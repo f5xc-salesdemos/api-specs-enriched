@@ -223,19 +223,20 @@ operation_level:
 # INDEX-LEVEL EXTENSIONS (index.json metadata)
 # =============================================================================
 index_level:
-  x-f5xc-domain-category:
+  x-f5xc-category:
     type: string
-    purpose: Domain category classification
+    purpose: Unified category classification (DRY consolidation)
     consumers: [mcp, cli, ide]
     example: "virtual"
-    migrated_from: "domain_category"
+    migrated_from: ["domain_category", "ui_category"]
+    note: "Single field replaces domain_category and ui_category"
 
-  x-f5xc-ui-category:
-    type: string
-    purpose: UI navigation category
-    consumers: [ide]
-    example: "Load Balancing"
-    migrated_from: "ui_category"
+  x-f5xc-critical-resources:
+    type: array
+    items: string
+    purpose: Critical resources requiring special handling
+    consumers: [cli, mcp]
+    source: "config/critical_resources.yaml"
 
   x-f5xc-primary-resources:
     type: array
@@ -336,3 +337,15 @@ preserved_native:
     - x-ves-oneof
     - x-ves-default
     - x-ves-required
+
+# =============================================================================
+# WRAPPER FIELDS (NOT EXTENSIONS)
+# =============================================================================
+wrapper_fields:
+  description: |
+    These fields are structural wrappers, not OpenAPI extensions.
+    They intentionally do not use x-f5xc-* prefix.
+    The contents within these wrappers DO use x-f5xc-* namespace.
+
+  fields:
+    - cli_metadata

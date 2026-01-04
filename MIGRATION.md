@@ -20,21 +20,22 @@ This release migrates all OpenAPI extension fields from mixed namespaces (`x-ves
 
 ### Index.json Fields
 
-| Old Field | New Field |
-|-----------|-----------|
-| `domain_category` | `x-f5xc-domain-category` |
-| `ui_category` | `x-f5xc-ui-category` |
-| `primary_resources` | `x-f5xc-primary-resources` |
-| `description_short` | `x-f5xc-description-short` |
-| `description_medium` | `x-f5xc-description-medium` |
-| `complexity` | `x-f5xc-complexity` |
-| `requires_tier` | `x-f5xc-requires-tier` |
-| `is_preview` | `x-f5xc-is-preview` |
-| `aliases` | `x-f5xc-aliases` |
-| `use_cases` | `x-f5xc-use-cases` |
-| `icon` | `x-f5xc-icon` |
-| `logo_svg` | `x-f5xc-logo-svg` |
-| `related_domains` | `x-f5xc-related-domains` |
+| Old Field | New Field | Notes |
+|-----------|-----------|-------|
+| `domain_category` | `x-f5xc-category` | DRY consolidation |
+| `ui_category` | `x-f5xc-category` | DRY consolidation |
+| `primary_resources` | `x-f5xc-primary-resources` | |
+| `description_short` | `x-f5xc-description-short` | |
+| `description_medium` | `x-f5xc-description-medium` | |
+| `complexity` | `x-f5xc-complexity` | |
+| `requires_tier` | `x-f5xc-requires-tier` | |
+| `is_preview` | `x-f5xc-is-preview` | |
+| `aliases` | `x-f5xc-aliases` | |
+| `use_cases` | `x-f5xc-use-cases` | |
+| `icon` | `x-f5xc-icon` | |
+| `logo_svg` | `x-f5xc-logo-svg` | |
+| `related_domains` | `x-f5xc-related-domains` | |
+| `critical_resources` | `x-f5xc-critical-resources` | New |
 
 ### Spec-Level Fields (info section)
 
@@ -175,6 +176,16 @@ The following F5 native fields are **preserved unchanged**:
 - Any other `x-ves-*` fields from upstream F5 specs
 
 These are not enrichment fields - they come from F5's original specifications.
+
+## Wrapper Fields (Not Extensions)
+
+The following fields are structural wrappers and intentionally do NOT use the `x-f5xc-*` prefix:
+
+| Field | Reason |
+|-------|--------|
+| `cli_metadata` | Container object for CLI-related extensions |
+
+**Note**: The contents of `cli_metadata` use the `x-f5xc-*` namespace correctly. Only the wrapper key itself remains unprefixed because it's a structural grouping, not an OpenAPI extension value.
 
 ## Centralized Constants
 
