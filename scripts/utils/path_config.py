@@ -24,7 +24,7 @@ class PathConfig:
     _instance: Optional["PathConfig"] = None
     _initialized: bool = False
 
-    def __new__(cls) -> "PathConfig":
+    def __new__(cls, _config_path: Path | None = None) -> "PathConfig":
         """Implement singleton pattern."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)

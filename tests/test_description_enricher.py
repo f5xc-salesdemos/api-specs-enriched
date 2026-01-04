@@ -23,7 +23,7 @@ def spec_with_info():
         "info": {
             "title": "F5 XC Virtual API",
             "description": "Original description",
-            "x-ves-cli-domain": "virtual",
+            "x-f5xc-cli-domain": "virtual",
         },
         "paths": {},
     }
@@ -137,9 +137,9 @@ class TestSpecEnrichment:
         assert desc != "Original description"
 
     def test_enrich_spec_extracts_domain(self, enricher, spec_with_info):
-        """Test enriching spec that has x-ves-cli-domain."""
+        """Test enriching spec that has x-f5xc-cli-domain."""
         result = enricher.enrich_spec(spec_with_info)
-        # Should extract domain from x-ves-cli-domain
+        # Should extract domain from x-f5xc-cli-domain
         assert result["info"]["description"] != "Original description"
 
     def test_enrich_spec_without_domain(self, enricher, spec_without_domain):

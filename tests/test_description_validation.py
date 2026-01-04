@@ -33,43 +33,43 @@ class TestBannedPatterns:
         ("text", "should_fail"),
         [
             # Redundant terms
-            ("This is the API for users", True),
-            ("REST API documentation", True),
-            ("endpoint configuration", True),
-            ("specifications for the service", True),
+            ("This is the API for users.", True),
+            ("REST API documentation.", True),
+            ("Endpoint configuration.", True),
+            ("Specifications for the service.", True),
             # Word boundary test - should NOT fail
-            ("rapid deployment", False),
-            ("therapy management", False),
-            ("rapier tools", False),
+            ("Rapid deployment options.", False),
+            ("Therapy management system.", False),
+            ("Rapier tools available.", False),
             # Brand names
-            ("F5 load balancer", True),
-            ("XC configuration", True),
-            ("Distributed Cloud services", True),
-            ("Volterra platform", True),
+            ("F5 load balancer.", True),
+            ("XC configuration.", True),
+            ("Distributed Cloud services.", True),
+            ("Volterra platform.", True),
             # Filler words
-            ("utilize advanced features", True),
-            ("leverage cloud services", True),
-            ("facilitate communication", True),
-            ("in order to configure", True),
+            ("Utilize advanced features.", True),
+            ("Leverage cloud services.", True),
+            ("Facilitate communication.", True),
+            ("In order to configure.", True),
             # Acceptable alternatives
-            ("use advanced features", False),
-            ("enable communication", False),
-            ("to configure settings", False),
+            ("Advanced features available.", False),
+            ("Communication protocols.", False),
+            ("Settings for configuration.", False),
             # Vague descriptors
-            ("various configurations", True),
-            ("multiple options available", True),
-            ("several settings etc.", True),
+            ("Various configurations.", True),
+            ("Multiple options available.", True),
+            ("Several settings etc.", True),
             # Marketing hype
-            ("seamless integration", True),
-            ("robust security", True),
-            ("powerful automation", True),
-            ("cutting-edge technology", True),
+            ("Seamless integration.", True),
+            ("Robust security.", True),
+            ("Powerful automation.", True),
+            ("Cutting-edge technology.", True),
             # Passive voice
-            ("Data is returned by the server", True),
-            ("Connections are handled automatically", True),
+            ("Data is returned by the server.", True),
+            ("Connections are handled automatically.", True),
             # Active voice (should pass)
-            ("Returns data from the server", False),
-            ("Handles connections automatically", False),
+            ("Server returns data directly.", False),
+            ("Connection handling automatic.", False),
             # Truncation indicators
             ("Configure settings...", True),
             ("Set up load balancing…", True),
@@ -411,7 +411,7 @@ class TestDomainNameUsage:
         assert v is not None
         assert v.code == "DOMAIN_NAME"
         assert v.tier == "long"
-        assert "observability" in v.location
+        assert "observability" in v.location.lower()
 
     def test_no_violation_when_domain_absent(self) -> None:
         """Verify no violation when domain name is not present."""

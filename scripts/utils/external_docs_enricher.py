@@ -18,6 +18,7 @@ from typing import Any
 import yaml
 
 from scripts.utils.domain_categorizer import categorize_spec
+from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +171,7 @@ class ExternalDocsEnricher:
 
         Uses multiple strategies to determine the domain:
         1. Use filename with DomainCategorizer if available
-        2. Extract from x-ves-cli-domain extension if present
+        2. Extract from x-f5xc-cli-domain extension if present
         3. Extract from spec title
 
         Args:
@@ -186,9 +187,9 @@ class ExternalDocsEnricher:
             if domain and domain != "other":
                 return domain
 
-        # Strategy 2: Use x-ves-cli-domain if present
+        # Strategy 2: Use x-f5xc-cli-domain if present
         info = spec.get("info", {})
-        cli_domain = info.get("x-ves-cli-domain")
+        cli_domain = info.get(X_F5XC_CLI_DOMAIN)
         if cli_domain:
             return cli_domain
 

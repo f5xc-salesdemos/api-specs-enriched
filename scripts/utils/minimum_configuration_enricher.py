@@ -4,10 +4,12 @@ This enricher adds minimum configuration metadata to resource schemas,
 enabling AI assistants and CLI tools to generate working configurations.
 
 Adds four OpenAPI extensions:
-- x-ves-minimum-configuration: Schema-level minimum config definition
-- x-ves-required-for: Field-level context requirements
-- x-ves-cli-domain: Domain classification for CLI routing
-- x-ves-cli-aliases: Alternative names for resources
+- x-f5xc-minimum-configuration: Schema-level minimum config definition
+- x-f5xc-required-for: Field-level context requirements
+- x-f5xc-cli-domain: Domain classification for CLI routing
+- x-f5xc-cli-aliases: Alternative names for resources
+
+Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
 import json
@@ -20,6 +22,12 @@ from typing import Any
 import yaml
 
 from .domain_categorizer import DomainCategorizer
+from .extension_constants import (
+    X_F5XC_CLI_ALIASES,
+    X_F5XC_CLI_DOMAIN,
+    X_F5XC_MINIMUM_CONFIGURATION,
+    X_F5XC_REQUIRED_FOR,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +146,7 @@ class MinimumConfigurationEnricher:
         """Enrich individual schema with minimum configuration metadata.
 
         Handles both configured resources (from config/minimum_configs.yaml) and
-        unconfigured resources (via auto-generation). x-ves-cli-domain is idempotent
+        unconfigured resources (via auto-generation). x-f5xc-cli-domain is idempotent
         and will preserve existing values.
 
         Args:
@@ -148,8 +156,8 @@ class MinimumConfigurationEnricher:
         resource_type = self._detect_resource_type(schema_name)
 
         try:
-            # Check if x-ves-cli-domain already exists (idempotent behavior)
-            has_existing_cli_domain = "x-ves-cli-domain" in schema
+            # Check if x-f5xc-cli-domain already exists (idempotent behavior)
+            has_existing_cli_domain = X_F5XC_CLI_DOMAIN in schema
 
             if resource_type and resource_type in self.resources:
                 # Explicit configuration exists
@@ -160,10 +168,10 @@ class MinimumConfigurationEnricher:
                 self._enrich_with_auto_generation(schema, schema_name, resource_type)
                 self.stats.schemas_auto_generated += 1
 
-            # Preserve existing x-ves-cli-domain or add domain via categorizer
-            if not has_existing_cli_domain or "x-ves-cli-domain" not in schema:
+            # Preserve existing x-f5xc-cli-domain or add domain via categorizer
+            if not has_existing_cli_domain or X_F5XC_CLI_DOMAIN not in schema:
                 domain = self._get_domain_for_resource(resource_type or "", schema_name)
-                schema["x-ves-cli-domain"] = domain
+                schema[X_F5XC_CLI_DOMAIN] = domain
                 self.stats.cli_domains_added += 1
             else:
                 self.stats.cli_domains_preserved += 1
@@ -195,7 +203,7 @@ class MinimumConfigurationEnricher:
             resource_type: Detected resource type
             resource_config: Configuration from config file
         """
-        # Add x-ves-minimum-configuration at schema level
+        # Add x-f5xc-minimum-configuration at schema level
         minimum_config = {
             "description": resource_config.get("description", ""),
             "required_fields": self._extract_required_fields(resource_type, schema),
@@ -205,15 +213,15 @@ class MinimumConfigurationEnricher:
             "example_curl": resource_config.get("example_curl", ""),
         }
 
-        schema["x-ves-minimum-configuration"] = minimum_config
+        schema[X_F5XC_MINIMUM_CONFIGURATION] = minimum_config
         self.stats.minimum_configs_added += 1
 
-        # Add x-ves-required-for to schema properties
+        # Add x-f5xc-required-for to schema properties
         self._add_field_requirements(schema, resource_config)
 
-        # Add x-ves-cli-aliases if configured
+        # Add x-f5xc-cli-aliases if configured
         if "cli" in resource_config and "aliases" in resource_config["cli"]:
-            schema["x-ves-cli-aliases"] = resource_config["cli"]["aliases"]
+            schema[X_F5XC_CLI_ALIASES] = resource_config["cli"]["aliases"]
             self.stats.cli_aliases_added += 1
 
     def _enrich_with_auto_generation(
@@ -232,7 +240,7 @@ class MinimumConfigurationEnricher:
         # Generate sensible defaults
         auto_config = self._auto_generate_minimum_config(schema, schema_name)
 
-        schema["x-ves-minimum-configuration"] = auto_config
+        schema[X_F5XC_MINIMUM_CONFIGURATION] = auto_config
         self.stats.minimum_configs_auto_generated += 1
 
         # Add basic field requirements
@@ -377,7 +385,7 @@ class MinimumConfigurationEnricher:
         )
 
     def _add_auto_generated_field_requirements(self, schema: dict[str, Any]) -> None:
-        """Add basic x-ves-required-for to schema properties (auto-generated).
+        """Add basic x-f5xc-required-for to schema properties (auto-generated).
 
         Args:
             schema: Schema definition
@@ -399,7 +407,7 @@ class MinimumConfigurationEnricher:
                 "update": False,
                 "read": False,
             }
-            field_schema["x-ves-required-for"] = field_requirements
+            field_schema[X_F5XC_REQUIRED_FOR] = field_requirements
             self.stats.field_requirements_added += 1
 
     def _detect_resource_type(self, schema_name: str) -> str | None:
@@ -488,7 +496,7 @@ class MinimumConfigurationEnricher:
         schema: dict[str, Any],
         resource_config: dict[str, Any],
     ) -> None:
-        """Add x-ves-required-for to schema properties.
+        """Add x-f5xc-required-for to schema properties.
 
         Args:
             schema: Schema definition
@@ -510,7 +518,7 @@ class MinimumConfigurationEnricher:
                 "update": False,
                 "read": False,
             }
-            field_schema["x-ves-required-for"] = field_requirements
+            field_schema[X_F5XC_REQUIRED_FOR] = field_requirements
             self.stats.field_requirements_added += 1
 
     def _extract_required_fields_list(self, resource_config: dict[str, Any]) -> list[str]:

@@ -6,6 +6,7 @@ providing links to F5's official documentation.
 
 import pytest
 
+from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
 from scripts.utils.external_docs_enricher import (
     ExternalDocsEnricher,
     ExternalDocsStats,
@@ -131,12 +132,12 @@ class TestDomainDetection:
         assert domain == "virtual"
 
     def test_detect_domain_from_cli_domain_extension(self):
-        """Test domain detection from x-ves-cli-domain extension."""
+        """Test domain detection from x-f5xc-cli-domain extension."""
         enricher = ExternalDocsEnricher()
         spec = {
             "info": {
                 "title": "Some API",
-                "x-ves-cli-domain": "waf",
+                X_F5XC_CLI_DOMAIN: "waf",
             },
             "paths": {},
         }
@@ -188,7 +189,7 @@ class TestSpecEnrichment:
         spec = {
             "info": {
                 "title": "HTTP Load Balancer API",
-                "x-ves-cli-domain": "virtual",
+                X_F5XC_CLI_DOMAIN: "virtual",
             },
             "paths": {},
         }
@@ -206,7 +207,7 @@ class TestSpecEnrichment:
         spec = {
             "info": {
                 "title": "App Firewall API",
-                "x-ves-cli-domain": "waf",
+                X_F5XC_CLI_DOMAIN: "waf",
             },
             "paths": {},
         }
@@ -242,7 +243,7 @@ class TestSpecEnrichment:
                 "title": "Some API",
                 "version": "1.0.0",
                 "description": "API description",
-                "x-ves-cli-domain": "virtual",
+                X_F5XC_CLI_DOMAIN: "virtual",
             },
             "paths": {},
         }
@@ -250,7 +251,7 @@ class TestSpecEnrichment:
         assert result["info"]["title"] == "Some API"
         assert result["info"]["version"] == "1.0.0"
         assert result["info"]["description"] == "API description"
-        assert result["info"]["x-ves-cli-domain"] == "virtual"
+        assert result["info"][X_F5XC_CLI_DOMAIN] == "virtual"
         assert "externalDocs" in result["info"]
 
     def test_enrich_spec_creates_info_if_missing(self):
@@ -280,11 +281,11 @@ class TestSpecEnrichment:
         enricher = ExternalDocsEnricher()
         specs = [
             {
-                "info": {"title": "HTTP Load Balancer API", "x-ves-cli-domain": "virtual"},
+                "info": {"title": "HTTP Load Balancer API", X_F5XC_CLI_DOMAIN: "virtual"},
                 "paths": {},
             },
-            {"info": {"title": "App Firewall API", "x-ves-cli-domain": "waf"}, "paths": {}},
-            {"info": {"title": "DNS Zone API", "x-ves-cli-domain": "dns"}, "paths": {}},
+            {"info": {"title": "App Firewall API", X_F5XC_CLI_DOMAIN: "waf"}, "paths": {}},
+            {"info": {"title": "DNS Zone API", X_F5XC_CLI_DOMAIN: "dns"}, "paths": {}},
         ]
         for spec in specs:
             enricher.enrich_spec(spec)
@@ -411,14 +412,14 @@ class TestIntegrationPatterns:
     """Test integration patterns with other enrichers."""
 
     def test_works_with_cli_domain_from_other_enricher(self):
-        """Test using x-ves-cli-domain set by another enricher."""
+        """Test using x-f5xc-cli-domain set by another enricher."""
         enricher = ExternalDocsEnricher()
         # Simulate spec already enriched by MinimumConfigurationEnricher
         spec = {
             "info": {
                 "title": "HTTP Load Balancer API",
-                "x-ves-cli-domain": "virtual",
-                "x-ves-minimum-configuration": {
+                X_F5XC_CLI_DOMAIN: "virtual",
+                "x-f5xc-minimum-configuration": {
                     "description": "Minimum viable load balancer",
                 },
             },
@@ -427,8 +428,8 @@ class TestIntegrationPatterns:
         result = enricher.enrich_spec(spec)
         assert "externalDocs" in result["info"]
         # Should still have other extensions
-        assert "x-ves-cli-domain" in result["info"]
-        assert "x-ves-minimum-configuration" in result["info"]
+        assert X_F5XC_CLI_DOMAIN in result["info"]
+        assert "x-f5xc-minimum-configuration" in result["info"]
 
     def test_works_with_namespace_scope(self):
         """Test compatibility with namespace scope enricher."""
@@ -437,11 +438,11 @@ class TestIntegrationPatterns:
         spec = {
             "info": {
                 "title": "Alert Policy API",
-                "x-ves-namespace-scope": "system",
+                "x-f5xc-namespace-scope": "system",
             },
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
         assert "externalDocs" in result["info"]
-        assert "x-ves-namespace-scope" in result["info"]
-        assert result["info"]["x-ves-namespace-scope"] == "system"
+        assert "x-f5xc-namespace-scope" in result["info"]
+        assert result["info"]["x-f5xc-namespace-scope"] == "system"

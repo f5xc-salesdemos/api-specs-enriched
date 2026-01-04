@@ -305,13 +305,13 @@ def enrich_spec_file(
         # 3. Schema fixes (add missing type field where format exists)
         spec = schema_fixer.fix_spec(spec)
 
-        # 4. Field metadata enrichment (add unified x-ves-* field-level metadata)
+        # 4. Field metadata enrichment (add unified x-f5xc-* field-level metadata)
         spec = field_metadata_enricher.enrich_spec(spec)
 
-        # 4.5. Minimum configuration enrichment (add x-ves-minimum-configuration)
+        # 4.5. Minimum configuration enrichment (add x-f5xc-minimum-configuration)
         spec = minimum_configuration_enricher.enrich_spec(spec)
 
-        # 4.6. Namespace scope enrichment (add x-ves-namespace-scope)
+        # 4.6. Namespace scope enrichment (add x-f5xc-namespace-scope)
         namespace_scope_enricher = NamespaceScopeEnricher()
         spec = namespace_scope_enricher.enrich_spec(spec)
 
