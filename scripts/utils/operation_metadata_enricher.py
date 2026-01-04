@@ -7,7 +7,9 @@ Adds operation-level metadata for CLI tooling:
 - CLI example generation
 
 Conservative approach: only applies well-established patterns.
-Uses x-ves-* extensions to store operation metadata.
+Uses x-f5xc-* extensions to store operation metadata.
+
+Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
 import re
@@ -41,10 +43,10 @@ class OperationMetadataEnricher:
     """Add operation-level metadata for API operations.
 
     Enriches operations with:
-    - x-ves-required-fields: List of required field paths
-    - x-ves-danger-level: low/medium/high risk classification
-    - x-ves-confirmation-required: Boolean for dangerous operations
-    - x-ves-side-effects: Create/modify/delete effects
+    - x-f5xc-required-fields: List of required field paths
+    - x-f5xc-danger-level: low/medium/high risk classification
+    - x-f5xc-confirmation-required: Boolean for dangerous operations
+    - x-f5xc-side-effects: Create/modify/delete effects
 
     Configuration-driven from operation_metadata.yaml.
     """
@@ -62,7 +64,7 @@ class OperationMetadataEnricher:
         self.config_path = config_path
         self.danger_levels: dict[str, Any] = {}
         self.required_fields_config: dict[str, Any] = {}
-        self.extension_prefix = "x-ves"
+        self.extension_prefix = "x-f5xc"
         self.stats = OperationEnrichmentStats()
 
         self._load_config()
@@ -79,7 +81,7 @@ class OperationMetadataEnricher:
 
             self.danger_levels = config.get("danger_levels", {})
             self.required_fields_config = config.get("required_fields", {})
-            self.extension_prefix = config.get("extension_prefix", "x-ves")
+            self.extension_prefix = config.get("extension_prefix", "x-f5xc")
         except Exception:
             self._use_default_config()
 
@@ -118,7 +120,7 @@ class OperationMetadataEnricher:
             "standard_create_fields": ["metadata.name", "metadata.namespace"],
         }
 
-        self.extension_prefix = "x-ves"
+        self.extension_prefix = "x-f5xc"
 
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Enrich OpenAPI specification with operation metadata.
@@ -221,7 +223,7 @@ class OperationMetadataEnricher:
     ) -> dict[str, Any]:
         """Build comprehensive operation metadata object.
 
-        Creates x-ves-operation-metadata containing all operation context and constraints.
+        Creates x-f5xc-operation-metadata containing all operation context and constraints.
 
         Args:
             method: HTTP method

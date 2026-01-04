@@ -6,6 +6,10 @@ for AI-assisted resource creation.
 
 import pytest
 
+from scripts.utils.extension_constants import (
+    X_F5XC_CLI_DOMAIN,
+    X_F5XC_MINIMUM_CONFIGURATION,
+)
 from scripts.utils.minimum_configuration_enricher import (
     MinimumConfigurationEnricher,
     MinimumConfigurationStats,
@@ -285,8 +289,8 @@ class TestFullEnrichment:
 
         # Verify schema was enriched with minimum configuration
         schema = enriched["components"]["schemas"]["http_loadbalancerCreateRequest"]
-        assert "x-ves-minimum-configuration" in schema
-        assert "x-ves-cli-domain" in schema
+        assert X_F5XC_MINIMUM_CONFIGURATION in schema
+        assert X_F5XC_CLI_DOMAIN in schema
         assert enricher.stats.minimum_configs_added > 0
 
     def test_enrich_preserves_original_schema(self):
@@ -394,9 +398,9 @@ class TestAllFiveResources:
         schema = enriched["components"]["schemas"][schema_name]
 
         # Verify minimum configuration was added
-        assert "x-ves-minimum-configuration" in schema, f"No minimum config for {resource_type}"
+        assert X_F5XC_MINIMUM_CONFIGURATION in schema, f"No minimum config for {resource_type}"
 
-        min_config = schema["x-ves-minimum-configuration"]
+        min_config = schema[X_F5XC_MINIMUM_CONFIGURATION]
         assert "required_fields" in min_config
         assert "description" in min_config
         assert "example_yaml" in min_config
@@ -404,8 +408,8 @@ class TestAllFiveResources:
         assert "example_curl" in min_config
 
         # Verify CLI metadata was added
-        assert "x-ves-cli-domain" in schema
-        assert schema["x-ves-cli-domain"] is not None
+        assert X_F5XC_CLI_DOMAIN in schema
+        assert schema[X_F5XC_CLI_DOMAIN] is not None
 
 
 class TestAutoGenerationForUnconfiguredResources:
@@ -435,17 +439,17 @@ class TestAutoGenerationForUnconfiguredResources:
         schema = enriched["components"]["schemas"]["RandomUnknownSchema"]
 
         # Verify auto-generated minimum configuration was added
-        assert "x-ves-minimum-configuration" in schema
-        min_config = schema["x-ves-minimum-configuration"]
+        assert X_F5XC_MINIMUM_CONFIGURATION in schema
+        min_config = schema[X_F5XC_MINIMUM_CONFIGURATION]
         assert "description" in min_config
         assert "Minimum configuration for" in min_config["description"]
         assert min_config["required_fields"] is not None
         assert min_config["example_yaml"] is not None
 
         # Verify auto-generated CLI domain
-        assert "x-ves-cli-domain" in schema
+        assert X_F5XC_CLI_DOMAIN in schema
         # Should have been auto-categorized or fallback
-        assert schema["x-ves-cli-domain"] is not None
+        assert schema[X_F5XC_CLI_DOMAIN] is not None
 
     def test_auto_generation_stats_tracked(self):
         """Test that auto-generation statistics are properly tracked."""
@@ -494,24 +498,24 @@ class TestAutoGenerationForUnconfiguredResources:
         # All should have been enriched
         for schema_name in ["customTypeA", "customTypeB", "customTypeC", "customTypeD"]:
             schema = schemas[schema_name]
-            assert "x-ves-cli-domain" in schema
-            assert schema["x-ves-cli-domain"] is not None
+            assert X_F5XC_CLI_DOMAIN in schema
+            assert schema[X_F5XC_CLI_DOMAIN] is not None
 
 
 class TestIdempotency:
     """Test idempotent behavior - running enrichment multiple times produces consistent results."""
 
     def test_preserve_existing_cli_domain(self):
-        """Test that existing x-ves-cli-domain is preserved (idempotent)."""
+        """Test that existing x-f5xc-cli-domain is preserved (idempotent)."""
         enricher = MinimumConfigurationEnricher()
 
-        # Create a spec with manually-set x-ves-cli-domain
+        # Create a spec with manually-set x-f5xc-cli-domain
         spec = {
             "components": {
                 "schemas": {
                     "custom_resource": {
                         "type": "object",
-                        "x-ves-cli-domain": "my_custom_domain",
+                        X_F5XC_CLI_DOMAIN: "my_custom_domain",
                     },
                 },
             },
@@ -521,7 +525,7 @@ class TestIdempotency:
         schema = enriched["components"]["schemas"]["custom_resource"]
 
         # Should preserve the existing value
-        assert schema["x-ves-cli-domain"] == "my_custom_domain"
+        assert schema[X_F5XC_CLI_DOMAIN] == "my_custom_domain"
         # Should have recorded that it was preserved
         assert enricher.stats.cli_domains_preserved > 0
 
@@ -550,9 +554,9 @@ class TestIdempotency:
         schema1 = result1["components"]["schemas"]["http_loadbalancerCreateRequest"]
         schema2 = result2["components"]["schemas"]["http_loadbalancerCreateRequest"]
 
-        assert schema1.get("x-ves-cli-domain") == schema2.get("x-ves-cli-domain")
-        assert schema1.get("x-ves-minimum-configuration") == schema2.get(
-            "x-ves-minimum-configuration",
+        assert schema1.get(X_F5XC_CLI_DOMAIN) == schema2.get(X_F5XC_CLI_DOMAIN)
+        assert schema1.get(X_F5XC_MINIMUM_CONFIGURATION) == schema2.get(
+            X_F5XC_MINIMUM_CONFIGURATION,
         )
 
     def test_idempotent_stats_tracking(self):
@@ -616,15 +620,15 @@ class TestAllResourcePatterns:
         schema = enriched["components"]["schemas"][schema_name]
 
         # All schemas should be enriched with minimum configuration
-        assert "x-ves-minimum-configuration" in schema
-        min_config = schema["x-ves-minimum-configuration"]
+        assert X_F5XC_MINIMUM_CONFIGURATION in schema
+        min_config = schema[X_F5XC_MINIMUM_CONFIGURATION]
         assert min_config.get("description") is not None
         assert min_config.get("example_yaml") is not None
         assert min_config.get("required_fields") is not None
 
         # All should have CLI domain
-        assert "x-ves-cli-domain" in schema
-        assert schema["x-ves-cli-domain"] is not None
+        assert X_F5XC_CLI_DOMAIN in schema
+        assert schema[X_F5XC_CLI_DOMAIN] is not None
 
 
 if __name__ == "__main__":

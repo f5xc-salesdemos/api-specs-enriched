@@ -3,180 +3,182 @@ preserve_existing: true
 
 # Consolidated field patterns for all field-level metadata
 # Each pattern defines:
-# - x-ves-description: Brief help text for the field
-# - x-ves-validation: Validation constraints (type, format, ranges, patterns)
-# - x-ves-examples: Array of examples with context descriptions
-# - x-ves-completion: CLI autocomplete hints
-# - x-ves-defaults: Default values with reasoning
-# - x-ves-required-for-operations: Per-operation requirement flags
+# - x-f5xc-description: Brief help text for the field
+# - x-f5xc-validation: Validation constraints (type, format, ranges, patterns)
+# - x-f5xc-examples: Array of examples with context descriptions
+# - x-f5xc-completion: CLI autocomplete hints
+# - x-f5xc-defaults: Default values with reasoning
+# - x-f5xc-required-for-operations: Per-operation requirement flags
+#
+# Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 
 field_patterns:
   - pattern: '\bname$'
-    x-ves-description: 'Human-readable resource name'
-    x-ves-validation:
+    x-f5xc-description: 'Human-readable resource name'
+    x-f5xc-validation:
       minLength: 1
       maxLength: 63
       pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'example-resource'
         context: 'Basic alphanumeric name'
       - value: 'my-app-prod'
         context: 'Environment-specific naming'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'string-value'
       hint: 'Resource name (alphanumeric and hyphens, 1-63 chars)'
       pattern: '^[a-z0-9-]+$'
-    x-ves-defaults:
+    x-f5xc-defaults:
       value: null
       reasoning: 'Name must be explicitly provided by user'
-    x-ves-required-for-operations:
+    x-f5xc-required-for-operations:
       create: true
       read: true
       update: true
       delete: true
 
   - pattern: '\bemail$'
-    x-ves-description: 'Email address in RFC 5322 format'
-    x-ves-validation:
+    x-f5xc-description: 'Email address in RFC 5322 format'
+    x-f5xc-validation:
       format: 'email'
       pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'user@example.com'
         context: 'Standard email format'
       - value: 'admin+ops@company.org'
         context: 'Email with plus addressing'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'email'
       hint: 'Valid email address'
-    x-ves-required-for-operations:
+    x-f5xc-required-for-operations:
       create: true
       read: false
       update: false
       delete: false
 
   - pattern: '\bport$'
-    x-ves-description: 'TCP/UDP port number'
-    x-ves-validation:
+    x-f5xc-description: 'TCP/UDP port number'
+    x-f5xc-validation:
       type: 'integer'
       minimum: 1
       maximum: 65535
-    x-ves-examples:
+    x-f5xc-examples:
       - value: '8080'
         context: 'Standard service port'
       - value: '443'
         context: 'HTTPS port'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'port'
       hint: 'Port number (1-65535)'
-    x-ves-defaults:
+    x-f5xc-defaults:
       value: '8080'
       reasoning: 'Sensible default for development'
 
   - pattern: '\buuid$'
-    x-ves-description: 'Unique identifier in UUID v4 format'
-    x-ves-validation:
+    x-f5xc-description: 'Unique identifier in UUID v4 format'
+    x-f5xc-validation:
       format: 'uuid'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
         context: 'Valid UUID v4 example'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'uuid'
       hint: 'UUID identifier (auto-generated)'
-    x-ves-defaults:
+    x-f5xc-defaults:
       value: null
       reasoning: 'UUIDs typically generated server-side'
 
   - pattern: '\btimestamp$'
-    x-ves-description: 'Timestamp in ISO 8601 format'
-    x-ves-validation:
+    x-f5xc-description: 'Timestamp in ISO 8601 format'
+    x-f5xc-validation:
       format: 'date-time'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: '2025-01-15T10:30:00Z'
         context: 'ISO 8601 UTC timestamp'
       - value: '2025-01-15T10:30:00+05:30'
         context: 'ISO 8601 with timezone'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'timestamp'
       hint: 'ISO 8601 date-time (auto-set on create)'
-    x-ves-defaults:
+    x-f5xc-defaults:
       value: null
       reasoning: 'Timestamps typically set by server'
 
   - pattern: '\b(ipv4|ipaddress|ip_addr)$'
-    x-ves-description: 'IPv4 address in dotted decimal notation'
-    x-ves-validation:
+    x-f5xc-description: 'IPv4 address in dotted decimal notation'
+    x-f5xc-validation:
       format: 'ipv4'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: '192.0.2.1'
         context: 'Documentation IPv4 address'
       - value: '10.0.0.1'
         context: 'Private network address'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'ipv4'
       hint: 'IPv4 address (e.g., 192.0.2.1)'
 
   - pattern: '\b(url|uri)$'
-    x-ves-description: 'URL or URI reference'
-    x-ves-validation:
+    x-f5xc-description: 'URL or URI reference'
+    x-f5xc-validation:
       format: 'uri'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'https://example.com'
         context: 'Standard HTTPS URL'
       - value: 'https://api.example.com/v1/resource'
         context: 'API endpoint URL'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'url'
       hint: 'Valid URL (https://...)'
 
   - pattern: '\b(namespace|project)$'
-    x-ves-description: 'Kubernetes/project namespace identifier'
-    x-ves-validation:
+    x-f5xc-description: 'Kubernetes/project namespace identifier'
+    x-f5xc-validation:
       minLength: 1
       maxLength: 63
       pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'default'
         context: 'Default namespace'
       - value: 'kube-system'
         context: 'System namespace'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'namespace-list'
       hint: 'Kubernetes namespace'
 
   - pattern: '\blabels$'
-    x-ves-description: 'Metadata labels as key-value pairs'
-    x-ves-validation:
+    x-f5xc-description: 'Metadata labels as key-value pairs'
+    x-f5xc-validation:
       type: 'object'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'env=production,tier=api'
         context: 'Multiple labels'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'key-value-pairs'
       hint: 'Key=value pairs'
       separator: '='
 
   - pattern: '\btags$'
-    x-ves-description: 'Resource tags for organization and filtering'
-    x-ves-validation:
+    x-f5xc-description: 'Resource tags for organization and filtering'
+    x-f5xc-validation:
       type: 'array'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: 'production,critical'
         context: 'Multiple tags'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'key-value-pairs'
       hint: 'Tag identifiers'
       separator: ','
 
   - pattern: '\b(file|path)$'
-    x-ves-description: 'File path reference'
-    x-ves-validation:
+    x-f5xc-description: 'File path reference'
+    x-f5xc-validation:
       type: 'string'
-    x-ves-examples:
+    x-f5xc-examples:
       - value: './config.yaml'
         context: 'Relative file path'
       - value: '/etc/app/config.yaml'
         context: 'Absolute file path'
-    x-ves-completion:
+    x-f5xc-completion:
       type: 'file-path'
       hint: 'File path reference'
 
@@ -191,7 +193,7 @@ conditions: []
 #
 # Priority Order:
 # 1. EXISTING: In the original spec (highest trust)
-# 2. DISCOVERY: From x-ves-validation-rules (live API constraints)
+# 2. DISCOVERY: From x-f5xc-validation-rules (live API constraints)
 # 3. INFERRED: From field_metadata.yaml (pattern-based)
 #
 # When conflicts exist:

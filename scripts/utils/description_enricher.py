@@ -22,6 +22,8 @@ from typing import Any
 
 import yaml
 
+from .extension_constants import X_F5XC_CLI_DOMAIN
+
 
 @dataclass
 class DescriptionEnrichmentStats:
@@ -133,7 +135,7 @@ class DescriptionEnricher:
         Args:
             spec: OpenAPI specification dictionary
             domain: Domain name (e.g., "virtual"). If None, tries to extract
-                   from spec's x-ves-cli-domain extension.
+                   from spec's x-f5xc-cli-domain extension.
 
         Returns:
             Specification with enriched info.description and info.summary
@@ -179,7 +181,7 @@ class DescriptionEnricher:
         return spec
 
     def _extract_domain(self, spec: dict[str, Any]) -> str | None:
-        """Extract domain from spec's x-ves-cli-domain extension.
+        """Extract domain from spec's x-f5xc-cli-domain extension.
 
         Args:
             spec: OpenAPI specification dictionary
@@ -188,7 +190,7 @@ class DescriptionEnricher:
             Domain name if found, None otherwise
         """
         info = spec.get("info", {})
-        return info.get("x-ves-cli-domain")
+        return info.get(X_F5XC_CLI_DOMAIN)
 
     def get_description(self, domain: str, tier: str = "long") -> str | None:
         """Get description for a domain at specified tier.

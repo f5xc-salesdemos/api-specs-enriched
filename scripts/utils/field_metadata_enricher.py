@@ -8,6 +8,8 @@ Consolidates and extends field-level enrichment with:
 Conservative approach: only applies high-confidence patterns (95%+).
 Preserves all existing metadata (never overwrites).
 Merges discovery constraints with priority: existing > discovery > inferred.
+
+Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
 import re
@@ -16,6 +18,17 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from .extension_constants import (
+    X_F5XC_COMPLETION,
+    X_F5XC_CONDITIONS,
+    X_F5XC_DEFAULTS,
+    X_F5XC_DEPRECATED,
+    X_F5XC_DESCRIPTION,
+    X_F5XC_EXAMPLES,
+    X_F5XC_REQUIRED_FOR_OPERATIONS,
+    X_F5XC_VALIDATION,
+)
 
 
 @dataclass
@@ -58,14 +71,14 @@ class FieldMetadataEnricher:
     - CLIMetadataEnricher: CLI-specific metadata
 
     Adds new extensions:
-    - x-ves-description: Field help text
-    - x-ves-validation: Validation constraints object
-    - x-ves-examples: Multiple examples with context (array)
-    - x-ves-completion: Enhanced autocomplete metadata
-    - x-ves-defaults: Default values with reasoning
-    - x-ves-conditions: Conditional requirements
-    - x-ves-required-for-operations: Per-operation requirements
-    - x-ves-deprecated: Deprecation metadata
+    - x-f5xc-description: Field help text
+    - x-f5xc-validation: Validation constraints object
+    - x-f5xc-examples: Multiple examples with context (array)
+    - x-f5xc-completion: Enhanced autocomplete metadata
+    - x-f5xc-defaults: Default values with reasoning
+    - x-f5xc-conditions: Conditional requirements
+    - x-f5xc-required-for-operations: Per-operation requirements
+    - x-f5xc-deprecated: Deprecation metadata
 
     Configuration-driven from field_metadata.yaml.
     Preserves all existing metadata (never overwrites).
@@ -118,17 +131,17 @@ class FieldMetadataEnricher:
         self.field_patterns = [
             {
                 "pattern": r"\bname$",
-                "x-ves-description": "Human-readable resource name",
-                "x-ves-validation": {
+                X_F5XC_DESCRIPTION: "Human-readable resource name",
+                X_F5XC_VALIDATION: {
                     "minLength": 1,
                     "maxLength": 63,
                     "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
                 },
-                "x-ves-examples": [
+                X_F5XC_EXAMPLES: [
                     {"value": "example-resource", "context": "Basic alphanumeric name"},
                 ],
-                "x-ves-completion": {"type": "string-value", "hint": "Resource name"},
-                "x-ves-required-for-operations": {
+                X_F5XC_COMPLETION: {"type": "string-value", "hint": "Resource name"},
+                X_F5XC_REQUIRED_FOR_OPERATIONS: {
                     "create": True,
                     "read": True,
                     "update": True,
@@ -137,43 +150,43 @@ class FieldMetadataEnricher:
             },
             {
                 "pattern": r"\bemail$",
-                "x-ves-description": "Email address in RFC 5322 format",
-                "x-ves-validation": {
+                X_F5XC_DESCRIPTION: "Email address in RFC 5322 format",
+                X_F5XC_VALIDATION: {
                     "format": "email",
                     "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
                 },
-                "x-ves-examples": [
+                X_F5XC_EXAMPLES: [
                     {"value": "user@example.com", "context": "Standard email format"},
                 ],
-                "x-ves-completion": {"type": "email", "hint": "Email address"},
+                X_F5XC_COMPLETION: {"type": "email", "hint": "Email address"},
             },
             {
                 "pattern": r"\bport$",
-                "x-ves-description": "TCP/UDP port number",
-                "x-ves-validation": {"minimum": 1, "maximum": 65535},
-                "x-ves-examples": [{"value": "8080", "context": "Standard service port"}],
-                "x-ves-completion": {"type": "port", "hint": "Port number"},
+                X_F5XC_DESCRIPTION: "TCP/UDP port number",
+                X_F5XC_VALIDATION: {"minimum": 1, "maximum": 65535},
+                X_F5XC_EXAMPLES: [{"value": "8080", "context": "Standard service port"}],
+                X_F5XC_COMPLETION: {"type": "port", "hint": "Port number"},
             },
             {
                 "pattern": r"\buuid$",
-                "x-ves-description": "Unique identifier in UUID v4 format",
-                "x-ves-validation": {"format": "uuid"},
-                "x-ves-examples": [
+                X_F5XC_DESCRIPTION: "Unique identifier in UUID v4 format",
+                X_F5XC_VALIDATION: {"format": "uuid"},
+                X_F5XC_EXAMPLES: [
                     {
                         "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                         "context": "Valid UUID v4",
                     },
                 ],
-                "x-ves-completion": {"type": "uuid", "hint": "UUID identifier"},
+                X_F5XC_COMPLETION: {"type": "uuid", "hint": "UUID identifier"},
             },
             {
                 "pattern": r"\btimestamp$",
-                "x-ves-description": "Timestamp in ISO 8601 format",
-                "x-ves-validation": {"format": "date-time"},
-                "x-ves-examples": [
+                X_F5XC_DESCRIPTION: "Timestamp in ISO 8601 format",
+                X_F5XC_VALIDATION: {"format": "date-time"},
+                X_F5XC_EXAMPLES: [
                     {"value": "2025-01-15T10:30:00Z", "context": "ISO 8601 UTC"},
                 ],
-                "x-ves-completion": {"type": "timestamp", "hint": "ISO 8601 timestamp"},
+                X_F5XC_COMPLETION: {"type": "timestamp", "hint": "ISO 8601 timestamp"},
             },
         ]
 
@@ -378,95 +391,95 @@ class FieldMetadataEnricher:
         return None
 
     def _add_description(self, prop: dict[str, Any], pattern_config: dict[str, Any]) -> None:
-        """Add x-ves-description if not already present.
+        """Add x-f5xc-description if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-description" in prop:
+        if self.preserve_existing and X_F5XC_DESCRIPTION in prop:
             return
 
-        description = pattern_config.get("x-ves-description")
+        description = pattern_config.get(X_F5XC_DESCRIPTION)
         if description:
-            prop["x-ves-description"] = description
+            prop[X_F5XC_DESCRIPTION] = description
             self.stats.descriptions_added += 1
 
     def _add_validation(self, prop: dict[str, Any], pattern_config: dict[str, Any]) -> None:
-        """Add x-ves-validation if not already present.
+        """Add x-f5xc-validation if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-validation" in prop:
+        if self.preserve_existing and X_F5XC_VALIDATION in prop:
             return
 
-        validation = pattern_config.get("x-ves-validation")
+        validation = pattern_config.get(X_F5XC_VALIDATION)
         if validation:
-            prop["x-ves-validation"] = validation
+            prop[X_F5XC_VALIDATION] = validation
             self.stats.validations_added += 1
 
     def _add_examples(self, prop: dict[str, Any], pattern_config: dict[str, Any]) -> None:
-        """Add x-ves-examples array if not already present.
+        """Add x-f5xc-examples array if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-examples" in prop:
+        if self.preserve_existing and X_F5XC_EXAMPLES in prop:
             return
 
-        examples = pattern_config.get("x-ves-examples")
+        examples = pattern_config.get(X_F5XC_EXAMPLES)
         if examples and isinstance(examples, list):
-            prop["x-ves-examples"] = examples
+            prop[X_F5XC_EXAMPLES] = examples
             self.stats.examples_added += 1
 
     def _add_completion(self, prop: dict[str, Any], pattern_config: dict[str, Any]) -> None:
-        """Add x-ves-completion if not already present.
+        """Add x-f5xc-completion if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-completion" in prop:
+        if self.preserve_existing and X_F5XC_COMPLETION in prop:
             return
 
-        completion = pattern_config.get("x-ves-completion")
+        completion = pattern_config.get(X_F5XC_COMPLETION)
         if completion:
-            prop["x-ves-completion"] = completion
+            prop[X_F5XC_COMPLETION] = completion
             self.stats.completions_added += 1
 
     def _add_defaults(self, prop: dict[str, Any], pattern_config: dict[str, Any]) -> None:
-        """Add x-ves-defaults if not already present.
+        """Add x-f5xc-defaults if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-defaults" in prop:
+        if self.preserve_existing and X_F5XC_DEFAULTS in prop:
             return
 
-        defaults = pattern_config.get("x-ves-defaults")
+        defaults = pattern_config.get(X_F5XC_DEFAULTS)
         if defaults:
-            prop["x-ves-defaults"] = defaults
+            prop[X_F5XC_DEFAULTS] = defaults
             self.stats.defaults_added += 1
 
     def _add_conditions(self, prop: dict[str, Any], prop_name: str) -> None:
-        """Add x-ves-conditions if not already present.
+        """Add x-f5xc-conditions if not already present.
 
         Args:
             prop: Property definition
             prop_name: Name of the property
         """
-        if self.preserve_existing and "x-ves-conditions" in prop:
+        if self.preserve_existing and X_F5XC_CONDITIONS in prop:
             return
 
         for compiled_pattern, condition_config in self._compiled_conditions:
             if compiled_pattern.search(prop_name):
-                conditions = condition_config.get("x-ves-conditions")
+                conditions = condition_config.get(X_F5XC_CONDITIONS)
                 if conditions:
-                    prop["x-ves-conditions"] = conditions
+                    prop[X_F5XC_CONDITIONS] = conditions
                     self.stats.conditions_added += 1
                 return
 
@@ -475,35 +488,35 @@ class FieldMetadataEnricher:
         prop: dict[str, Any],
         pattern_config: dict[str, Any],
     ) -> None:
-        """Add x-ves-required-for-operations if not already present.
+        """Add x-f5xc-required-for-operations if not already present.
 
         Args:
             prop: Property definition
             pattern_config: Pattern configuration
         """
-        if self.preserve_existing and "x-ves-required-for-operations" in prop:
+        if self.preserve_existing and X_F5XC_REQUIRED_FOR_OPERATIONS in prop:
             return
 
-        requirements = pattern_config.get("x-ves-required-for-operations")
+        requirements = pattern_config.get(X_F5XC_REQUIRED_FOR_OPERATIONS)
         if requirements:
-            prop["x-ves-required-for-operations"] = requirements
+            prop[X_F5XC_REQUIRED_FOR_OPERATIONS] = requirements
             self.stats.operation_requirements_added += 1
 
     def _add_deprecation(self, prop: dict[str, Any], prop_name: str) -> None:
-        """Add x-ves-deprecated if not already present.
+        """Add x-f5xc-deprecated if not already present.
 
         Args:
             prop: Property definition
             prop_name: Name of the property
         """
-        if self.preserve_existing and "x-ves-deprecated" in prop:
+        if self.preserve_existing and X_F5XC_DEPRECATED in prop:
             return
 
         for compiled_pattern, deprecation_config in self._compiled_deprecations:
             if compiled_pattern.search(prop_name):
-                deprecation = deprecation_config.get("x-ves-deprecated")
+                deprecation = deprecation_config.get(X_F5XC_DEPRECATED)
                 if deprecation:
-                    prop["x-ves-deprecated"] = deprecation
+                    prop[X_F5XC_DEPRECATED] = deprecation
                     self.stats.deprecations_added += 1
                 return
 

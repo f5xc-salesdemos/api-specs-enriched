@@ -4,6 +4,13 @@ from pathlib import Path
 
 import pytest
 
+from scripts.utils.extension_constants import (
+    X_F5XC_COMPLETION,
+    X_F5XC_DEFAULTS,
+    X_F5XC_DESCRIPTION,
+    X_F5XC_EXAMPLES,
+    X_F5XC_VALIDATION,
+)
 from scripts.utils.field_metadata_enricher import FieldMetadataEnricher
 
 
@@ -69,32 +76,32 @@ class TestDescriptionEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-description" in prop
-        assert "name" in prop["x-ves-description"].lower()
+        assert X_F5XC_DESCRIPTION in prop
+        assert "name" in prop[X_F5XC_DESCRIPTION].lower()
 
     def test_email_field_gets_description(self, enricher):
         """Test that email field gets description."""
         prop = {"type": "string"}
         enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-description" in prop
-        assert "email" in prop["x-ves-description"].lower()
+        assert X_F5XC_DESCRIPTION in prop
+        assert "email" in prop[X_F5XC_DESCRIPTION].lower()
 
     def test_port_field_gets_description(self, enricher):
         """Test that port field gets description."""
         prop = {"type": "integer"}
         enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-description" in prop
-        assert "port" in prop["x-ves-description"].lower()
+        assert X_F5XC_DESCRIPTION in prop
+        assert "port" in prop[X_F5XC_DESCRIPTION].lower()
 
     def test_preserves_existing_description(self, enricher):
         """Test that existing descriptions are preserved."""
         existing_desc = "Custom description"
-        prop = {"type": "string", "x-ves-description": existing_desc}
+        prop = {"type": "string", X_F5XC_DESCRIPTION: existing_desc}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert prop["x-ves-description"] == existing_desc
+        assert prop[X_F5XC_DESCRIPTION] == existing_desc
 
 
 class TestValidationEnrichment:
@@ -105,8 +112,8 @@ class TestValidationEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-validation" in prop
-        validation = prop["x-ves-validation"]
+        assert X_F5XC_VALIDATION in prop
+        validation = prop[X_F5XC_VALIDATION]
         assert "minLength" in validation or "pattern" in validation
 
     def test_port_field_gets_validation(self, enricher):
@@ -114,8 +121,8 @@ class TestValidationEnrichment:
         prop = {"type": "integer"}
         enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-validation" in prop
-        validation = prop["x-ves-validation"]
+        assert X_F5XC_VALIDATION in prop
+        validation = prop[X_F5XC_VALIDATION]
         assert validation.get("minimum") == 1
         assert validation.get("maximum") == 65535
 
@@ -124,17 +131,17 @@ class TestValidationEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-validation" in prop
-        validation = prop["x-ves-validation"]
+        assert X_F5XC_VALIDATION in prop
+        validation = prop[X_F5XC_VALIDATION]
         assert validation.get("format") == "email"
 
     def test_preserves_existing_validation(self, enricher):
         """Test that existing validation is preserved."""
         existing_validation = {"minLength": 10}
-        prop = {"type": "string", "x-ves-validation": existing_validation}
+        prop = {"type": "string", X_F5XC_VALIDATION: existing_validation}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert prop["x-ves-validation"] == existing_validation
+        assert prop[X_F5XC_VALIDATION] == existing_validation
 
 
 class TestExampleEnrichment:
@@ -145,8 +152,8 @@ class TestExampleEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-examples" in prop
-        examples = prop["x-ves-examples"]
+        assert X_F5XC_EXAMPLES in prop
+        examples = prop[X_F5XC_EXAMPLES]
         assert isinstance(examples, list)
         assert len(examples) > 0
         assert all("value" in ex and "context" in ex for ex in examples)
@@ -156,8 +163,8 @@ class TestExampleEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-examples" in prop
-        examples = prop["x-ves-examples"]
+        assert X_F5XC_EXAMPLES in prop
+        examples = prop[X_F5XC_EXAMPLES]
         assert any("@" in str(ex.get("value", "")) for ex in examples)
 
     def test_port_field_gets_examples(self, enricher):
@@ -165,15 +172,15 @@ class TestExampleEnrichment:
         prop = {"type": "integer"}
         enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-examples" in prop
+        assert X_F5XC_EXAMPLES in prop
 
     def test_preserves_existing_examples(self, enricher):
         """Test that existing examples are preserved."""
         existing_examples = [{"value": "custom", "context": "test"}]
-        prop = {"type": "string", "x-ves-examples": existing_examples}
+        prop = {"type": "string", X_F5XC_EXAMPLES: existing_examples}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert prop["x-ves-examples"] == existing_examples
+        assert prop[X_F5XC_EXAMPLES] == existing_examples
 
 
 class TestCompletionEnrichment:
@@ -184,16 +191,16 @@ class TestCompletionEnrichment:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-completion" in prop
-        assert "type" in prop["x-ves-completion"]
+        assert X_F5XC_COMPLETION in prop
+        assert "type" in prop[X_F5XC_COMPLETION]
 
     def test_email_field_gets_email_completion(self, enricher):
         """Test that email field gets email completion."""
         prop = {"type": "string"}
         enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-completion" in prop
-        completion = prop["x-ves-completion"]
+        assert X_F5XC_COMPLETION in prop
+        completion = prop[X_F5XC_COMPLETION]
         assert completion.get("type") == "email"
 
     def test_port_field_gets_port_completion(self, enricher):
@@ -201,17 +208,17 @@ class TestCompletionEnrichment:
         prop = {"type": "integer"}
         enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
 
-        assert "x-ves-completion" in prop
-        completion = prop["x-ves-completion"]
+        assert X_F5XC_COMPLETION in prop
+        completion = prop[X_F5XC_COMPLETION]
         assert completion.get("type") == "port"
 
     def test_preserves_existing_completion(self, enricher):
         """Test that existing completion is preserved."""
         existing_completion = {"type": "custom"}
-        prop = {"type": "string", "x-ves-completion": existing_completion}
+        prop = {"type": "string", X_F5XC_COMPLETION: existing_completion}
         enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
 
-        assert prop["x-ves-completion"] == existing_completion
+        assert prop[X_F5XC_COMPLETION] == existing_completion
 
 
 class TestDefaultsEnrichment:
@@ -223,9 +230,9 @@ class TestDefaultsEnrichment:
         enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
 
         # Port should have defaults defined in config
-        if "x-ves-defaults" in prop:
-            assert "value" in prop["x-ves-defaults"]
-            assert "reasoning" in prop["x-ves-defaults"]
+        if X_F5XC_DEFAULTS in prop:
+            assert "value" in prop[X_F5XC_DEFAULTS]
+            assert "reasoning" in prop[X_F5XC_DEFAULTS]
 
 
 class TestSpecEnrichment:
@@ -248,7 +255,7 @@ class TestSpecEnrichment:
 
         # Check that enrichment happened
         name_prop = user_props["name"]
-        assert "x-ves-description" in name_prop
+        assert X_F5XC_DESCRIPTION in name_prop
 
     def test_stats_after_full_enrichment(self, enricher, simple_spec):
         """Test that stats are correctly updated after enrichment."""
@@ -359,9 +366,9 @@ class TestEdgeCases:
         prop = {"type": "string"}
         enricher._enrich_property(prop, "arbitrary_field", "TestSchema")  # noqa: SLF001
 
-        # Should not add any x-ves-* fields for non-matching fields
-        ves_keys = [k for k in prop if k.startswith("x-ves-")]
-        assert len(ves_keys) == 0
+        # Should not add any x-f5xc-* fields for non-matching fields
+        f5xc_keys = [k for k in prop if k.startswith("x-f5xc-")]
+        assert len(f5xc_keys) == 0
 
     def test_multiple_enrichment_preserves_additions(self, enricher):
         """Test that running enrichment twice doesn't duplicate."""
@@ -376,7 +383,7 @@ class TestEdgeCases:
         # First enrichment
         result1 = enricher.enrich_spec(spec)
         desc1 = result1["components"]["schemas"]["Test"]["properties"]["name"].get(
-            "x-ves-description",
+            X_F5XC_DESCRIPTION,
         )
 
         # Create fresh enricher to test with preserved flag
@@ -385,7 +392,7 @@ class TestEdgeCases:
 
         result2 = enricher2.enrich_spec(result1)
         desc2 = result2["components"]["schemas"]["Test"]["properties"]["name"].get(
-            "x-ves-description",
+            X_F5XC_DESCRIPTION,
         )
 
         # Description should be identical (not duplicated)
@@ -413,7 +420,7 @@ class TestPatternMatching:
         # Verify enrichment happens for matching patterns
         prop = {"type": "string"}
         enricher._enrich_property(prop, "namespace", "TestSchema")  # noqa: SLF001
-        assert "x-ves-description" in prop  # "namespace" matches \bname$ due to word boundary
+        assert X_F5XC_DESCRIPTION in prop  # "namespace" matches \bname$ due to word boundary
 
     def test_multiple_pattern_matching(self, enricher):
         """Test behavior when multiple patterns could match."""

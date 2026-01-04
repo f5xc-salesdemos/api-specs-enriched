@@ -94,6 +94,22 @@ from scripts.utils.domain_metadata import (
     get_primary_resources,
     get_primary_resources_metadata,
 )
+from scripts.utils.extension_constants import (
+    X_F5XC_ALIASES,
+    X_F5XC_CATEGORY,
+    X_F5XC_COMPLEXITY,
+    X_F5XC_CRITICAL_RESOURCES,
+    X_F5XC_DESCRIPTION_MEDIUM,
+    X_F5XC_DESCRIPTION_SHORT,
+    X_F5XC_ICON,
+    X_F5XC_IS_PREVIEW,
+    X_F5XC_LOGO_SVG,
+    X_F5XC_PRIMARY_RESOURCES,
+    X_F5XC_PRIMARY_RESOURCES_SIMPLE,
+    X_F5XC_RELATED_DOMAINS,
+    X_F5XC_REQUIRES_TIER,
+    X_F5XC_USE_CASES,
+)
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
@@ -1216,7 +1232,7 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     }
 
     # Add critical resources list for downstream tooling (e.g., xcsh CLI)
-    index["x-ves-critical-resources"] = load_critical_resources()
+    index[X_F5XC_CRITICAL_RESOURCES] = load_critical_resources()
 
     # Load description enricher for multi-tier descriptions
     description_enricher = DescriptionEnricher()
@@ -1242,32 +1258,32 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
         # Simple format for backward compatibility
         primary_resources_simple = get_primary_resources(domain)
 
-        # Build spec entry
+        # Build spec entry with x-f5xc-* namespace (Issue #292)
         spec_entry = {
             "domain": domain,
             "title": info.get("title", ""),
             "description": info.get("description", ""),
-            "description_short": description_short or f"{domain_title} API",
-            "description_medium": description_medium
+            X_F5XC_DESCRIPTION_SHORT: description_short or f"{domain_title} API",
+            X_F5XC_DESCRIPTION_MEDIUM: description_medium
             or f"F5 Distributed Cloud {domain_title} API specifications",
             "file": f"{domain}.json",
             "path_count": path_count,
             "schema_count": schema_count,
-            "complexity": complexity,
-            "is_preview": metadata.get("is_preview", False),
-            "requires_tier": metadata.get("requires_tier", "Standard"),
-            "domain_category": metadata.get("domain_category", "Other"),
-            "ui_category": metadata.get("ui_category", metadata.get("domain_category", "Other")),
-            "aliases": metadata.get("aliases", []),
-            "use_cases": metadata.get("use_cases", []),
-            "related_domains": metadata.get("related_domains", []),
+            X_F5XC_COMPLEXITY: complexity,
+            X_F5XC_IS_PREVIEW: metadata.get("is_preview", False),
+            X_F5XC_REQUIRES_TIER: metadata.get("requires_tier", "Standard"),
+            # Single category field for CLI, UI, docs, and Terraform grouping (DRY)
+            X_F5XC_CATEGORY: metadata.get("category", metadata.get("domain_category", "Other")),
+            X_F5XC_ALIASES: metadata.get("aliases", []),
+            X_F5XC_USE_CASES: metadata.get("use_cases", []),
+            X_F5XC_RELATED_DOMAINS: metadata.get("related_domains", []),
             # Visual identity and resource metadata (Issue #184)
-            "icon": icon_info["icon"],
-            "logo_svg": icon_info["logo_svg"],
+            X_F5XC_ICON: icon_info["icon"],
+            X_F5XC_LOGO_SVG: icon_info["logo_svg"],
             # Rich resource metadata for IDE tooling (Issues #267-270)
-            "primary_resources": primary_resources_metadata,
+            X_F5XC_PRIMARY_RESOURCES: primary_resources_metadata,
             # Backward compatible simple format
-            "primary_resources_simple": primary_resources_simple,
+            X_F5XC_PRIMARY_RESOURCES_SIMPLE: primary_resources_simple,
         }
 
         # Add CLI metadata if available

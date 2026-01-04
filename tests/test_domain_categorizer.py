@@ -31,19 +31,19 @@ class TestDomainCategorizerSingleton:
         patterns = categorizer.get_domain_patterns()
         assert isinstance(patterns, dict)
         assert len(patterns) > 0
-        assert "site_management" in patterns
+        assert "sites" in patterns
 
 
 class TestDomainCategorization:
-    """Test domain categorization for all 33 domains."""
+    """Test domain categorization for all 34 domains."""
 
-    # A. Infrastructure & Deployment (5 categories)
-    def test_site_management(self) -> None:
-        """Test categorization of site management specs."""
-        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "site_management"
-        assert categorize_spec("ves.io.schema.views.azure_vnet_site.json") == "site_management"
-        assert categorize_spec("ves.io.schema.views.gcp_vpc_site.json") == "site_management"
-        assert categorize_spec("ves.io.schema.views.virtual_site.json") == "site_management"
+    # A. Infrastructure & Deployment (6 categories)
+    def test_sites(self) -> None:
+        """Test categorization of site specs."""
+        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "sites"
+        assert categorize_spec("ves.io.schema.views.azure_vnet_site.json") == "sites"
+        assert categorize_spec("ves.io.schema.views.gcp_vpc_site.json") == "sites"
+        assert categorize_spec("ves.io.schema.views.virtual_site.json") == "sites"
 
     def test_cloud_infrastructure(self) -> None:
         """Test categorization of cloud infrastructure specs."""
@@ -74,7 +74,7 @@ class TestDomainCategorization:
     def test_service_mesh(self) -> None:
         """Test categorization of service mesh specs."""
         assert categorize_spec("ves.io.schema.views.site_mesh.json") == "service_mesh"
-        assert categorize_spec("ves.io.schema.views.virtual_network.json") == "service_mesh"
+        # virtual_network moved to network domain (L3 overlay)
 
     # B. Security - Core (4 categories)
     def test_waf(self) -> None:
@@ -118,13 +118,12 @@ class TestDomainCategorization:
     def test_blindfold(self) -> None:
         """Test categorization of blindfold (secret policy) specs."""
         assert categorize_spec("ves.io.schema.views.secret_policy.json") == "blindfold"
+        # secret_management moved from secops_and_incident_response
+        assert categorize_spec("ves.io.schema.views.secret_management.json") == "blindfold"
 
     def test_secops_and_incident_response(self) -> None:
         """Test categorization of security operations specs."""
-        assert (
-            categorize_spec("ves.io.schema.views.secret_management.json")
-            == "secops_and_incident_response"
-        )
+        # secret_management moved to blindfold domain
         assert (
             categorize_spec("ves.io.schema.views.malicious_user.json")
             == "secops_and_incident_response"
@@ -154,6 +153,8 @@ class TestDomainCategorization:
         assert categorize_spec("ves.io.schema.views.public_ip.json") == "network"
         assert categorize_spec("ves.io.schema.views.ike1.json") == "network"
         assert categorize_spec("ves.io.schema.views.ike2.json") == "network"
+        # virtual_network moved from service_mesh (L3 overlay)
+        assert categorize_spec("ves.io.schema.views.virtual_network.json") == "network"
 
     # F. Content & Performance
     def test_cdn(self) -> None:
@@ -263,7 +264,7 @@ class TestFallbackBehavior:
 
     def test_case_insensitive(self) -> None:
         """Verify that categorization is case-insensitive."""
-        assert categorize_spec("VES.IO.SCHEMA.VIEWS.AWS_VPC_SITE.JSON") == "site_management"
+        assert categorize_spec("VES.IO.SCHEMA.VIEWS.AWS_VPC_SITE.JSON") == "sites"
         assert categorize_spec("Ves.Io.Schema.Views.App_Firewall.Json") == "waf"
 
 
@@ -273,19 +274,19 @@ class TestBackwardCompatibility:
     def test_domain_patterns_export(self) -> None:
         """Verify that DOMAIN_PATTERNS dictionary is exported."""
         assert isinstance(DOMAIN_PATTERNS, dict)
-        assert len(DOMAIN_PATTERNS) == 33  # 33 domains in current structure
-        assert "site_management" in DOMAIN_PATTERNS
-        assert isinstance(DOMAIN_PATTERNS["site_management"], list)
+        assert len(DOMAIN_PATTERNS) == 34  # 34 domains in current structure
+        assert "sites" in DOMAIN_PATTERNS
+        assert isinstance(DOMAIN_PATTERNS["sites"], list)
 
     def test_all_domains_in_patterns(self) -> None:
         """Verify that all domains are present in DOMAIN_PATTERNS."""
-        # Actual 33 domains from current structure
-        expected_domain_count = 33
+        # Actual 34 domains from current structure
+        expected_domain_count = 34
         assert len(DOMAIN_PATTERNS) == expected_domain_count
 
         # Verify key domains exist
         key_domains = {
-            "site_management",
+            "sites",
             "ddos",
             "blindfold",
             "virtual",
@@ -304,12 +305,12 @@ class TestBackwardCompatibility:
     def test_module_level_functions(self) -> None:
         """Verify that module-level functions work correctly."""
         # Test categorize_spec function
-        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "site_management"
+        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "sites"
 
         # Test get_domain_patterns function
         patterns = get_domain_patterns()
         assert isinstance(patterns, dict)
-        assert len(patterns) == 33  # 33 domains in current structure
+        assert len(patterns) == 34  # 34 domains in current structure
 
 
 class TestCaching:
@@ -325,7 +326,7 @@ class TestCaching:
         # Second call should return same result (patterns are compiled at load time)
         result2 = categorizer.categorize(filename)
 
-        assert result1 == result2 == "site_management"
+        assert result1 == result2 == "sites"
 
     def test_many_categorizations(self) -> None:
         """Verify that categorization works efficiently with many filenames."""

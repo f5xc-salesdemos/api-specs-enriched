@@ -6,6 +6,7 @@ indicating which namespaces each resource type can be created in.
 
 import pytest
 
+from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_NAMESPACE_SCOPE
 from scripts.utils.namespace_scope_enricher import (
     NamespaceScopeEnricher,
     NamespaceScopeStats,
@@ -48,7 +49,7 @@ class TestNamespaceScopeEnricherBasics:
         """Test enricher initializes with config loaded."""
         enricher = NamespaceScopeEnricher()
         assert enricher.config is not None
-        assert enricher.extension_name == "x-ves-namespace-scope"
+        assert enricher.extension_name == X_F5XC_NAMESPACE_SCOPE
         assert enricher.default_scope == "any"
         assert enricher.stats is not None
 
@@ -191,8 +192,8 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "x-ves-namespace-scope" in result["info"]
-        assert result["info"]["x-ves-namespace-scope"] == "system"
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "system"
 
     def test_enrich_spec_system_resource(self):
         """Test enrichment of system-scoped resource."""
@@ -206,7 +207,7 @@ class TestSpecEnrichment:
             },
         }
         result = enricher.enrich_spec(spec)
-        assert result["info"]["x-ves-namespace-scope"] == "system"
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "system"
         assert enricher.stats.system_scoped == 1
 
     def test_enrich_spec_shared_resource(self):
@@ -219,7 +220,7 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert result["info"]["x-ves-namespace-scope"] == "shared"
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "shared"
         assert enricher.stats.shared_scoped == 1
 
     def test_enrich_spec_any_resource(self):
@@ -232,7 +233,7 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert result["info"]["x-ves-namespace-scope"] == "any"
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "any"
         assert enricher.stats.any_scoped == 1
 
     def test_enrich_spec_idempotent(self):
@@ -241,12 +242,12 @@ class TestSpecEnrichment:
         spec = {
             "info": {
                 "title": "Alert Policy API",
-                "x-ves-namespace-scope": "system",  # Already set
+                X_F5XC_NAMESPACE_SCOPE: "system",  # Already set
             },
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert result["info"]["x-ves-namespace-scope"] == "system"
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "system"
         assert enricher.stats.already_had_scope == 1
 
     def test_enrich_spec_preserves_existing_info(self):
@@ -264,7 +265,7 @@ class TestSpecEnrichment:
         assert result["info"]["title"] == "Alert Policy API"
         assert result["info"]["version"] == "1.0.0"
         assert result["info"]["description"] == "Alert policy management"
-        assert "x-ves-namespace-scope" in result["info"]
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
 
     def test_enrich_spec_creates_info_if_missing(self):
         """Test that enrichment creates info section if missing."""
@@ -274,7 +275,7 @@ class TestSpecEnrichment:
         }
         result = enricher.enrich_spec(spec)
         assert "info" in result
-        assert "x-ves-namespace-scope" in result["info"]
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
 
     def test_enrich_spec_stats_updated(self):
         """Test that stats are updated after enrichment."""
@@ -330,12 +331,12 @@ class TestResourceTypeDetection:
         assert result == "alert_policy"
 
     def test_detect_from_cli_domain(self):
-        """Test resource type detection from x-ves-cli-domain as fallback."""
+        """Test resource type detection from x-f5xc-cli-domain as fallback."""
         enricher = NamespaceScopeEnricher()
         spec = {
             "info": {
                 "title": "",  # Empty title to fall through
-                "x-ves-cli-domain": "virtual",
+                X_F5XC_CLI_DOMAIN: "virtual",
             },
             "paths": {},
         }
@@ -359,8 +360,8 @@ class TestEdgeCases:
         spec = {}
         result = enricher.enrich_spec(spec)
         assert "info" in result
-        assert "x-ves-namespace-scope" in result["info"]
-        assert result["info"]["x-ves-namespace-scope"] == "any"
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
+        assert result["info"][X_F5XC_NAMESPACE_SCOPE] == "any"
 
     def test_enrich_spec_with_none_info(self):
         """Test enriching spec where info might be None-like."""
@@ -370,7 +371,7 @@ class TestEdgeCases:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "x-ves-namespace-scope" in result["info"]
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
 
     def test_scope_case_insensitivity(self):
         """Test that resource matching is case-appropriate."""
@@ -388,7 +389,7 @@ class TestEdgeCases:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "x-ves-namespace-scope" in result["info"]
+        assert X_F5XC_NAMESPACE_SCOPE in result["info"]
 
 
 class TestConfiguredResources:

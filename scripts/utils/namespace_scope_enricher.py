@@ -3,12 +3,14 @@
 This enricher adds namespace scope metadata to OpenAPI specs,
 indicating which namespaces each resource type can be created in.
 
-Adds the x-ves-namespace-scope extension with values:
+Adds the x-f5xc-namespace-scope extension with values:
 - system: Only available in system namespace
 - shared: Only available in shared namespace
 - any: Available in user namespaces (shared, default, custom) but NOT system
 
 Configuration is loaded from config/namespace_scope.yaml.
+
+Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
 import logging
@@ -18,6 +20,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from .extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_NAMESPACE_SCOPE
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +53,7 @@ class NamespaceScopeStats:
 class NamespaceScopeEnricher:
     """Enrich OpenAPI specs with namespace scope metadata.
 
-    Adds x-ves-namespace-scope extension to the spec's info section,
+    Adds x-f5xc-namespace-scope extension to the spec's info section,
     indicating which namespaces the resource type can be created in.
 
     Uses config/namespace_scope.yaml for scope mappings.
@@ -66,7 +70,7 @@ class NamespaceScopeEnricher:
             config_path or Path(__file__).parent.parent.parent / "config" / "namespace_scope.yaml"
         )
         self.config: dict[str, Any] = {}
-        self.extension_name: str = "x-ves-namespace-scope"
+        self.extension_name: str = X_F5XC_NAMESPACE_SCOPE
         self.default_scope: str = "any"
         self.system_resources: set[str] = set()
         self.shared_resources: set[str] = set()
@@ -79,7 +83,7 @@ class NamespaceScopeEnricher:
         try:
             with self.config_path.open() as f:
                 self.config = yaml.safe_load(f) or {}
-                self.extension_name = self.config.get("extension_name", "x-ves-namespace-scope")
+                self.extension_name = self.config.get("extension_name", X_F5XC_NAMESPACE_SCOPE)
                 self.default_scope = self.config.get("default_scope", "any")
 
                 scopes = self.config.get("scopes", {})
@@ -184,8 +188,8 @@ class NamespaceScopeEnricher:
             if resource_type:
                 return resource_type
 
-        # Strategy 3: Use x-ves-cli-domain if present
-        domain = spec.get("info", {}).get("x-ves-cli-domain", "")
+        # Strategy 3: Use x-f5xc-cli-domain if present
+        domain = spec.get("info", {}).get(X_F5XC_CLI_DOMAIN, "")
         if domain:
             return domain
 
