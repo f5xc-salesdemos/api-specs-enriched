@@ -6,6 +6,8 @@ to schema properties based on field types and names.
 Conservative approach: only applies well-established validation rules.
 Respects existing constraints (never overwrites).
 Merges with discovery constraints when available.
+
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import re
@@ -14,6 +16,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from scripts.utils.extension_constants import X_F5XC_VALIDATION
 
 
 @dataclass
@@ -318,13 +322,13 @@ class ValidationEnricher:
     def _merge_discovery_constraints(self, prop: dict[str, Any], _prop_name: str) -> None:
         """Merge constraints from discovery data if available.
 
-        Discovery constraints are stored in x-ves-validation-rules extension.
+        Discovery constraints are stored in x-f5xc-validation extension.
 
         Args:
             prop: Property definition to update
             _prop_name: Name of the property (unused, kept for interface compatibility)
         """
-        discovery_rules = prop.get("x-ves-validation-rules", {})
+        discovery_rules = prop.get(X_F5XC_VALIDATION, {})
         if not discovery_rules:
             return
 

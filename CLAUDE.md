@@ -237,25 +237,25 @@ make pre-commit-run      # Run all hooks manually
 
 Four OpenAPI extensions are added to schemas and specs:
 
-1. **x-ves-minimum-configuration** (schema-level)
+1. **x-f5xc-minimum-configuration** (schema-level)
    - Description of minimum viable configuration
    - Required fields list
    - Example YAML configuration
    - Example xcsh CLI command
    - Applied to ALL resource schemas (5 configured + auto-generated for others)
 
-2. **x-ves-cli-domain** (both schema and spec-level)
+2. **x-f5xc-cli-domain** (both schema and spec-level)
    - Domain classification (e.g., "virtual", "waf", "cdn")
    - At schema level: Resource classification
    - At spec level: Domain grouping metadata
    - Idempotent: Preserves existing values if present
 
-3. **x-ves-required-for** (field-level)
+3. **x-f5xc-required-for** (field-level)
    - Context-specific field requirements
    - Flags: minimum_config, create, update, read
    - Enables intelligent configuration generation
 
-4. **x-ves-cli-aliases** (schema-level)
+4. **x-f5xc-cli-aliases** (schema-level)
    - Alternative names for resources
    - Supports CLI command flexibility
    - Explicitly configured per resource
@@ -268,7 +268,7 @@ Four OpenAPI extensions are added to schemas and specs:
   - Uses DomainCategorizer for domain classification
 
 - **Stage 2 (Merge)**: add_domain_metadata_to_spec() adds spec-level metadata
-  - Spec info section gets x-ves-cli-domain from domain categorization
+  - Spec info section gets x-f5xc-cli-domain from domain categorization
   - Spec index includes CLI domain metadata
   - Idempotent: Never overwrites existing values
 
@@ -290,7 +290,7 @@ Four OpenAPI extensions are added to schemas and specs:
 
 **Addresses**:
 
-- Issue #267: x-ves-resource-metadata for IDE tooling
+- Issue #267: x-f5xc-resource-metadata for IDE tooling
 - Issue #268: Per-resource descriptions
 - Issue #269: Per-resource tier requirements
 - Issue #270: Resource dependency/relationship metadata

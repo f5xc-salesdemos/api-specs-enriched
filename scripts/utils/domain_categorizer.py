@@ -136,12 +136,7 @@ def get_domain_patterns() -> dict[str, list[str]]:
     return _categorizer.get_domain_patterns()
 
 
-# Backward compatibility export: DOMAIN_PATTERNS dictionary
-DOMAIN_PATTERNS = get_domain_patterns()
-
-
 __all__ = [
-    "DOMAIN_PATTERNS",
     "DomainCategorizer",
     "categorize_spec",
     "get_domain_patterns",

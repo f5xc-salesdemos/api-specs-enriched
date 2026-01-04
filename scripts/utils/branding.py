@@ -8,6 +8,8 @@ Fully automated - no manual intervention required.
 Branding Strategy:
   - XCKS (XC Kubernetes Service) = AppStack/VoltStack (comparable to AWS EKS, Azure AKS, GCP GKE)
   - XCCS (XC Container Services) = Virtual Kubernetes (comparable to AWS ECS, Azure Container Services)
+
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import re
@@ -16,6 +18,8 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import yaml
+
+from scripts.utils.extension_constants import X_F5XC_GLOSSARY
 
 
 @dataclass
@@ -627,7 +631,7 @@ class BrandingNormalizer:
             return spec
 
         # Check if glossary already exists
-        existing_glossary = spec["info"].get("x-ves-glossary", {})
+        existing_glossary = spec["info"].get(X_F5XC_GLOSSARY, {})
 
         # Merge our glossary terms
         for term, definition in self.glossary.items():
@@ -636,7 +640,7 @@ class BrandingNormalizer:
                 self.stats.glossary_terms_added += 1
 
         if existing_glossary:
-            spec["info"]["x-ves-glossary"] = existing_glossary
+            spec["info"][X_F5XC_GLOSSARY] = existing_glossary
 
         return spec
 

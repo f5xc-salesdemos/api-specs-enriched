@@ -328,7 +328,7 @@ def get_domain_context(domain: str) -> dict[str, Any]:
         "domain_title": domain.replace("_", " ").title(),
         "use_cases": metadata.get("use_cases", []),
         "related_domains": metadata.get("related_domains", []),
-        "domain_category": metadata.get("domain_category", "Other"),
+        "category": metadata.get("category", "Other"),
         "paths": unique_paths,
         "schemas": unique_schemas,
         "spec_count": len(source_specs),
@@ -349,7 +349,7 @@ def build_prompt(domain: str, context: dict[str, Any]) -> str:
     domain_variants = domain.replace("_", " ")
 
     # Get successful pattern based on domain category
-    category = context.get("domain_category", "Other")
+    category = context.get("category", "Other")
     pattern_key = CATEGORY_TO_PATTERN.get(category, "infrastructure")
     pattern = SUCCESSFUL_PATTERNS.get(pattern_key, SUCCESSFUL_PATTERNS["infrastructure"])
 
@@ -369,7 +369,7 @@ LONG ({len(pattern["long"])} chars): "{pattern["long"]}"
 
 CONTEXT:
 Domain: {domain}
-Category: {context.get("domain_category", "Other")}
+Category: {context.get("category", "Other")}
 Related: {", ".join(context.get("related_domains", []))}
 Specs: {context.get("spec_count", 0)} source specifications
 

@@ -296,7 +296,7 @@ class TestDiscoveryConstraintMerging:
         """Test that discovery constraints are merged."""
         prop = {
             "type": "string",
-            "x-ves-validation-rules": {
+            "x-f5xc-validation": {
                 "pattern": "^[A-Z]+$",
                 "maxLength": 50,
             },
@@ -313,7 +313,7 @@ class TestDiscoveryConstraintMerging:
         prop = {
             "type": "string",
             "minLength": 10,
-            "x-ves-validation-rules": {
+            "x-f5xc-validation": {
                 "minLength": 5,
             },
         }
