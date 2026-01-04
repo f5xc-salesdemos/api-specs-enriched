@@ -231,9 +231,12 @@ jobs:
             IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 
             # Check for major bump via commit message (highest priority)
+            # For merge commits, also check the commits that were merged (HEAD^2)
             COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
-            if [[ "$COMMIT_MSG" == *"[major]"* ]] || \
-               [[ "$COMMIT_MSG" == *"BREAKING CHANGE"* ]]; then
+            MERGED_MSG=$(git log -1 HEAD^2 --pretty=%B 2>/dev/null || echo "")
+            COMBINED_MSG="$COMMIT_MSG $MERGED_MSG"
+            if [[ "$COMBINED_MSG" == *"[major]"* ]] || \
+               [[ "$COMBINED_MSG" == *"BREAKING CHANGE"* ]]; then
               NEW_VERSION="$((MAJOR + 1)).0.0"
               BUMP_TYPE="major"
             elif [ "$CHANGE_TYPE" = "source" ]; then
