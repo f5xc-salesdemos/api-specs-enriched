@@ -10,7 +10,7 @@ Adds the x-f5xc-namespace-scope extension with values:
 
 Configuration is loaded from config/namespace_scope.yaml.
 
-Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import logging
@@ -106,7 +106,7 @@ class NamespaceScopeEnricher:
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Enrich OpenAPI specification with namespace scope metadata.
 
-        Adds x-ves-namespace-scope to the spec's info section based on
+        Adds x-f5xc-namespace-scope to the spec's info section based on
         the resource type detected from the spec title or paths.
 
         Args:
@@ -166,7 +166,7 @@ class NamespaceScopeEnricher:
         Uses multiple strategies to determine the resource type:
         1. Extract from spec title (e.g., "Alert Policy API" -> "alert_policy")
         2. Extract from first path (e.g., "/api/.../alert_policy/..." -> "alert_policy")
-        3. Extract from x-ves-cli-domain or other extensions
+        3. Extract from x-f5xc-cli-domain or other extensions
 
         Args:
             spec: OpenAPI specification

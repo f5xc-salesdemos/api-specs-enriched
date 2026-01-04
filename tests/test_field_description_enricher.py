@@ -161,7 +161,7 @@ class TestPropertyEnrichment:
 
         assert "description" in prop
         assert prop["description"] == "Human-readable name for the resource"
-        assert "x-ves-example" in prop
+        assert "x-f5xc-example" in prop
 
     def test_property_preserves_existing_description(self, enricher):
         """Test that existing descriptions are preserved."""
@@ -180,7 +180,7 @@ class TestPropertyEnrichment:
 
         # Example should remain unchanged
         assert prop["example"] == original_example
-        assert "x-ves-example" not in prop
+        assert "x-f5xc-example" not in prop
 
     def test_stats_incremented_on_enrichment(self, enricher):
         """Test that stats are updated during enrichment."""
@@ -207,15 +207,15 @@ class TestSpecEnrichment:
         # Check that name field was enriched
         user_props = result["components"]["schemas"]["User"]["properties"]
         assert "description" in user_props["name"]
-        assert "x-ves-example" in user_props["name"]
+        assert "x-f5xc-example" in user_props["name"]
 
         # Check that email field was enriched
         assert "description" in user_props["email"]
-        assert "x-ves-example" in user_props["email"]
+        assert "x-f5xc-example" in user_props["email"]
 
         # Check that unmatched id field wasn't enriched
         assert "description" not in user_props["id"]
-        assert "x-ves-example" not in user_props["id"]
+        assert "x-f5xc-example" not in user_props["id"]
 
     def test_stats_after_full_enrichment(self, enricher, simple_spec):
         """Test that stats are correctly updated after full enrichment."""
@@ -374,34 +374,34 @@ class TestEdgeCases:
 
 
 class TestExampleStringConversion:
-    """Test x-ves-example string type conversion (Issue #136 fix)."""
+    """Test x-f5xc-example string type conversion (Issue #136 fix)."""
 
     def test_example_is_always_string_type_for_numeric(self, enricher):
-        """Verify x-ves-example is string even for numeric values (port: 8080)."""
+        """Verify x-f5xc-example is string even for numeric values (port: 8080)."""
         prop = {"type": "integer"}
         enricher._enrich_property(prop, "port", "TestSchema")
 
-        assert "x-ves-example" in prop
-        assert isinstance(prop["x-ves-example"], str), "x-ves-example must be string type"
-        assert prop["x-ves-example"] == "8080"
+        assert "x-f5xc-example" in prop
+        assert isinstance(prop["x-f5xc-example"], str), "x-f5xc-example must be string type"
+        assert prop["x-f5xc-example"] == "8080"
 
     def test_example_is_always_string_type_for_boolean(self, enricher):
-        """Verify x-ves-example is string for boolean values."""
+        """Verify x-f5xc-example is string for boolean values."""
         prop = {"type": "boolean"}
         enricher._enrich_property(prop, "enabled", "TestSchema")
 
         # Note: boolean fields don't currently have examples in default config
         # but this test ensures if they did, they'd be strings
-        if "x-ves-example" in prop:
-            assert isinstance(prop["x-ves-example"], str), "x-ves-example must be string type"
+        if "x-f5xc-example" in prop:
+            assert isinstance(prop["x-f5xc-example"], str), "x-f5xc-example must be string type"
 
     def test_example_is_always_string_type_for_uuid(self, enricher):
-        """Verify x-ves-example is string for UUID values."""
+        """Verify x-f5xc-example is string for UUID values."""
         prop = {"type": "string", "format": "uuid"}
         enricher._enrich_property(prop, "uuid", "TestSchema")
 
-        assert "x-ves-example" in prop
-        assert isinstance(prop["x-ves-example"], str), "x-ves-example must be string type"
+        assert "x-f5xc-example" in prop
+        assert isinstance(prop["x-f5xc-example"], str), "x-f5xc-example must be string type"
 
 
 class TestResourceTypeInference:

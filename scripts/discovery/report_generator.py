@@ -18,6 +18,11 @@ from .schema_inferrer import InferredSchema
 
 # Add utils to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "utils"))
+from extension_constants import (
+    X_F5XC_API_URL,
+    X_F5XC_DISCOVERED_AT,
+    X_F5XC_RESPONSE_TIME_MS,
+)
 from path_config import PathConfig
 from report_base import BaseReporter
 from server_variables_markdown import ServerVariablesMarkdownHelper
@@ -152,8 +157,8 @@ class ReportGenerator(BaseReporter):
                 "title": "F5 Distributed Cloud API (Discovered)",
                 "version": datetime.now(timezone.utc).strftime("%Y%m%d%H%M"),
                 "description": "API specification discovered from live API exploration",
-                "x-discovered-at": session.started_at.isoformat(),
-                "x-api-url": session.api_url,
+                X_F5XC_DISCOVERED_AT: session.started_at.isoformat(),
+                X_F5XC_API_URL: session.api_url,
             },
             "servers": [{"url": session.api_url}] if session.api_url else [],
             "paths": {},
@@ -189,7 +194,7 @@ class ReportGenerator(BaseReporter):
                     ]["example"] = endpoint.examples[0]
 
                 if endpoint.response_time_ms:
-                    operation["x-response-time-ms"] = round(endpoint.response_time_ms, 2)
+                    operation[X_F5XC_RESPONSE_TIME_MS] = round(endpoint.response_time_ms, 2)
 
                 spec["paths"][path][method] = operation
 

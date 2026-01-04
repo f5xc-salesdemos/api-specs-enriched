@@ -12,6 +12,8 @@ F5 XC subscription tiers:
 Transformations applied:
 - BASIC → STANDARD (legacy tier replaced)
 - PREMIUM → ADVANCED (legacy tier replaced)
+
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import logging
@@ -21,6 +23,8 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import yaml
+
+from scripts.utils.extension_constants import X_F5XC_MINIMUM_CONFIGURATION
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +164,7 @@ class DeprecatedTierEnricher:
             if self._matches_tier_pattern(schema_name):
                 self._clean_tier_schema(schema_name, schema_def)
 
-            # Also fix CLI examples in any schema with x-ves-minimum-configuration
+            # Also fix CLI examples in any schema with x-f5xc-minimum-configuration
             self._fix_cli_examples(schema_def)
 
         return spec
@@ -262,7 +266,7 @@ class DeprecatedTierEnricher:
         Args:
             schema: Schema definition dictionary
         """
-        min_config = schema.get("x-ves-minimum-configuration", {})
+        min_config = schema.get(X_F5XC_MINIMUM_CONFIGURATION, {})
         if not min_config:
             return
 

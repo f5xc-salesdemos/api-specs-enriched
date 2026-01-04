@@ -3,6 +3,8 @@
 
 Extracts embedded metadata (examples, validation rules) to proper fields
 and normalizes whitespace artifacts in description text.
+
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import re
@@ -11,11 +13,13 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.extension_constants import X_F5XC_EXAMPLE
+
 
 class DescriptionStructureTransformer:
     """Transforms description fields by extracting embedded metadata.
 
-    Extracts Example: sections to x-ves-example field.
+    Extracts Example: sections to x-f5xc-example field.
     Extracts Validation Rules: sections to x-validation-rules extension.
     Extracts X-required markers to x-required extension field.
     Normalizes leading whitespace artifacts.
@@ -119,8 +123,8 @@ class DescriptionStructureTransformer:
                     # Only extract examples/validation/required from 'description' field
                     # Other target fields just get whitespace normalization
                     if key == "description":
-                        # Get existing x-ves-example if present
-                        existing_example = obj.get("x-ves-example")
+                        # Get existing x-f5xc-example if present
+                        existing_example = obj.get(X_F5XC_EXAMPLE)
 
                         # Transform the description (extract metadata)
                         new_value, extracted_example, extracted_validation, extracted_required = (
@@ -138,8 +142,8 @@ class DescriptionStructureTransformer:
                     result[key] = self._transform_recursive(value, target_fields)
 
             # Add extracted fields to this object level
-            if extracted_example and "x-ves-example" not in result:
-                result["x-ves-example"] = extracted_example
+            if extracted_example and X_F5XC_EXAMPLE not in result:
+                result[X_F5XC_EXAMPLE] = extracted_example
 
             if extracted_validation:
                 result["x-validation-rules"] = extracted_validation
@@ -161,7 +165,7 @@ class DescriptionStructureTransformer:
 
         Args:
             description: Original description text.
-            existing_example: Existing x-ves-example value if any.
+            existing_example: Existing x-f5xc-example value if any.
 
         Returns:
             Tuple of (cleaned description, extracted example, extracted validation rules, is_required).
@@ -218,7 +222,7 @@ class DescriptionStructureTransformer:
         description: str,
         existing_example: str | None,
     ) -> tuple[str, str | None]:
-        """Extract Example: section to x-ves-example field."""
+        """Extract Example: section to x-f5xc-example field."""
         result = description
         extracted_value = existing_example
 

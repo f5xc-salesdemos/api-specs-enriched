@@ -12,7 +12,7 @@ from .description_enricher import DescriptionEnricher
 from .description_structure import DescriptionStructureTransformer
 from .description_validator import DescriptionValidator
 from .discovery_enricher import DiscoveryEnricher
-from .domain_categorizer import DOMAIN_PATTERNS, DomainCategorizer, categorize_spec
+from .domain_categorizer import DomainCategorizer, categorize_spec
 from .external_docs_enricher import ExternalDocsEnricher
 from .field_description_enricher import FieldDescriptionEnricher
 from .field_metadata_enricher import FieldMetadataEnricher
@@ -26,7 +26,6 @@ from .tag_generator import TagGenerator
 from .validation_enricher import ValidationEnricher
 
 __all__ = [
-    "DOMAIN_PATTERNS",
     "AcronymNormalizer",
     "AliasValidationStats",
     "AliasValidator",

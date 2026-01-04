@@ -1,6 +1,6 @@
 """Tests for extension naming constants and validation utilities.
 
-Issue: #292
+Version: v3.0.0 - Clean break, no backward compatibility
 """
 
 from __future__ import annotations
@@ -8,8 +8,6 @@ from __future__ import annotations
 import pytest
 
 from scripts.utils.extension_constants import (
-    FIELD_MIGRATION,
-    FIELD_MIGRATION_REVERSE,
     PRESERVED_NATIVE_EXTENSIONS,
     VALID_X_F5XC_EXTENSIONS,
     X_F5XC_CATEGORY,
@@ -32,10 +30,8 @@ from scripts.utils.extension_constants import (
     X_F5XC_TERRAFORM_RESOURCE,
     X_F5XC_UPSTREAM_ETAG,
     X_F5XC_UPSTREAM_TIMESTAMP,
-    is_old_extension,
     is_preserved_native,
     is_valid_extension,
-    migrate_field_name,
     validate_no_invalid_extensions,
 )
 
@@ -133,60 +129,6 @@ class TestExtensionConstants:
         assert "_" not in after_prefix, f"Constant '{constant}' should use hyphens, not underscores"
 
 
-class TestFieldMigration:
-    """Tests for field migration mapping."""
-
-    def test_migration_mapping_not_empty(self) -> None:
-        """Migration mapping should have entries."""
-        assert len(FIELD_MIGRATION) > 0
-
-    def test_all_migrations_to_x_f5xc(self) -> None:
-        """All migration targets must use x-f5xc- prefix."""
-        for old, new in FIELD_MIGRATION.items():
-            assert new.startswith(X_F5XC_PREFIX), (
-                f"Migration '{old}' -> '{new}' target missing prefix"
-            )
-
-    def test_reverse_mapping_consistency(self) -> None:
-        """Reverse mapping should map to at least one valid old field.
-
-        Note: Multiple old fields can map to the same new field (DRY principle).
-        For example: domain_category, ui_category, category -> x-f5xc-category
-        """
-        # Reverse mapping has fewer entries due to DRY consolidation
-        assert len(FIELD_MIGRATION_REVERSE) <= len(FIELD_MIGRATION)
-        for new_field in FIELD_MIGRATION_REVERSE:
-            # The reverse should point to one of the old fields that maps to it
-            old_field = FIELD_MIGRATION_REVERSE[new_field]
-            assert FIELD_MIGRATION[old_field] == new_field
-
-    @pytest.mark.parametrize(
-        ("old_field", "expected_new"),
-        [
-            ("x-ves-cli-domain", "x-f5xc-cli-domain"),
-            ("x-ves-minimum-configuration", "x-f5xc-minimum-configuration"),
-            ("x-ves-danger-level", "x-f5xc-danger-level"),
-            # All category fields map to single x-f5xc-category (DRY)
-            ("domain_category", "x-f5xc-category"),
-            ("ui_category", "x-f5xc-category"),
-            ("category", "x-f5xc-category"),
-            ("primary_resources", "x-f5xc-primary-resources"),
-            ("description_short", "x-f5xc-description-short"),
-            ("description_medium", "x-f5xc-description-medium"),
-            ("x-upstream-timestamp", "x-f5xc-upstream-timestamp"),
-            ("x-enriched-version", "x-f5xc-enriched-version"),
-        ],
-    )
-    def test_specific_migrations(self, old_field: str, expected_new: str) -> None:
-        """Test specific field migrations are correct."""
-        assert FIELD_MIGRATION[old_field] == expected_new
-
-    def test_no_self_migrations(self) -> None:
-        """No field should migrate to itself."""
-        for old, new in FIELD_MIGRATION.items():
-            assert old != new, f"Field '{old}' migrates to itself"
-
-
 class TestPreservedNativeExtensions:
     """Tests for preserved F5 native extensions."""
 
@@ -207,11 +149,6 @@ class TestPreservedNativeExtensions:
         """Known F5 native extensions should be in preserved set."""
         assert extension in PRESERVED_NATIVE_EXTENSIONS
 
-    def test_preserved_not_in_migration(self) -> None:
-        """Preserved extensions should not be in migration mapping."""
-        for ext in PRESERVED_NATIVE_EXTENSIONS:
-            assert ext not in FIELD_MIGRATION, f"Preserved extension '{ext}' should not be migrated"
-
 
 class TestValidExtensions:
     """Tests for valid extension set."""
@@ -224,11 +161,6 @@ class TestValidExtensions:
         """All valid extensions must have x-f5xc- prefix."""
         for ext in VALID_X_F5XC_EXTENSIONS:
             assert ext.startswith(X_F5XC_PREFIX), f"Valid extension '{ext}' missing prefix"
-
-    def test_migration_targets_are_valid(self) -> None:
-        """All migration targets should be valid extensions."""
-        for new in FIELD_MIGRATION.values():
-            assert new in VALID_X_F5XC_EXTENSIONS, f"Migration target '{new}' not in valid set"
 
     def test_new_fields_are_valid(self) -> None:
         """New fields should be in valid extensions set."""
@@ -262,30 +194,6 @@ class TestValidationFunctions:
         assert not is_preserved_native(X_F5XC_CLI_DOMAIN)
         assert not is_preserved_native("x-ves-cli-domain")
 
-    def test_is_old_extension_true(self) -> None:
-        """Old extensions should return True."""
-        assert is_old_extension("x-ves-cli-domain")
-        assert is_old_extension("domain_category")
-        assert is_old_extension("x-upstream-timestamp")
-
-    def test_is_old_extension_false(self) -> None:
-        """New extensions should return False."""
-        assert not is_old_extension(X_F5XC_CLI_DOMAIN)
-        assert not is_old_extension("x-random-field")
-
-    def test_migrate_field_name_old(self) -> None:
-        """Old field names should be migrated."""
-        assert migrate_field_name("x-ves-cli-domain") == X_F5XC_CLI_DOMAIN
-        # Both old category fields map to the single X_F5XC_CATEGORY (DRY)
-        assert migrate_field_name("domain_category") == X_F5XC_CATEGORY
-        assert migrate_field_name("ui_category") == X_F5XC_CATEGORY
-        assert migrate_field_name("category") == X_F5XC_CATEGORY
-
-    def test_migrate_field_name_unknown(self) -> None:
-        """Unknown fields should return unchanged."""
-        assert migrate_field_name("unknown-field") == "unknown-field"
-        assert migrate_field_name(X_F5XC_CLI_DOMAIN) == X_F5XC_CLI_DOMAIN
-
 
 class TestValidateNoInvalidExtensions:
     """Tests for the spec validation function."""
@@ -309,23 +217,13 @@ class TestValidateNoInvalidExtensions:
         """Old x-ves-* fields should produce errors."""
         spec = {
             "info": {
-                "x-ves-cli-domain": "test",  # old field
+                "x-ves-cli-domain": "test",  # old field - not in valid or preserved sets
             },
         }
         errors = validate_no_invalid_extensions(spec)
         assert len(errors) == 1
         assert "x-ves-cli-domain" in errors[0]
-        assert "x-f5xc-cli-domain" in errors[0]
-
-    def test_non_prefixed_field_error(self) -> None:
-        """Non-prefixed fields should produce errors."""
-        spec = {
-            "domain_category": "test",  # should be x-f5xc-category (DRY)
-        }
-        errors = validate_no_invalid_extensions(spec)
-        assert len(errors) == 1
-        assert "domain_category" in errors[0]
-        assert "x-f5xc-category" in errors[0]  # Consolidated category field
+        assert "x-f5xc-*" in errors[0]  # Generic namespace guidance
 
     def test_preserved_native_no_error(self) -> None:
         """Preserved native fields should not produce errors."""
@@ -372,51 +270,3 @@ class TestValidateNoInvalidExtensions:
         errors = validate_no_invalid_extensions(spec)
         assert len(errors) == 1
         assert "x-random-vendor-field" in errors[0]
-
-
-class TestMigrationCompleteness:
-    """Tests to ensure migration mapping is complete."""
-
-    def test_all_x_ves_cli_fields_migrated(self) -> None:
-        """All known x-ves-cli-* fields should have migration."""
-        expected_x_ves_cli = ["x-ves-cli-domain", "x-ves-cli-aliases"]
-        for field in expected_x_ves_cli:
-            assert field in FIELD_MIGRATION, f"Missing migration for '{field}'"
-
-    def test_all_index_fields_migrated(self) -> None:
-        """All known index.json non-prefixed fields should have migration."""
-        expected_index = [
-            "domain_category",
-            "ui_category",
-            "primary_resources",
-            "description_short",
-            "description_medium",
-            "complexity",
-            "requires_tier",
-            "is_preview",
-            "aliases",
-            "use_cases",
-            "icon",
-            "logo_svg",
-            "related_domains",
-        ]
-        for field in expected_index:
-            assert field in FIELD_MIGRATION, f"Missing migration for index field '{field}'"
-
-    def test_intentional_dry_consolidation(self) -> None:
-        """DRY consolidation: multiple old fields can map to same new field.
-
-        Specifically, domain_category, ui_category, and category all map to
-        x-f5xc-category to avoid redundant fields in the spec.
-        """
-        # All three category fields should map to the same target
-        assert FIELD_MIGRATION["domain_category"] == X_F5XC_CATEGORY
-        assert FIELD_MIGRATION["ui_category"] == X_F5XC_CATEGORY
-        assert FIELD_MIGRATION["category"] == X_F5XC_CATEGORY
-
-        # Verify we have fewer unique targets than source fields (due to consolidation)
-        targets = list(FIELD_MIGRATION.values())
-        unique_targets = set(targets)
-        assert len(unique_targets) < len(targets), (
-            "Expected DRY consolidation (fewer targets than sources)"
-        )

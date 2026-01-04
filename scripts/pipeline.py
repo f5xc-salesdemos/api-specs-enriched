@@ -91,12 +91,12 @@ from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
     get_metadata,
-    get_primary_resources,
     get_primary_resources_metadata,
 )
 from scripts.utils.extension_constants import (
     X_F5XC_ALIASES,
     X_F5XC_CATEGORY,
+    X_F5XC_CLI_METADATA,
     X_F5XC_COMPLEXITY,
     X_F5XC_CRITICAL_RESOURCES,
     X_F5XC_DESCRIPTION_MEDIUM,
@@ -105,7 +105,6 @@ from scripts.utils.extension_constants import (
     X_F5XC_IS_PREVIEW,
     X_F5XC_LOGO_SVG,
     X_F5XC_PRIMARY_RESOURCES,
-    X_F5XC_PRIMARY_RESOURCES_SIMPLE,
     X_F5XC_RELATED_DOMAINS,
     X_F5XC_REQUIRES_TIER,
     X_F5XC_USE_CASES,
@@ -1255,8 +1254,6 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
         icon_info = get_domain_icon(domain)
         # Rich metadata format for IDE tooling (Issues #267-270)
         primary_resources_metadata = get_primary_resources_metadata(domain)
-        # Simple format for backward compatibility
-        primary_resources_simple = get_primary_resources(domain)
 
         # Build spec entry with x-f5xc-* namespace (Issue #292)
         spec_entry = {
@@ -1273,7 +1270,7 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
             X_F5XC_IS_PREVIEW: metadata.get("is_preview", False),
             X_F5XC_REQUIRES_TIER: metadata.get("requires_tier", "Standard"),
             # Single category field for CLI, UI, docs, and Terraform grouping (DRY)
-            X_F5XC_CATEGORY: metadata.get("category", metadata.get("domain_category", "Other")),
+            X_F5XC_CATEGORY: metadata.get("category", "Other"),
             X_F5XC_ALIASES: metadata.get("aliases", []),
             X_F5XC_USE_CASES: metadata.get("use_cases", []),
             X_F5XC_RELATED_DOMAINS: metadata.get("related_domains", []),
@@ -1282,14 +1279,12 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
             X_F5XC_LOGO_SVG: icon_info["logo_svg"],
             # Rich resource metadata for IDE tooling (Issues #267-270)
             X_F5XC_PRIMARY_RESOURCES: primary_resources_metadata,
-            # Backward compatible simple format
-            X_F5XC_PRIMARY_RESOURCES_SIMPLE: primary_resources_simple,
         }
 
         # Add CLI metadata if available
         cli_metadata = metadata.get("cli_metadata")
         if cli_metadata:
-            spec_entry["cli_metadata"] = cli_metadata
+            spec_entry[X_F5XC_CLI_METADATA] = cli_metadata
 
         index["specifications"].append(spec_entry)
 

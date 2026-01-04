@@ -9,7 +9,6 @@ import re
 import pytest
 
 from scripts.utils.domain_categorizer import (
-    DOMAIN_PATTERNS,
     DomainCategorizer,
     categorize_spec,
     get_domain_patterns,
@@ -268,21 +267,24 @@ class TestFallbackBehavior:
         assert categorize_spec("Ves.Io.Schema.Views.App_Firewall.Json") == "waf"
 
 
-class TestBackwardCompatibility:
-    """Test backward compatibility exports."""
+class TestModuleLevelFunctions:
+    """Test module-level function exports (v3.0.0 - no backward compat exports)."""
 
-    def test_domain_patterns_export(self) -> None:
-        """Verify that DOMAIN_PATTERNS dictionary is exported."""
-        assert isinstance(DOMAIN_PATTERNS, dict)
-        assert len(DOMAIN_PATTERNS) == 34  # 34 domains in current structure
-        assert "sites" in DOMAIN_PATTERNS
-        assert isinstance(DOMAIN_PATTERNS["sites"], list)
+    def test_categorize_spec_function(self) -> None:
+        """Verify that categorize_spec function works correctly."""
+        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "sites"
+
+    def test_get_domain_patterns_function(self) -> None:
+        """Verify that get_domain_patterns function works correctly."""
+        patterns = get_domain_patterns()
+        assert isinstance(patterns, dict)
+        assert len(patterns) == 34  # 34 domains in current structure
 
     def test_all_domains_in_patterns(self) -> None:
-        """Verify that all domains are present in DOMAIN_PATTERNS."""
-        # Actual 34 domains from current structure
+        """Verify that all domains are present via get_domain_patterns()."""
+        patterns = get_domain_patterns()
         expected_domain_count = 34
-        assert len(DOMAIN_PATTERNS) == expected_domain_count
+        assert len(patterns) == expected_domain_count
 
         # Verify key domains exist
         key_domains = {
@@ -300,17 +302,7 @@ class TestBackwardCompatibility:
             "admin_console_and_ui",
             "label",
         }
-        assert key_domains.issubset(set(DOMAIN_PATTERNS.keys()))
-
-    def test_module_level_functions(self) -> None:
-        """Verify that module-level functions work correctly."""
-        # Test categorize_spec function
-        assert categorize_spec("ves.io.schema.views.aws_vpc_site.json") == "sites"
-
-        # Test get_domain_patterns function
-        patterns = get_domain_patterns()
-        assert isinstance(patterns, dict)
-        assert len(patterns) == 34  # 34 domains in current structure
+        assert key_domains.issubset(set(patterns.keys()))
 
 
 class TestCaching:
@@ -349,11 +341,12 @@ class TestPatternValidation:
     """Test that domain patterns are valid regexes."""
 
     def test_all_patterns_valid_regex(self) -> None:
-        """Verify that all patterns in DOMAIN_PATTERNS are valid regexes."""
+        """Verify that all patterns via get_domain_patterns() are valid regexes."""
+        domain_patterns = get_domain_patterns()
         # Collect all patterns first to validate outside nested loop
         all_patterns = [
             (domain, pattern)
-            for domain, patterns in DOMAIN_PATTERNS.items()
+            for domain, patterns in domain_patterns.items()
             for pattern in patterns
         ]
 

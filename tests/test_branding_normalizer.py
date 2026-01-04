@@ -248,8 +248,8 @@ class TestGlossaryIntegration:
         result = normalizer.normalize_spec(spec)
 
         # Check that glossary was added
-        assert "x-ves-glossary" in result["info"]
-        glossary = result["info"]["x-ves-glossary"]
+        assert "x-f5xc-glossary" in result["info"]
+        glossary = result["info"]["x-f5xc-glossary"]
         assert "XCKS" in glossary or "XCCS" in glossary
 
     def test_glossary_terms_added_stat(self) -> None:
@@ -269,7 +269,7 @@ class TestGlossaryIntegration:
         spec = {
             "info": {
                 "title": "Test API",
-                "x-ves-glossary": {
+                "x-f5xc-glossary": {
                     "CUSTOM_TERM": {"term": "Custom", "definition": "Custom def"},
                 },
             },
@@ -278,7 +278,7 @@ class TestGlossaryIntegration:
         result = normalizer.normalize_spec(spec)
 
         # Custom term should be preserved
-        glossary = result["info"]["x-ves-glossary"]
+        glossary = result["info"]["x-f5xc-glossary"]
         assert "CUSTOM_TERM" in glossary
         assert glossary["CUSTOM_TERM"]["definition"] == "Custom def"
 

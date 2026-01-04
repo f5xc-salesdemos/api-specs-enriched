@@ -7,11 +7,17 @@
 #
 # Consumers: f5xc-api-mcp, f5xc-xcsh, vscode-f5xc-tools
 #
-# Version: 2.0.0
+# Version: 3.0.0
 # Issue: #292
 # Released: 2026-01-04
+#
+# v3.0.0 Changes:
+# - Removed all backward compatibility code
+# - Migrated cli_metadata → x-f5xc-cli-metadata
+# - Added discovery extensions
+# - Consolidated category fields (removed domain_category, ui_category)
 
-version: "2.0"
+version: "3.0"
 namespace: "x-f5xc-"
 
 # =============================================================================
@@ -44,8 +50,41 @@ spec_level:
     type: string
     purpose: Version of enrichment pipeline that processed this spec
     consumers: [pipeline, mcp]
-    example: "2.0.0"
+    example: "3.0.0"
     migrated_from: "x-enriched-version"
+
+  x-f5xc-glossary:
+    type: object
+    purpose: Domain-specific terminology and acronym definitions
+    consumers: [mcp, ide, docs]
+    added_in: "3.0.0"
+
+  x-f5xc-cli-metadata:
+    type: object
+    purpose: CLI-specific metadata for command generation
+    consumers: [cli, mcp]
+    added_in: "3.0.0"
+    note: "Migrated from non-prefixed cli_metadata in v3.0.0"
+
+  x-f5xc-discovered-at:
+    type: string
+    format: iso8601
+    purpose: Timestamp when endpoint was discovered via live API
+    consumers: [discovery]
+    added_in: "3.0.0"
+
+  x-f5xc-api-url:
+    type: string
+    format: uri
+    purpose: API URL used during discovery
+    consumers: [discovery]
+    added_in: "3.0.0"
+
+  x-f5xc-response-time-ms:
+    type: number
+    purpose: Response time in milliseconds during discovery
+    consumers: [discovery]
+    added_in: "3.0.0"
 
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
@@ -339,13 +378,13 @@ preserved_native:
     - x-ves-required
 
 # =============================================================================
-# WRAPPER FIELDS (NOT EXTENSIONS)
+# WRAPPER FIELDS (NOT EXTENSIONS) - DEPRECATED IN v3.0.0
 # =============================================================================
 wrapper_fields:
   description: |
-    These fields are structural wrappers, not OpenAPI extensions.
-    They intentionally do not use x-f5xc-* prefix.
-    The contents within these wrappers DO use x-f5xc-* namespace.
+    In v3.0.0, all wrapper fields have been migrated to the x-f5xc-* namespace.
+    The cli_metadata wrapper field is now x-f5xc-cli-metadata.
 
-  fields:
-    - cli_metadata
+    This section is retained for historical reference only.
+
+  fields: []  # All migrated to x-f5xc-* namespace in v3.0.0

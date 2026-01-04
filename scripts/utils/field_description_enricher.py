@@ -5,6 +5,8 @@ using pattern-based matching with high-confidence patterns only.
 
 Follows conservative approach: only matches patterns with 95%+ confidence.
 Respects existing descriptions and examples (never overwrites).
+
+Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """
 
 import re
@@ -13,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from scripts.utils.extension_constants import X_F5XC_EXAMPLE
 
 
 @dataclass
@@ -288,7 +292,7 @@ class FieldDescriptionEnricher:
                 self.stats.descriptions_added += 1
 
         # Never overwrite existing examples if preserve_existing is True
-        if self.preserve_existing and ("example" in prop or "x-ves-example" in prop):
+        if self.preserve_existing and ("example" in prop or X_F5XC_EXAMPLE in prop):
             # Example already exists, skip
             pass
         else:
@@ -297,7 +301,7 @@ class FieldDescriptionEnricher:
             if example is not None:
                 # Convert to string to ensure JSON schema compatibility
                 # Examples may be numbers (8080) or booleans that need string representation
-                prop["x-ves-example"] = str(example) if not isinstance(example, str) else example
+                prop[X_F5XC_EXAMPLE] = str(example) if not isinstance(example, str) else example
                 self.stats.examples_added += 1
 
     def _find_description(self, prop_name: str) -> str | None:

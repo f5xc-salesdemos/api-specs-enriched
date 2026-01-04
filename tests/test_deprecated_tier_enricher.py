@@ -64,7 +64,7 @@ def spec_with_cli_examples():
             "schemas": {
                 "TestSchema": {
                     "type": "object",
-                    "x-ves-minimum-configuration": {
+                    "x-f5xc-minimum-configuration": {
                         "example_curl": 'curl -X POST "$F5XC_API_URL/api/subscription_basic_tier" -d @test.json',
                     },
                 },
@@ -224,7 +224,7 @@ class TestCLIExampleTransformation:
     def test_cli_example_basic_to_standard(self, enricher, spec_with_cli_examples):
         """Test CLI examples are updated from basic to standard."""
         result = enricher.enrich(spec_with_cli_examples)
-        example_cmd = result["components"]["schemas"]["TestSchema"]["x-ves-minimum-configuration"][
+        example_cmd = result["components"]["schemas"]["TestSchema"]["x-f5xc-minimum-configuration"][
             "example_curl"
         ]
 
@@ -245,7 +245,7 @@ class TestCLIExampleTransformation:
                 "schemas": {
                     "TestSchema": {
                         "type": "object",
-                        "x-ves-minimum-configuration": {
+                        "x-f5xc-minimum-configuration": {
                             "example_curl": 'curl -X POST "$F5XC_API_URL/api/subscription_premium_tier" -d @test.json',
                         },
                     },
@@ -254,7 +254,7 @@ class TestCLIExampleTransformation:
         }
 
         result = enricher.enrich(spec)
-        example_cmd = result["components"]["schemas"]["TestSchema"]["x-ves-minimum-configuration"][
+        example_cmd = result["components"]["schemas"]["TestSchema"]["x-f5xc-minimum-configuration"][
             "example_curl"
         ]
 
