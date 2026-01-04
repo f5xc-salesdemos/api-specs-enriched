@@ -201,7 +201,7 @@ This ensures consistency and makes future migrations easier.
 
 ## Timeline
 
-- **v2.0.0 Released**: 2026-01-04
+- **v2.0.0**: 2026-01-04
 - **Migration Deadline**: Immediate (no deprecation period)
 
 ## Support
