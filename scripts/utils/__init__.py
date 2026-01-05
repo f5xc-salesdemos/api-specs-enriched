@@ -1,5 +1,6 @@
 """Utility modules for F5 XC API enrichment."""
 
+from .acronym_enricher import AcronymEnricher
 from .acronyms import AcronymNormalizer
 from .best_practices_enricher import BestPracticesEnricher
 from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, BrandingValidator
@@ -28,6 +29,7 @@ from .tag_generator import TagGenerator
 from .validation_enricher import ValidationEnricher
 
 __all__ = [
+    "AcronymEnricher",
     "AcronymNormalizer",
     "BestPracticesEnricher",
     "BrandingNormalizer",

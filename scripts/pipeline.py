@@ -67,6 +67,7 @@ from rich.table import Table
 # Import processing modules
 from scripts.merge_specs import load_critical_resources
 from scripts.utils import (
+    AcronymEnricher,
     AcronymNormalizer,
     BestPracticesEnricher,
     BrandingTransformer,
@@ -1261,6 +1262,10 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     # Add guided workflows for deployment automation (Issue #314)
     guided_workflow_enricher = GuidedWorkflowEnricher()
     index = guided_workflow_enricher.enrich_index(index)
+
+    # Add acronyms for consistent terminology (Issue #317)
+    acronym_enricher = AcronymEnricher()
+    index = acronym_enricher.enrich_index(index)
 
     # Load description enricher for multi-tier descriptions
     description_enricher = DescriptionEnricher()
