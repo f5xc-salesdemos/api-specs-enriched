@@ -24,6 +24,7 @@ from .minimum_configuration_enricher import MinimumConfigurationEnricher
 from .namespace_scope_enricher import NamespaceScopeEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .readonly_enricher import ReadOnlyEnricher
+from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
 from .tag_generator import TagGenerator
 from .validation_enricher import ValidationEnricher
@@ -56,6 +57,7 @@ __all__ = [
     "NamespaceScopeEnricher",
     "OperationMetadataEnricher",
     "ReadOnlyEnricher",
+    "ResourceExamplesEnricher",
     "SchemaFixer",
     "TagGenerator",
     "ValidationEnricher",
