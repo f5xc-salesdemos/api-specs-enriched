@@ -124,6 +124,18 @@ jobs:
         env:
           DISCOVERY_ENRICHMENT_ENABLED: ${{ steps.check-discovery.outputs.has_discovery }}
 
+      - name: Verify version consistency
+        run: |
+          VERSION_FILE=$(cat .version)
+          INDEX_VERSION=$(jq -r '.version' docs/specifications/api/index.json)
+
+          if [ "$VERSION_FILE" != "$INDEX_VERSION" ]; then
+            echo "::error::Version mismatch! .version=$VERSION_FILE but index.json=$INDEX_VERSION"
+            exit 1
+          fi
+
+          echo "Version consistent: $VERSION_FILE"
+
       - name: Generate constraint analysis report
         if: steps.check-discovery.outputs.has_full_discovery == 'true'
         run: python -m scripts.analyze_constraints
@@ -281,23 +293,6 @@ jobs:
           echo "$NEW_VERSION" > .version
 
           echo "::notice::Version: $CURRENT_VERSION -> $NEW_VERSION ($BUMP_TYPE)"
-
-      - name: Update version in specs
-        if: steps.version.outputs.has_changes == 'true'
-        run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
-
-          # Update index.json
-          jq --arg v "$VERSION" '.version = $v' docs/specifications/api/index.json > /tmp/index.json
-          mv /tmp/index.json docs/specifications/api/index.json
-
-          # Update all domain specs
-          for spec in docs/specifications/api/*.json; do
-            if [ "$(basename "$spec")" != "index.json" ]; then
-              jq --arg v "$VERSION" '.info.version = $v' "$spec" > /tmp/spec.json
-              mv /tmp/spec.json "$spec"
-            fi
-          done
 
       - name: Generate discovery summary
         id: discovery-summary
