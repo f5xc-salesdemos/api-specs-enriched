@@ -279,6 +279,10 @@ Three OpenAPI extensions are added to schemas and specs:
 - 13 new tests for auto-generation and idempotency
 - Total: 43 comprehensive tests with 82% code coverage
 
+**Complete Extension Reference**:
+
+For the full list of 50+ extensions across all levels (spec, schema, property, operation, index), see `config/extension_registry.yaml`.
+
 ## Per-Resource Metadata (Issues #267-270)
 
 **Purpose**: Provide rich per-resource metadata in `index.json` for IDE tooling, CLI help, and AI assistants.
