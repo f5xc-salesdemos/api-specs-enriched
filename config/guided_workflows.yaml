@@ -1,0 +1,356 @@
+# Guided Workflows Configuration
+#
+# Step-by-step deployment workflows for common F5 XC operations.
+# AI assistants and CLI tools use these to guide users through
+# multi-step resource deployments.
+#
+# Version: 1.0.0
+# Issue: #314
+# Last Updated: 2026-01-04
+
+version: "1.0.0"
+
+# Workflows organized by domain
+workflows:
+  virtual:
+    - id: deploy_http_loadbalancer
+      name: Deploy HTTP Load Balancer
+      description: Create a fully configured HTTP load balancer with backend origin pool
+      complexity: medium
+      estimated_steps: 5
+      prerequisites:
+        - "Valid namespace in target tenant"
+        - "Backend application reachable via IP or DNS"
+        - "SSL certificate (optional for HTTPS)"
+      steps:
+        - order: 1
+          action: create_origin_pool
+          name: Create Origin Pool
+          description: Define backend servers for the load balancer
+          resource: origin_pool
+          required_fields:
+            - name
+            - origin_servers
+            - port
+          tips:
+            - "Use private IPs for internal applications"
+            - "Configure health checks for high availability"
+        - order: 2
+          action: create_healthcheck
+          name: Configure Health Check
+          description: Set up health monitoring for origin pool
+          resource: healthcheck
+          optional: true
+          required_fields:
+            - name
+            - http_health_check
+          tips:
+            - "Use application-specific health endpoints"
+            - "Set appropriate timeout values"
+        - order: 3
+          action: attach_healthcheck
+          name: Attach Health Check
+          description: Link health check to origin pool
+          depends_on: [1, 2]
+          optional: true
+        - order: 4
+          action: create_http_loadbalancer
+          name: Create HTTP Load Balancer
+          description: Configure the load balancer with origin pool
+          resource: http_loadbalancer
+          depends_on: [1]
+          required_fields:
+            - name
+            - domains
+            - http.port
+          tips:
+            - "Use wildcard domains for multi-host routing"
+            - "Configure advertise policy for internet exposure"
+        - order: 5
+          action: verify_deployment
+          name: Verify Deployment
+          description: Test load balancer endpoint accessibility
+          depends_on: [4]
+          verification:
+            - "DNS resolution for configured domains"
+            - "HTTP response from load balancer VIP"
+            - "Backend origin health status"
+
+    - id: deploy_https_loadbalancer
+      name: Deploy HTTPS Load Balancer with TLS
+      description: Create HTTPS load balancer with SSL/TLS termination
+      complexity: high
+      estimated_steps: 7
+      prerequisites:
+        - "Valid namespace in target tenant"
+        - "SSL certificate and private key"
+        - "Backend application reachable"
+      steps:
+        - order: 1
+          action: upload_certificate
+          name: Upload SSL Certificate
+          description: Upload certificate and private key
+          resource: certificate
+          required_fields:
+            - name
+            - certificate_chain
+            - private_key
+          tips:
+            - "Include intermediate certificates in chain"
+            - "Use PEM format for certificate data"
+        - order: 2
+          action: create_origin_pool
+          name: Create Origin Pool
+          description: Define backend servers
+          resource: origin_pool
+          required_fields:
+            - name
+            - origin_servers
+        - order: 3
+          action: create_healthcheck
+          name: Configure Health Check
+          description: Set up health monitoring
+          resource: healthcheck
+          optional: true
+        - order: 4
+          action: create_waf_policy
+          name: Configure WAF Policy
+          description: Enable web application firewall
+          resource: app_firewall
+          optional: true
+          tips:
+            - "Start in monitoring mode"
+            - "Use appropriate rule sets"
+        - order: 5
+          action: create_https_loadbalancer
+          name: Create HTTPS Load Balancer
+          description: Configure load balancer with TLS
+          resource: http_loadbalancer
+          depends_on: [1, 2]
+          required_fields:
+            - name
+            - domains
+            - https.tls_parameters
+        - order: 6
+          action: attach_waf
+          name: Attach WAF Policy
+          description: Link WAF to load balancer
+          depends_on: [4, 5]
+          optional: true
+        - order: 7
+          action: verify_https
+          name: Verify HTTPS Deployment
+          description: Test secure endpoint
+          verification:
+            - "TLS certificate validation"
+            - "HTTPS response codes"
+            - "WAF policy application"
+
+  waf:
+    - id: enable_waf_protection
+      name: Enable WAF Protection
+      description: Add web application firewall to existing load balancer
+      complexity: medium
+      estimated_steps: 4
+      prerequisites:
+        - "Existing HTTP load balancer"
+        - "Understanding of application traffic patterns"
+      steps:
+        - order: 1
+          action: create_app_firewall
+          name: Create Application Firewall
+          description: Define WAF policy with rule sets
+          resource: app_firewall
+          required_fields:
+            - name
+            - blocking
+          tips:
+            - "Start in monitoring mode for tuning"
+            - "Select rules based on application stack"
+        - order: 2
+          action: configure_exclusions
+          name: Configure Exclusions
+          description: Add bypass rules for false positives
+          optional: true
+          tips:
+            - "Exclude trusted internal IPs"
+            - "Add API endpoint exclusions if needed"
+        - order: 3
+          action: attach_to_loadbalancer
+          name: Attach to Load Balancer
+          description: Apply WAF policy to load balancer
+          depends_on: [1]
+        - order: 4
+          action: monitor_and_tune
+          name: Monitor and Tune
+          description: Review WAF logs and adjust rules
+          verification:
+            - "Check security event logs"
+            - "Verify no legitimate traffic blocked"
+            - "Adjust rules as needed"
+
+  dns:
+    - id: configure_dns_zone
+      name: Configure DNS Zone
+      description: Set up authoritative DNS zone with records
+      complexity: low
+      estimated_steps: 4
+      prerequisites:
+        - "Domain name ownership"
+        - "NS delegation configured at registrar"
+      steps:
+        - order: 1
+          action: create_dns_zone
+          name: Create DNS Zone
+          description: Create authoritative zone for domain
+          resource: dns_zone
+          required_fields:
+            - name
+            - domain
+        - order: 2
+          action: add_dns_records
+          name: Add DNS Records
+          description: Create A, CNAME, and other records
+          resource: dns_record
+          depends_on: [1]
+          tips:
+            - "Use appropriate TTL values"
+            - "Add MX records for email"
+        - order: 3
+          action: enable_dnssec
+          name: Enable DNSSEC
+          description: Configure DNS security extensions
+          optional: true
+          depends_on: [1]
+        - order: 4
+          action: verify_resolution
+          name: Verify DNS Resolution
+          description: Test DNS queries
+          verification:
+            - "Query records from public DNS"
+            - "Verify propagation"
+
+  cdn:
+    - id: enable_cdn_distribution
+      name: Enable CDN Distribution
+      description: Configure CDN for content delivery
+      complexity: medium
+      estimated_steps: 5
+      prerequisites:
+        - "Existing origin server or load balancer"
+        - "Content cacheable via HTTP headers"
+      steps:
+        - order: 1
+          action: create_origin
+          name: Define Origin
+          description: Configure origin server for CDN
+          resource: cdn_origin
+          required_fields:
+            - name
+            - origin_address
+        - order: 2
+          action: configure_cache_rules
+          name: Configure Cache Rules
+          description: Define caching behavior per content type
+          tips:
+            - "Set longer TTL for static assets"
+            - "Use vary headers appropriately"
+        - order: 3
+          action: create_distribution
+          name: Create Distribution
+          description: Configure CDN distribution
+          resource: cdn_distribution
+          depends_on: [1]
+        - order: 4
+          action: configure_ssl
+          name: Configure SSL
+          description: Set up HTTPS for CDN endpoints
+          optional: true
+        - order: 5
+          action: verify_caching
+          name: Verify Caching
+          description: Test CDN cache behavior
+          verification:
+            - "Check X-Cache headers"
+            - "Verify content delivery from edge"
+
+  origin_pool:
+    - id: configure_origin_pool
+      name: Configure Origin Pool
+      description: Set up backend server pool with health checks
+      complexity: low
+      estimated_steps: 3
+      prerequisites:
+        - "Backend server addresses"
+        - "Network connectivity to origins"
+      steps:
+        - order: 1
+          action: create_origin_pool
+          name: Create Origin Pool
+          description: Define backend servers
+          resource: origin_pool
+          required_fields:
+            - name
+            - origin_servers
+            - port
+        - order: 2
+          action: add_healthcheck
+          name: Add Health Check
+          description: Configure health monitoring
+          resource: healthcheck
+          optional: true
+        - order: 3
+          action: verify_connectivity
+          name: Verify Connectivity
+          description: Test origin pool health
+          verification:
+            - "All origins showing healthy"
+            - "Connection pooling working"
+
+  sites:
+    - id: register_site
+      name: Register Customer Edge Site
+      description: Register and configure a CE site
+      complexity: high
+      estimated_steps: 6
+      prerequisites:
+        - "Site hardware or VM provisioned"
+        - "Network connectivity to F5 XC"
+        - "Registration token generated"
+      steps:
+        - order: 1
+          action: generate_token
+          name: Generate Registration Token
+          description: Create site registration token
+          resource: site_token
+        - order: 2
+          action: configure_site
+          name: Configure Site Settings
+          description: Define site parameters
+          resource: site
+          required_fields:
+            - name
+            - site_type
+        - order: 3
+          action: install_software
+          name: Install CE Software
+          description: Deploy F5 XC software on site
+          depends_on: [1]
+        - order: 4
+          action: complete_registration
+          name: Complete Registration
+          description: Finalize site registration
+          depends_on: [2, 3]
+        - order: 5
+          action: configure_network
+          name: Configure Site Network
+          description: Set up site networking
+          depends_on: [4]
+        - order: 6
+          action: verify_site
+          name: Verify Site Status
+          description: Confirm site is operational
+          verification:
+            - "Site shows online status"
+            - "Tunnel connectivity established"
+            - "Services deployed successfully"

@@ -1,0 +1,255 @@
+# Best Practices Configuration
+#
+# Domain-specific operational knowledge for AI assistants and CLI tools.
+# Provides common errors, security notes, and performance tips per domain.
+#
+# Version: 1.0.0
+# Issue: #314
+# Last Updated: 2026-01-04
+
+version: "1.0.0"
+
+# Default best practices applied when domain-specific ones are not available
+defaults:
+  common_errors:
+    - code: 400
+      message: "Invalid request body"
+      resolution: "Validate JSON structure and required fields before submission"
+      prevention: "Use schema validation from OpenAPI spec"
+    - code: 401
+      message: "Authentication failed"
+      resolution: "Verify API token is valid and not expired"
+      prevention: "Use environment variables for token management"
+    - code: 403
+      message: "Permission denied"
+      resolution: "Check user role and namespace permissions"
+      prevention: "Verify RBAC policies before operations"
+    - code: 404
+      message: "Resource not found"
+      resolution: "Verify resource name and namespace exist"
+      prevention: "List resources before attempting operations"
+    - code: 409
+      message: "Resource already exists"
+      resolution: "Use unique name or delete existing resource"
+      prevention: "Check existence before creation"
+    - code: 429
+      message: "Rate limit exceeded"
+      resolution: "Implement exponential backoff and retry logic"
+      prevention: "Batch operations and add delays between requests"
+  security_notes:
+    - "Always use HTTPS for all API communications"
+    - "Store API tokens securely, never in source code"
+    - "Rotate API tokens regularly following security policies"
+  performance_tips:
+    - "Use pagination for large result sets"
+    - "Batch related operations when possible"
+    - "Cache read-only responses appropriately"
+
+# Domain-specific best practices
+domains:
+  virtual:
+    common_errors:
+      - code: 409
+        message: "Load balancer name already exists"
+        resolution: "Use unique name or delete existing load balancer"
+        prevention: "Check existence with GET before POST"
+      - code: 400
+        message: "Origin pool not found"
+        resolution: "Create origin pool before referencing in load balancer"
+        prevention: "Ensure dependent resources exist first"
+      - code: 400
+        message: "Invalid SSL certificate reference"
+        resolution: "Verify certificate exists and is valid"
+        prevention: "Use certificate management API to validate first"
+      - code: 503
+        message: "All backend servers unhealthy"
+        resolution: "Check origin server health and connectivity"
+        prevention: "Configure proper health checks with appropriate thresholds"
+    security_notes:
+      - "Always use HTTPS for production load balancers"
+      - "Configure TLS 1.2 or higher for client connections"
+      - "Enable WAF policies for internet-facing applications"
+      - "Use certificate pinning for high-security applications"
+      - "Configure HSTS headers for browser security"
+    performance_tips:
+      - "Enable connection pooling for backend efficiency"
+      - "Use geographic load balancing for global deployments"
+      - "Configure appropriate timeout values based on application needs"
+      - "Enable HTTP/2 for improved client performance"
+      - "Use caching policies for static content"
+
+  waf:
+    common_errors:
+      - code: 400
+        message: "Invalid WAF rule syntax"
+        resolution: "Validate rule syntax against WAF rule specification"
+        prevention: "Use rule builder or validated templates"
+      - code: 409
+        message: "WAF policy already attached to load balancer"
+        resolution: "Detach existing policy before attaching new one"
+        prevention: "Check current policy attachment status"
+      - code: 400
+        message: "Conflicting WAF rules detected"
+        resolution: "Review rule order and resolve conflicts"
+        prevention: "Use rule groups with clear precedence"
+    security_notes:
+      - "Start with WAF in monitoring mode before blocking"
+      - "Review WAF logs regularly for false positives"
+      - "Keep signature databases updated for latest threats"
+      - "Configure custom rules for application-specific protections"
+      - "Enable bot protection for API endpoints"
+    performance_tips:
+      - "Use exclusion rules to skip validation for trusted sources"
+      - "Configure appropriate request body inspection limits"
+      - "Enable request buffering for consistent protection"
+      - "Use signature groups relevant to your application stack"
+
+  dns:
+    common_errors:
+      - code: 400
+        message: "Invalid DNS record format"
+        resolution: "Validate record syntax (e.g., IP format for A records)"
+        prevention: "Use DNS record validation before submission"
+      - code: 409
+        message: "DNS zone already exists"
+        resolution: "Use existing zone or delete before recreation"
+        prevention: "Check zone existence before creation"
+      - code: 400
+        message: "DNSSEC signing failed"
+        resolution: "Verify DNSSEC key configuration and chain"
+        prevention: "Test DNSSEC in staging before production"
+    security_notes:
+      - "Enable DNSSEC for zone authentication"
+      - "Use CAA records to restrict certificate issuance"
+      - "Configure DNS query logging for security monitoring"
+      - "Implement rate limiting on DNS responses"
+    performance_tips:
+      - "Set appropriate TTL values based on change frequency"
+      - "Use GeoDNS for global load distribution"
+      - "Configure health-based failover for high availability"
+      - "Enable DNS prefetching hints for faster resolution"
+
+  cdn:
+    common_errors:
+      - code: 400
+        message: "Invalid cache key configuration"
+        resolution: "Review cache key parameters and syntax"
+        prevention: "Use cache key templates for consistency"
+      - code: 409
+        message: "CDN distribution already exists for origin"
+        resolution: "Update existing distribution or delete first"
+        prevention: "Check existing distributions before creation"
+      - code: 504
+        message: "Origin server timeout"
+        resolution: "Increase timeout values or fix origin performance"
+        prevention: "Configure realistic timeout thresholds"
+    security_notes:
+      - "Use signed URLs/cookies for private content"
+      - "Configure origin access identity for S3 origins"
+      - "Enable field-level encryption for sensitive data"
+      - "Set appropriate CORS policies for cross-origin requests"
+    performance_tips:
+      - "Configure optimal cache TTLs for content types"
+      - "Enable compression for text-based content"
+      - "Use edge computing for dynamic content personalization"
+      - "Configure cache warming for popular content"
+
+  origin_pool:
+    common_errors:
+      - code: 400
+        message: "Invalid origin server address"
+        resolution: "Verify server hostname or IP is reachable"
+        prevention: "Test connectivity before adding to pool"
+      - code: 400
+        message: "Health check configuration invalid"
+        resolution: "Verify health check path and expected response"
+        prevention: "Test health check endpoint manually first"
+    security_notes:
+      - "Use private network connectivity when possible"
+      - "Configure TLS verification for origin connections"
+      - "Restrict origin access to F5 XC IP ranges"
+    performance_tips:
+      - "Distribute origins across availability zones"
+      - "Configure connection pooling for efficiency"
+      - "Set appropriate health check intervals"
+
+  certificates:
+    common_errors:
+      - code: 400
+        message: "Certificate chain incomplete"
+        resolution: "Include intermediate certificates in chain"
+        prevention: "Validate certificate chain before upload"
+      - code: 400
+        message: "Private key mismatch"
+        resolution: "Ensure private key matches certificate"
+        prevention: "Verify key-cert pair before upload"
+      - code: 400
+        message: "Certificate expired"
+        resolution: "Renew certificate and upload new version"
+        prevention: "Set up certificate expiry monitoring"
+    security_notes:
+      - "Use certificates with at least 2048-bit RSA or 256-bit ECDSA keys"
+      - "Enable OCSP stapling for revocation checking"
+      - "Configure certificate transparency logging"
+      - "Use separate certificates for different environments"
+    performance_tips:
+      - "Use ECDSA certificates for faster TLS handshakes"
+      - "Enable session resumption for repeat visitors"
+      - "Configure OCSP stapling to reduce client latency"
+
+  network:
+    common_errors:
+      - code: 400
+        message: "Overlapping IP ranges"
+        resolution: "Review CIDR blocks for conflicts"
+        prevention: "Plan IP addressing before network creation"
+      - code: 409
+        message: "Network already attached to site"
+        resolution: "Detach network before deletion or reassignment"
+        prevention: "Check network attachments before operations"
+    security_notes:
+      - "Use network segmentation for security isolation"
+      - "Configure network policies for east-west traffic"
+      - "Enable encryption for inter-site traffic"
+    performance_tips:
+      - "Plan network topology to minimize latency"
+      - "Use direct connect for high-bandwidth workloads"
+      - "Configure appropriate MTU values"
+
+  sites:
+    common_errors:
+      - code: 400
+        message: "Site registration token invalid"
+        resolution: "Generate new registration token and retry"
+        prevention: "Use tokens within validity period"
+      - code: 504
+        message: "Site not responding"
+        resolution: "Check site connectivity and agent status"
+        prevention: "Configure monitoring for site health"
+    security_notes:
+      - "Rotate site tokens after initial registration"
+      - "Configure site-level firewall policies"
+      - "Enable audit logging for site operations"
+    performance_tips:
+      - "Deploy sites close to workloads for low latency"
+      - "Configure appropriate resource allocation"
+      - "Use site mesh for efficient inter-site communication"
+
+  authentication:
+    common_errors:
+      - code: 401
+        message: "Token expired"
+        resolution: "Refresh token or re-authenticate"
+        prevention: "Implement automatic token refresh"
+      - code: 403
+        message: "Insufficient permissions"
+        resolution: "Request additional role assignments"
+        prevention: "Verify permissions before operations"
+    security_notes:
+      - "Use short-lived tokens with refresh capability"
+      - "Enable MFA for administrative access"
+      - "Implement least privilege access policies"
+    performance_tips:
+      - "Cache authentication tokens appropriately"
+      - "Use service accounts for automation"
+      - "Implement token pooling for high-volume scenarios"

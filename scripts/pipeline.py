@@ -68,6 +68,7 @@ from rich.table import Table
 from scripts.merge_specs import load_critical_resources
 from scripts.utils import (
     AcronymNormalizer,
+    BestPracticesEnricher,
     BrandingTransformer,
     ConsistencyValidator,
     ConstraintReconciler,
@@ -75,8 +76,10 @@ from scripts.utils import (
     DescriptionStructureTransformer,
     DescriptionValidator,
     DiscoveryEnricher,
+    ErrorResolutionEnricher,
     FieldDescriptionEnricher,
     GrammarImprover,
+    GuidedWorkflowEnricher,
     MinimumConfigurationEnricher,
     OperationMetadataEnricher,
     ReadOnlyEnricher,
@@ -166,6 +169,9 @@ class PipelineStats:
     discovery_enriched: int = 0
     constraints_reconciled: int = 0
     constraints_preserved: int = 0
+    best_practices_enriched: int = 0
+    guided_workflows_added: int = 0
+    error_resolutions_added: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -302,6 +308,21 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = readonly_enricher.enrich_spec(spec)
     readonly_stats = readonly_enricher.get_stats()
 
+    # 17. Best practices enrichment (add x-f5xc-best-practices to info section)
+    # Note: Domain is determined from spec's x-f5xc-cli-domain or categorized later
+    best_practices_enricher = BestPracticesEnricher()
+    # Get domain from spec info if available (may be added during merge)
+    spec_domain = spec.get("info", {}).get("x-f5xc-cli-domain", "")
+    if spec_domain:
+        spec = best_practices_enricher.enrich_spec(spec, domain=spec_domain)
+    best_practices_stats = best_practices_enricher.get_stats()
+
+    # 18. Guided workflow enrichment (add x-f5xc-guided-workflows to info section)
+    guided_workflow_enricher = GuidedWorkflowEnricher()
+    if spec_domain:
+        spec = guided_workflow_enricher.enrich_spec(spec, domain=spec_domain)
+    guided_workflow_stats = guided_workflow_enricher.get_stats()
+
     # Close grammar improver resources
     grammar_improver.close()
 
@@ -325,6 +346,8 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "readonly_fields_marked": readonly_stats.get("total_fields_marked", 0),
         "readonly_metadata_schemas": readonly_stats.get("metadata_schemas_matched", 0),
         "readonly_objectref_schemas": readonly_stats.get("object_ref_schemas_matched", 0),
+        "best_practices_enriched": best_practices_stats.get("specs_enriched", 0),
+        "guided_workflows_added": guided_workflow_stats.get("specs_enriched", 0),
     }
 
 
@@ -1231,6 +1254,14 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     # Add critical resources list for downstream tooling (e.g., xcsh CLI)
     index[X_F5XC_CRITICAL_RESOURCES] = load_critical_resources()
 
+    # Add error resolution data for AI assistants and CLI troubleshooting (Issue #314)
+    error_resolution_enricher = ErrorResolutionEnricher()
+    index = error_resolution_enricher.enrich_index(index)
+
+    # Add guided workflows for deployment automation (Issue #314)
+    guided_workflow_enricher = GuidedWorkflowEnricher()
+    index = guided_workflow_enricher.enrich_index(index)
+
     # Load description enricher for multi-tier descriptions
     description_enricher = DescriptionEnricher()
 
@@ -1409,6 +1440,8 @@ def run_pipeline(
                 stats.descriptions_generated += enrich_stats.get("descriptions_generated", 0)
                 stats.consistency_issues += enrich_stats.get("consistency_issues", 0)
                 stats.minimum_configs_added += enrich_stats.get("minimum_configs_added", 0)
+                stats.best_practices_enriched += enrich_stats.get("best_practices_enriched", 0)
+                stats.guided_workflows_added += enrich_stats.get("guided_workflows_added", 0)
 
                 # Step 2: Normalize (in memory)
                 spec, norm_count = normalize_spec(spec, config)
@@ -1495,6 +1528,14 @@ def print_summary(stats: PipelineStats) -> None:
     if stats.constraints_preserved > 0:
         table.add_row("Custom Extensions Preserved", str(stats.constraints_preserved))
 
+    # Issue #314 enrichment stats
+    if stats.best_practices_enriched > 0:
+        table.add_row("Best Practices Enriched", str(stats.best_practices_enriched))
+    if stats.guided_workflows_added > 0:
+        table.add_row("Guided Workflows Added", str(stats.guided_workflows_added))
+    if stats.error_resolutions_added > 0:
+        table.add_row("Error Resolutions Added", str(stats.error_resolutions_added))
+
     console.print(table)
 
     if stats.errors:
@@ -1526,6 +1567,9 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "discovery_enriched": stats.discovery_enriched,
             "constraints_reconciled": stats.constraints_reconciled,
             "constraints_preserved": stats.constraints_preserved,
+            "best_practices_enriched": stats.best_practices_enriched,
+            "guided_workflows_added": stats.guided_workflows_added,
+            "error_resolutions_added": stats.error_resolutions_added,
         },
         "errors": stats.errors,
     }
