@@ -96,6 +96,7 @@ from scripts.utils.domain_metadata import (
 from scripts.utils.extension_constants import (
     X_F5XC_ALIASES,
     X_F5XC_CATEGORY,
+    X_F5XC_CLI_DOMAIN,
     X_F5XC_CLI_METADATA,
     X_F5XC_COMPLEXITY,
     X_F5XC_CRITICAL_RESOURCES,
@@ -945,7 +946,7 @@ def get_api_data_target_domain(path: str) -> str | None:
 def add_domain_metadata_to_spec(spec: dict[str, Any], domain: str) -> None:
     """Add domain classification metadata to spec (idempotent).
 
-    Adds x-ves-cli-domain extension to the spec's info section.
+    Adds x-f5xc-cli-domain extension to the spec's info section.
     Preserves existing values if already present (idempotent behavior).
 
     Args:
@@ -957,9 +958,9 @@ def add_domain_metadata_to_spec(spec: dict[str, Any], domain: str) -> None:
 
     info = spec["info"]
 
-    # Idempotent: preserve existing x-ves-cli-domain
-    if "x-ves-cli-domain" not in info:
-        info["x-ves-cli-domain"] = domain
+    # Idempotent: preserve existing x-f5xc-cli-domain
+    if X_F5XC_CLI_DOMAIN not in info:
+        info[X_F5XC_CLI_DOMAIN] = domain
 
 
 def merge_specs_by_domain(
