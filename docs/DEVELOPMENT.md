@@ -148,6 +148,8 @@ make push-discovery
 | New domain spec added | Minor | 1.0.0 → 1.1.0 |
 | Any other change | Patch | 1.0.0 → 1.0.1 |
 
+For detailed version bump logic including source spec detection, see the "Version Bumping Logic" section in CLAUDE.md.
+
 ### 3. Development Workflow
 
 **Making Changes**:
