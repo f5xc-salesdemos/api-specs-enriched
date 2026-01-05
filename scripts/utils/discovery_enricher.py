@@ -12,6 +12,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import yaml
+
+from scripts.utils.extension_constants import (
+    X_F5XC_DISCOVERED_ERROR_CATALOG,
+    X_F5XC_DISCOVERED_RATE_LIMITS,
+    X_F5XC_DISCOVERED_RESPONSE_TIME,
+)
+
 
 @dataclass
 class EnrichmentStats:
@@ -23,6 +31,9 @@ class EnrichmentStats:
     fields_enriched: int = 0
     schemas_processed: int = 0
     paths_processed: int = 0
+    response_times_added: int = 0
+    rate_limits_added: int = 0
+    error_catalogs_added: int = 0
 
     def to_dict(self) -> dict[str, int]:
         """Convert stats to dictionary."""
@@ -33,6 +44,9 @@ class EnrichmentStats:
             "fields_enriched": self.fields_enriched,
             "schemas_processed": self.schemas_processed,
             "paths_processed": self.paths_processed,
+            "response_times_added": self.response_times_added,
+            "rate_limits_added": self.rate_limits_added,
+            "error_catalogs_added": self.error_catalogs_added,
         }
 
 
@@ -97,6 +111,356 @@ class DiscoveryEnricher:
             re.compile(p, re.IGNORECASE)
             for p in self.config.get("examples", {}).get("redact_patterns", [])
         ]
+
+        # Performance configuration (Issue #314)
+        self.performance_config = self.config.get("performance", {})
+        self.add_percentiles = self.performance_config.get("add_percentiles", True)
+
+        # Rate limit configuration (Issue #314)
+        self.rate_limits_config = self.config.get("rate_limits", {})
+        self.rate_limits_enabled = self.rate_limits_config.get("enabled", True)
+
+        # Error catalog configuration (Issue #314)
+        self.errors_config = self.config.get("errors", {})
+        self.errors_enabled = self.errors_config.get("enabled", True)
+
+        # Load latency estimates for fallback values
+        self.latency_estimates = self._load_latency_estimates()
+
+    def _load_latency_estimates(self) -> dict:
+        """Load latency estimates configuration for fallback values.
+
+        Returns:
+            Latency estimates configuration dictionary
+        """
+        latency_file = self.performance_config.get(
+            "latency_estimates_file",
+            "config/latency_estimates.yaml",
+        )
+        latency_path = Path(latency_file)
+
+        if latency_path.exists():
+            with latency_path.open() as f:
+                return yaml.safe_load(f)
+
+        # Return sensible defaults if file doesn't exist
+        return {
+            "defaults": {
+                "list_operations": {"p50": 500, "p95": 2000, "p99": 5000, "unknown": 1500},
+                "get_operations": {"p50": 200, "p95": 800, "p99": 2000, "unknown": 600},
+                "create_operations": {"p50": 1000, "p95": 3000, "p99": 8000, "unknown": 2500},
+                "update_operations": {"p50": 800, "p95": 2500, "p99": 6000, "unknown": 2000},
+                "delete_operations": {"p50": 500, "p95": 1500, "p99": 4000, "unknown": 1200},
+            },
+            "operation_patterns": [
+                {"pattern": r"^GET .*/list$", "latency_level": "list_operations"},
+                {"pattern": r"^GET .*/items$", "latency_level": "list_operations"},
+                {"pattern": r"^GET .*", "latency_level": "get_operations"},
+                {"pattern": r"^POST .*", "latency_level": "create_operations"},
+                {"pattern": r"^PUT .*", "latency_level": "update_operations"},
+                {"pattern": r"^PATCH .*", "latency_level": "update_operations"},
+                {"pattern": r"^DELETE .*", "latency_level": "delete_operations"},
+            ],
+        }
+
+    def _get_latency_level(self, method: str, path: str) -> str:
+        """Determine the latency level for an operation based on method and path.
+
+        Args:
+            method: HTTP method (GET, POST, etc.)
+            path: API path
+
+        Returns:
+            Latency level key (e.g., "get_operations", "create_operations")
+        """
+        operation_key = f"{method.upper()} {path}"
+        patterns = self.latency_estimates.get("operation_patterns", [])
+
+        for pattern_config in patterns:
+            pattern = pattern_config.get("pattern", "")
+            if re.match(pattern, operation_key):
+                return pattern_config.get("latency_level", "get_operations")
+
+        # Default based on method
+        method_defaults = {
+            "GET": "get_operations",
+            "POST": "create_operations",
+            "PUT": "update_operations",
+            "PATCH": "update_operations",
+            "DELETE": "delete_operations",
+        }
+        return method_defaults.get(method.upper(), "get_operations")
+
+    def _get_default_latency_estimates(self, method: str, path: str) -> dict:
+        """Get default latency estimates for an operation.
+
+        Args:
+            method: HTTP method
+            path: API path
+
+        Returns:
+            Dictionary with p50, p95, p99, unknown latency estimates
+        """
+        latency_level = self._get_latency_level(method, path)
+        defaults = self.latency_estimates.get("defaults", {})
+        return defaults.get(latency_level, defaults.get("get_operations", {}))
+
+    def _enrich_operation_with_response_time(
+        self,
+        operation: dict,
+        discovered_op: dict | None,
+        method: str,
+        path: str,
+    ) -> None:
+        """Enrich operation with percentile response time data.
+
+        Adds x-f5xc-discovered-response-time extension with p50, p95, p99
+        percentiles, sample count, and last measured timestamp.
+
+        Args:
+            operation: Operation dict to enrich
+            discovered_op: Discovered operation data (may be None)
+            method: HTTP method
+            path: API path
+        """
+        if not self.add_percentiles:
+            return
+
+        response_time_data: dict[str, Any] = {}
+
+        if discovered_op:
+            # Use discovered response time data if available
+            rt = discovered_op.get("x-response-time-ms")
+            if rt:
+                # Single measurement - use as p50 estimate
+                response_time_data = {
+                    "p50_ms": round(rt, 2),
+                    "p95_ms": round(rt * 2.0, 2),  # Estimate based on single sample
+                    "p99_ms": round(rt * 3.0, 2),  # Estimate based on single sample
+                    "sample_count": 1,
+                    "source": "discovery",
+                }
+
+            # Check for more detailed percentile data if present
+            if "x-response-time-percentiles" in discovered_op:
+                percentiles = discovered_op["x-response-time-percentiles"]
+                response_time_data = {
+                    "p50_ms": percentiles.get("p50", response_time_data.get("p50_ms")),
+                    "p95_ms": percentiles.get("p95", response_time_data.get("p95_ms")),
+                    "p99_ms": percentiles.get("p99", response_time_data.get("p99_ms")),
+                    "sample_count": percentiles.get(
+                        "sample_count",
+                        response_time_data.get("sample_count", 1),
+                    ),
+                    "source": "discovery",
+                }
+
+            # Add last measured timestamp if available
+            if self.discovery_data and self.discovery_data.discovered_at:
+                response_time_data["last_measured"] = self.discovery_data.discovered_at
+
+        # Fall back to latency estimates if no discovery data
+        if not response_time_data:
+            estimates = self._get_default_latency_estimates(method, path)
+            if estimates:
+                response_time_data = {
+                    "p50_ms": estimates.get("p50"),
+                    "p95_ms": estimates.get("p95"),
+                    "p99_ms": estimates.get("p99"),
+                    "sample_count": 0,
+                    "source": "estimate",
+                }
+
+        if response_time_data:
+            operation[X_F5XC_DISCOVERED_RESPONSE_TIME] = response_time_data
+            self.stats.response_times_added += 1
+
+    def _enrich_operation_with_rate_limits(
+        self,
+        operation: dict,
+        discovered_op: dict | None,
+    ) -> None:
+        """Enrich operation with rate limit data.
+
+        Adds x-f5xc-discovered-rate-limits extension with requests_per_minute,
+        burst_limit, retry_after_header, and confidence level.
+
+        Args:
+            operation: Operation dict to enrich
+            discovered_op: Discovered operation data (may be None)
+        """
+        if not self.rate_limits_enabled:
+            return
+
+        if not discovered_op:
+            return
+
+        rate_limit_data: dict[str, Any] = {}
+        min_confidence = self.rate_limits_config.get("min_confidence", 0.7)
+        include_confidence = self.rate_limits_config.get("include_confidence", True)
+
+        # Check for discovered rate limit data
+        if "x-rate-limit" in discovered_op:
+            rl = discovered_op["x-rate-limit"]
+            confidence = rl.get("confidence", 0.5)
+
+            if confidence >= min_confidence:
+                rate_limit_data = {
+                    "requests_per_minute": rl.get("requests_per_minute"),
+                    "burst_limit": rl.get("burst_limit"),
+                    "retry_after_header": rl.get("retry_after_header", False),
+                }
+                if include_confidence:
+                    rate_limit_data["confidence"] = round(confidence, 2)
+
+        # Check for rate limit headers in response
+        if "x-ratelimit-limit" in discovered_op:
+            rate_limit_data["requests_per_minute"] = discovered_op["x-ratelimit-limit"]
+            rate_limit_data["source"] = "response_header"
+
+        if rate_limit_data:
+            operation[X_F5XC_DISCOVERED_RATE_LIMITS] = rate_limit_data
+            self.stats.rate_limits_added += 1
+
+    def _enrich_operation_with_error_catalog(
+        self,
+        operation: dict,
+        discovered_op: dict | None,
+    ) -> None:
+        """Enrich operation with error catalog data.
+
+        Adds x-f5xc-discovered-error-catalog extension with observed errors
+        including status_code, error_type, message_pattern, and resolution hints.
+
+        Args:
+            operation: Operation dict to enrich
+            discovered_op: Discovered operation data (may be None)
+        """
+        if not self.errors_enabled:
+            return
+
+        if not discovered_op:
+            return
+
+        max_errors = self.errors_config.get("max_errors_per_operation", 10)
+        min_frequency = self.errors_config.get("min_frequency", 0.01)
+
+        error_catalog: list[dict[str, Any]] = []
+
+        # Check for discovered error data
+        if "x-discovered-errors" in discovered_op:
+            errors = discovered_op["x-discovered-errors"]
+
+            for error in errors[:max_errors]:
+                frequency = error.get("frequency", 0)
+                if frequency >= min_frequency:
+                    error_entry = {
+                        "status_code": error.get("status_code"),
+                        "error_type": error.get("error_type", "unknown"),
+                        "message_pattern": error.get("message_pattern"),
+                    }
+
+                    # Add resolution hint if available
+                    if "resolution" in error:
+                        error_entry["resolution"] = error["resolution"]
+
+                    # Add frequency if significant
+                    if frequency > 0.05:  # More than 5% occurrence
+                        error_entry["frequency"] = round(frequency, 3)
+
+                    error_catalog.append(error_entry)
+
+        # Also extract error info from responses if available
+        responses = discovered_op.get("responses", {})
+        for status_code, response in responses.items():
+            if not isinstance(response, dict):
+                continue
+
+            # Only process error status codes (4xx, 5xx)
+            try:
+                code = int(status_code)
+                if code < 400:
+                    continue
+            except ValueError:
+                continue
+
+            # Check if this error code is already in catalog
+            if any(e.get("status_code") == code for e in error_catalog):
+                continue
+
+            # Build error entry from response
+            resp_error: dict[str, Any] = {"status_code": code}
+
+            # Get description for error type
+            desc = response.get("description", "")
+            if desc:
+                resp_error["error_type"] = self._classify_error_type(code, desc)
+                resp_error["message_pattern"] = desc[:100]  # Truncate long descriptions
+
+            # Check for schema with error details
+            content = response.get("content", {})
+            for media_obj in content.values():
+                if isinstance(media_obj, dict):
+                    example = media_obj.get("example", {})
+                    if isinstance(example, dict) and "message" in example:
+                        resp_error["message_pattern"] = example["message"][:100]
+                    break
+
+            if len(resp_error) > 1:  # Has more than just status_code
+                error_catalog.append(resp_error)
+
+        # Limit and deduplicate
+        if error_catalog:
+            # Sort by status code for consistency
+            error_catalog.sort(key=lambda e: e.get("status_code", 0))
+            operation[X_F5XC_DISCOVERED_ERROR_CATALOG] = error_catalog[:max_errors]
+            self.stats.error_catalogs_added += 1
+
+    def _classify_error_type(self, status_code: int, description: str) -> str:
+        """Classify error type based on status code and description.
+
+        Args:
+            status_code: HTTP status code
+            description: Error description
+
+        Returns:
+            Error type classification
+        """
+        desc_lower = description.lower()
+
+        # Keyword patterns mapped to error types
+        keyword_patterns = [
+            (["auth", "unauthorized"], "authentication_error"),
+            (["forbidden", "permission"], "authorization_error"),
+            (["not found"], "not_found_error"),
+            (["validation", "invalid"], "validation_error"),
+            (["conflict", "already exists"], "conflict_error"),
+            (["rate", "limit", "throttl"], "rate_limit_error"),
+            (["timeout"], "timeout_error"),
+            (["server", "internal"], "server_error"),
+        ]
+
+        # Check description keywords first
+        for keywords, error_type in keyword_patterns:
+            if any(kw in desc_lower for kw in keywords):
+                return error_type
+
+        # Fall back to status code classification
+        status_types = {
+            400: "bad_request",
+            401: "authentication_error",
+            403: "authorization_error",
+            404: "not_found_error",
+            405: "method_not_allowed",
+            409: "conflict_error",
+            422: "validation_error",
+            429: "rate_limit_error",
+            500: "server_error",
+            502: "gateway_error",
+            503: "service_unavailable",
+            504: "timeout_error",
+        }
+        return status_types.get(status_code, "unknown_error")
 
     def load_discovery_data(self, discovered_dir: Path | str) -> DiscoveryData:
         """Load discovered API specifications.
@@ -212,8 +576,8 @@ class DiscoveryEnricher:
                     discoveries,
                 )
 
+                # Legacy: Add basic response time for backward compatibility
                 if discovered_op:
-                    # Add response time baseline
                     rt = discovered_op.get("x-response-time-ms")
                     if rt:
                         operation[f"{self.prefix}-response-time-ms"] = round(rt, 2)
@@ -222,7 +586,18 @@ class DiscoveryEnricher:
                     if self.config.get("performance", {}).get("add_sample_size", True):
                         operation[f"{self.prefix}-sample-size"] = 1
 
-                    self.stats.paths_processed += 1
+                # Issue #314: Add operation-level enrichment extensions
+                # These methods handle both discovered data and fallback estimates
+                self._enrich_operation_with_response_time(
+                    operation,
+                    discovered_op,
+                    method,
+                    path,
+                )
+                self._enrich_operation_with_rate_limits(operation, discovered_op)
+                self._enrich_operation_with_error_catalog(operation, discovered_op)
+
+                self.stats.paths_processed += 1
 
         return spec
 
