@@ -336,37 +336,19 @@ class BestPracticesEnricher:
         """
         return self.stats.to_dict()
 
+    def enrich_index(self, index: dict[str, Any]) -> dict[str, Any]:
+        """Enrich index.json with best practices summary.
 
-# Module-level singleton for convenience
-_enricher: BestPracticesEnricher | None = None
+        For API consistency with other enrichers. Best practices are
+        applied at the spec level, so this is a pass-through.
 
+        Args:
+            index: Index dictionary to enrich
 
-def get_best_practices_enricher() -> BestPracticesEnricher:
-    """Get or create module-level BestPracticesEnricher singleton.
-
-    Returns:
-        Shared BestPracticesEnricher instance
-    """
-    global _enricher  # noqa: PLW0603
-    if _enricher is None:
-        _enricher = BestPracticesEnricher()
-    return _enricher
-
-
-def get_domain_best_practices(domain: str) -> dict[str, Any] | None:
-    """Convenience function to get all best practices for a domain.
-
-    Args:
-        domain: Domain name (e.g., "virtual")
-
-    Returns:
-        Dictionary with best practices, or None
-    """
-    enricher = get_best_practices_enricher()
-    best_practices = enricher.get_best_practices(domain)
-    if best_practices:
-        return best_practices.to_dict()
-    return None
+        Returns:
+            Index dictionary unchanged
+        """
+        return index
 
 
 __all__ = [
@@ -374,6 +356,4 @@ __all__ = [
     "BestPracticesEnricher",
     "BestPracticesEnrichmentStats",
     "CommonError",
-    "get_best_practices_enricher",
-    "get_domain_best_practices",
 ]

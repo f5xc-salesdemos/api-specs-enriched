@@ -38,9 +38,9 @@ class ErrorEntry:
     endpoint: str
     method: str
     frequency: int = 1
-    first_seen: str = ""
-    last_seen: str = ""
-    resolution: str = ""
+    first_seen: str | None = None
+    last_seen: str | None = None
+    resolution: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -56,13 +56,15 @@ class ErrorEntry:
 
     def to_extension(self) -> dict[str, Any]:
         """Convert to OpenAPI extension format."""
-        return {
+        result: dict[str, Any] = {
             "status_code": self.status_code,
             "error_type": self.error_type,
             "message_pattern": self.message_pattern,
-            "resolution": self.resolution,
             "frequency": self.frequency,
         }
+        if self.resolution:
+            result["resolution"] = self.resolution
+        return result
 
 
 @dataclass
@@ -94,7 +96,7 @@ class ErrorCatalog:
     )
     total_errors: int = 0
     unique_patterns: int = 0
-    discovered_at: str = ""
+    discovered_at: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""

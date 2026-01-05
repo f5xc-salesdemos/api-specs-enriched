@@ -331,37 +331,46 @@ class ErrorResolutionEnricher:
         """
         return self.stats.to_dict()
 
+    def enrich_spec(
+        self,
+        spec: dict[str, Any],
+        domain: str | None = None,  # noqa: ARG002 - API consistency with other enrichers
+    ) -> dict[str, Any]:
+        """Enrich OpenAPI specification with error resolution.
 
-# Module-level singleton for convenience
-_enricher: ErrorResolutionEnricher | None = None
+        For API consistency with other enrichers. Error resolution is
+        applied at the index level, so this is a pass-through.
 
+        Args:
+            spec: OpenAPI specification dictionary
+            domain: Domain name (unused, for API consistency)
 
-def get_error_resolution_enricher() -> ErrorResolutionEnricher:
-    """Get or create module-level ErrorResolutionEnricher singleton.
+        Returns:
+            Specification unchanged
+        """
+        return spec
 
-    Returns:
-        Shared ErrorResolutionEnricher instance
-    """
-    global _enricher  # noqa: PLW0603
-    if _enricher is None:
-        _enricher = ErrorResolutionEnricher()
-    return _enricher
+    def has_errors(self, code: int) -> bool:
+        """Check if error resolution exists for a status code.
 
+        Args:
+            code: HTTP status code to check
 
-def get_http_error_resolution(code: int) -> dict[str, Any] | None:
-    """Convenience function to get resolution for an HTTP error.
+        Returns:
+            True if resolution is configured for the code
+        """
+        return code in self.http_errors
 
-    Args:
-        code: HTTP status code
+    def get_configured_domains(self) -> list[str]:
+        """Get list of resources with configured error patterns.
 
-    Returns:
-        Dictionary with error resolution, or None
-    """
-    enricher = get_error_resolution_enricher()
-    error = enricher.get_http_error(code)
-    if error:
-        return error.to_dict()
-    return None
+        For API consistency with other enrichers. Returns resource names
+        instead of domains since error resolution is resource-based.
+
+        Returns:
+            Sorted list of resource names
+        """
+        return sorted(self.resource_errors.keys())
 
 
 __all__ = [
@@ -370,6 +379,4 @@ __all__ = [
     "ErrorResolutionEnrichmentStats",
     "HttpError",
     "ResourceErrorPattern",
-    "get_error_resolution_enricher",
-    "get_http_error_resolution",
 ]

@@ -42,13 +42,13 @@ class ResponseTimeStats:
     mean_ms: float = 0.0
     stdev_ms: float = 0.0
     sample_count: int = 0
-    last_measured: str = ""
+    last_measured: str | None = None
     endpoint: str = ""
     method: str = "GET"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {
+        result: dict[str, Any] = {
             "samples": self.samples,
             "p50": round(self.p50, 2),
             "p95": round(self.p95, 2),
@@ -58,20 +58,24 @@ class ResponseTimeStats:
             "mean_ms": round(self.mean_ms, 2),
             "stdev_ms": round(self.stdev_ms, 2),
             "sample_count": self.sample_count,
-            "last_measured": self.last_measured,
             "endpoint": self.endpoint,
             "method": self.method,
         }
+        if self.last_measured:
+            result["last_measured"] = self.last_measured
+        return result
 
     def to_extension(self) -> dict[str, Any]:
         """Convert to OpenAPI extension format (x-f5xc-discovered-response-time)."""
-        return {
+        result: dict[str, Any] = {
             "p50": round(self.p50, 2),
             "p95": round(self.p95, 2),
             "p99": round(self.p99, 2),
             "sample_count": self.sample_count,
-            "last_measured": self.last_measured,
         }
+        if self.last_measured:
+            result["last_measured"] = self.last_measured
+        return result
 
 
 @dataclass

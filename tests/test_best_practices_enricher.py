@@ -7,7 +7,6 @@ from scripts.utils.best_practices_enricher import (
     BestPracticesEnricher,
     BestPracticesEnrichmentStats,
     CommonError,
-    get_best_practices_enricher,
 )
 
 
@@ -234,21 +233,6 @@ class TestBestPracticesEnrichmentStats:
         assert stats_dict["specs_processed"] == 5
         assert stats_dict["best_practices_applied"] == 3
         assert stats_dict["best_practices_skipped"] == 2
-
-
-class TestSingletonPattern:
-    """Test singleton pattern for enricher."""
-
-    def test_get_best_practices_enricher_returns_singleton(self):
-        """Test that get_best_practices_enricher returns same instance."""
-        enricher1 = get_best_practices_enricher()
-        enricher2 = get_best_practices_enricher()
-        assert enricher1 is enricher2
-
-    def test_singleton_is_best_practices_enricher(self):
-        """Test that singleton is BestPracticesEnricher instance."""
-        enricher = get_best_practices_enricher()
-        assert isinstance(enricher, BestPracticesEnricher)
 
 
 class TestBestPracticesToDict:

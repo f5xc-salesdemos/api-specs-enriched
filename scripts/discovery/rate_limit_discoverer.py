@@ -41,7 +41,7 @@ class RateLimitInfo:
     retry_after_header: bool = False
     retry_after_value: float | None = None
     rate_limit_header: str | None = None
-    discovered_at: str = ""
+    discovered_at: str | None = None
     confidence: str = "unknown"  # low, medium, high
 
     def to_dict(self) -> dict[str, Any]:
@@ -49,9 +49,10 @@ class RateLimitInfo:
         result: dict[str, Any] = {
             "endpoint": self.endpoint,
             "method": self.method,
-            "discovered_at": self.discovered_at,
             "confidence": self.confidence,
         }
+        if self.discovered_at:
+            result["discovered_at"] = self.discovered_at
         if self.requests_per_minute is not None:
             result["requests_per_minute"] = self.requests_per_minute
         if self.requests_per_second is not None:
@@ -68,9 +69,9 @@ class RateLimitInfo:
 
     def to_extension(self) -> dict[str, Any]:
         """Convert to OpenAPI extension format (x-f5xc-discovered-rate-limits)."""
-        result: dict[str, Any] = {
-            "discovered_at": self.discovered_at,
-        }
+        result: dict[str, Any] = {}
+        if self.discovered_at:
+            result["discovered_at"] = self.discovered_at
         if self.requests_per_minute is not None:
             result["requests_per_minute"] = self.requests_per_minute
         if self.requests_per_second is not None:
