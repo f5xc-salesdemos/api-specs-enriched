@@ -86,6 +86,34 @@ discovery_enrichment:
     # Add x-discovery-confidence
     add_confidence: true
 
+    # Add x-f5xc-discovered-response-time with percentiles (Issue #314)
+    add_percentiles: true
+
+    # Latency estimates config for fallback values
+    latency_estimates_file: "config/latency_estimates.yaml"
+
+  # Rate limit discovery (Issue #314)
+  rate_limits:
+    # Enable rate limit extension enrichment
+    enabled: true
+
+    # Include confidence level in rate limit data
+    include_confidence: true
+
+    # Only apply rate limits with this minimum confidence
+    min_confidence: 0.7
+
+  # Error catalog enrichment (Issue #314)
+  errors:
+    # Enable error catalog extension enrichment
+    enabled: true
+
+    # Maximum errors to include per operation
+    max_errors_per_operation: 10
+
+    # Minimum frequency (0.0-1.0) for an error to be included
+    min_frequency: 0.01
+
   # Extension naming
   extensions:
     # Prefix for all discovery extensions
