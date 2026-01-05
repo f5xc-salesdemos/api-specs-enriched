@@ -84,6 +84,7 @@ from scripts.utils import (
     MinimumConfigurationEnricher,
     OperationMetadataEnricher,
     ReadOnlyEnricher,
+    ResourceExamplesEnricher,
     SchemaFixer,
     TagGenerator,
     ValidationEnricher,
@@ -1282,6 +1283,9 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     # Load description enricher for multi-tier descriptions
     description_enricher = DescriptionEnricher()
 
+    # Load resource examples enricher for tiered configuration snippets (Issue #325)
+    resource_examples_enricher = ResourceExamplesEnricher()
+
     for domain, spec in sorted(domain_specs.items()):
         info = spec.get("info", {})
         metadata = get_metadata(domain)
@@ -1330,6 +1334,10 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
         cli_metadata = metadata.get("cli_metadata")
         if cli_metadata:
             spec_entry[X_F5XC_CLI_METADATA] = cli_metadata
+
+        # Add resource examples for domain (Issue #325)
+        schemas = spec.get("components", {}).get("schemas", {})
+        spec_entry = resource_examples_enricher.enrich_index_entry(spec_entry, domain, schemas)
 
         index["specifications"].append(spec_entry)
 

@@ -1,0 +1,418 @@
+# Resource Examples Configuration
+# Tiered resource configuration examples for AI assistants and CLI tools
+#
+# Issue: #325
+# Version: 1.0.0
+#
+# Each resource has tiered examples:
+#   - minimal: Simplest working configuration
+#   - production: Production-ready with best practices
+#   - advanced: Full-featured with all options
+#   - migration: For migrating from other platforms
+
+version: "1.0.0"
+description: "Tiered resource configuration examples for F5 Distributed Cloud"
+
+# Domain-organized resource examples
+domains:
+  # ============================================================================
+  # Virtual Domain - Load Balancers and Pools
+  # ============================================================================
+  virtual:
+    http_loadbalancer:
+      minimal:
+        description: "Basic HTTP load balancer for quick testing"
+        use_case: "Development environments, quick validation"
+        yaml: |
+          metadata:
+            name: my-lb
+            namespace: default
+          spec:
+            domains:
+              - example.com
+            http:
+              port: 80
+            default_route_pools:
+              - pool:
+                  name: my-origin-pool
+                  namespace: default
+
+      production:
+        description: "Production-ready HTTP load balancer with TLS and WAF"
+        use_case: "Production deployments with security controls"
+        yaml: |
+          metadata:
+            name: prod-lb
+            namespace: production
+          spec:
+            domains:
+              - api.example.com
+            https_auto_cert:
+              http_redirect: true
+              add_hsts: true
+              tls_config:
+                min_version: TLS12
+            app_firewall:
+              name: default-waf
+              namespace: shared
+            default_route_pools:
+              - pool:
+                  name: prod-origin-pool
+                  namespace: production
+                weight: 100
+            rate_limiter:
+              total_number: 1000
+              unit: MINUTE
+
+      advanced:
+        description: "Multi-origin load balancer with routing rules and rate limiting"
+        use_case: "Complex routing scenarios, API gateways"
+        yaml: |
+          metadata:
+            name: api-gateway
+            namespace: production
+          spec:
+            domains:
+              - api.example.com
+              - api-v2.example.com
+            https_auto_cert:
+              http_redirect: true
+              add_hsts: true
+            app_firewall:
+              name: strict-waf
+              namespace: shared
+            routes:
+              - match:
+                  path:
+                    prefix: /api/v1
+                route_destination:
+                  destinations:
+                    - cluster:
+                        name: v1-backend
+                      weight: 100
+              - match:
+                  path:
+                    prefix: /api/v2
+                route_destination:
+                  destinations:
+                    - cluster:
+                        name: v2-backend
+                      weight: 100
+            default_route_pools:
+              - pool:
+                  name: default-backend
+                  namespace: production
+            rate_limiter:
+              total_number: 5000
+              unit: MINUTE
+            cors_policy:
+              allow_origins:
+                - exact: https://app.example.com
+              allow_methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+
+    origin_pool:
+      minimal:
+        description: "Basic origin pool with single backend"
+        use_case: "Simple backend configuration"
+        yaml: |
+          metadata:
+            name: backend-pool
+            namespace: default
+          spec:
+            origin_servers:
+              - public_ip:
+                  ip: 192.168.1.100
+            port: 8080
+            loadbalancer_algorithm: ROUND_ROBIN
+
+      production:
+        description: "Production origin pool with health checks"
+        use_case: "Production deployments with monitoring"
+        yaml: |
+          metadata:
+            name: prod-backend
+            namespace: production
+          spec:
+            origin_servers:
+              - public_name:
+                  dns_name: backend1.example.com
+              - public_name:
+                  dns_name: backend2.example.com
+            port: 443
+            use_tls:
+              use_host_header_as_sni: {}
+              tls_config:
+                min_version: TLS12
+            healthcheck:
+              - name: http-health
+                namespace: production
+            loadbalancer_algorithm: LEAST_ACTIVE
+            endpoint_selection: LOCAL_PREFERRED
+
+      advanced:
+        description: "Multi-region origin pool with advanced routing"
+        use_case: "Global deployments, failover scenarios"
+        yaml: |
+          metadata:
+            name: global-backend
+            namespace: production
+          spec:
+            origin_servers:
+              - public_name:
+                  dns_name: us-backend.example.com
+                labels:
+                  region: us-east
+              - public_name:
+                  dns_name: eu-backend.example.com
+                labels:
+                  region: eu-west
+            port: 443
+            use_tls:
+              use_host_header_as_sni: {}
+              tls_config:
+                min_version: TLS12
+            healthcheck:
+              - name: tcp-health
+                namespace: production
+            loadbalancer_algorithm: ROUND_ROBIN
+            endpoint_selection: LOCAL_PREFERRED
+            advanced_options:
+              connection_timeout: 30000
+              idle_timeout: 60000
+              max_connections: 10000
+
+    healthcheck:
+      minimal:
+        description: "Basic HTTP health check"
+        use_case: "Simple health monitoring"
+        yaml: |
+          metadata:
+            name: http-health
+            namespace: default
+          spec:
+            http_health_check:
+              path: /health
+            timeout: 3
+            interval: 15
+            unhealthy_threshold: 3
+            healthy_threshold: 2
+
+      production:
+        description: "Production health check with custom headers"
+        use_case: "Production monitoring with authentication"
+        yaml: |
+          metadata:
+            name: prod-health
+            namespace: production
+          spec:
+            http_health_check:
+              path: /api/health
+              headers:
+                x-health-check: "true"
+              expected_status_codes:
+                - 200
+                - 204
+            timeout: 5
+            interval: 10
+            unhealthy_threshold: 2
+            healthy_threshold: 3
+
+  # ============================================================================
+  # WAF Domain - Web Application Firewall
+  # ============================================================================
+  waf:
+    app_firewall:
+      minimal:
+        description: "Basic WAF policy with default detection"
+        use_case: "Quick WAF protection setup"
+        yaml: |
+          metadata:
+            name: basic-waf
+            namespace: default
+          spec:
+            blocking: {}
+            detection_settings:
+              signature_selection_setting:
+                default_attack_type_settings: {}
+                high_medium_accuracy_signatures: {}
+
+      production:
+        description: "Production WAF with signature detection and bot defense"
+        use_case: "Production security with comprehensive protection"
+        yaml: |
+          metadata:
+            name: prod-waf
+            namespace: production
+          spec:
+            blocking: {}
+            detection_settings:
+              signature_selection_setting:
+                default_attack_type_settings: {}
+                high_medium_low_accuracy_signatures: {}
+              enable_suppression: true
+              enable_threat_campaigns: true
+            bot_defense_setting:
+              policy:
+                protected_app_endpoints:
+                  - metadata:
+                      name: login
+                    http_methods:
+                      - POST
+                    protocol: HTTPS
+                    path:
+                      prefix: /api/login
+                js_insert_all_pages:
+                  javascript_location: AFTER_HEAD
+            allow_all_response_codes: false
+            default_anonymization: true
+
+      advanced:
+        description: "Advanced WAF with custom rules and data guard"
+        use_case: "High-security environments with custom policies"
+        yaml: |
+          metadata:
+            name: advanced-waf
+            namespace: security
+          spec:
+            blocking: {}
+            detection_settings:
+              signature_selection_setting:
+                attack_type_settings:
+                  - attack_type: ATTACK_TYPE_COMMAND_EXECUTION
+                    disabled: false
+                  - attack_type: ATTACK_TYPE_SQL_INJECTION
+                    disabled: false
+                  - attack_type: ATTACK_TYPE_CROSS_SITE_SCRIPTING
+                    disabled: false
+                high_medium_low_accuracy_signatures: {}
+              enable_suppression: true
+              enable_threat_campaigns: true
+              violation_settings:
+                disabled_violation_types:
+                  - violation_type: VIOL_FILETYPE
+            bot_defense_setting:
+              policy:
+                protected_app_endpoints:
+                  - metadata:
+                      name: api-endpoint
+                    http_methods:
+                      - POST
+                      - PUT
+                    protocol: HTTPS
+                    path:
+                      prefix: /api/
+                js_insert_all_pages:
+                  javascript_location: AFTER_HEAD
+            data_guard_rules:
+              - name: mask-credit-cards
+                path:
+                  prefix: /
+                target_parameters:
+                  - parameter_name:
+                      exact_value: credit_card
+                apply_data_guard: {}
+
+  # ============================================================================
+  # DNS Domain - DNS Zones and Records
+  # ============================================================================
+  dns:
+    dns_zone:
+      minimal:
+        description: "Basic DNS zone with primary nameserver"
+        use_case: "Simple DNS hosting"
+        yaml: |
+          metadata:
+            name: example-zone
+            namespace: default
+          spec:
+            primary:
+              default_rr_set_group:
+                - ttl: 300
+                  a_record:
+                    name: www
+                    values:
+                      - 192.168.1.100
+
+      production:
+        description: "Production DNS zone with SOA and multiple records"
+        use_case: "Production DNS with full configuration"
+        yaml: |
+          metadata:
+            name: prod-zone
+            namespace: production
+          spec:
+            domain: example.com
+            primary:
+              soa_parameters:
+                refresh: 3600
+                retry: 600
+                expire: 604800
+                negative_ttl: 300
+              default_rr_set_group:
+                - ttl: 300
+                  a_record:
+                    name: www
+                    values:
+                      - 192.168.1.100
+                      - 192.168.1.101
+                - ttl: 300
+                  cname_record:
+                    name: api
+                    value: www.example.com
+                - ttl: 86400
+                  mx_record:
+                    name: ""
+                    values:
+                      - domain: mail.example.com
+                        priority: 10
+
+  # ============================================================================
+  # CDN Domain - Content Delivery Network
+  # ============================================================================
+  cdn:
+    cdn_loadbalancer:
+      minimal:
+        description: "Basic CDN distribution"
+        use_case: "Simple content delivery"
+        yaml: |
+          metadata:
+            name: cdn-basic
+            namespace: default
+          spec:
+            domains:
+              - cdn.example.com
+            origin_pool:
+              - pool:
+                  name: origin-pool
+                  namespace: default
+
+      production:
+        description: "Production CDN with caching and compression"
+        use_case: "Production content delivery with optimization"
+        yaml: |
+          metadata:
+            name: cdn-prod
+            namespace: production
+          spec:
+            domains:
+              - cdn.example.com
+              - assets.example.com
+            https_auto_cert:
+              add_hsts: true
+            origin_pool:
+              - pool:
+                  name: origin-pool
+                  namespace: production
+            cache_settings:
+              default_cache_action: CACHE
+              cache_ttl_default: 86400
+            compression_settings:
+              content_types:
+                - text/html
+                - text/css
+                - application/javascript
+              enable_gzip: true
