@@ -8,8 +8,6 @@ from scripts.utils.error_resolution_enricher import (
     ErrorResolutionEnrichmentStats,
     HttpError,
     ResourceErrorPattern,
-    get_error_resolution_enricher,
-    get_http_error_resolution,
 )
 
 
@@ -268,34 +266,3 @@ class TestErrorResolutionEnrichmentStats:
         assert isinstance(stats_dict, dict)
         assert stats_dict["indexes_processed"] == 2
         assert stats_dict["http_errors_loaded"] == 10
-
-
-class TestSingletonPattern:
-    """Test singleton pattern for enricher."""
-
-    def test_get_error_resolution_enricher_returns_singleton(self):
-        """Test that get_error_resolution_enricher returns same instance."""
-        enricher1 = get_error_resolution_enricher()
-        enricher2 = get_error_resolution_enricher()
-        assert enricher1 is enricher2
-
-    def test_singleton_is_error_resolution_enricher(self):
-        """Test that singleton is ErrorResolutionEnricher instance."""
-        enricher = get_error_resolution_enricher()
-        assert isinstance(enricher, ErrorResolutionEnricher)
-
-
-class TestConvenienceFunctions:
-    """Test convenience functions."""
-
-    def test_get_http_error_resolution(self):
-        """Test get_http_error_resolution convenience function."""
-        resolution = get_http_error_resolution(401)
-        assert resolution is not None
-        assert isinstance(resolution, dict)
-        assert "code" in resolution
-
-    def test_get_http_error_resolution_unknown(self):
-        """Test get_http_error_resolution returns None for unknown."""
-        resolution = get_http_error_resolution(999)
-        assert resolution is None

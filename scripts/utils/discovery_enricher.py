@@ -43,8 +43,8 @@ class ConstraintDiff:
     field_path: str
     published_value: Any = None
     discovered_value: Any = None
-    constraint_type: str = ""  # minLength, maxLength, pattern, enum, format
-    recommendation: str = ""
+    constraint_type: str | None = None  # minLength, maxLength, pattern, enum, format
+    recommendation: str | None = None
     confidence: float = 0.0
 
 
@@ -57,7 +57,7 @@ class DiscoveryData:
     paths: dict = field(default_factory=dict)
     schemas: dict = field(default_factory=dict)
     response_times: dict = field(default_factory=dict)
-    discovered_at: str = ""
+    discovered_at: str | None = None
 
 
 class DiscoveryEnricher:
@@ -856,37 +856,6 @@ class DiscoveryEnricher:
             confidence=0.9,  # Default high confidence
         )
         self.constraint_diffs.append(diff)
-
-    def sanitize_example(self, example: dict[str, Any]) -> dict[str, Any]:
-        """Sanitize an example by redacting sensitive fields.
-
-        Args:
-            example: Example data to sanitize
-
-        Returns:
-            Sanitized example
-        """
-        if not isinstance(example, dict):
-            return example
-
-        sanitized: dict[str, Any] = {}
-        for key, value in example.items():
-            # Check if key matches redaction pattern
-            should_redact = any(p.match(key) for p in self.redact_patterns)
-
-            if should_redact:
-                sanitized[key] = "[REDACTED]"
-            elif isinstance(value, dict):
-                sanitized[key] = self.sanitize_example(value)
-            elif isinstance(value, list):
-                sanitized[key] = [
-                    self.sanitize_example(item) if isinstance(item, dict) else item
-                    for item in value
-                ]
-            else:
-                sanitized[key] = value
-
-        return sanitized
 
     def get_stats(self) -> dict[str, int]:
         """Get enrichment statistics.

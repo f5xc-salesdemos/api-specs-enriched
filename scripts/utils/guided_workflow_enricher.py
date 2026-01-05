@@ -367,41 +367,9 @@ class GuidedWorkflowEnricher:
         return index
 
 
-# Module-level singleton for convenience
-_enricher: GuidedWorkflowEnricher | None = None
-
-
-def get_guided_workflow_enricher() -> GuidedWorkflowEnricher:
-    """Get or create module-level GuidedWorkflowEnricher singleton.
-
-    Returns:
-        Shared GuidedWorkflowEnricher instance
-    """
-    global _enricher  # noqa: PLW0603
-    if _enricher is None:
-        _enricher = GuidedWorkflowEnricher()
-    return _enricher
-
-
-def get_domain_workflows(domain: str) -> list[dict[str, Any]]:
-    """Convenience function to get all workflows for a domain.
-
-    Args:
-        domain: Domain name (e.g., "virtual")
-
-    Returns:
-        List of workflow dictionaries
-    """
-    enricher = get_guided_workflow_enricher()
-    workflows = enricher.get_workflows(domain)
-    return [w.to_dict() for w in workflows]
-
-
 __all__ = [
     "GuidedWorkflow",
     "GuidedWorkflowEnricher",
     "GuidedWorkflowEnrichmentStats",
     "WorkflowStep",
-    "get_domain_workflows",
-    "get_guided_workflow_enricher",
 ]

@@ -7,7 +7,6 @@ from scripts.utils.guided_workflow_enricher import (
     GuidedWorkflowEnricher,
     GuidedWorkflowEnrichmentStats,
     WorkflowStep,
-    get_guided_workflow_enricher,
 )
 
 
@@ -213,21 +212,6 @@ class TestGuidedWorkflowEnrichmentStats:
         assert isinstance(stats_dict, dict)
         assert stats_dict["specs_processed"] == 5
         assert stats_dict["workflows_applied"] == 10
-
-
-class TestSingletonPattern:
-    """Test singleton pattern for enricher."""
-
-    def test_get_guided_workflow_enricher_returns_singleton(self):
-        """Test that get_guided_workflow_enricher returns same instance."""
-        enricher1 = get_guided_workflow_enricher()
-        enricher2 = get_guided_workflow_enricher()
-        assert enricher1 is enricher2
-
-    def test_singleton_is_guided_workflow_enricher(self):
-        """Test that singleton is GuidedWorkflowEnricher instance."""
-        enricher = get_guided_workflow_enricher()
-        assert isinstance(enricher, GuidedWorkflowEnricher)
 
 
 class TestWorkflowToDict:
