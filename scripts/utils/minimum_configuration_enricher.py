@@ -3,11 +3,10 @@
 This enricher adds minimum configuration metadata to resource schemas,
 enabling AI assistants and CLI tools to generate working configurations.
 
-Adds four OpenAPI extensions:
+Adds three OpenAPI extensions:
 - x-f5xc-minimum-configuration: Schema-level minimum config definition
 - x-f5xc-required-for: Field-level context requirements
 - x-f5xc-cli-domain: Domain classification for CLI routing
-- x-f5xc-cli-aliases: Alternative names for resources
 
 Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
@@ -23,7 +22,6 @@ import yaml
 
 from .domain_categorizer import DomainCategorizer
 from .extension_constants import (
-    X_F5XC_CLI_ALIASES,
     X_F5XC_CLI_DOMAIN,
     X_F5XC_MINIMUM_CONFIGURATION,
     X_F5XC_REQUIRED_FOR,
@@ -47,7 +45,6 @@ class MinimumConfigurationStats:
     example_curls_generated: int = 0
     cli_domains_added: int = 0
     cli_domains_preserved: int = 0
-    cli_aliases_added: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -64,7 +61,6 @@ class MinimumConfigurationStats:
             "example_curls_generated": self.example_curls_generated,
             "cli_domains_added": self.cli_domains_added,
             "cli_domains_preserved": self.cli_domains_preserved,
-            "cli_aliases_added": self.cli_aliases_added,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -218,11 +214,6 @@ class MinimumConfigurationEnricher:
 
         # Add x-f5xc-required-for to schema properties
         self._add_field_requirements(schema, resource_config)
-
-        # Add x-f5xc-cli-aliases if configured
-        if "cli" in resource_config and "aliases" in resource_config["cli"]:
-            schema[X_F5XC_CLI_ALIASES] = resource_config["cli"]["aliases"]
-            self.stats.cli_aliases_added += 1
 
     def _enrich_with_auto_generation(
         self,

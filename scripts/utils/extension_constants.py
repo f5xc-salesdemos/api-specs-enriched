@@ -37,7 +37,6 @@ X_F5XC_RESPONSE_TIME_MS = "x-f5xc-response-time-ms"
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
 # =============================================================================
 
-X_F5XC_CLI_ALIASES = "x-f5xc-cli-aliases"
 X_F5XC_MINIMUM_CONFIGURATION = "x-f5xc-minimum-configuration"
 X_F5XC_NAMESPACE_SCOPE = "x-f5xc-namespace-scope"
 X_F5XC_DISPLAYORDER = "x-f5xc-displayorder"
@@ -81,7 +80,6 @@ X_F5XC_DESCRIPTION_MEDIUM = "x-f5xc-description-medium"
 X_F5XC_COMPLEXITY = "x-f5xc-complexity"
 X_F5XC_REQUIRES_TIER = "x-f5xc-requires-tier"
 X_F5XC_IS_PREVIEW = "x-f5xc-is-preview"
-X_F5XC_ALIASES = "x-f5xc-aliases"
 X_F5XC_USE_CASES = "x-f5xc-use-cases"
 X_F5XC_ICON = "x-f5xc-icon"
 X_F5XC_LOGO_SVG = "x-f5xc-logo-svg"
@@ -124,7 +122,6 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_API_URL,
         X_F5XC_RESPONSE_TIME_MS,
         # Schema-level
-        X_F5XC_CLI_ALIASES,
         X_F5XC_MINIMUM_CONFIGURATION,
         X_F5XC_NAMESPACE_SCOPE,
         X_F5XC_DISPLAYORDER,
@@ -155,7 +152,6 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_COMPLEXITY,
         X_F5XC_REQUIRES_TIER,
         X_F5XC_IS_PREVIEW,
-        X_F5XC_ALIASES,
         X_F5XC_USE_CASES,
         X_F5XC_ICON,
         X_F5XC_LOGO_SVG,

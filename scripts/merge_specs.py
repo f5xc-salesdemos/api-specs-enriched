@@ -29,7 +29,6 @@ from scripts.utils.domain_metadata import (
     get_primary_resources_metadata,
 )
 from scripts.utils.extension_constants import (
-    X_F5XC_ALIASES,
     X_F5XC_CATEGORY,
     X_F5XC_CLI_DOMAIN,
     X_F5XC_CLI_METADATA,
@@ -502,7 +501,6 @@ def create_spec_index(
             X_F5XC_REQUIRES_TIER: metadata.get("requires_tier", "Standard"),
             # Single category field for CLI, UI, docs, and Terraform grouping (DRY)
             X_F5XC_CATEGORY: metadata.get("category", "Other"),
-            X_F5XC_ALIASES: metadata.get("aliases", []),
             X_F5XC_USE_CASES: metadata.get("use_cases", []),
             X_F5XC_RELATED_DOMAINS: metadata.get("related_domains", []),
             # Visual identity and resource metadata (Issue #184)

@@ -68,7 +68,6 @@ from rich.table import Table
 from scripts.merge_specs import load_critical_resources
 from scripts.utils import (
     AcronymNormalizer,
-    AliasValidator,
     BrandingTransformer,
     ConsistencyValidator,
     ConstraintReconciler,
@@ -87,14 +86,12 @@ from scripts.utils import (
     categorize_spec,
 )
 from scripts.utils.domain_metadata import (
-    DOMAIN_METADATA,
     calculate_complexity,
     get_domain_icon,
     get_metadata,
     get_primary_resources_metadata,
 )
 from scripts.utils.extension_constants import (
-    X_F5XC_ALIASES,
     X_F5XC_CATEGORY,
     X_F5XC_CLI_DOMAIN,
     X_F5XC_CLI_METADATA,
@@ -1272,7 +1269,6 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
             X_F5XC_REQUIRES_TIER: metadata.get("requires_tier", "Standard"),
             # Single category field for CLI, UI, docs, and Terraform grouping (DRY)
             X_F5XC_CATEGORY: metadata.get("category", "Other"),
-            X_F5XC_ALIASES: metadata.get("aliases", []),
             X_F5XC_USE_CASES: metadata.get("use_cases", []),
             X_F5XC_RELATED_DOMAINS: metadata.get("related_domains", []),
             # Visual identity and resource metadata (Issue #184)
@@ -1631,22 +1627,6 @@ Output (merged domain specs only):
         console.print(f"[red]Input directory not found: {input_dir}[/red]")
         console.print("[yellow]Run 'make download' or 'python -m scripts.download' first[/yellow]")
         return 1
-
-    # Validate domain aliases before running pipeline
-    console.print("\n[blue]Validating domain aliases...[/blue]")
-    alias_validator = AliasValidator(DOMAIN_METADATA)
-    alias_stats = alias_validator.validate_all()
-
-    if alias_stats.errors:
-        console.print("[red]Alias validation failed:[/red]")
-        for error in alias_stats.errors:
-            console.print(f"  [red]✗[/red] {error}")
-        return 1
-
-    console.print(
-        f"  [green]✓[/green] Validated {alias_stats.total_aliases} aliases "
-        f"across {alias_stats.domains_validated} domains",
-    )
 
     # Run pipeline
     stats = run_pipeline(
