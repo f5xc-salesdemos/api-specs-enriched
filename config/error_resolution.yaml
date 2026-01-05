@@ -1,0 +1,346 @@
+# Error Resolution Configuration
+#
+# HTTP error diagnostics with resolution steps for AI assistants and CLI tools.
+# Provides structured guidance for troubleshooting API errors.
+#
+# Version: 1.0.0
+# Issue: #314
+# Last Updated: 2026-01-04
+
+version: "1.0.0"
+
+# HTTP error resolutions organized by status code
+http_errors:
+  # 4xx Client Errors
+  400:
+    name: Bad Request
+    description: The request was malformed or contains invalid data
+    common_causes:
+      - "Invalid JSON syntax in request body"
+      - "Missing required fields"
+      - "Invalid field values or formats"
+      - "Malformed resource references"
+    diagnostic_steps:
+      - step: 1
+        action: "Validate JSON syntax"
+        command: "echo '$REQUEST_BODY' | jq ."
+        description: "Check if request body is valid JSON"
+      - step: 2
+        action: "Check required fields"
+        description: "Verify all required fields from OpenAPI spec are present"
+      - step: 3
+        action: "Validate field formats"
+        description: "Check string patterns, enum values, and data types"
+      - step: 4
+        action: "Verify references"
+        description: "Ensure referenced resources exist and are properly formatted"
+    prevention:
+      - "Use schema validation before submission"
+      - "Validate JSON with jq or similar tools"
+      - "Reference OpenAPI spec for required fields and formats"
+    related_errors: [422]
+
+  401:
+    name: Unauthorized
+    description: Authentication credentials are missing or invalid
+    common_causes:
+      - "Missing Authorization header"
+      - "Expired API token"
+      - "Invalid API token format"
+      - "Token revoked or disabled"
+    diagnostic_steps:
+      - step: 1
+        action: "Check Authorization header"
+        description: "Verify Authorization header is present and uses correct format"
+      - step: 2
+        action: "Validate token format"
+        description: "Ensure token starts with correct prefix (APIToken, Bearer)"
+      - step: 3
+        action: "Check token expiry"
+        command: "Check token creation date in console"
+        description: "Verify token has not expired"
+      - step: 4
+        action: "Test with fresh token"
+        description: "Generate new API token and retry"
+    prevention:
+      - "Store tokens securely in environment variables"
+      - "Implement token refresh logic"
+      - "Monitor token expiry dates"
+      - "Use service accounts for automation"
+    related_errors: [403]
+
+  403:
+    name: Forbidden
+    description: Authentication succeeded but authorization denied
+    common_causes:
+      - "Insufficient role permissions"
+      - "Resource outside allowed namespaces"
+      - "Operation not permitted for user type"
+      - "Tenant-level restrictions"
+    diagnostic_steps:
+      - step: 1
+        action: "Check user roles"
+        command: "GET /api/web/custom/namespaces/{namespace}/whoami"
+        description: "Verify current user's role assignments"
+      - step: 2
+        action: "Verify namespace access"
+        description: "Confirm user has access to target namespace"
+      - step: 3
+        action: "Check resource permissions"
+        description: "Verify user has permission for specific resource type"
+      - step: 4
+        action: "Review RBAC policies"
+        description: "Audit role-based access control configuration"
+    prevention:
+      - "Request appropriate role assignments"
+      - "Verify RBAC policies before operations"
+      - "Use least privilege access principles"
+    related_errors: [401]
+
+  404:
+    name: Not Found
+    description: The requested resource does not exist
+    common_causes:
+      - "Resource was deleted"
+      - "Incorrect resource name or ID"
+      - "Wrong namespace specified"
+      - "Typo in resource path"
+    diagnostic_steps:
+      - step: 1
+        action: "List resources"
+        command: "GET /api/.../namespaces/{namespace}/{resource_type}"
+        description: "List all resources of this type to verify existence"
+      - step: 2
+        action: "Check namespace"
+        description: "Verify operating in correct namespace"
+      - step: 3
+        action: "Verify resource name"
+        description: "Check for typos in resource name"
+      - step: 4
+        action: "Check deletion status"
+        description: "Verify resource was not recently deleted"
+    prevention:
+      - "List resources before attempting operations"
+      - "Use tab completion or autocomplete"
+      - "Implement existence checks in scripts"
+    related_errors: [410]
+
+  409:
+    name: Conflict
+    description: The request conflicts with current resource state
+    common_causes:
+      - "Resource with same name already exists"
+      - "Concurrent modification detected"
+      - "Resource in transitional state"
+      - "Dependency conflict"
+    diagnostic_steps:
+      - step: 1
+        action: "Check resource existence"
+        command: "GET /api/.../namespaces/{namespace}/{resource_type}/{name}"
+        description: "Verify if resource already exists"
+      - step: 2
+        action: "Check resource state"
+        description: "Verify resource is not in a transitional state"
+      - step: 3
+        action: "Review dependencies"
+        description: "Check for conflicting dependent resources"
+      - step: 4
+        action: "Use unique naming"
+        description: "Try with a different resource name"
+    prevention:
+      - "Check existence before creation"
+      - "Use unique naming conventions"
+      - "Implement retry logic with backoff"
+      - "Add timestamps or UUIDs to names"
+    related_errors: [423]
+
+  422:
+    name: Unprocessable Entity
+    description: The request is well-formed but contains semantic errors
+    common_causes:
+      - "Business logic validation failure"
+      - "Invalid resource configuration"
+      - "Incompatible field combinations"
+      - "Referenced resources don't meet requirements"
+    diagnostic_steps:
+      - step: 1
+        action: "Review error details"
+        description: "Check response body for specific validation errors"
+      - step: 2
+        action: "Validate configuration"
+        description: "Compare configuration against documentation requirements"
+      - step: 3
+        action: "Check dependencies"
+        description: "Verify referenced resources meet all requirements"
+      - step: 4
+        action: "Review constraints"
+        description: "Check field-level constraints and requirements"
+    prevention:
+      - "Use configuration templates"
+      - "Validate against OpenAPI spec"
+      - "Review minimum configuration requirements"
+    related_errors: [400]
+
+  429:
+    name: Too Many Requests
+    description: Rate limit exceeded
+    common_causes:
+      - "Too many requests in time window"
+      - "Batch operations without delays"
+      - "Parallel operations exceeding limits"
+      - "Shared rate limit pool exhausted"
+    diagnostic_steps:
+      - step: 1
+        action: "Check Retry-After header"
+        description: "Note the suggested wait time from response headers"
+      - step: 2
+        action: "Review request rate"
+        description: "Count requests made in recent time window"
+      - step: 3
+        action: "Implement backoff"
+        description: "Add exponential backoff between requests"
+    prevention:
+      - "Implement exponential backoff"
+      - "Add delays between batch operations"
+      - "Use parallel request limits"
+      - "Cache responses where appropriate"
+    related_errors: [503]
+
+  # 5xx Server Errors
+  500:
+    name: Internal Server Error
+    description: An unexpected server error occurred
+    common_causes:
+      - "Temporary service issue"
+      - "Bug in request handling"
+      - "Backend service failure"
+      - "Resource constraint"
+    diagnostic_steps:
+      - step: 1
+        action: "Retry request"
+        description: "Wait a moment and retry the request"
+      - step: 2
+        action: "Check service status"
+        description: "Verify F5 XC service health status"
+      - step: 3
+        action: "Simplify request"
+        description: "Try with minimal configuration"
+      - step: 4
+        action: "Contact support"
+        description: "If persistent, open support ticket with request ID"
+    prevention:
+      - "Implement retry logic"
+      - "Monitor service status pages"
+      - "Use health check endpoints"
+    related_errors: [502, 503]
+
+  502:
+    name: Bad Gateway
+    description: Upstream service returned invalid response
+    common_causes:
+      - "Upstream service unavailable"
+      - "Network connectivity issues"
+      - "Timeout from backend services"
+    diagnostic_steps:
+      - step: 1
+        action: "Retry request"
+        description: "Wait and retry the request"
+      - step: 2
+        action: "Check connectivity"
+        description: "Verify network connectivity to API endpoint"
+      - step: 3
+        action: "Check service status"
+        description: "Verify F5 XC service availability"
+    prevention:
+      - "Implement retry logic with backoff"
+      - "Use multiple endpoints for redundancy"
+    related_errors: [500, 503]
+
+  503:
+    name: Service Unavailable
+    description: Service is temporarily unavailable
+    common_causes:
+      - "Service maintenance"
+      - "Overload condition"
+      - "Deployment in progress"
+      - "Regional outage"
+    diagnostic_steps:
+      - step: 1
+        action: "Check Retry-After header"
+        description: "Note suggested retry time if present"
+      - step: 2
+        action: "Wait and retry"
+        description: "Implement exponential backoff"
+      - step: 3
+        action: "Check status page"
+        description: "Verify service status for maintenance windows"
+    prevention:
+      - "Implement circuit breaker pattern"
+      - "Subscribe to status page updates"
+      - "Build in retry logic with backoff"
+    related_errors: [500, 502]
+
+  504:
+    name: Gateway Timeout
+    description: Request timed out waiting for response
+    common_causes:
+      - "Long-running operation"
+      - "Backend overloaded"
+      - "Network latency issues"
+      - "Large payload processing"
+    diagnostic_steps:
+      - step: 1
+        action: "Reduce payload size"
+        description: "Try with smaller request payload"
+      - step: 2
+        action: "Check operation status"
+        description: "For async operations, check status separately"
+      - step: 3
+        action: "Retry with longer timeout"
+        description: "If client-controlled, increase timeout"
+    prevention:
+      - "Use pagination for large requests"
+      - "Break large operations into smaller batches"
+      - "Use async operation patterns"
+    related_errors: [408, 503]
+
+# Error patterns for specific resource types
+resource_errors:
+  http_loadbalancer:
+    common_patterns:
+      - error_code: 400
+        pattern: "origin_pool.*not found"
+        resolution: "Create the referenced origin pool before creating the load balancer"
+      - error_code: 400
+        pattern: "certificate.*invalid"
+        resolution: "Verify certificate format and upload a valid certificate first"
+      - error_code: 409
+        pattern: "already exists"
+        resolution: "Use a unique name or delete the existing load balancer"
+
+  origin_pool:
+    common_patterns:
+      - error_code: 400
+        pattern: "invalid port"
+        resolution: "Specify a valid port number between 1-65535"
+      - error_code: 400
+        pattern: "invalid.*address"
+        resolution: "Verify IP address format or DNS name resolution"
+
+  waf:
+    common_patterns:
+      - error_code: 400
+        pattern: "invalid rule"
+        resolution: "Validate WAF rule syntax against rule specification"
+      - error_code: 409
+        pattern: "already attached"
+        resolution: "Detach existing WAF policy before attaching new one"
+
+  dns_zone:
+    common_patterns:
+      - error_code: 400
+        pattern: "invalid record"
+        resolution: "Verify DNS record format matches record type requirements"
+      - error_code: 409
+        pattern: "zone exists"
+        resolution: "Use existing zone or delete before recreation"

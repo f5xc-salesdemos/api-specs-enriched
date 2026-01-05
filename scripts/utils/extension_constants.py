@@ -33,6 +33,11 @@ X_F5XC_DISCOVERED_AT = "x-f5xc-discovered-at"
 X_F5XC_API_URL = "x-f5xc-api-url"
 X_F5XC_RESPONSE_TIME_MS = "x-f5xc-response-time-ms"
 
+# Domain-level extensions for operational knowledge (Issue #314)
+X_F5XC_BEST_PRACTICES = "x-f5xc-best-practices"
+X_F5XC_GUIDED_WORKFLOWS = "x-f5xc-guided-workflows"
+X_F5XC_ACRONYMS = "x-f5xc-acronyms"
+
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
 # =============================================================================
@@ -66,6 +71,11 @@ X_F5XC_REQUIRED_FIELDS = "x-f5xc-required-fields"
 X_F5XC_DANGER_LEVEL = "x-f5xc-danger-level"
 X_F5XC_CONFIRMATION_REQUIRED = "x-f5xc-confirmation-required"
 X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
+
+# Discovery-derived extensions for live API behavior (Issue #314)
+X_F5XC_DISCOVERED_RESPONSE_TIME = "x-f5xc-discovered-response-time"
+X_F5XC_DISCOVERED_RATE_LIMITS = "x-f5xc-discovered-rate-limits"
+X_F5XC_DISCOVERED_ERROR_CATALOG = "x-f5xc-discovered-error-catalog"
 
 # =============================================================================
 # INDEX-LEVEL EXTENSIONS (index.json metadata)
@@ -121,6 +131,10 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_DISCOVERED_AT,
         X_F5XC_API_URL,
         X_F5XC_RESPONSE_TIME_MS,
+        # Domain-level (Issue #314)
+        X_F5XC_BEST_PRACTICES,
+        X_F5XC_GUIDED_WORKFLOWS,
+        X_F5XC_ACRONYMS,
         # Schema-level
         X_F5XC_MINIMUM_CONFIGURATION,
         X_F5XC_NAMESPACE_SCOPE,
@@ -143,6 +157,10 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_DANGER_LEVEL,
         X_F5XC_CONFIRMATION_REQUIRED,
         X_F5XC_SIDE_EFFECTS,
+        # Discovery-derived (Issue #314)
+        X_F5XC_DISCOVERED_RESPONSE_TIME,
+        X_F5XC_DISCOVERED_RATE_LIMITS,
+        X_F5XC_DISCOVERED_ERROR_CATALOG,
         # Index-level
         X_F5XC_CATEGORY,
         X_F5XC_PRIMARY_RESOURCES,

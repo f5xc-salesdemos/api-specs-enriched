@@ -1,6 +1,7 @@
 """Utility modules for F5 XC API enrichment."""
 
 from .acronyms import AcronymNormalizer
+from .best_practices_enricher import BestPracticesEnricher
 from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, BrandingValidator
 from .consistency_validator import ConsistencyValidator
 from .constraint_analyzer import ConstraintAnalyzer
@@ -12,10 +13,12 @@ from .description_structure import DescriptionStructureTransformer
 from .description_validator import DescriptionValidator
 from .discovery_enricher import DiscoveryEnricher
 from .domain_categorizer import DomainCategorizer, categorize_spec
+from .error_resolution_enricher import ErrorResolutionEnricher
 from .external_docs_enricher import ExternalDocsEnricher
 from .field_description_enricher import FieldDescriptionEnricher
 from .field_metadata_enricher import FieldMetadataEnricher
 from .grammar import GrammarImprover
+from .guided_workflow_enricher import GuidedWorkflowEnricher
 from .minimum_configuration_enricher import MinimumConfigurationEnricher
 from .namespace_scope_enricher import NamespaceScopeEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
@@ -26,6 +29,7 @@ from .validation_enricher import ValidationEnricher
 
 __all__ = [
     "AcronymNormalizer",
+    "BestPracticesEnricher",
     "BrandingNormalizer",
     "BrandingStats",
     "BrandingTransformer",
@@ -40,10 +44,12 @@ __all__ = [
     "DescriptionValidator",
     "DiscoveryEnricher",
     "DomainCategorizer",
+    "ErrorResolutionEnricher",
     "ExternalDocsEnricher",
     "FieldDescriptionEnricher",
     "FieldMetadataEnricher",
     "GrammarImprover",
+    "GuidedWorkflowEnricher",
     "MinimumConfigurationEnricher",
     "NamespaceScopeEnricher",
     "OperationMetadataEnricher",

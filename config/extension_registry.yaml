@@ -7,17 +7,18 @@
 #
 # Consumers: f5xc-api-mcp, f5xc-xcsh, vscode-f5xc-tools
 #
-# Version: 2.0.4
-# Issue: #292
-# Last Updated: 2026-01-05
+# Version: 2.1.0
+# Issue: #314
+# Last Updated: 2026-01-04
 #
 # History:
 # - v2.0.0 (2026-01-04): Initial x-f5xc-* namespace migration (#292)
 # - v2.0.4 (2026-01-05): Removed x-f5xc-aliases, x-f5xc-cli-aliases (#306)
+# - v2.1.0 (2026-01-04): Added best practices, guided workflows, acronyms, and discovery extensions (#314)
 #
 # All extensions are now unified under x-f5xc-* namespace.
 
-version: "2.0"
+version: "2.1"
 namespace: "x-f5xc-"
 
 # =============================================================================
@@ -85,6 +86,41 @@ spec_level:
     purpose: Response time in milliseconds during discovery
     consumers: [discovery]
     added_in: "3.0.0"
+
+  x-f5xc-best-practices:
+    type: object
+    purpose: Domain-specific operational knowledge and guidance
+    consumers: [mcp, cli, ide, docs]
+    properties:
+      common_errors: "Array of common error scenarios with resolutions"
+      security_notes: "Security best practices for the domain"
+      performance_tips: "Performance optimization recommendations"
+    added_in: "3.1.0"
+    issue: "#314"
+
+  x-f5xc-guided-workflows:
+    type: array
+    items: object
+    purpose: Step-by-step deployment workflows for the domain
+    consumers: [mcp, cli, ide]
+    properties:
+      id: "Unique workflow identifier"
+      name: "Human-readable workflow name"
+      description: "Workflow purpose and outcome"
+      steps: "Array of sequential steps with actions"
+    added_in: "3.1.0"
+    issue: "#314"
+
+  x-f5xc-acronyms:
+    type: object
+    purpose: Domain-specific acronym expansions and terminology
+    consumers: [mcp, ide, docs]
+    example:
+      WAAP: "Web Application and API Protection"
+      RE: "Regional Edge"
+      CE: "Customer Edge"
+    added_in: "3.1.0"
+    issue: "#314"
 
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
@@ -249,6 +285,46 @@ operation_level:
     consumers: [cli, mcp]
     example: ["Deletes associated origin pools", "Invalidates CDN cache"]
     migrated_from: "x-ves-side-effects"
+
+  x-f5xc-discovered-response-time:
+    type: object
+    purpose: Statistical response time data from live API discovery
+    consumers: [mcp, cli, docs]
+    properties:
+      p50: "50th percentile response time in milliseconds"
+      p95: "95th percentile response time in milliseconds"
+      p99: "99th percentile response time in milliseconds"
+      sample_count: "Number of samples collected"
+      last_measured: "ISO 8601 timestamp of last measurement"
+    added_in: "3.1.0"
+    issue: "#314"
+
+  x-f5xc-discovered-rate-limits:
+    type: object
+    purpose: Rate limiting behavior discovered from live API
+    consumers: [mcp, cli]
+    properties:
+      requests_per_minute: "Maximum requests per minute"
+      requests_per_second: "Maximum requests per second"
+      burst_limit: "Burst capacity if applicable"
+      retry_after_header: "Whether API returns Retry-After header"
+      discovered_at: "ISO 8601 timestamp of discovery"
+    added_in: "3.1.0"
+    issue: "#314"
+
+  x-f5xc-discovered-error-catalog:
+    type: array
+    items: object
+    purpose: Catalog of error responses discovered from live API
+    consumers: [mcp, cli, ide]
+    properties:
+      status_code: "HTTP status code"
+      error_type: "Error classification"
+      message_pattern: "Common message patterns"
+      resolution: "Suggested resolution"
+      frequency: "How often this error was encountered"
+    added_in: "3.1.0"
+    issue: "#314"
 
 # =============================================================================
 # INDEX-LEVEL EXTENSIONS (index.json metadata)
