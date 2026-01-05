@@ -309,20 +309,9 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = readonly_enricher.enrich_spec(spec)
     readonly_stats = readonly_enricher.get_stats()
 
-    # 17. Best practices enrichment (add x-f5xc-best-practices to info section)
-    # Note: Domain is determined from spec's x-f5xc-cli-domain or categorized later
-    best_practices_enricher = BestPracticesEnricher()
-    # Get domain from spec info if available (may be added during merge)
-    spec_domain = spec.get("info", {}).get("x-f5xc-cli-domain", "")
-    if spec_domain:
-        spec = best_practices_enricher.enrich_spec(spec, domain=spec_domain)
-    best_practices_stats = best_practices_enricher.get_stats()
-
-    # 18. Guided workflow enrichment (add x-f5xc-guided-workflows to info section)
-    guided_workflow_enricher = GuidedWorkflowEnricher()
-    if spec_domain:
-        spec = guided_workflow_enricher.enrich_spec(spec, domain=spec_domain)
-    guided_workflow_stats = guided_workflow_enricher.get_stats()
+    # Note: Best practices and guided workflow enrichment moved to merge_specs_by_domain()
+    # These enrichers require domain context which is only available after merging.
+    # See Issue #314 for details.
 
     # Close grammar improver resources
     grammar_improver.close()
@@ -347,8 +336,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "readonly_fields_marked": readonly_stats.get("total_fields_marked", 0),
         "readonly_metadata_schemas": readonly_stats.get("metadata_schemas_matched", 0),
         "readonly_objectref_schemas": readonly_stats.get("object_ref_schemas_matched", 0),
-        "best_practices_enriched": best_practices_stats.get("specs_enriched", 0),
-        "guided_workflows_added": guided_workflow_stats.get("specs_enriched", 0),
+        # Note: best_practices and guided_workflows stats tracked in merge_specs_by_domain()
     }
 
 
@@ -1048,10 +1036,17 @@ def merge_specs_by_domain(
         "schemas": 0,
         "requestBodies": 0,
         "operationIds_deduplicated": 0,
+        "best_practices_enriched": 0,
+        "guided_workflows_added": 0,
     }
 
     # Load description enricher for domain-specific descriptions
     description_enricher = DescriptionEnricher()
+
+    # Load enrichers that require domain context (Issue #314)
+    # These run after merging when domain is known
+    best_practices_enricher = BestPracticesEnricher()
+    guided_workflow_enricher = GuidedWorkflowEnricher()
 
     for domain, spec_list in sorted(domain_specs.items()):
         domain_title = domain.replace("_", " ").title()
@@ -1174,6 +1169,23 @@ def merge_specs_by_domain(
 
         # Add spec-level domain metadata (idempotent)
         add_domain_metadata_to_spec(merged_spec, domain)
+
+        # Apply domain-specific enrichments now that domain is known (Issue #314)
+        # Best practices: common errors, security notes, performance tips
+        merged_spec = best_practices_enricher.enrich_spec(merged_spec, domain=domain)
+        bp_stats = best_practices_enricher.get_stats()
+        stats["best_practices_enriched"] = max(
+            stats["best_practices_enriched"],
+            bp_stats.get("specs_enriched", 0),
+        )
+
+        # Guided workflows: multi-step deployment workflows
+        merged_spec = guided_workflow_enricher.enrich_spec(merged_spec, domain=domain)
+        gw_stats = guided_workflow_enricher.get_stats()
+        stats["guided_workflows_added"] = max(
+            stats["guided_workflows_added"],
+            gw_stats.get("specs_enriched", 0),
+        )
 
         merged[domain] = merged_spec
         stats["domains"] += 1
@@ -1445,8 +1457,7 @@ def run_pipeline(
                 stats.descriptions_generated += enrich_stats.get("descriptions_generated", 0)
                 stats.consistency_issues += enrich_stats.get("consistency_issues", 0)
                 stats.minimum_configs_added += enrich_stats.get("minimum_configs_added", 0)
-                stats.best_practices_enriched += enrich_stats.get("best_practices_enriched", 0)
-                stats.guided_workflows_added += enrich_stats.get("guided_workflows_added", 0)
+                # Note: best_practices and guided_workflows stats come from merge_stats
 
                 # Step 2: Normalize (in memory)
                 spec, norm_count = normalize_spec(spec, config)
@@ -1487,6 +1498,8 @@ def run_pipeline(
         stats.domains_created = merge_stats["domains"]
         stats.paths_merged = merge_stats["paths"]
         stats.schemas_merged = merge_stats["schemas"]
+        stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
+        stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
 
         # Save domain specs
         for domain, spec in domain_specs.items():
