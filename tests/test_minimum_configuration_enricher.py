@@ -30,7 +30,6 @@ class TestMinimumConfigurationStats:
         assert stats.example_jsons_generated == 0
         assert stats.example_curls_generated == 0
         assert stats.cli_domains_added == 0
-        assert stats.cli_aliases_added == 0
         assert stats.errors == []
 
     def test_stats_to_dict(self):
@@ -216,21 +215,6 @@ class TestExampleGeneration:
             example_json = resource_config.get("example_json", "")
             assert example_json, f"No example_json for {resource}"
             assert "metadata" in example_json, f"Invalid JSON structure for {resource}"
-
-    def test_cli_aliases_configured(self):
-        """Test that CLI aliases are explicitly configured."""
-        enricher = MinimumConfigurationEnricher()
-        for resource in [
-            "http_loadbalancer",
-            "origin_pool",
-            "tcp_loadbalancer",
-            "healthcheck",
-            "app_firewall",
-        ]:
-            resource_config = enricher.resources.get(resource, {})
-            cli_config = resource_config.get("cli", {})
-            aliases = cli_config.get("aliases", [])
-            assert isinstance(aliases, list), f"CLI aliases not configured for {resource}"
 
 
 class TestDomainMapping:

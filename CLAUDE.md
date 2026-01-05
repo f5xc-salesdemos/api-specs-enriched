@@ -235,7 +235,7 @@ make pre-commit-run      # Run all hooks manually
 
 **Features**:
 
-Four OpenAPI extensions are added to schemas and specs:
+Three OpenAPI extensions are added to schemas and specs:
 
 1. **x-f5xc-minimum-configuration** (schema-level)
    - Description of minimum viable configuration
@@ -254,11 +254,6 @@ Four OpenAPI extensions are added to schemas and specs:
    - Context-specific field requirements
    - Flags: minimum_config, create, update, read
    - Enables intelligent configuration generation
-
-4. **x-f5xc-cli-aliases** (schema-level)
-   - Alternative names for resources
-   - Supports CLI command flexibility
-   - Explicitly configured per resource
 
 **Architecture**:
 

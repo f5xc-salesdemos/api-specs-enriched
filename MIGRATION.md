@@ -30,7 +30,6 @@ This release migrates all OpenAPI extension fields from mixed namespaces (`x-ves
 | `complexity` | `x-f5xc-complexity` | |
 | `requires_tier` | `x-f5xc-requires-tier` | |
 | `is_preview` | `x-f5xc-is-preview` | |
-| `aliases` | `x-f5xc-aliases` | |
 | `use_cases` | `x-f5xc-use-cases` | |
 | `icon` | `x-f5xc-icon` | |
 | `logo_svg` | `x-f5xc-logo-svg` | |
@@ -51,7 +50,6 @@ This release migrates all OpenAPI extension fields from mixed namespaces (`x-ves
 | Old Field | New Field |
 |-----------|-----------|
 | `x-ves-cli-domain` | `x-f5xc-cli-domain` |
-| `x-ves-cli-aliases` | `x-f5xc-cli-aliases` |
 | `x-ves-minimum-configuration` | `x-f5xc-minimum-configuration` |
 | `x-ves-namespace-scope` | `x-f5xc-namespace-scope` |
 | `x-ves-displayorder` | `x-f5xc-displayorder` |
