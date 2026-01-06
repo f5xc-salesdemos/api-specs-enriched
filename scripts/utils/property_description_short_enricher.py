@@ -1,11 +1,12 @@
-"""Property Short Description Enricher for OpenAPI specifications.
+"""Property Description Enricher for OpenAPI specifications.
 
-Generates concise 80-150 character descriptions for schema properties
-with long descriptions (>300 chars) to support Terraform provider documentation.
+Generates concise descriptions for schema properties with long descriptions (>300 chars):
+- Short tier: 80-150 characters for tooltips and Terraform descriptions
+- Medium tier: 150-300 characters for extended tooltips, CLI help, and summaries
 
 Follows Azure/AWS Terraform provider conventions:
 - Imperative tone: "Specifies...", "Enables...", "Configures..."
-- Single sentence, no code examples
+- Single sentence (short) or 2-3 sentences (medium), no code examples
 - Includes defaults and constraints inline
 
 Issue #330: https://github.com/robinmordasiewicz/f5xc-api-enriched/issues/330
@@ -19,15 +20,16 @@ from typing import Any, ClassVar
 
 import yaml
 
-from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_SHORT
+from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_MEDIUM, X_F5XC_DESCRIPTION_SHORT
 
 
 @dataclass
 class PropertyDescriptionShortStats:
-    """Statistics from property short description enrichment."""
+    """Statistics from property description enrichment (short and medium tiers)."""
 
     fields_processed: int = 0
     short_descriptions_added: int = 0
+    medium_descriptions_added: int = 0
     descriptions_from_extraction: int = 0
     descriptions_from_config: int = 0
     skipped_already_short: int = 0
@@ -39,6 +41,7 @@ class PropertyDescriptionShortStats:
         return {
             "fields_processed": self.fields_processed,
             "short_descriptions_added": self.short_descriptions_added,
+            "medium_descriptions_added": self.medium_descriptions_added,
             "descriptions_from_extraction": self.descriptions_from_extraction,
             "descriptions_from_config": self.descriptions_from_config,
             "skipped_already_short": self.skipped_already_short,
@@ -52,8 +55,12 @@ class EnricherSettings:
     """Configuration settings for the enricher."""
 
     min_source_length: int = 300
+    # Short tier (80-150 chars)
     target_min_length: int = 80
     target_max_length: int = 150
+    # Medium tier (150-300 chars)
+    medium_min_length: int = 150
+    medium_max_length: int = 300
     preserve_existing: bool = True
 
 
@@ -116,8 +123,12 @@ class PropertyDescriptionShortEnricher:
 
         self.config_path = config_path
         self.settings = EnricherSettings()
+        # Short tier overrides and patterns
         self.overrides: dict[str, str] = {}
         self.patterns: list[PatternTemplate] = []
+        # Medium tier overrides and patterns
+        self.medium_overrides: dict[str, str] = {}
+        self.medium_patterns: list[PatternTemplate] = []
         self.exclusions: list[re.Pattern[str]] = []
         self.stats = PropertyDescriptionShortStats()
         self._config_version: str = "1.0.0"
@@ -136,23 +147,41 @@ class PropertyDescriptionShortEnricher:
 
             self._config_version = config.get("version", "1.0.0")
 
-            # Load settings
+            # Load settings (including medium tier)
             settings = config.get("settings", {})
             self.settings = EnricherSettings(
                 min_source_length=settings.get("min_source_length", 300),
                 target_min_length=settings.get("target_min_length", 80),
                 target_max_length=settings.get("target_max_length", 150),
+                medium_min_length=settings.get("medium_min_length", 150),
+                medium_max_length=settings.get("medium_max_length", 300),
                 preserve_existing=settings.get("preserve_existing", True),
             )
 
-            # Load overrides
+            # Load short tier overrides
             self.overrides = config.get("overrides", {})
 
-            # Compile patterns
+            # Load medium tier overrides
+            self.medium_overrides = config.get("medium_overrides", {})
+
+            # Compile short tier patterns
             for pattern_config in config.get("patterns", []):
                 try:
                     compiled = re.compile(pattern_config["pattern"])
                     self.patterns.append(
+                        PatternTemplate(
+                            pattern=compiled,
+                            template=pattern_config["template"],
+                        ),
+                    )
+                except re.error:  # noqa: PERF203
+                    pass  # Skip invalid patterns
+
+            # Compile medium tier patterns
+            for pattern_config in config.get("medium_patterns", []):
+                try:
+                    compiled = re.compile(pattern_config["pattern"])
+                    self.medium_patterns.append(
                         PatternTemplate(
                             pattern=compiled,
                             template=pattern_config["template"],
@@ -248,7 +277,7 @@ class PropertyDescriptionShortEnricher:
         prop_name: str,
         prop: dict[str, Any],
     ) -> None:
-        """Process a single property for short description enrichment.
+        """Process a single property for description enrichment (short and medium tiers).
 
         Args:
             schema_name: Name of the parent schema
@@ -268,23 +297,34 @@ class PropertyDescriptionShortEnricher:
             self.stats.skipped_already_short += 1
             return
 
-        # Skip if already has short description and preserve_existing is True
-        if self.settings.preserve_existing and X_F5XC_DESCRIPTION_SHORT in prop:
-            self.stats.skipped_has_extension += 1
-            return
-
         # Check exclusions
         full_path = f"{schema_name}.{prop_name}"
         for exclusion in self.exclusions:
             if exclusion.match(full_path):
                 return
 
-        # Generate short description
-        short_desc = self._generate_short_description(schema_name, prop_name, description)
+        # Track if both extensions already exist
+        has_short = X_F5XC_DESCRIPTION_SHORT in prop
+        has_medium = X_F5XC_DESCRIPTION_MEDIUM in prop
 
-        if short_desc:
-            prop[X_F5XC_DESCRIPTION_SHORT] = short_desc
-            self.stats.short_descriptions_added += 1
+        # Skip if both already exist and preserve_existing is True
+        if self.settings.preserve_existing and has_short and has_medium:
+            self.stats.skipped_has_extension += 1
+            return
+
+        # Generate short description if not already present (or not preserving)
+        if not (self.settings.preserve_existing and has_short):
+            short_desc = self._generate_short_description(schema_name, prop_name, description)
+            if short_desc:
+                prop[X_F5XC_DESCRIPTION_SHORT] = short_desc
+                self.stats.short_descriptions_added += 1
+
+        # Generate medium description if not already present (or not preserving)
+        if not (self.settings.preserve_existing and has_medium):
+            medium_desc = self._generate_medium_description(schema_name, prop_name, description)
+            if medium_desc:
+                prop[X_F5XC_DESCRIPTION_MEDIUM] = medium_desc
+                self.stats.medium_descriptions_added += 1
 
     def _generate_short_description(
         self,
@@ -327,6 +367,115 @@ class PropertyDescriptionShortEnricher:
             return short_desc
 
         return None
+
+    def _generate_medium_description(
+        self,
+        schema_name: str,
+        prop_name: str,
+        description: str,
+    ) -> str | None:
+        """Generate a medium description for a property.
+
+        Uses priority order:
+        1. Configuration override (medium_overrides)
+        2. Pattern-based template (medium_patterns)
+        3. Multi-sentence extraction with style transformation
+
+        Args:
+            schema_name: Name of the parent schema
+            prop_name: Name of the property
+            description: Original long description
+
+        Returns:
+            Medium description (150-300 chars) or None if generation failed
+        """
+        full_path = f"{schema_name}.{prop_name}"
+
+        # 1. Check for medium configuration override
+        if full_path in self.medium_overrides:
+            return self.medium_overrides[full_path]
+
+        # 2. Check medium pattern-based templates
+        for pattern_template in self.medium_patterns:
+            if pattern_template.pattern.search(prop_name):
+                return pattern_template.template
+
+        # 3. Extract and transform from description (multiple sentences)
+        return self._extract_and_transform_medium(description)
+
+    def _extract_and_transform_medium(self, description: str) -> str | None:
+        """Extract multiple sentences and apply style transformations for medium tier.
+
+        Args:
+            description: Original long description
+
+        Returns:
+            Transformed medium description or None
+        """
+        # Clean the description first
+        cleaned = self._clean_description(description)
+
+        # Extract up to 3 sentences for medium tier
+        sentences = self._extract_multiple_sentences(cleaned, max_count=3)
+        if not sentences:
+            return None
+
+        # Combine sentences
+        combined = " ".join(sentences)
+
+        # Apply style transformations
+        transformed = self._apply_style_rules(combined)
+
+        # Validate and adjust length
+        if len(transformed) < self.settings.medium_min_length:
+            # Try to get more sentences
+            additional = self._extract_multiple_sentences(cleaned, max_count=5)
+            if additional and len(additional) > len(sentences):
+                combined = " ".join(additional)
+                transformed = self._apply_style_rules(combined)
+
+        # Truncate if too long
+        if len(transformed) > self.settings.medium_max_length:
+            transformed = self._smart_truncate(transformed, self.settings.medium_max_length)
+
+        # Final validation
+        if self.settings.medium_min_length <= len(transformed) <= self.settings.medium_max_length:
+            return transformed
+
+        # If still too short but has reasonable content, return it
+        if transformed and len(transformed) >= 100:
+            return transformed
+
+        return None
+
+    def _extract_multiple_sentences(self, text: str, max_count: int = 3) -> list[str]:
+        """Extract multiple sentences from text.
+
+        Args:
+            text: Input text
+            max_count: Maximum number of sentences to extract
+
+        Returns:
+            List of sentences (may be empty)
+        """
+        if not text:
+            return []
+
+        # Split on sentence boundaries
+        sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", text)
+
+        result = []
+        for i, sentence in enumerate(sentences):
+            if i >= max_count:
+                break
+            stripped = sentence.strip()
+            if stripped:
+                # Ensure it ends with punctuation
+                if stripped[-1] not in ".!?":
+                    stripped += "."
+                result.append(stripped)
+
+        return result
 
     def _extract_and_transform(self, description: str) -> str | None:
         """Extract first sentence and apply style transformations.

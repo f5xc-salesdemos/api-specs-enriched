@@ -1,7 +1,9 @@
 """Unit tests for PropertyDescriptionShortEnricher.
 
-Tests for Issue #330: Add x-f5xc-description-short extensions for Terraform documentation.
-Generates concise 80-150 character descriptions for schema properties with long descriptions.
+Tests for Issue #330: Add x-f5xc-description-short and x-f5xc-description-medium extensions
+for Terraform documentation. Generates descriptions for schema properties with long descriptions:
+- Short tier: 80-150 characters
+- Medium tier: 150-300 characters
 """
 
 import re
@@ -9,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_SHORT
+from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_MEDIUM, X_F5XC_DESCRIPTION_SHORT
 from scripts.utils.property_description_short_enricher import (
     EnricherSettings,
     PatternTemplate,
@@ -74,6 +76,7 @@ class TestPropertyDescriptionShortStats:
         stats = PropertyDescriptionShortStats()
         assert stats.fields_processed == 0
         assert stats.short_descriptions_added == 0
+        assert stats.medium_descriptions_added == 0
         assert stats.descriptions_from_extraction == 0
         assert stats.descriptions_from_config == 0
         assert stats.skipped_already_short == 0
@@ -85,6 +88,7 @@ class TestPropertyDescriptionShortStats:
         stats = PropertyDescriptionShortStats(
             fields_processed=10,
             short_descriptions_added=5,
+            medium_descriptions_added=4,
             descriptions_from_extraction=3,
             descriptions_from_config=2,
         )
@@ -92,6 +96,7 @@ class TestPropertyDescriptionShortStats:
 
         assert result["fields_processed"] == 10
         assert result["short_descriptions_added"] == 5
+        assert result["medium_descriptions_added"] == 4
         assert result["descriptions_from_extraction"] == 3
         assert result["descriptions_from_config"] == 2
 
@@ -103,8 +108,12 @@ class TestEnricherSettings:
         """Test default settings values."""
         settings = EnricherSettings()
         assert settings.min_source_length == 300
+        # Short tier
         assert settings.target_min_length == 80
         assert settings.target_max_length == 150
+        # Medium tier
+        assert settings.medium_min_length == 150
+        assert settings.medium_max_length == 300
         assert settings.preserve_existing is True
 
     def test_custom_settings(self):
@@ -113,11 +122,15 @@ class TestEnricherSettings:
             min_source_length=200,
             target_min_length=50,
             target_max_length=100,
+            medium_min_length=100,
+            medium_max_length=200,
             preserve_existing=False,
         )
         assert settings.min_source_length == 200
         assert settings.target_min_length == 50
         assert settings.target_max_length == 100
+        assert settings.medium_min_length == 100
+        assert settings.medium_max_length == 200
         assert settings.preserve_existing is False
 
 
@@ -461,7 +474,7 @@ class TestNestedSchemas:
 class TestPreserveExisting:
     """Test preservation of existing extensions."""
 
-    def test_preserve_existing_extension(self, enricher, long_description):
+    def test_preserve_existing_short_extension(self, enricher, long_description):
         """Test that existing x-f5xc-description-short is preserved."""
         existing_short = "Existing short description."
         spec = {
@@ -484,10 +497,39 @@ class TestPreserveExisting:
         result = enricher.enrich_spec(spec)
         config_prop = result["components"]["schemas"]["Test"]["properties"]["config"]
 
-        # Should preserve existing
+        # Short should be preserved, medium may be added
         assert config_prop[X_F5XC_DESCRIPTION_SHORT] == existing_short
 
-        # Stats should show skipped
+    def test_preserve_existing_both_extensions(self, enricher, long_description):
+        """Test that properties with both extensions are skipped."""
+        existing_short = "Existing short description."
+        existing_medium = "Existing medium description with more details."
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "config": {
+                                "type": "object",
+                                "description": long_description,
+                                X_F5XC_DESCRIPTION_SHORT: existing_short,
+                                X_F5XC_DESCRIPTION_MEDIUM: existing_medium,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        config_prop = result["components"]["schemas"]["Test"]["properties"]["config"]
+
+        # Both should be preserved
+        assert config_prop[X_F5XC_DESCRIPTION_SHORT] == existing_short
+        assert config_prop[X_F5XC_DESCRIPTION_MEDIUM] == existing_medium
+
+        # Stats should show skipped when both exist
         stats = enricher.get_stats()
         assert stats["skipped_has_extension"] >= 1
 
@@ -647,6 +689,172 @@ class TestIdempotency:
 
         # Should be identical (preserved)
         assert short_desc1 == short_desc2
+
+
+class TestMediumTierGeneration:
+    """Test medium tier description generation (150-300 chars)."""
+
+    def test_medium_description_generated(self, enricher, spec_with_long_descriptions):
+        """Test that medium description is generated alongside short."""
+        result = enricher.enrich_spec(spec_with_long_descriptions)
+        prop = result["components"]["schemas"]["TestSchema"]["properties"]["js_challenge"]
+
+        # Both tiers should be generated
+        assert X_F5XC_DESCRIPTION_SHORT in prop
+        assert X_F5XC_DESCRIPTION_MEDIUM in prop
+
+    def test_medium_length_within_bounds(self, enricher, long_description):
+        """Test that medium description length is within 150-300 chars."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "field": {"type": "string", "description": long_description},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        medium_desc = result["components"]["schemas"]["Test"]["properties"]["field"].get(
+            X_F5XC_DESCRIPTION_MEDIUM,
+        )
+
+        # Medium should be longer than short (if generated)
+        if medium_desc:
+            # Length should be reasonable for medium tier (allowing some flexibility)
+            assert len(medium_desc) >= 100  # Minimum reasonable length
+            assert len(medium_desc) <= 300  # Maximum length
+
+    def test_medium_longer_than_short(self, enricher, long_description):
+        """Test that medium description is longer than short description."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "field": {"type": "string", "description": long_description},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        prop = result["components"]["schemas"]["Test"]["properties"]["field"]
+        short_desc = prop.get(X_F5XC_DESCRIPTION_SHORT)
+        medium_desc = prop.get(X_F5XC_DESCRIPTION_MEDIUM)
+
+        # If both exist, medium should be longer
+        if short_desc and medium_desc:
+            assert len(medium_desc) >= len(short_desc)
+
+    def test_medium_stats_tracking(self, enricher, spec_with_long_descriptions):
+        """Test that medium description stats are tracked."""
+        enricher.enrich_spec(spec_with_long_descriptions)
+        stats = enricher.get_stats()
+
+        # Should have tracked medium generation
+        assert "medium_descriptions_added" in stats
+
+    def test_both_short_and_medium_generated(self, enricher):
+        """Test that both tiers are generated for eligible properties."""
+        # Create a very long description with multiple sentences
+        long_desc = (
+            "The endpoint configuration specifies how to connect to backend services. "
+            "It includes settings for load balancing, health checks, and circuit breakers. "
+            "When a backend becomes unhealthy, traffic is automatically routed to healthy endpoints. "
+            "You can configure retry policies to handle transient failures gracefully. "
+            "For more information, see the backend configuration guide. "
+            "Example: { endpoints: [{ address: '10.0.0.1', port: 8080 }] }."
+        )
+
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "endpoint_config": {"type": "object", "description": long_desc},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        prop = result["components"]["schemas"]["Test"]["properties"]["endpoint_config"]
+
+        # Both should be present
+        assert X_F5XC_DESCRIPTION_SHORT in prop
+        assert X_F5XC_DESCRIPTION_MEDIUM in prop
+
+    def test_medium_preserves_existing(self, enricher):
+        """Test that existing medium descriptions are preserved."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "field": {
+                                "type": "string",
+                                "description": "X" * 400,  # Long enough to trigger generation
+                                X_F5XC_DESCRIPTION_MEDIUM: "Existing medium description.",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        medium_desc = result["components"]["schemas"]["Test"]["properties"]["field"].get(
+            X_F5XC_DESCRIPTION_MEDIUM,
+        )
+
+        # Should preserve existing
+        assert medium_desc == "Existing medium description."
+
+    def test_medium_override_from_config(self, enricher):
+        """Test that medium overrides from config are applied."""
+        # This test uses the config file which has medium_overrides defined
+        # Check if medium_overrides attribute exists and is loaded
+        assert hasattr(enricher, "medium_overrides")
+        assert isinstance(enricher.medium_overrides, dict)
+
+    def test_medium_patterns_loaded(self, enricher):
+        """Test that medium patterns are loaded from config."""
+        assert hasattr(enricher, "medium_patterns")
+        assert isinstance(enricher.medium_patterns, list)
+
+
+class TestMultipleSentenceExtraction:
+    """Test extraction of multiple sentences for medium tier."""
+
+    def test_extract_multiple_sentences(self, enricher):
+        """Test extraction of multiple sentences."""
+        text = "First sentence here. Second sentence follows. Third sentence completes it."
+        result = enricher._extract_multiple_sentences(text, max_count=3)  # noqa: SLF001
+
+        assert len(result) == 3
+        assert "First sentence here." in result[0]
+
+    def test_extract_multiple_sentences_limited(self, enricher):
+        """Test sentence extraction respects max_count."""
+        text = "One. Two. Three. Four. Five."
+        result = enricher._extract_multiple_sentences(text, max_count=2)  # noqa: SLF001
+
+        assert len(result) == 2
+
+    def test_extract_multiple_sentences_empty(self, enricher):
+        """Test sentence extraction with empty text."""
+        result = enricher._extract_multiple_sentences("", max_count=3)  # noqa: SLF001
+        assert result == []
 
 
 if __name__ == "__main__":

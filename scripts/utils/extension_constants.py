@@ -85,6 +85,10 @@ X_F5XC_DISCOVERED_ERROR_CATALOG = "x-f5xc-discovered-error-catalog"
 X_F5XC_CATEGORY = "x-f5xc-category"
 X_F5XC_PRIMARY_RESOURCES = "x-f5xc-primary-resources"
 X_F5XC_CRITICAL_RESOURCES = "x-f5xc-critical-resources"
+
+# Description tiers - used at BOTH index-level (domains) and property-level (Issue #330)
+# - Property level: 80-150 chars (short), 150-300 chars (medium) for properties with >300 char descriptions
+# - Index level: ~60 chars (short), ~150 chars (medium) for domain descriptions
 X_F5XC_DESCRIPTION_SHORT = "x-f5xc-description-short"
 X_F5XC_DESCRIPTION_MEDIUM = "x-f5xc-description-medium"
 X_F5XC_COMPLEXITY = "x-f5xc-complexity"
