@@ -1,25 +1,31 @@
-# Property Short Description Configuration
-# Issue #330: Add x-f5xc-description-short for Terraform documentation
+# Property Description Configuration (Short and Medium Tiers)
+# Issue #330: Add x-f5xc-description-short and x-f5xc-description-medium for Terraform docs
 #
-# Generates concise 80-150 char descriptions for schema properties
-# with long descriptions (>300 chars) following Azure/AWS conventions.
+# Generates descriptions for schema properties with long descriptions (>300 chars):
+# - Short tier: 80-150 chars for tooltips and Terraform descriptions
+# - Medium tier: 150-300 chars for extended tooltips, CLI help, and summaries
+# Following Azure/AWS conventions.
 
-version: "1.0.0"
+version: "1.1.0"
 
 # Generation settings
 settings:
   # Only process descriptions longer than this (chars)
   min_source_length: 300
 
-  # Target length range for generated descriptions
+  # Short tier: Target length range (80-150 chars)
   target_min_length: 80
   target_max_length: 150
 
-  # Never overwrite existing x-f5xc-description-short
+  # Medium tier: Target length range (150-300 chars)
+  medium_min_length: 150
+  medium_max_length: 300
+
+  # Never overwrite existing extensions
   preserve_existing: true
 
-# Manual overrides for high-priority fields
-# Format: "schemaName.propertyName": "Short description"
+# Manual overrides for high-priority fields (short tier)
+# Format: "schemaName.propertyName": "Short description (80-150 chars)"
 overrides:
   # Virtual domain - load balancing
   "schemavirtual_hostCreateSpecType.domains": "List of domain names matched to this virtual host."
@@ -69,7 +75,21 @@ overrides:
   # Common fields across domains
   "protobufAny.type_url": "URL identifying the protocol buffer message type."
 
-# Pattern-based templates
+# Manual overrides for medium tier (150-300 chars)
+# Format: "schemaName.propertyName": "Medium description"
+medium_overrides:
+  # Virtual domain - load balancing (expanded descriptions)
+  "schemavirtual_hostCreateSpecType.domains": >-
+    List of domain names matched to this virtual host for routing incoming requests.
+    Supports wildcard patterns like *.example.com for subdomain matching.
+  "schemavirtual_hostCreateSpecType.routes": >-
+    HTTP routing rules that match incoming requests based on path, headers, or query parameters
+    and forward them to appropriate backend origin pools.
+  "clusterCreateSpecType.endpoint_subsets": >-
+    Configure endpoint groups based on metadata labels for traffic routing.
+    Supports weighted distribution and session affinity across labeled endpoints.
+
+# Pattern-based templates (short tier)
 # These match property names across all schemas
 patterns:
   # Domain and hostname patterns
@@ -155,7 +175,25 @@ patterns:
   - pattern: '\.namespace_selector$'
     template: "Namespace selector for cross-namespace references."
 
-# Exclusions - never generate short descriptions for these
+# Pattern-based templates (medium tier)
+# Extended descriptions for common property patterns
+medium_patterns:
+  - pattern: '\.domains$'
+    template: >-
+      List of domain names for this resource. Supports wildcard patterns like *.example.com
+      for matching all subdomains. Used for routing and traffic distribution.
+
+  - pattern: '\.health_check'
+    template: >-
+      Health check configuration for backend monitoring. Defines probe intervals, timeouts,
+      success thresholds, and protocol-specific checks (HTTP, TCP, gRPC).
+
+  - pattern: '\.routes$'
+    template: >-
+      Routing rules for matching incoming requests based on path, headers, query parameters,
+      or other criteria and forwarding them to appropriate backend services.
+
+# Exclusions - never generate descriptions for these
 # Uses regex patterns matching "schemaName.propertyName"
 exclusions:
   # Protocol buffer internal fields
