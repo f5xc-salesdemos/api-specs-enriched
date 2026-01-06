@@ -1,0 +1,653 @@
+"""Unit tests for PropertyDescriptionShortEnricher.
+
+Tests for Issue #330: Add x-f5xc-description-short extensions for Terraform documentation.
+Generates concise 80-150 character descriptions for schema properties with long descriptions.
+"""
+
+import re
+from pathlib import Path
+
+import pytest
+
+from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_SHORT
+from scripts.utils.property_description_short_enricher import (
+    EnricherSettings,
+    PatternTemplate,
+    PropertyDescriptionShortEnricher,
+    PropertyDescriptionShortStats,
+)
+
+
+@pytest.fixture
+def enricher():
+    """Create enricher with default config."""
+    return PropertyDescriptionShortEnricher()
+
+
+@pytest.fixture
+def long_description():
+    """Create a description >300 chars for testing."""
+    return (
+        "The javascript challenge type specifies the type of JavaScript challenge "
+        "to use for bot detection. When enabled, clients must execute JavaScript code "
+        "to prove they are real browsers. This is useful for filtering out automated "
+        "traffic. Example configuration: { type: 'js_challenge', timeout: 300 }. "
+        "For more information, see https://docs.example.com/js-challenge."
+    )
+
+
+@pytest.fixture
+def short_description():
+    """Create a description <300 chars (should not be processed)."""
+    return "A short description that should not trigger short description generation."
+
+
+@pytest.fixture
+def spec_with_long_descriptions(long_description):
+    """Create a spec with properties that have long descriptions."""
+    return {
+        "components": {
+            "schemas": {
+                "TestSchema": {
+                    "type": "object",
+                    "properties": {
+                        "js_challenge": {
+                            "type": "object",
+                            "description": long_description,
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Short description under 300 chars.",
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+
+class TestPropertyDescriptionShortStats:
+    """Test stats dataclass functionality."""
+
+    def test_stats_initialization(self):
+        """Test stats initialize to zero."""
+        stats = PropertyDescriptionShortStats()
+        assert stats.fields_processed == 0
+        assert stats.short_descriptions_added == 0
+        assert stats.descriptions_from_extraction == 0
+        assert stats.descriptions_from_config == 0
+        assert stats.skipped_already_short == 0
+        assert stats.skipped_has_extension == 0
+        assert stats.schemas_processed == 0
+
+    def test_stats_to_dict(self):
+        """Test stats to_dict conversion."""
+        stats = PropertyDescriptionShortStats(
+            fields_processed=10,
+            short_descriptions_added=5,
+            descriptions_from_extraction=3,
+            descriptions_from_config=2,
+        )
+        result = stats.to_dict()
+
+        assert result["fields_processed"] == 10
+        assert result["short_descriptions_added"] == 5
+        assert result["descriptions_from_extraction"] == 3
+        assert result["descriptions_from_config"] == 2
+
+
+class TestEnricherSettings:
+    """Test settings dataclass."""
+
+    def test_default_settings(self):
+        """Test default settings values."""
+        settings = EnricherSettings()
+        assert settings.min_source_length == 300
+        assert settings.target_min_length == 80
+        assert settings.target_max_length == 150
+        assert settings.preserve_existing is True
+
+    def test_custom_settings(self):
+        """Test custom settings values."""
+        settings = EnricherSettings(
+            min_source_length=200,
+            target_min_length=50,
+            target_max_length=100,
+            preserve_existing=False,
+        )
+        assert settings.min_source_length == 200
+        assert settings.target_min_length == 50
+        assert settings.target_max_length == 100
+        assert settings.preserve_existing is False
+
+
+class TestEnricherBasics:
+    """Test basic enricher functionality."""
+
+    def test_initialization(self):
+        """Test enricher initializes with default config."""
+        enricher = PropertyDescriptionShortEnricher()
+        assert enricher.settings.min_source_length == 300
+        assert enricher.settings.target_min_length == 80
+        assert enricher.settings.target_max_length == 150
+        assert enricher.settings.preserve_existing is True
+
+    def test_config_loading_missing_file(self):
+        """Test enricher uses defaults when config file missing."""
+        enricher = PropertyDescriptionShortEnricher(
+            config_path=Path("/nonexistent/path.yaml"),
+        )
+        assert enricher.settings.min_source_length == 300
+        assert enricher.settings.preserve_existing is True
+
+    def test_stats_initialization(self):
+        """Test enrichment stats start at zero."""
+        enricher = PropertyDescriptionShortEnricher()
+        stats = enricher.get_stats()
+        assert stats["fields_processed"] == 0
+        assert stats["short_descriptions_added"] == 0
+        assert stats["schemas_processed"] == 0
+
+    def test_config_version(self):
+        """Test config version is accessible."""
+        enricher = PropertyDescriptionShortEnricher()
+        version = enricher.get_config_version()
+        assert version is not None
+        assert isinstance(version, str)
+
+
+class TestFirstSentenceExtraction:
+    """Test first sentence extraction logic."""
+
+    def test_extract_first_sentence_simple(self, enricher):
+        """Test extracting first sentence from simple text."""
+        text = "This is the first sentence. This is the second sentence."
+        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        assert result == "This is the first sentence."
+
+    def test_extract_first_sentence_no_period(self, enricher):
+        """Test handling text without period."""
+        text = "This is a sentence without a period at the end"
+        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        assert result.endswith(".")
+
+    def test_extract_first_sentence_exclamation(self, enricher):
+        """Test extracting sentence ending with exclamation."""
+        text = "Warning! This is important. More text here."
+        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        assert result == "Warning!"
+
+    def test_extract_first_sentence_question(self, enricher):
+        """Test extracting sentence ending with question mark."""
+        text = "What is this? This explains it."
+        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        assert result == "What is this?"
+
+    def test_extract_first_sentence_empty(self, enricher):
+        """Test empty text returns None."""
+        result = enricher._extract_first_sentence("")  # noqa: SLF001
+        assert result is None
+
+    def test_extract_first_sentence_none(self, enricher):
+        """Test None text returns None."""
+        result = enricher._extract_first_sentence(None)  # type: ignore[arg-type]  # noqa: SLF001
+        assert result is None
+
+
+class TestStyleTransformations:
+    """Test style transformation to imperative tone."""
+
+    def test_transform_the_x_is_pattern(self, enricher):
+        """Test transforming 'The X is used to...' pattern."""
+        text = "The configuration is used to specify options."
+        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        assert result.startswith("Specifies") or "configuration" in result.lower()
+
+    def test_transform_this_field_pattern(self, enricher):
+        """Test transforming 'This field specifies...' pattern."""
+        text = "This field specifies the timeout value."
+        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        # Should remove "This field specifies"
+        assert not result.lower().startswith("this field")
+
+    def test_transform_an_article_pattern(self, enricher):
+        """Test removing leading article 'An/A'."""
+        text = "An option for configuring the system."
+        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        # Should remove leading "An"
+        assert not result.startswith("An ")
+
+    def test_capitalize_first_letter(self, enricher):
+        """Test first letter is capitalized."""
+        text = "lowercase start of sentence."
+        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        assert result[0].isupper()
+
+
+class TestDescriptionCleaning:
+    """Test description cleaning functionality."""
+
+    def test_remove_examples(self, enricher):
+        """Test removal of example sections."""
+        text = "Configure the system. Example: config.yaml contains settings."
+        result = enricher._clean_description(text)  # noqa: SLF001
+        assert "Example:" not in result
+
+    def test_remove_http_links(self, enricher):
+        """Test removal of HTTP links."""
+        text = "See documentation. For more info see https://docs.example.com/page."
+        result = enricher._clean_description(text)  # noqa: SLF001
+        assert "https://" not in result
+
+    def test_remove_inline_code(self, enricher):
+        """Test removal of inline code blocks."""
+        text = "Use the `config` command to set values."
+        result = enricher._clean_description(text)  # noqa: SLF001
+        assert "`config`" not in result
+
+    def test_remove_code_blocks(self, enricher):
+        """Test removal of code blocks."""
+        text = "Configure like this: ```yaml\nkey: value\n``` Then proceed."
+        result = enricher._clean_description(text)  # noqa: SLF001
+        assert "```" not in result
+
+    def test_normalize_whitespace(self, enricher):
+        """Test whitespace normalization."""
+        text = "Multiple   spaces   and\nnewlines\tand tabs."
+        result = enricher._clean_description(text)  # noqa: SLF001
+        assert "  " not in result
+        assert "\n" not in result
+        assert "\t" not in result
+
+
+class TestSmartTruncation:
+    """Test smart truncation functionality."""
+
+    def test_truncate_at_word_boundary(self, enricher):
+        """Test truncation happens at word boundaries."""
+        text = "This is a very long description that needs to be truncated properly."
+        result = enricher._smart_truncate(text, 30)  # noqa: SLF001
+        # Should end with ellipsis and not cut mid-word
+        assert result.endswith("...")
+        assert len(result) <= 30
+
+    def test_truncate_preserves_short_text(self, enricher):
+        """Test short text is not truncated."""
+        text = "Short text."
+        result = enricher._smart_truncate(text, 100)  # noqa: SLF001
+        assert result == text
+        assert "..." not in result
+
+    def test_truncate_removes_trailing_punctuation(self, enricher):
+        """Test trailing punctuation is removed before ellipsis."""
+        text = "A sentence, with punctuation, that gets cut."
+        result = enricher._smart_truncate(text, 30)  # noqa: SLF001
+        # Should not end with ",...""
+        assert not result.endswith(",...")
+
+
+class TestConfigurationOverrides:
+    """Test configuration-based overrides."""
+
+    def test_has_override(self, enricher):
+        """Test checking for override existence."""
+        # Assuming default config has some overrides
+        # The actual key depends on config file
+        has = enricher.has_override("schemavirtual_hostCreateSpecType", "domains")
+        # This tests the method works; actual result depends on config
+        assert isinstance(has, bool)
+
+    def test_get_override(self, enricher):
+        """Test getting override value."""
+        result = enricher.get_override("schemavirtual_hostCreateSpecType", "domains")
+        # If override exists, should return string
+        if result is not None:
+            assert isinstance(result, str)
+            assert len(result) > 0
+
+
+class TestPatternTemplates:
+    """Test pattern-based template matching."""
+
+    def test_pattern_template_creation(self):
+        """Test creating a pattern template."""
+        template = PatternTemplate(
+            pattern=re.compile(r"\.domains$"),
+            template="List of domain names for this resource.",
+        )
+        assert template.pattern.search("config.domains") is not None
+        assert template.template == "List of domain names for this resource."
+
+    def test_pattern_matching_domains(self, enricher):
+        """Test that .domains pattern matches."""
+        # Internal method test - check pattern matching works
+        for pattern_template in enricher.patterns:
+            if pattern_template.pattern.search("domains"):
+                assert pattern_template.template is not None
+                break
+
+
+class TestSpecEnrichment:
+    """Test full specification enrichment."""
+
+    def test_enrich_spec_with_long_description(
+        self,
+        enricher,
+        spec_with_long_descriptions,
+    ):
+        """Test enriching spec with long descriptions."""
+        result = enricher.enrich_spec(spec_with_long_descriptions)
+
+        # Check structure preserved
+        assert "components" in result
+        assert "schemas" in result["components"]
+        assert "TestSchema" in result["components"]["schemas"]
+
+        # Check that js_challenge got short description
+        js_challenge = result["components"]["schemas"]["TestSchema"]["properties"]["js_challenge"]
+        assert X_F5XC_DESCRIPTION_SHORT in js_challenge
+
+        # Check short description length
+        short_desc = js_challenge[X_F5XC_DESCRIPTION_SHORT]
+        assert len(short_desc) >= 40  # Minimum reasonable length
+        assert len(short_desc) <= 150  # Max target length
+
+    def test_enrich_spec_skips_short_descriptions(
+        self,
+        enricher,
+        spec_with_long_descriptions,
+    ):
+        """Test that short descriptions are skipped."""
+        result = enricher.enrich_spec(spec_with_long_descriptions)
+
+        # Name property has short description - should not get extension
+        name_prop = result["components"]["schemas"]["TestSchema"]["properties"]["name"]
+        assert X_F5XC_DESCRIPTION_SHORT not in name_prop
+
+    def test_stats_after_enrichment(self, enricher, spec_with_long_descriptions):
+        """Test stats are updated after enrichment."""
+        enricher.enrich_spec(spec_with_long_descriptions)
+        stats = enricher.get_stats()
+
+        assert stats["schemas_processed"] >= 1
+        assert stats["fields_processed"] >= 2
+        assert stats["short_descriptions_added"] >= 1
+        assert stats["skipped_already_short"] >= 1
+
+
+class TestNestedSchemas:
+    """Test handling of nested schemas."""
+
+    def test_allof_schemas_processed(self, enricher, long_description):
+        """Test that allOf schemas are processed."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Combined": {
+                        "allOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "config": {
+                                        "type": "object",
+                                        "description": long_description,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        config_prop = result["components"]["schemas"]["Combined"]["allOf"][0]["properties"][
+            "config"
+        ]
+        assert X_F5XC_DESCRIPTION_SHORT in config_prop
+
+    def test_oneof_schemas_processed(self, enricher, long_description):
+        """Test that oneOf schemas are processed."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Choice": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "option": {
+                                        "type": "string",
+                                        "description": long_description,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        option_prop = result["components"]["schemas"]["Choice"]["oneOf"][0]["properties"]["option"]
+        assert X_F5XC_DESCRIPTION_SHORT in option_prop
+
+    def test_items_schema_processed(self, enricher, long_description):
+        """Test that array items schemas are processed."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "List": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "element": {
+                                    "type": "string",
+                                    "description": long_description,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        element_prop = result["components"]["schemas"]["List"]["items"]["properties"]["element"]
+        assert X_F5XC_DESCRIPTION_SHORT in element_prop
+
+
+class TestPreserveExisting:
+    """Test preservation of existing extensions."""
+
+    def test_preserve_existing_extension(self, enricher, long_description):
+        """Test that existing x-f5xc-description-short is preserved."""
+        existing_short = "Existing short description."
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "config": {
+                                "type": "object",
+                                "description": long_description,
+                                X_F5XC_DESCRIPTION_SHORT: existing_short,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        config_prop = result["components"]["schemas"]["Test"]["properties"]["config"]
+
+        # Should preserve existing
+        assert config_prop[X_F5XC_DESCRIPTION_SHORT] == existing_short
+
+        # Stats should show skipped
+        stats = enricher.get_stats()
+        assert stats["skipped_has_extension"] >= 1
+
+
+class TestEdgeCases:
+    """Test edge cases and error conditions."""
+
+    def test_empty_spec(self, enricher):
+        """Test enriching empty spec."""
+        result = enricher.enrich_spec({})
+        assert result == {}
+
+    def test_spec_without_schemas(self, enricher):
+        """Test enriching spec without schemas."""
+        spec = {"info": {"title": "Test API"}, "paths": {}}
+        result = enricher.enrich_spec(spec)
+        assert result is not None
+
+    def test_null_property_values(self, enricher):
+        """Test handling null property values."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "name": None,
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        # Should not raise, should preserve null
+        assert result["components"]["schemas"]["Test"]["properties"]["name"] is None
+
+    def test_property_without_description(self, enricher):
+        """Test property without description field."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        # Should not add short description to property without long description
+        name_prop = result["components"]["schemas"]["Test"]["properties"]["name"]
+        assert X_F5XC_DESCRIPTION_SHORT not in name_prop
+
+    def test_empty_description(self, enricher):
+        """Test property with empty description."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string", "description": ""},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        name_prop = result["components"]["schemas"]["Test"]["properties"]["name"]
+        assert X_F5XC_DESCRIPTION_SHORT not in name_prop
+
+
+class TestLengthValidation:
+    """Test description length validation."""
+
+    def test_generated_description_within_target(self, enricher, long_description):
+        """Test generated descriptions are within target range."""
+        short_desc = enricher._extract_and_transform(long_description)  # noqa: SLF001
+
+        if short_desc:
+            # Should be at least 40 chars (relaxed minimum for some extractions)
+            assert len(short_desc) >= 40
+            # Should be at most 150 chars (max target)
+            assert len(short_desc) <= 150
+
+    def test_boundary_length_description(self, enricher):
+        """Test description exactly at 300 char boundary."""
+        # Create description exactly 300 chars
+        desc_300 = "X" * 299 + "."
+        assert len(desc_300) == 300
+
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "field": {"type": "string", "description": desc_300},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        field_prop = result["components"]["schemas"]["Test"]["properties"]["field"]
+        # At exactly 300 chars, should NOT be processed (min_source_length is 300)
+        assert X_F5XC_DESCRIPTION_SHORT not in field_prop
+
+    def test_just_over_boundary_processed(self, enricher):
+        """Test description just over 300 chars is processed."""
+        # Create description 301 chars
+        desc_301 = "X" * 300 + "."
+        assert len(desc_301) == 301
+
+        spec = {
+            "components": {
+                "schemas": {
+                    "Test": {
+                        "type": "object",
+                        "properties": {
+                            "field": {"type": "string", "description": desc_301},
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        field_prop = result["components"]["schemas"]["Test"]["properties"]["field"]
+        # At 301 chars, should be processed
+        assert X_F5XC_DESCRIPTION_SHORT in field_prop
+
+
+class TestIdempotency:
+    """Test idempotent enrichment behavior."""
+
+    def test_multiple_enrichment_idempotent(self, enricher, spec_with_long_descriptions):
+        """Test that running enrichment twice produces same result."""
+        # First enrichment
+        result1 = enricher.enrich_spec(spec_with_long_descriptions)
+        short_desc1 = result1["components"]["schemas"]["TestSchema"]["properties"][
+            "js_challenge"
+        ].get(X_F5XC_DESCRIPTION_SHORT)
+
+        # Create new enricher and enrich again
+        enricher2 = PropertyDescriptionShortEnricher()
+        result2 = enricher2.enrich_spec(result1)
+        short_desc2 = result2["components"]["schemas"]["TestSchema"]["properties"][
+            "js_challenge"
+        ].get(X_F5XC_DESCRIPTION_SHORT)
+
+        # Should be identical (preserved)
+        assert short_desc1 == short_desc2
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

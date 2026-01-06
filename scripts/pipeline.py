@@ -83,6 +83,7 @@ from scripts.utils import (
     GuidedWorkflowEnricher,
     MinimumConfigurationEnricher,
     OperationMetadataEnricher,
+    PropertyDescriptionShortEnricher,
     ReadOnlyEnricher,
     ResourceExamplesEnricher,
     SchemaFixer,
@@ -290,12 +291,18 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = field_description_enricher.enrich_spec(spec)
     field_desc_stats = field_description_enricher.get_stats()
 
-    # 12. Field-level validation rule enrichment (add min/max, patterns, formats)
+    # 12. Property short description enrichment (Issue #330)
+    # Generate 80-150 char descriptions for properties with long descriptions (>300 chars)
+    prop_desc_short_enricher = PropertyDescriptionShortEnricher()
+    spec = prop_desc_short_enricher.enrich_spec(spec)
+    prop_desc_short_stats = prop_desc_short_enricher.get_stats()
+
+    # 13. Field-level validation rule enrichment (add min/max, patterns, formats)
     validation_enricher = ValidationEnricher()
     spec = validation_enricher.enrich_spec(spec)
     validation_stats = validation_enricher.get_stats()
 
-    # 13. Operation metadata enrichment (add danger levels, required fields, side effects)
+    # 14. Operation metadata enrichment (add danger levels, required fields, side effects)
     operation_metadata_enricher = OperationMetadataEnricher()
     spec = operation_metadata_enricher.enrich_spec(spec)
     op_stats = operation_metadata_enricher.get_stats()
@@ -327,6 +334,15 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "domains_normalized": domain_normalize_count,
         "field_descriptions_added": field_desc_stats.get("descriptions_added", 0),
         "field_examples_added": field_desc_stats.get("examples_added", 0),
+        "short_descriptions_added": prop_desc_short_stats.get("short_descriptions_added", 0),
+        "short_descriptions_from_extraction": prop_desc_short_stats.get(
+            "descriptions_from_extraction",
+            0,
+        ),
+        "short_descriptions_from_config": prop_desc_short_stats.get(
+            "descriptions_from_config",
+            0,
+        ),
         "validation_rules_added": validation_stats.get("patterns_added", 0),
         "validation_constraints_added": validation_stats.get("constraints_added", 0),
         "operations_enriched": op_stats.get("operations_enriched", 0),

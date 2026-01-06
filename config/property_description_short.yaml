@@ -1,0 +1,171 @@
+# Property Short Description Configuration
+# Issue #330: Add x-f5xc-description-short for Terraform documentation
+#
+# Generates concise 80-150 char descriptions for schema properties
+# with long descriptions (>300 chars) following Azure/AWS conventions.
+
+version: "1.0.0"
+
+# Generation settings
+settings:
+  # Only process descriptions longer than this (chars)
+  min_source_length: 300
+
+  # Target length range for generated descriptions
+  target_min_length: 80
+  target_max_length: 150
+
+  # Never overwrite existing x-f5xc-description-short
+  preserve_existing: true
+
+# Manual overrides for high-priority fields
+# Format: "schemaName.propertyName": "Short description"
+overrides:
+  # Virtual domain - load balancing
+  "schemavirtual_hostCreateSpecType.domains": "List of domain names matched to this virtual host."
+  "schemavirtual_hostCreateSpecType.routes": "HTTP routing rules for matching requests to backends."
+  "schemavirtual_hostCreateSpecType.default_route_pools": "Default origin pools for unmatched requests."
+  "schemavirtual_hostCreateSpecType.advertise_on_public": "Advertise virtual host on F5 XC public network."
+  "schemavirtual_hostCreateSpecType.http": "HTTP protocol configuration including port and TLS settings."
+  "schemavirtual_hostCreateSpecType.https": "HTTPS protocol configuration with TLS certificate handling."
+
+  # Virtual domain - security
+  "schemavirtual_hostCreateSpecType.waf_type": "Web Application Firewall protection mode for this virtual host."
+  "schemavirtual_hostCreateSpecType.cors_policy": "Cross-Origin Resource Sharing policy for browser requests."
+  "schemavirtual_hostCreateSpecType.csrf_policy": "Cross-Site Request Forgery protection configuration."
+  "schemavirtual_hostCreateSpecType.js_challenge": "JavaScript browser challenge for bot detection."
+
+  # Cluster and endpoint management
+  "clusterCreateSpecType.endpoint_subsets": "Endpoint groups based on metadata labels for traffic routing."
+  "clusterCreateSpecType.endpoints": "List of endpoints for this cluster."
+  "clusterCreateSpecType.health_checks": "Health check configuration for backend monitoring."
+
+  # Retry and circuit breaker
+  "schemaRetryPolicyType.retry_condition": "Conditions that trigger request retry (5xx, connection failures)."
+  "schemaRetryPolicyType.num_retries": "Maximum number of retry attempts. Default: 1."
+  "schemaCircuitBreakerType.consecutive_5xx": "Consecutive 5xx errors before circuit opens."
+
+  # WAF domain
+  "schemawaf_ruleCreateSpecType.rule_id": "Unique identifier for this WAF rule."
+  "schemawaf_ruleCreateSpecType.mode": "WAF rule mode: block, detect, or disable."
+  "schemaapp_firewallCreateSpecType.blocking_page": "Custom HTML page for blocked requests."
+
+  # DNS domain
+  "schemadns_zoneCreateSpecType.domain": "DNS domain name for this zone."
+  "schemadns_zoneCreateSpecType.primary": "Primary DNS server configuration."
+  "schemadns_recordCreateSpecType.type": "DNS record type (A, AAAA, CNAME, MX, TXT, etc.)."
+  "schemadns_recordCreateSpecType.ttl": "Time-to-live in seconds. Default: 300."
+
+  # CDN domain
+  "schemacdn_loadbalancerCreateSpecType.origin": "Origin server configuration for CDN."
+  "schemacdn_loadbalancerCreateSpecType.cache_options": "Cache behavior and TTL settings."
+  "schemacdn_loadbalancerCreateSpecType.domains": "Domain names for CDN distribution."
+
+  # Sites domain
+  "schemasiteCreateSpecType.site_type": "Site deployment type (AWS, Azure, GCP, VMware, etc.)."
+  "schemasiteCreateSpecType.coordinates": "Geographic coordinates for site location."
+  "schemasiteCreateSpecType.address": "Physical address of the site location."
+
+  # Common fields across domains
+  "protobufAny.type_url": "URL identifying the protocol buffer message type."
+
+# Pattern-based templates
+# These match property names across all schemas
+patterns:
+  # Domain and hostname patterns
+  - pattern: '\.domains$'
+    template: "List of domain names for this resource. Supports wildcards."
+
+  - pattern: '\.fqdn$'
+    template: "Fully qualified domain name for this resource."
+
+  - pattern: '\.hostname$'
+    template: "Hostname for this resource."
+
+  # Timeout patterns
+  - pattern: '\.timeout$'
+    template: "Timeout duration. Specify with unit (e.g., '30s', '5m')."
+
+  - pattern: '\.idle_timeout$'
+    template: "Idle connection timeout duration."
+
+  - pattern: '\.connect_timeout$'
+    template: "Connection establishment timeout duration."
+
+  # Health check patterns
+  - pattern: '\.health_check'
+    template: "Health check configuration for backend monitoring."
+
+  - pattern: '\.healthcheck'
+    template: "Health check configuration for backend monitoring."
+
+  # Retry patterns
+  - pattern: '\.retry_'
+    template: "Retry policy configuration for failed requests."
+
+  - pattern: '\.num_retries$'
+    template: "Maximum number of retry attempts."
+
+  # Port patterns
+  - pattern: '\.port$'
+    template: "Network port number. Range: 1-65535."
+
+  - pattern: '\.target_port$'
+    template: "Target port for backend connections."
+
+  # TLS/SSL patterns
+  - pattern: '\.tls_'
+    template: "TLS/SSL configuration settings."
+
+  - pattern: '\.certificate'
+    template: "TLS certificate configuration."
+
+  # Endpoint patterns
+  - pattern: '\.endpoints$'
+    template: "List of endpoint addresses for this resource."
+
+  - pattern: '\.endpoint_subsets$'
+    template: "Endpoint groups based on metadata labels."
+
+  # Route patterns
+  - pattern: '\.routes$'
+    template: "Routing rules for request matching and forwarding."
+
+  - pattern: '\.default_route'
+    template: "Default route for requests not matching other rules."
+
+  # Pool patterns
+  - pattern: '\.origin_pool'
+    template: "Backend origin server pool configuration."
+
+  - pattern: '\.pool$'
+    template: "Backend server pool configuration."
+
+  # Policy patterns
+  - pattern: '_policy$'
+    template: "Policy configuration for this feature."
+
+  - pattern: '\.waf_'
+    template: "Web Application Firewall configuration."
+
+  # Selector patterns
+  - pattern: '\.selector$'
+    template: "Label selector for resource matching."
+
+  - pattern: '\.namespace_selector$'
+    template: "Namespace selector for cross-namespace references."
+
+# Exclusions - never generate short descriptions for these
+# Uses regex patterns matching "schemaName.propertyName"
+exclusions:
+  # Protocol buffer internal fields
+  - "^protobufAny\\.value$"
+
+  # Validation rule fields (metadata, not user-facing)
+  - ".*_validation_rules$"
+
+  # Internal reference fields
+  - ".*\\.\\$ref$"
+
+  # Empty or placeholder schemas
+  - "^schemaEmpty\\."
