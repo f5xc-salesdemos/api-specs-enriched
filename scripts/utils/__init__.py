@@ -23,6 +23,7 @@ from .guided_workflow_enricher import GuidedWorkflowEnricher
 from .minimum_configuration_enricher import MinimumConfigurationEnricher
 from .namespace_scope_enricher import NamespaceScopeEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
+from .property_description_short_enricher import PropertyDescriptionShortEnricher
 from .readonly_enricher import ReadOnlyEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
@@ -56,6 +57,7 @@ __all__ = [
     "MinimumConfigurationEnricher",
     "NamespaceScopeEnricher",
     "OperationMetadataEnricher",
+    "PropertyDescriptionShortEnricher",
     "ReadOnlyEnricher",
     "ResourceExamplesEnricher",
     "SchemaFixer",
