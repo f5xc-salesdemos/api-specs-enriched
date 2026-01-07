@@ -1327,9 +1327,8 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
             "domain": domain,
             "title": info.get("title", ""),
             "description": info.get("description", ""),
-            X_F5XC_DESCRIPTION_SHORT: description_short or f"{domain_title} API",
-            X_F5XC_DESCRIPTION_MEDIUM: description_medium
-            or f"F5 Distributed Cloud {domain_title} API specifications",
+            X_F5XC_DESCRIPTION_SHORT: description_short or domain_title,
+            X_F5XC_DESCRIPTION_MEDIUM: description_medium or f"F5 Distributed Cloud {domain_title}",
             "file": f"{domain}.json",
             "path_count": path_count,
             "schema_count": schema_count,
