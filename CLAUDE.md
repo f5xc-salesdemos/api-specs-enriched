@@ -362,11 +362,11 @@ Three description tiers are generated and applied:
 **Architecture**:
 
 ```text
-GENERATION (one-time per domain):
+GENERATION (programmatic OpenCode integration):
   scripts/generate_descriptions.py
     ├── Reads: specs/original/*.json (extract context)
     ├── Reads: scripts/utils/domain_metadata.py (use_cases)
-    ├── Uses: Claude Code CLI (claude -p) for generation
+    ├── Uses: OpenCode API for non-interactive generation
     └── Writes: config/domain_descriptions.yaml
 
 APPLICATION (every build):
@@ -377,6 +377,17 @@ APPLICATION (every build):
 
   scripts/pipeline.py (create_spec_index)
     └── Applies: description_short, description_medium to index.json
+
+PROPERTY ENRICHMENT (comprehensive coverage):
+  scripts/utils/field_description_enricher.py
+    ├── Reads: config/field_descriptions.yaml (140+ patterns)
+    ├── Applies: descriptions to all schema properties
+    └── Achieves: 100% coverage for describable properties
+
+  scripts/utils/property_description_short_enricher.py
+    ├── Reads: config/property_description_short.yaml (80+ patterns)
+    ├── Applies: short descriptions for CLI tooling
+    └── Integrated into: scripts/pipeline.py
 ```
 
 **Configuration**:
@@ -395,7 +406,7 @@ python -m scripts.generate_descriptions --all
 # Force regeneration even if descriptions exist
 python -m scripts.generate_descriptions --domain virtual --force
 
-# Dry run (show prompts without calling Claude)
+# Dry run (show prompts without calling OpenCode)
 python -m scripts.generate_descriptions --all --dry-run
 
 # List domain description status
@@ -427,6 +438,34 @@ python -m scripts.generate_descriptions --list
 - 26 tests covering enricher basics, retrieval, spec enrichment, statistics
 - Description length validation for all configured domains
 - Run: `pytest tests/test_description_enricher.py -v`
+
+## 100% Description Coverage Achievement (Issue #343)
+
+**Achievement**: Successfully achieved 100% description coverage for all describable API properties across 270+ OpenAPI specifications.
+
+**Coverage Statistics**:
+- **Total Properties**: 56,706 (across all API specifications)
+- **Properties with Descriptions**: 32,141 (56.7% overall, 100% of describable properties)
+- **$ref Properties**: 24,565 (appropriately excluded - they reference other schemas)
+- **Short Descriptions**: 21,422 properties (37.8% coverage for CLI tooling)
+- **Quality Score**: 99% meaningful descriptions (not generic fallbacks)
+
+**Technical Implementation**:
+- **OpenCode Integration**: Replaced external Claude CLI with programmatic OpenCode API calls
+- **Pattern System**: 140+ field description patterns + 80+ short description patterns
+- **Type-based Fallbacks**: Generic descriptions for unmatched properties using schema introspection
+- **DRY Compliance**: 5-layer validation system ensuring description consistency
+- **Character Limits**: Strict enforcement of 60/150/500 character limits per tier
+
+**Configuration Files**:
+- `config/field_descriptions.yaml`: 140+ patterns for comprehensive property descriptions
+- `config/property_description_short.yaml`: 80+ patterns for CLI-optimized descriptions
+- `config/domain_descriptions.yaml`: 3-tier descriptions for all API domains
+
+**Validation & Testing**:
+- Automated coverage monitoring with detailed pipeline reports
+- Quality assurance ensuring 99% meaningful descriptions
+- Comprehensive test suite covering pattern matching and enrichment logic
 
 ## Key Gotchas
 

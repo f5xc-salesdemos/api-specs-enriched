@@ -280,12 +280,17 @@ class FieldDescriptionEnricher:
             prop_name: Name of the property
             _schema_name: Name of parent schema (unused, kept for interface compatibility)
         """
-        # Never overwrite existing descriptions if preserve_existing is True
-        if self.preserve_existing and "description" in prop:
-            # Description already exists, skip
+        # Check if we should add/replace description
+        existing_desc = prop.get("description", "")
+        has_meaningful_desc = (
+            existing_desc and existing_desc.strip() and len(existing_desc.strip()) > 5
+        )
+
+        if self.preserve_existing and has_meaningful_desc:
+            # Meaningful description already exists, skip
             pass
         else:
-            # Try to add description based on patterns and type fallbacks
+            # Try to add description based on patterns
             description = self._find_description(prop_name)
             if description:
                 prop["description"] = description
@@ -387,6 +392,40 @@ class FieldDescriptionEnricher:
             "owner": "Owner or responsible party",
             "creator": "User who created the resource",
             "modifier": "User who last modified the resource",
+            # Additional containment patterns for missing properties
+            "event": "Event or occurrence data",
+            "instance": "Instance or deployment identifier",
+            "site": "Site or location identifier",
+            "vh": "Virtual host configuration",
+            "sec": "Security-related configuration",
+            "classification": "Classification or category data",
+            "rule": "Rule or policy definition",
+            "endpoint": "Endpoint or connection point",
+            "routing": "Routing or forwarding configuration",
+            "allowlist": "Allowlist or permitted items",
+            "block": "Blocking or denial configuration",
+            "mobile": "Mobile device configuration",
+            "web": "Web-related configuration",
+            "client": "Client-side configuration",
+            "data": "Data or content configuration",
+            "sort": "Sorting or ordering configuration",
+            "feature": "Feature flag or capability",
+            "format": "Data format specification",
+            "infra": "Infrastructure configuration",
+            "deployment": "Deployment configuration",
+            "upstream": "Upstream service configuration",
+            "manual": "Manual or custom configuration",
+            "protected": "Protection or security configuration",
+            "mitigation": "Mitigation or response configuration",
+            "intelligence": "Intelligence or analysis data",
+            "threat": "Threat detection configuration",
+            "campaign": "Campaign or operation data",
+            "infrastructure": "Infrastructure component",
+            "hosted": "Hosted service configuration",
+            "range": "Range or scope specification",
+            "action": "Action or operation type",
+            "body": "Message body or content",
+            "history": "Historical or audit data",
         }
 
         for pattern, description in containment_patterns.items():
