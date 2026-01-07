@@ -2,6 +2,60 @@
 
 F5 Distributed Cloud API enrichment tools and utilities.
 
+## API Enrichment Pipeline
+
+This repository provides comprehensive OpenAPI specification enrichment for F5 Distributed Cloud APIs, enhancing developer experience with detailed descriptions, examples, and metadata.
+
+### Key Achievements
+
+- **100% Description Coverage**: All describable API properties (32,141/32,141) now have meaningful descriptions
+- **OpenCode Integration**: Replaced external CLI dependencies with programmatic OpenCode API for domain description generation
+- **Comprehensive Patterns**: 140+ field description patterns and 80+ short description patterns for consistent API documentation
+- **Quality Assurance**: 99% meaningful descriptions with DRY compliance validation and character limit enforcement
+
+### Enrichment Features
+
+| Feature | Description | Coverage |
+|---------|-------------|----------|
+| **Property Descriptions** | Full descriptions for all API schema properties | 32,141 properties (100%) |
+| **Short Descriptions** | Concise descriptions for CLI tools and UI | 21,422 properties (37.8%) |
+| **Domain Descriptions** | 3-tier descriptions (short/medium/long) for API domains | 270+ specifications |
+| **CLI Metadata** | Minimum configurations and examples for resource creation | 5 priority resources + auto-generated |
+| **Resource Metadata** | Rich metadata for IDE tooling and AI assistants | 90+ resources |
+
+### Pipeline Components
+
+| Component | Purpose | Output |
+|-----------|---------|--------|
+| **Download** | ETag-cached F5 spec retrieval | `specs/original/` (gitignored) |
+| **Enrich** | Branding, grammar, and description enrichment | Enhanced OpenAPI specs |
+| **Normalize** | Schema reference resolution and type fixes | Consistent schemas |
+| **Merge** | Domain-specific spec generation | `docs/specifications/api/*.json` |
+| **Discover** | Live API exploration (VPN required) | `specs/discovered/openapi.json` |
+
+### Usage
+
+```bash
+# Full enrichment pipeline
+make pipeline
+
+# Individual steps
+make download    # Fetch latest F5 specs
+make enrich      # Apply enrichments
+make normalize   # Normalize schemas
+make merge       # Generate domain specs
+
+# Documentation
+make serve       # Serve docs locally (http://localhost:8000)
+```
+
+### Documentation Links
+
+- [Enriched API Specifications](https://robinmordasiewicz.github.io/f5xc-api-enriched/)
+- [Swagger UI](https://robinmordasiewicz.github.io/f5xc-api-enriched/swagger-ui/)
+- [Scalar Documentation](https://robinmordasiewicz.github.io/f5xc-api-enriched/scalar/)
+- [GitHub Repository](https://github.com/robinmordasiewicz/f5xc-api-enriched)
+
 ## Subscription & Licensing Architecture
 
 F5 Distributed Cloud uses a **Plan-Based Access Control (PBAC)** system with addon services organized into subscription tiers.

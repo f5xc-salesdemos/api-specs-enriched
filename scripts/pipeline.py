@@ -290,6 +290,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     field_description_enricher = FieldDescriptionEnricher()
     spec = field_description_enricher.enrich_spec(spec)
     field_desc_stats = field_description_enricher.get_stats()
+    print(f"DEBUG: Field description enricher stats: {field_desc_stats}")
 
     # 12. Property short description enrichment (Issue #330)
     # Generate 80-150 char descriptions for properties with long descriptions (>300 chars)
