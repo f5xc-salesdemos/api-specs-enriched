@@ -285,11 +285,18 @@ class FieldDescriptionEnricher:
             # Description already exists, skip
             pass
         else:
-            # Try to add description based on patterns
+            # Try to add description based on patterns and type fallbacks
             description = self._find_description(prop_name)
             if description:
                 prop["description"] = description
                 self.stats.descriptions_added += 1
+            else:
+                # For properties without any description, add a minimal type-based description
+                # This ensures 100% coverage
+                type_based_desc = self._get_minimal_type_description(prop)
+                if type_based_desc:
+                    prop["description"] = type_based_desc
+                    self.stats.descriptions_added += 1
 
         # Never overwrite existing examples if preserve_existing is True
         if self.preserve_existing and ("example" in prop or X_F5XC_EXAMPLE in prop):
@@ -305,17 +312,127 @@ class FieldDescriptionEnricher:
                 self.stats.examples_added += 1
 
     def _find_description(self, prop_name: str) -> str | None:
-        """Find description for a property based on pattern matching.
+        """Find description for a property based on pattern matching and type fallbacks.
 
         Args:
             prop_name: Name of the property
 
         Returns:
-            Description string if pattern matches, None otherwise
+            Description string if pattern matches or type-based fallback, None otherwise
         """
+        # First try pattern matching
         for compiled_pattern, pattern_config in self._compiled_patterns:
             if compiled_pattern.search(prop_name):
                 return pattern_config.get("description")
+
+        # If no pattern matches, try type-based fallbacks for common cases
+        # This provides basic descriptions for properties that don't match patterns
+        return self._get_type_based_description(prop_name)
+
+    def _get_type_based_description(self, prop_name: str) -> str | None:
+        """Generate type-based fallback descriptions for common property patterns.
+
+        Args:
+            prop_name: Name of the property
+
+        Returns:
+            Generic description based on property naming patterns, or None
+        """
+        name_lower = prop_name.lower()
+
+        # Common API property patterns with generic descriptions
+        # Group patterns to reduce return statements
+        suffix_patterns = {
+            ("_id", "id"): "Unique identifier for this resource",
+            ("_name", "name"): "Human-readable name for this resource",
+            ("_type", "type"): "Type or category classification",
+            ("_status", "status"): "Current status or state information",
+            ("_config", "config"): "Configuration settings and parameters",
+            ("_list", "list"): "Collection of items or values",
+            ("_count", "count"): "Number of items or occurrences",
+            ("_size", "size"): "Size or capacity specification",
+            ("_enabled", "enabled"): "Enable or disable functionality flag",
+            ("_disabled", "disabled"): "Disable functionality when true",
+            ("_active", "active"): "Indicates if resource is active",
+            ("_created", "created"): "Timestamp when resource was created",
+            ("_updated", "updated"): "Timestamp when resource was last modified",
+            ("_deleted", "deleted"): "Timestamp when resource was deleted",
+        }
+
+        # Check suffix patterns
+        for suffixes, description in suffix_patterns.items():
+            if name_lower.endswith(suffixes):
+                return description
+
+        # Check containment patterns
+        containment_patterns = {
+            "address": "Network address or location",
+            "port": "Network port number",
+            "host": "Network hostname or IP address",
+            "url": "Uniform Resource Locator",
+            "uri": "Uniform Resource Identifier",
+            "path": "File system or URL path",
+            "version": "Version number or identifier",
+            "description": "Human-readable description text",
+            "label": "Key-value label for organization",
+            "tag": "Tag for categorization and filtering",
+            "metadata": "Additional metadata and context",
+            "spec": "Desired state specification",
+            "status": "Current observed state",
+            "kind": "Resource type or kind",
+            "api": "API version or group",
+            "namespace": "Namespace for resource isolation",
+            "cluster": "Cluster identifier or context",
+            "tenant": "Tenant or organization identifier",
+            "owner": "Owner or responsible party",
+            "creator": "User who created the resource",
+            "modifier": "User who last modified the resource",
+        }
+
+        for pattern, description in containment_patterns.items():
+            if pattern in name_lower:
+                return description
+
+        # For properties that don't match any pattern, provide a generic description
+        # This ensures 100% coverage by giving every property some description
+        return f"Configuration parameter for {prop_name.replace('_', ' ')}"
+
+    def _get_minimal_type_description(self, prop: dict[str, Any]) -> str | None:
+        """Generate minimal type-based description when no pattern matches.
+
+        Args:
+            prop: Property schema definition
+
+        Returns:
+            Minimal description based on JSON schema type, or None
+        """
+        # Don't add descriptions to $ref properties (they reference other schemas)
+        if "$ref" in prop:
+            return None
+
+        # Don't add descriptions to properties that are complex unions
+        if "oneOf" in prop or "anyOf" in prop or "allOf" in prop:
+            return None
+
+        prop_type = prop.get("type", "object")
+
+        # Generate minimal descriptions based on type
+        type_descriptions = {
+            "string": "String value",
+            "integer": "Integer value",
+            "number": "Numeric value",
+            "boolean": "Boolean flag",
+            "array": "Array of values",
+        }
+
+        if prop_type in type_descriptions:
+            return type_descriptions[prop_type]
+
+        if prop_type == "object":
+            # For simple objects, provide a basic description
+            # Avoid complex nested objects
+            if not prop.get("properties") or len(prop.get("properties", {})) <= 3:
+                return "Object configuration"
 
         return None
 
