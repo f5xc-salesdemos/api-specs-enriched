@@ -2,9 +2,10 @@ enabled: true
 preserve_existing: true  # Never overwrite existing descriptions or examples
 
 description_patterns:
-  # High-confidence patterns only (95%+ confidence)
-  # These patterns have been validated across the codebase and match consistently
+  # Comprehensive patterns for API field descriptions
+  # Expanded to cover thousands of common API properties
 
+  # Identity and Naming
   - pattern: '\bname$'
     description: 'Human-readable name for the resource'
     example_type: 'kebab-case-name'
@@ -19,23 +20,76 @@ description_patterns:
     max_length: 128
     comment: 'UI-friendly name distinct from resource name'
 
+  - pattern: '\btitle$'
+    description: 'Human-readable title for the resource'
+    example_type: 'kebab-case-name'
+    min_length: 1
+    max_length: 128
+    comment: 'Title field for display purposes'
+
+  - pattern: '\bid$'
+    description: 'Unique identifier for the resource'
+    example_type: 'uuid'
+    format: 'uuid'
+    comment: 'Identifier field, typically read-only'
+
+  - pattern: '\buuid$'
+    description: 'Unique identifier in UUID v4 format'
+    example_type: 'uuid'
+    format: 'uuid'
+    comment: 'Applies to UUID fields. Uses RFC 4122 compliant example'
+
+  # Contact and Communication
   - pattern: '\bemail$'
     description: 'Email address in RFC 5322 format'
     example_type: 'email'
     format: 'email'
     comment: 'Applies to fields ending with "email". Pattern matches single email address'
 
+  - pattern: '\bphone$'
+    description: 'Phone number in international format'
+    example_type: 'phone'
+    comment: 'Phone number field'
+
+  # Network and Connectivity
   - pattern: '\b(url|uri)$'
     description: 'URL or URI reference'
     example_type: 'url'
     format: 'uri'
     comment: 'Applies to URL and URI fields. Excludes schema $ref fields'
 
+  - pattern: '\bhost$'
+    description: 'Hostname or IP address of the target server'
+    example_type: 'hostname'
+    comment: 'Target host for connections'
+
+  - pattern: '\bhostname$'
+    description: 'Fully qualified domain name'
+    example_type: 'hostname'
+    format: 'hostname'
+    comment: 'FQDN for network identification'
+
+  - pattern: '\bdns_name$'
+    description: 'DNS name for service discovery'
+    example_type: 'hostname'
+    comment: 'DNS resolvable name'
+
+  - pattern: '\bdomain$'
+    description: 'Domain name for routing and identification'
+    example_type: 'domain'
+    comment: 'Domain for virtual hosting'
+
   - pattern: '\b(ip|ipv4|ip_address)$'
     description: 'IPv4 address in dotted decimal notation (e.g., 192.0.2.1)'
     example_type: 'ipv4'
     format: 'ipv4'
     comment: 'Applies to IP address fields. Uses RFC 5737 TEST-NET-1 example range'
+
+  - pattern: '\bipv6$'
+    description: 'IPv6 address in colon-separated hexadecimal format'
+    example_type: 'ipv6'
+    format: 'ipv6'
+    comment: 'IPv6 address field'
 
   - pattern: '\bport$'
     description: 'TCP/UDP port number (1-65535)'
@@ -44,26 +98,411 @@ description_patterns:
     maximum: 65535
     comment: 'Applies to port fields. Enforces valid port range'
 
-  - pattern: '\buuid$'
-    description: 'Unique identifier in UUID v4 format'
-    example_type: 'uuid'
-    format: 'uuid'
-    comment: 'Applies to UUID fields. Uses RFC 4122 compliant example'
+  - pattern: '\bnetwork$'
+    description: 'Network configuration and addressing'
+    example_type: 'cidr'
+    comment: 'Network specification'
 
+  - pattern: '\bsubnet$'
+    description: 'Subnet specification for network segmentation'
+    example_type: 'cidr'
+    comment: 'Network subnet'
+
+  - pattern: '\bgateway$'
+    description: 'Network gateway IP address'
+    example_type: 'ipv4'
+    comment: 'Default gateway'
+
+  # Time and Scheduling
   - pattern: '\btimestamp$'
     description: 'Timestamp in ISO 8601 format with UTC timezone'
     example_type: 'timestamp'
     format: 'date-time'
     comment: 'Applies to timestamp fields. Enforces ISO 8601 compliance'
 
+  - pattern: '\bcreated_at$'
+    description: 'Timestamp when the resource was created'
+    example_type: 'timestamp'
+    format: 'date-time'
+    comment: 'Creation timestamp'
+
+  - pattern: '\bupdated_at$'
+    description: 'Timestamp when the resource was last updated'
+    example_type: 'timestamp'
+    format: 'date-time'
+    comment: 'Last update timestamp'
+
+  - pattern: '\bdeleted_at$'
+    description: 'Timestamp when the resource was deleted'
+    example_type: 'timestamp'
+    format: 'date-time'
+    comment: 'Deletion timestamp'
+
+  - pattern: '\bexpires_at$'
+    description: 'Expiration timestamp for the resource'
+    example_type: 'timestamp'
+    format: 'date-time'
+    comment: 'Expiration time'
+
+  - pattern: '\bttl$'
+    description: 'Time-to-live duration in seconds'
+    example_type: 'ttl'
+    minimum: 0
+    maximum: 31536000
+    comment: 'TTL value for caching or validity'
+
+  - pattern: '\btimeout$'
+    description: 'Operation timeout duration'
+    example_type: 'duration'
+    comment: 'Timeout specification'
+
+  - pattern: '\bidle_timeout$'
+    description: 'Idle connection timeout duration'
+    example_type: 'duration'
+    comment: 'Idle timeout'
+
+  # Security and Authentication
+  - pattern: '\bpassword$'
+    description: 'Password for authentication'
+    example_type: 'password'
+    format: 'password'
+    min_length: 8
+    comment: 'Authentication password'
+
+  - pattern: '\btoken$'
+    description: 'Authentication or access token'
+    example_type: 'token'
+    comment: 'API token'
+
+  - pattern: '\bsecret$'
+    description: 'Sensitive configuration value'
+    example_type: 'secret'
+    comment: 'Secret value'
+
+  - pattern: '\bkey$'
+    description: 'Cryptographic key material'
+    example_type: 'key'
+    comment: 'Key data'
+
+  - pattern: '\bcertificate$'
+    description: 'X.509 certificate for TLS'
+    example_type: 'certificate'
+    comment: 'Certificate data'
+
+  - pattern: '\bprivate_key$'
+    description: 'Private key for asymmetric cryptography'
+    example_type: 'private_key'
+    comment: 'Private key data'
+
+  # Configuration and Settings
+  - pattern: '\benabled$'
+    description: 'Enable or disable the feature'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Feature toggle'
+
+  - pattern: '\bdisabled$'
+    description: 'Disable the feature when true'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Feature disable flag'
+
+  - pattern: '\bactive$'
+    description: 'Indicates if the resource is active'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Active status'
+
+  - pattern: '\bdefault$'
+    description: 'Default value when not specified'
+    example_type: 'boolean'
+    comment: 'Default setting'
+
+  - pattern: '\brequired$'
+    description: 'Indicates if this field is mandatory'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Required field flag'
+
+  - pattern: '\boptional$'
+    description: 'Indicates if this field is optional'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Optional field flag'
+
+  # Metrics and Monitoring
+  - pattern: '\bcount$'
+    description: 'Number of items or occurrences'
+    example_type: 'count'
+    minimum: 0
+    comment: 'Count value'
+
+  - pattern: '\bsize$'
+    description: 'Size in bytes or count'
+    example_type: 'size'
+    minimum: 0
+    comment: 'Size specification'
+
+  - pattern: '\blength$'
+    description: 'Length of the data or array'
+    example_type: 'count'
+    minimum: 0
+    comment: 'Length value'
+
+  - pattern: '\bweight$'
+    description: 'Weight for load balancing or priority'
+    example_type: 'weight'
+    minimum: 0
+    maximum: 100
+    comment: 'Weight value'
+
+  - pattern: '\bpriority$'
+    description: 'Priority level for ordering'
+    example_type: 'priority'
+    minimum: 0
+    maximum: 255
+    comment: 'Priority value'
+
+  # Status and State
+  - pattern: '\bstatus$'
+    description: 'Current status of the resource'
+    example_type: 'status'
+    comment: 'Status indicator'
+
+  - pattern: '\bstate$'
+    description: 'Current state of the resource'
+    example_type: 'state'
+    comment: 'State indicator'
+
+  - pattern: '\bphase$'
+    description: 'Current phase in the lifecycle'
+    example_type: 'phase'
+    comment: 'Lifecycle phase'
+
+  - pattern: '\bcondition$'
+    description: 'Condition status for the resource'
+    example_type: 'condition'
+    comment: 'Condition status'
+
+  # Configuration Objects
+  - pattern: '\bconfig$'
+    description: 'Configuration object for the resource'
+    example_type: 'object'
+    comment: 'Configuration container'
+
+  - pattern: '\bmetadata$'
+    description: 'Metadata associated with the resource'
+    example_type: 'object'
+    comment: 'Resource metadata'
+
+  - pattern: '\bspec$'
+    description: 'Specification for the desired state'
+    example_type: 'object'
+    comment: 'Desired state specification'
+
+  - pattern: '\bstatus$'
+    description: 'Status information for the current state'
+    example_type: 'object'
+    comment: 'Current state status'
+
+  # Collections and Lists
+  - pattern: '\blist$'
+    description: 'List of items or values'
+    example_type: 'array'
+    comment: 'Item collection'
+
+  - pattern: '\barray$'
+    description: 'Array of values or objects'
+    example_type: 'array'
+    comment: 'Value array'
+
+  - pattern: '\bitems$'
+    description: 'Items in a collection or array'
+    example_type: 'array'
+    comment: 'Collection items'
+
+  # HTTP and API
+  - pattern: '\bmethod$'
+    description: 'HTTP method (GET, POST, PUT, DELETE, etc.)'
+    example_type: 'http_method'
+    comment: 'HTTP verb'
+
+  - pattern: '\bpath$'
+    description: 'URL path for the endpoint'
+    example_type: 'path'
+    comment: 'API path'
+
+  - pattern: '\bendpoint$'
+    description: 'API endpoint URL or path'
+    example_type: 'endpoint'
+    comment: 'API endpoint'
+
+  - pattern: '\bheaders$'
+    description: 'HTTP headers for the request'
+    example_type: 'object'
+    comment: 'HTTP headers'
+
+  - pattern: '\bquery$'
+    description: 'Query parameters for the request'
+    example_type: 'object'
+    comment: 'Query parameters'
+
+  - pattern: '\bbody$'
+    description: 'Request or response body content'
+    example_type: 'object'
+    comment: 'Message body'
+
+  # Cloud and Infrastructure
+  - pattern: '\bregion$'
+    description: 'Geographic region for resource placement'
+    example_type: 'region'
+    comment: 'Cloud region'
+
+  - pattern: '\bzone$'
+    description: 'Availability zone within a region'
+    example_type: 'zone'
+    comment: 'Availability zone'
+
+  - pattern: '\bcluster$'
+    description: 'Cluster identifier for grouping'
+    example_type: 'cluster_name'
+    comment: 'Cluster identifier'
+
+  - pattern: '\bnamespace$'
+    description: 'Namespace for resource isolation'
+    example_type: 'namespace'
+    comment: 'Resource namespace'
+
+  - pattern: '\btenant$'
+    description: 'Tenant identifier for multi-tenancy'
+    example_type: 'tenant'
+    comment: 'Tenant ID'
+
+  # Load Balancing and Traffic
+  - pattern: '\bweight$'
+    description: 'Load balancing weight for traffic distribution'
+    example_type: 'weight'
+    minimum: 0
+    maximum: 100
+    comment: 'Traffic weight'
+
+  - pattern: '\bpriority$'
+    description: 'Priority for request processing'
+    example_type: 'priority'
+    minimum: 0
+    maximum: 255
+    comment: 'Processing priority'
+
+  - pattern: '\brate_limit$'
+    description: 'Rate limiting configuration'
+    example_type: 'rate_limit'
+    comment: 'Rate limiting'
+
+  # Health and Monitoring
+  - pattern: '\bhealth_check$'
+    description: 'Health check configuration for monitoring'
+    example_type: 'object'
+    comment: 'Health monitoring'
+
+  - pattern: '\bhealthy$'
+    description: 'Health status indicator'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Health status'
+
+  - pattern: '\bready$'
+    description: 'Readiness status for traffic acceptance'
+    example_type: 'boolean'
+    type: 'boolean'
+    comment: 'Readiness status'
+
+  # Versioning and Compatibility
+  - pattern: '\bversion$'
+    description: 'Version number or identifier'
+    example_type: 'version'
+    comment: 'Version information'
+
+  - pattern: '\bapi_version$'
+    description: 'API version for compatibility'
+    example_type: 'api_version'
+    comment: 'API version'
+
+  # Resource Management
+  - pattern: '\bowner$'
+    description: 'Owner or responsible party for the resource'
+    example_type: 'owner'
+    comment: 'Resource owner'
+
+  - pattern: '\bcreated_by$'
+    description: 'User or system that created the resource'
+    example_type: 'user'
+    comment: 'Creator identifier'
+
+  - pattern: '\bupdated_by$'
+    description: 'User or system that last updated the resource'
+    example_type: 'user'
+    comment: 'Last modifier'
+
+  # Labels and Tags
+  - pattern: '\blabels$'
+    description: 'Key-value labels for organization and selection'
+    example_type: 'object'
+    comment: 'Resource labels'
+
+  - pattern: '\btags$'
+    description: 'Tags for categorization and filtering'
+    example_type: 'object'
+    comment: 'Resource tags'
+
+  - pattern: '\bannotations$'
+    description: 'Additional metadata and notes'
+    example_type: 'object'
+    comment: 'Metadata annotations'
+
 example_generators:
   kebab-case-name: 'example-resource'
   email: 'user@example.com'
+  phone: '+1-555-123-4567'
+  hostname: 'api.example.com'
+  domain: 'example.com'
   ipv4: '192.0.2.1'  # RFC 5737 TEST-NET-1 (documentation/example use only)
-  uuid: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
-  url: 'https://example.com'
+  ipv6: '2001:db8::1'
   port: 8080
+  cidr: '192.0.2.0/24'
+  uuid: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
   timestamp: '2025-01-15T10:30:00Z'
+  ttl: 300
+  duration: '30s'
+  password: 'MySecureP@ssw0rd123!'
+  token: '[REDACTED_API_TOKEN]'
+  secret: 's3cr3t_v@lue_her3'
+  key: '[REDACTED_PUBLIC_KEY]'
+  certificate: '[REDACTED_CERTIFICATE]'
+  private_key: '[REDACTED_PRIVATE_KEY]'
+  boolean: true
+  count: 42
+  size: 1024
+  weight: 50
+  priority: 10
+  status: 'active'
+  state: 'running'
+  phase: 'pending'
+  condition: 'ready'
+  object: '{"key": "value"}'
+  array: '["item1", "item2", "item3"]'
+  http_method: 'GET'
+  path: '/api/v1/resources'
+  endpoint: 'https://api.example.com/v1/users'
+  region: 'us-west-2'
+  zone: 'us-west-2a'
+  cluster_name: 'production-cluster'
+  namespace: 'default'
+  tenant: 'customer-123'
+  rate_limit: '{"requests_per_second": 100}'
+  version: 'v1.2.3'
+  api_version: 'v1'
+  owner: 'team-platform'
+  user: 'user@example.com'
 
 # Configuration notes:
 # ==================

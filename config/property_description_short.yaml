@@ -10,8 +10,9 @@ version: "1.1.0"
 
 # Generation settings
 settings:
-  # Only process descriptions longer than this (chars)
-  min_source_length: 300
+  # Process descriptions of any length to add short/medium versions
+  # This enables adding short descriptions to properties with existing descriptions
+  min_source_length: 10
 
   # Short tier: Target length range (80-150 chars)
   target_min_length: 80
@@ -90,21 +91,94 @@ medium_overrides:
     Supports weighted distribution and session affinity across labeled endpoints.
 
 # Pattern-based templates (short tier)
-# These match property names across all schemas
+# Expanded comprehensive patterns for API property descriptions
 patterns:
-  # Domain and hostname patterns
+  # Identity and Naming
+  - pattern: '\.name$'
+    template: "Human-readable name for the resource."
+
+  - pattern: '\.display_name$'
+    template: "Display name for user interfaces."
+
+  - pattern: '\.title$'
+    template: "Human-readable title for the resource."
+
+  - pattern: '\.id$'
+    template: "Unique identifier for the resource."
+
+  - pattern: '\.uuid$'
+    template: "Unique identifier in UUID format."
+
+  # Network and Connectivity
+  - pattern: '\.url$'
+    template: "URL or URI reference."
+
+  - pattern: '\.uri$'
+    template: "Uniform Resource Identifier."
+
+  - pattern: '\.host$'
+    template: "Hostname or IP address of the target server."
+
+  - pattern: '\.hostname$'
+    template: "Fully qualified domain name."
+
+  - pattern: '\.dns_name$'
+    template: "DNS name for service discovery."
+
+  - pattern: '\.domain$'
+    template: "Domain name for routing and identification."
+
   - pattern: '\.domains$'
     template: "List of domain names for this resource. Supports wildcards."
 
-  - pattern: '\.fqdn$'
-    template: "Fully qualified domain name for this resource."
+  - pattern: '\.ip$'
+    template: "IPv4 address in dotted decimal notation."
 
-  - pattern: '\.hostname$'
-    template: "Hostname for this resource."
+  - pattern: '\.ipv4$'
+    template: "IPv4 address."
 
-  # Timeout patterns
+  - pattern: '\.ip_address$'
+    template: "IP address for network communication."
+
+  - pattern: '\.ipv6$'
+    template: "IPv6 address in colon-separated format."
+
+  - pattern: '\.port$'
+    template: "Network port number (1-65535)."
+
+  - pattern: '\.target_port$'
+    template: "Target port for backend connections."
+
+  - pattern: '\.network$'
+    template: "Network configuration and addressing."
+
+  - pattern: '\.subnet$'
+    template: "Subnet specification for network segmentation."
+
+  - pattern: '\.gateway$'
+    template: "Network gateway IP address."
+
+  # Time and Scheduling
+  - pattern: '\.timestamp$'
+    template: "Timestamp in ISO 8601 format with UTC timezone."
+
+  - pattern: '\.created_at$'
+    template: "Timestamp when the resource was created."
+
+  - pattern: '\.updated_at$'
+    template: "Timestamp when the resource was last updated."
+
+  - pattern: '\.deleted_at$'
+    template: "Timestamp when the resource was deleted."
+
+  - pattern: '\.expires_at$'
+    template: "Expiration timestamp for the resource."
+
+  - pattern: '\.ttl$'
+    template: "Time-to-live duration in seconds."
+
   - pattern: '\.timeout$'
-    template: "Timeout duration. Specify with unit (e.g., '30s', '5m')."
+    template: "Operation timeout duration."
 
   - pattern: '\.idle_timeout$'
     template: "Idle connection timeout duration."
@@ -112,40 +186,183 @@ patterns:
   - pattern: '\.connect_timeout$'
     template: "Connection establishment timeout duration."
 
-  # Health check patterns
+  # Security and Authentication
+  - pattern: '\.email$'
+    template: "Email address in RFC 5322 format."
+
+  - pattern: '\.password$'
+    template: "Password for authentication."
+
+  - pattern: '\.token$'
+    template: "Authentication or access token."
+
+  - pattern: '\.secret$'
+    template: "Sensitive configuration value."
+
+  - pattern: '\.key$'
+    template: "Cryptographic key material."
+
+  - pattern: '\.certificate$'
+    template: "X.509 certificate for TLS."
+
+  - pattern: '\.private_key$'
+    template: "Private key for asymmetric cryptography."
+
+  # Configuration and Settings
+  - pattern: '\.enabled$'
+    template: "Enable or disable the feature."
+
+  - pattern: '\.disabled$'
+    template: "Disable the feature when true."
+
+  - pattern: '\.active$'
+    template: "Indicates if the resource is active."
+
+  - pattern: '\.default$'
+    template: "Default value when not specified."
+
+  - pattern: '\.required$'
+    template: "Indicates if this field is mandatory."
+
+  - pattern: '\.optional$'
+    template: "Indicates if this field is optional."
+
+  # Metrics and Monitoring
+  - pattern: '\.count$'
+    template: "Number of items or occurrences."
+
+  - pattern: '\.size$'
+    template: "Size in bytes or count."
+
+  - pattern: '\.length$'
+    template: "Length of the data or array."
+
+  - pattern: '\.weight$'
+    template: "Weight for load balancing or priority."
+
+  - pattern: '\.priority$'
+    template: "Priority level for ordering."
+
+  # Status and State
+  - pattern: '\.status$'
+    template: "Current status of the resource."
+
+  - pattern: '\.state$'
+    template: "Current state of the resource."
+
+  - pattern: '\.phase$'
+    template: "Current phase in the lifecycle."
+
+  - pattern: '\.condition$'
+    template: "Condition status for the resource."
+
+  # Configuration Objects
+  - pattern: '\.config$'
+    template: "Configuration object for the resource."
+
+  - pattern: '\.metadata$'
+    template: "Metadata associated with the resource."
+
+  - pattern: '\.spec$'
+    template: "Specification for the desired state."
+
+  - pattern: '\.status$'
+    template: "Status information for the current state."
+
+  # Collections and Lists
+  - pattern: '\.list$'
+    template: "List of items or values."
+
+  - pattern: '\.array$'
+    template: "Array of values or objects."
+
+  - pattern: '\.items$'
+    template: "Items in a collection or array."
+
+  # HTTP and API
+  - pattern: '\.method$'
+    template: "HTTP method (GET, POST, PUT, DELETE, etc.)."
+
+  - pattern: '\.path$'
+    template: "URL path for the endpoint."
+
+  - pattern: '\.endpoint$'
+    template: "API endpoint URL or path."
+
+  - pattern: '\.headers$'
+    template: "HTTP headers for the request."
+
+  - pattern: '\.query$'
+    template: "Query parameters for the request."
+
+  - pattern: '\.body$'
+    template: "Request or response body content."
+
+  # Cloud and Infrastructure
+  - pattern: '\.region$'
+    template: "Geographic region for resource placement."
+
+  - pattern: '\.zone$'
+    template: "Availability zone within a region."
+
+  - pattern: '\.cluster$'
+    template: "Cluster identifier for grouping."
+
+  - pattern: '\.namespace$'
+    template: "Namespace for resource isolation."
+
+  - pattern: '\.tenant$'
+    template: "Tenant identifier for multi-tenancy."
+
+  # Load Balancing and Traffic
+  - pattern: '\.weight$'
+    template: "Load balancing weight for traffic distribution."
+
+  - pattern: '\.priority$'
+    template: "Priority for request processing."
+
+  - pattern: '\.rate_limit$'
+    template: "Rate limiting configuration."
+
+  # Health and Monitoring
   - pattern: '\.health_check'
     template: "Health check configuration for backend monitoring."
 
   - pattern: '\.healthcheck'
     template: "Health check configuration for backend monitoring."
 
-  # Retry patterns
-  - pattern: '\.retry_'
-    template: "Retry policy configuration for failed requests."
+  - pattern: '\.healthy$'
+    template: "Health status indicator."
 
-  - pattern: '\.num_retries$'
-    template: "Maximum number of retry attempts."
+  - pattern: '\.ready$'
+    template: "Readiness status for traffic acceptance."
 
-  # Port patterns
-  - pattern: '\.port$'
-    template: "Network port number. Range: 1-65535."
+  # Versioning and Compatibility
+  - pattern: '\.version$'
+    template: "Version number or identifier."
 
-  - pattern: '\.target_port$'
-    template: "Target port for backend connections."
+  - pattern: '\.api_version$'
+    template: "API version for compatibility."
 
-  # TLS/SSL patterns
-  - pattern: '\.tls_'
-    template: "TLS/SSL configuration settings."
+  # Resource Management
+  - pattern: '\.owner$'
+    template: "Owner or responsible party for the resource."
 
-  - pattern: '\.certificate'
-    template: "TLS certificate configuration."
+  - pattern: '\.created_by$'
+    template: "User or system that created the resource."
 
-  # Endpoint patterns
-  - pattern: '\.endpoints$'
-    template: "List of endpoint addresses for this resource."
+  - pattern: '\.updated_by$'
+    template: "User or system that last updated the resource."
 
-  - pattern: '\.endpoint_subsets$'
-    template: "Endpoint groups based on metadata labels."
+  # Labels and Tags
+  - pattern: '\.labels$'
+    template: "Key-value labels for organization and selection."
+
+  - pattern: '\.tags$'
+    template: "Tags for categorization and filtering."
+
+  - pattern: '\.annotations$'
+    template: "Additional metadata and notes."
 
   # Route patterns
   - pattern: '\.routes$'
@@ -192,6 +409,101 @@ medium_patterns:
     template: >-
       Routing rules for matching incoming requests based on path, headers, query parameters,
       or other criteria and forwarding them to appropriate backend services.
+
+  - pattern: '\.timeout$'
+    template: >-
+      Operation timeout duration in seconds or time units. Controls how long to wait
+      for an operation to complete before considering it failed.
+
+  - pattern: '\.endpoints$'
+    template: >-
+      List of endpoint addresses for this resource. Can include IP addresses, hostnames,
+      and port combinations for service connectivity.
+
+  - pattern: '\.certificate$'
+    template: >-
+      X.509 certificate for TLS/SSL encryption. Contains public key, issuer information,
+      validity period, and certificate chain for secure communications.
+
+  - pattern: '\.private_key$'
+    template: >-
+      Private key for asymmetric cryptography. Used with certificates for TLS handshakes,
+      digital signatures, and secure key exchange protocols.
+
+  - pattern: '\.config$'
+    template: >-
+      Configuration object containing settings and parameters. Defines behavior,
+      limits, and operational characteristics for the resource.
+
+  - pattern: '\.metadata$'
+    template: >-
+      Metadata associated with the resource including labels, annotations, and
+      additional context information for organization and automation.
+
+  - pattern: '\.spec$'
+    template: >-
+      Specification defining the desired state of the resource. Contains configuration
+      parameters, requirements, and operational settings for deployment.
+
+  - pattern: '\.status$'
+    template: >-
+      Current status information showing observed state, conditions, and health
+      indicators for monitoring and troubleshooting the resource.
+
+  - pattern: '\.labels$'
+    template: >-
+      Key-value labels for resource organization and selection. Used for grouping,
+      filtering, and policy application across resources.
+
+  - pattern: '\.annotations$'
+    template: >-
+      Additional metadata and notes for the resource. Provides extended context,
+      documentation, and tooling-specific information.
+
+  - pattern: '\.weight$'
+    template: >-
+      Load balancing weight for traffic distribution. Higher values receive more
+      traffic proportionally in weighted round-robin algorithms.
+
+  - pattern: '\.priority$'
+    template: >-
+      Priority level for ordering and precedence. Determines processing order
+      and resource allocation in competitive scenarios.
+
+  - pattern: '\.rate_limit$'
+    template: >-
+      Rate limiting configuration for traffic control. Defines request thresholds,
+      time windows, and actions for exceeding limits.
+
+  - pattern: '\.namespace$'
+    template: >-
+      Namespace for resource isolation and organization. Provides logical separation
+      between different environments, teams, or applications.
+
+  - pattern: '\.cluster$'
+    template: >-
+      Cluster identifier for grouping related resources. Enables coordinated
+      management and failover across distributed components.
+
+  - pattern: '\.region$'
+    template: >-
+      Geographic region for resource placement. Determines data residency,
+      latency characteristics, and compliance boundaries.
+
+  - pattern: '\.zone$'
+    template: >-
+      Availability zone within a region. Provides fault isolation and
+      high availability through geographic distribution.
+
+  - pattern: '\.version$'
+    template: >-
+      Version number or identifier for the resource. Enables compatibility
+      checking, rollback capabilities, and feature gating.
+
+  - pattern: '\.ttl$'
+    template: >-
+      Time-to-live duration controlling resource validity. Determines caching
+      behavior, lease expiration, and automatic cleanup timing.
 
 # Exclusions - never generate descriptions for these
 # Uses regex patterns matching "schemaName.propertyName"

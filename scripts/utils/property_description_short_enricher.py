@@ -85,7 +85,9 @@ class PropertyDescriptionShortEnricher:
 
     # Style transformation rules (pattern -> replacement)
     # Replacement can be string or callable for regex substitution
-    STYLE_TRANSFORMS: ClassVar[list[tuple[str, str | Callable[[re.Match[str]], str]]]] = [
+    STYLE_TRANSFORMS: ClassVar[
+        list[tuple[str, str | Callable[[re.Match[str]], str] | Callable[[re.Match[str]], str]]]
+    ] = [
         # Convert passive/descriptive to imperative
         (r"^The\s+(\w+)\s+(?:is|are)\s+(?:used\s+)?(?:to\s+)?", r"Specifies \1 "),
         (r"^This\s+(?:field|property|setting)\s+(?:is|specifies|defines|contains)\s+", ""),
@@ -251,6 +253,9 @@ class PropertyDescriptionShortEnricher:
         """
         self.stats.schemas_processed += 1
 
+        # Process schema description itself (Issue #330)
+        self._process_schema_description(schema_name, schema)
+
         # Process direct properties
         properties = schema.get("properties", {})
         for prop_name, prop in properties.items():
@@ -270,6 +275,93 @@ class PropertyDescriptionShortEnricher:
             items_props = items.get("properties", {})
             for prop_name, prop in items_props.items():
                 self._process_property(schema_name, prop_name, prop)
+
+    def _process_schema_description(self, schema_name: str, schema: dict[str, Any]) -> None:
+        """Process the schema's own description for short/medium tiers.
+
+        Args:
+            schema_name: Name of the schema
+            schema: Schema definition dictionary
+        """
+        description = schema.get("description", "")
+
+        # Skip if no description or not longer than minimum source length
+        if not description or len(description) <= self.settings.min_source_length:
+            return
+
+        # Check exclusions
+        if any(exclusion.match(schema_name) for exclusion in self.exclusions):
+            return
+
+        # Track if extensions already exist
+        has_short = X_F5XC_DESCRIPTION_SHORT in schema
+        has_medium = X_F5XC_DESCRIPTION_MEDIUM in schema
+
+        # Skip if both already exist and preserve_existing is True
+        if self.settings.preserve_existing and has_short and has_medium:
+            return
+
+        # Generate short description if not already present
+        if not (self.settings.preserve_existing and has_short):
+            short_desc = self._generate_short_description_for_schema(schema_name, description)
+            if short_desc:
+                schema[X_F5XC_DESCRIPTION_SHORT] = short_desc
+                self.stats.short_descriptions_added += 1
+
+        # Generate medium description if not already present
+        if not (self.settings.preserve_existing and has_medium):
+            medium_desc = self._generate_medium_description_for_schema(schema_name, description)
+            if medium_desc:
+                schema[X_F5XC_DESCRIPTION_MEDIUM] = medium_desc
+                self.stats.medium_descriptions_added += 1
+
+    def _generate_short_description_for_schema(
+        self,
+        schema_name: str,
+        description: str,
+    ) -> str | None:
+        """Generate short description for a schema.
+
+        Uses priority order:
+        1. Configuration override (schema-level)
+        2. First sentence extraction with style transformation
+
+        Args:
+            schema_name: Name of the parent schema (unused, kept for interface compatibility)
+            description: Original long description
+
+        Returns:
+            Short description (80-150 chars) or None if generation failed
+        """
+        # 1. Check for configuration override (schema-level overrides could be added to config)
+        # For now, skip config overrides for schemas
+
+        # 2. Extract and transform from description
+        short_desc = self._extract_and_transform(description)
+        if short_desc:
+            self.stats.descriptions_from_extraction += 1
+            return short_desc
+
+        return None
+
+    def _generate_medium_description_for_schema(
+        self,
+        schema_name: str,
+        description: str,
+    ) -> str | None:
+        """Generate medium description for a schema.
+
+        Uses multi-sentence extraction with style transformation.
+
+        Args:
+            schema_name: Name of the schema
+            description: Original long description
+
+        Returns:
+            Medium description (150-300 chars) or None if generation failed
+        """
+        # Extract and transform from description (multiple sentences)
+        return self._extract_and_transform_medium(description)
 
     def _process_property(
         self,
