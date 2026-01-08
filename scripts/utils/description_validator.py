@@ -17,7 +17,21 @@ class DescriptionValidator:
 
     Finds operations and schemas without descriptions and optionally
     generates placeholder descriptions from operationId or schema name.
+    Also detects and flags placeholder/generic descriptions that should
+    be replaced with meaningful content.
     """
+
+    # Placeholder description patterns to detect and flag
+    # These are generic or template descriptions that add no value
+    PLACEHOLDER_PATTERNS = [
+        r"can be used for messages where no values are needed",
+        r"this can be used for",
+        r"no description available",
+        r"placeholder for",
+        r"^a[n]?\s+\w+\s+that\s+",
+        r"^the\s+\w+\s+(is|are)\s+",
+        r"parameters?\s+(for|of)\s+\w+\s+",
+    ]
 
     def __init__(self, config_path: Path | None = None) -> None:
         """Initialize with configuration from file.
@@ -32,6 +46,9 @@ class DescriptionValidator:
         self._auto_generate_operation_descriptions = True
         self._auto_generate_schema_descriptions = False  # More risky, off by default
         self._description_prefix = ""  # Optional prefix like "[Auto-generated] "
+        self._placeholder_patterns = [
+            re.compile(p, re.IGNORECASE) for p in DescriptionValidator.PLACEHOLDER_PATTERNS
+        ]
 
         self._load_config(config_path)
 
@@ -40,6 +57,7 @@ class DescriptionValidator:
         self._operations_generated = 0
         self._schemas_missing = 0
         self._schemas_generated = 0
+        self._placeholder_descriptions = 0  # Track placeholder descriptions found
 
     def _load_config(self, config_path: Path) -> None:
         """Load configuration from YAML config."""
@@ -257,7 +275,7 @@ class DescriptionValidator:
             schema_name: Name of the schema.
 
         Returns:
-            Generated description.
+            Generated description or None.
         """
         # Handle patterns like:
         # schemaHttpLoadbalancerGetSpec -> HTTP loadbalancer get specification
@@ -306,6 +324,24 @@ class DescriptionValidator:
             description += "."
 
         return description
+
+    def _is_placeholder_description(self, description: str) -> bool:
+        """Check if a description is a placeholder/generic text.
+
+        Args:
+            description: Description text to check.
+
+        Returns:
+            True if description matches placeholder patterns.
+        """
+        if not description or not description.strip():
+            return True
+
+        for pattern in self._placeholder_patterns:
+            if pattern.search(description):
+                return True
+
+        return False
 
     def _format_resource_name(self, resource: str) -> str:
         """Format a resource name for human readability.
@@ -401,9 +437,84 @@ class DescriptionValidator:
             "operations_generated": self._operations_generated,
             "schemas_missing": self._schemas_missing,
             "schemas_generated": self._schemas_generated,
+            "placeholder_descriptions": self._placeholder_descriptions,
             "auto_generate_operation_descriptions": self._auto_generate_operation_descriptions,
             "auto_generate_schema_descriptions": self._auto_generate_schema_descriptions,
         }
+
+    def find_placeholder_descriptions(
+        self, spec: dict[str, Any]
+    ) -> dict[str, list[dict[str, str]]]:
+        """Find all descriptions that match placeholder patterns.
+
+        This is a read-only method that reports placeholder descriptions
+        without modifying the spec.
+
+        Args:
+            spec: OpenAPI specification dictionary.
+
+        Returns:
+            Dictionary with lists of placeholder descriptions for operations and schemas.
+        """
+        placeholders: dict[str, list[dict[str, str]]] = {
+            "operations": [],
+            "schemas": [],
+        }
+
+        # Check operations
+        for path, path_item in spec.get("paths", {}).items():
+            if not isinstance(path_item, dict):
+                continue
+
+            for method, operation in path_item.items():
+                if method.lower() not in (
+                    "get",
+                    "post",
+                    "put",
+                    "patch",
+                    "delete",
+                    "head",
+                    "options",
+                    "trace",
+                ):
+                    continue
+
+                if not isinstance(operation, dict):
+                    continue
+
+                description = operation.get("description", "")
+                if self._is_placeholder_description(description):
+                    placeholders["operations"].append(
+                        {
+                            "path": path,
+                            "method": method.upper(),
+                            "operationId": operation.get("operationId", ""),
+                            "description_preview": description[:100],
+                        },
+                    )
+
+        # Check schemas
+        for schema_name, schema_def in spec.get("components", {}).get("schemas", {}).items():
+            if not isinstance(schema_def, dict):
+                continue
+            if "$ref" in schema_def:
+                continue
+
+            description = schema_def.get("description", "")
+            if self._is_placeholder_description(description):
+                placeholders["schemas"].append(
+                    {
+                        "name": schema_name,
+                        "type": schema_def.get("type", "unknown"),
+                        "description_preview": description[:100],
+                    },
+                )
+
+        self._placeholder_descriptions = len(placeholders["operations"]) + len(
+            placeholders["schemas"]
+        )
+
+        return placeholders
 
     def find_missing_descriptions(self, spec: dict[str, Any]) -> dict[str, list[dict[str, str]]]:
         """Find all operations and schemas with missing descriptions.

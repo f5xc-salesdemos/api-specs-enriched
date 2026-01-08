@@ -88,9 +88,10 @@ X_F5XC_CRITICAL_RESOURCES = "x-f5xc-critical-resources"
 
 # Description tiers - used at BOTH index-level (domains) and property-level (Issue #330)
 # - Property level: 80-150 chars (short), 150-300 chars (medium) for properties with >300 char descriptions
-# - Index level: ~60 chars (short), ~150 chars (medium) for domain descriptions
+# - Index level: ~60 chars (short), ~150 chars (medium), ~500 chars (long) for domain descriptions
 X_F5XC_DESCRIPTION_SHORT = "x-f5xc-description-short"
 X_F5XC_DESCRIPTION_MEDIUM = "x-f5xc-description-medium"
+X_F5XC_DESCRIPTION_LONG = "x-f5xc-description-long"
 X_F5XC_COMPLEXITY = "x-f5xc-complexity"
 X_F5XC_REQUIRES_TIER = "x-f5xc-requires-tier"
 X_F5XC_IS_PREVIEW = "x-f5xc-is-preview"
@@ -171,6 +172,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_CRITICAL_RESOURCES,
         X_F5XC_DESCRIPTION_SHORT,
         X_F5XC_DESCRIPTION_MEDIUM,
+        X_F5XC_DESCRIPTION_LONG,
         X_F5XC_COMPLEXITY,
         X_F5XC_REQUIRES_TIER,
         X_F5XC_IS_PREVIEW,
