@@ -424,33 +424,41 @@ jobs:
           path: docs
           retention-days: 1
 
-      - name: Commit changes
+      - name: Create version bump PR
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.new_version }}
+          BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
         run: |
+          set -e
+          
+          BRANCH_NAME="version-bump/v${VERSION}"
+          
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
-          # Only add files that are tracked (specs/original is gitignored)
+          
+          git checkout -b "$BRANCH_NAME"
           git add .version CHANGELOG.md .etag
-
-          if git diff --staged --quiet; then
+          
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: bump version to v${VERSION} (${BUMP_TYPE} release)"
+            
+            git push -u origin "$BRANCH_NAME" || true
+            
+            PR_BODY="Automated version bump for ${BUMP_TYPE} release. Please review and merge."
+            
+            gh pr create \
+              --title "chore: bump version to v${VERSION}" \
+              --body "${PR_BODY}" \
+              --base main \
+              --head "$BRANCH_NAME" \
+              --label "release" || echo "PR creation skipped"
+            
+            echo "Version bump PR created"
+          else
             echo "No changes to commit"
-            exit 0
           fi
-
-          VERSION="${{ steps.version.outputs.new_version }}"
-          BUMP_TYPE="${{ steps.version.outputs.bump_type }}"
-
-          git commit -m "chore: update API specifications to v$VERSION
-
-          - Version bump: $BUMP_TYPE
-          - Downloaded latest specifications from F5 Distributed Cloud
-          - Applied unified enrichment pipeline
-          - Updated documentation portal"
-
-      - name: Push changes
-        if: steps.version.outputs.has_changes == 'true'
-        run: git push
 
       - name: Create release package
         if: steps.version.outputs.has_changes == 'true'
