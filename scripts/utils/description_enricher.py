@@ -22,7 +22,7 @@ from typing import Any
 
 import yaml
 
-from .extension_constants import X_F5XC_CLI_DOMAIN
+from .extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_DESCRIPTION_LONG
 
 
 @dataclass
@@ -129,6 +129,7 @@ class DescriptionEnricher:
         Applies descriptions from configuration to the spec's info section:
         - 'medium' tier → info.summary (for CLI banners, max 150 chars)
         - 'long' tier → info.description (for documentation, max 500 chars)
+        - Also adds x-f5xc-description-long extension for schema-level access
 
         Skips if no description is configured for the domain.
 
@@ -171,6 +172,9 @@ class DescriptionEnricher:
 
         # Apply long description to info.description
         spec["info"]["description"] = long_description
+
+        # Also add x-f5xc-description-long for schema-level access
+        spec["info"][X_F5XC_DESCRIPTION_LONG] = long_description
 
         # Apply medium description to info.summary (OpenAPI 3.0 standard field)
         if medium_description:
