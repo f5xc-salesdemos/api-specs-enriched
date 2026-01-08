@@ -1071,11 +1071,7 @@ def merge_specs_by_domain(
 
         # Use enriched description if available, otherwise fallback to generic
         enriched_desc = description_enricher.get_description(domain, tier="long")
-        description = (
-            enriched_desc
-            if enriched_desc
-            else f"F5 Distributed Cloud {domain_title} API specifications"
-        )
+        description = enriched_desc if enriched_desc else f"F5 Distributed Cloud {domain_title}"
 
         merged_spec = create_base_spec(
             title=domain_title,
