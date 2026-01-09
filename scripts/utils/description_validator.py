@@ -443,7 +443,8 @@ class DescriptionValidator:
         }
 
     def find_placeholder_descriptions(
-        self, spec: dict[str, Any]
+        self,
+        spec: dict[str, Any],
     ) -> dict[str, list[dict[str, str]]]:
         """Find all descriptions that match placeholder patterns.
 
@@ -511,7 +512,7 @@ class DescriptionValidator:
                 )
 
         self._placeholder_descriptions = len(placeholders["operations"]) + len(
-            placeholders["schemas"]
+            placeholders["schemas"],
         )
 
         return placeholders
