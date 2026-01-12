@@ -17,6 +17,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
   issues: write
   actions: read
 
@@ -414,25 +416,13 @@ jobs:
           - Upstream: $UPSTREAM_TS (ETag: $UPSTREAM_ETAG)
           EOF
 
-      - name: Build MkDocs site
+      - name: Upload docs artifact for deployment
         if: steps.version.outputs.has_changes == 'true'
-        run: |
-          echo "Building MkDocs site..."
-          mkdocs build
-
-          # Copy static assets that MkDocs doesn't process
-          echo "Copying Swagger UI, Scalar, and API specifications..."
-          cp -r docs/swagger-ui site/ 2>/dev/null || echo "Swagger UI not found"
-          cp -r docs/scalar site/ 2>/dev/null || echo "Scalar not found"
-          cp -r docs/specifications site/ 2>/dev/null || echo "Specifications not found"
-
-          # Verify build output
-          if [ ! -f "site/index.html" ]; then
-            echo "::error::MkDocs build failed - site/index.html not found"
-            exit 1
-          fi
-
-          echo "::notice::MkDocs site built successfully"
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: docs
+          retention-days: 1
 
       - name: Create version bump PR
         if: steps.version.outputs.has_changes == 'true'
@@ -442,22 +432,22 @@ jobs:
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
         run: |
           set -e
-
+          
           BRANCH_NAME="version-bump/v${VERSION}"
-
+          
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
+          
           git checkout -b "$BRANCH_NAME"
           git add .version CHANGELOG.md .etag
-
+          
           if ! git diff --staged --quiet; then
             git commit -m "chore: bump version to v${VERSION} (${BUMP_TYPE} release)"
-
+            
             git push -u origin "$BRANCH_NAME" || true
-
+            
             PR_BODY="Automated version bump for ${BUMP_TYPE} release."
-
+            
             gh pr create \
               --title "chore: bump version to v${VERSION}" \
               --body "${PR_BODY}" \
@@ -465,7 +455,7 @@ jobs:
               --head "$BRANCH_NAME" \
               --label "release,autorelease" \
               --autoMerge || echo "Note: Enable auto-merge in repo settings for fully automated workflow"
-
+            
             echo "Version bump PR created: https://github.com/${{ github.repository }}/pulls"
           else
             echo "No changes to commit"
@@ -567,40 +557,27 @@ jobs:
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Download docs artifact
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0  # Full history for mkdocs
+          name: docs-site
+          path: docs
 
-      - name: Setup Python
-        uses: actions/setup-python@v6.1.0
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Build MkDocs site
-        run: |
-          mkdocs build
-
-          # Copy static assets that MkDocs doesn't process
-          cp -r docs/swagger-ui site/ 2>/dev/null || echo "Swagger UI not found"
-          cp -r docs/scalar site/ 2>/dev/null || echo "Scalar not found"
-          cp -r docs/specifications site/ 2>/dev/null || echo "Specifications not found"
+          path: docs
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'docs: deploy documentation v${{ needs.sync-and-enrich.outputs.version }}'
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   # ==========================================================================
   # NOTIFY DOWNSTREAM REPOSITORIES
