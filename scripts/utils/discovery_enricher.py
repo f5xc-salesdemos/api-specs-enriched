@@ -84,6 +84,17 @@ class DiscoveryEnricher:
     patterns, and examples using x-discovered-* extensions.
     """
 
+    # Precompiled format detection patterns (Issue #391)
+    # These patterns are used in hot paths during format detection and path normalization
+    _UUID_PATTERN = re.compile(
+        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        re.IGNORECASE,
+    )
+    _DATETIME_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
+    _EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+    _URI_PATTERN = re.compile(r"^https?://")
+    _PATH_NORMALIZATION_PATTERN = re.compile(r"\{[^}]+\}")
+
     def __init__(self, config: dict) -> None:
         """Initialize the discovery enricher.
 
@@ -1149,23 +1160,19 @@ class DiscoveryEnricher:
 
     def _looks_like_uuid(self, value: str) -> bool:
         """Check if string looks like a UUID."""
-        uuid_pattern = re.compile(
-            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-            re.IGNORECASE,
-        )
-        return bool(uuid_pattern.match(value))
+        return bool(self._UUID_PATTERN.match(value))
 
     def _looks_like_datetime(self, value: str) -> bool:
         """Check if string looks like ISO datetime."""
-        return bool(re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value))
+        return bool(self._DATETIME_PATTERN.match(value))
 
     def _looks_like_email(self, value: str) -> bool:
         """Check if string looks like an email."""
-        return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", value))
+        return bool(self._EMAIL_PATTERN.match(value))
 
     def _looks_like_uri(self, value: str) -> bool:
         """Check if string looks like a URI."""
-        return bool(re.match(r"^https?://", value))
+        return bool(self._URI_PATTERN.match(value))
 
     def _find_discovered_operation(
         self,
@@ -1193,10 +1200,10 @@ class DiscoveryEnricher:
 
         # Try to match with different parameter styles
         # e.g., {namespace} vs {metadata.namespace}
-        normalized_path = re.sub(r"\{[^}]+\}", "{}", path)
+        normalized_path = self._PATH_NORMALIZATION_PATTERN.sub("{}", path)
 
         for disc_path, disc_item in discovered_paths.items():
-            disc_normalized = re.sub(r"\{[^}]+\}", "{}", disc_path)
+            disc_normalized = self._PATH_NORMALIZATION_PATTERN.sub("{}", disc_path)
             if disc_normalized == normalized_path and method in disc_item:
                 return disc_item[method]
 

@@ -22,6 +22,14 @@ except ImportError:
     LANGUAGE_TOOL_AVAILABLE = False
 
 
+# Precompiled regex patterns for performance (Issue #391)
+# These patterns are used in hot paths (called 56K+ times per pipeline run)
+_WHITESPACE_PATTERN = re.compile(r"[\t\r\f\v]+")
+_EXCESSIVE_NEWLINES_PATTERN = re.compile(r"\n{3,}")
+_DOUBLE_SPACES_PATTERN = re.compile(r" {2,}")
+_SENTENCE_SPLITTER_PATTERN = re.compile(r"([.!?]\s+)")
+
+
 class GrammarImprover:
     """Improves grammar in API specification text using LanguageTool.
 
@@ -124,13 +132,13 @@ class GrammarImprover:
     def _normalize_whitespace(self, text: str) -> str:
         """Normalize whitespace in text."""
         # Replace various whitespace characters with regular space
-        result = re.sub(r"[\t\r\f\v]+", " ", text)
+        result = _WHITESPACE_PATTERN.sub(" ", text)
         # Normalize newlines
-        return re.sub(r"\n{3,}", "\n\n", result)
+        return _EXCESSIVE_NEWLINES_PATTERN.sub("\n\n", result)
 
     def _fix_double_spaces(self, text: str) -> str:
         """Remove double spaces."""
-        return re.sub(r" {2,}", " ", text)
+        return _DOUBLE_SPACES_PATTERN.sub(" ", text)
 
     def _capitalize_sentences(self, text: str) -> str:
         """Capitalize first letter of sentences."""
@@ -138,7 +146,7 @@ class GrammarImprover:
             return text
 
         # Split by sentence-ending punctuation
-        sentences = re.split(r"([.!?]\s+)", text)
+        sentences = _SENTENCE_SPLITTER_PATTERN.split(text)
 
         result_parts = []
         for i, raw_part in enumerate(sentences):

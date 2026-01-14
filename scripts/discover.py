@@ -19,6 +19,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,6 +37,10 @@ from .discovery.report_generator import DiscoverySession, EndpointDiscovery
 from .discovery.schema_inferrer import InferredSchema
 
 console = Console()
+
+# Precompiled regex pattern for path parameter resolution (Issue #391)
+# This pattern is used in hot paths (called ~300+ times during discovery)
+_PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
 
 
 def load_config(config_path: Path) -> dict:
@@ -162,9 +167,7 @@ def resolve_path_params(path: str, namespace: str = "system") -> str:
     resolved = resolved.replace("{id}", "sample-id")
 
     # Handle any remaining parameters
-    import re
-
-    resolved = re.sub(r"\{[^}]+\}", "sample", resolved)
+    resolved = _PATH_PARAM_PATTERN.sub("sample", resolved)
 
     return resolved
 

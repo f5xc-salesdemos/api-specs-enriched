@@ -34,6 +34,9 @@ from rich.table import Table
 
 console = Console()
 
+# Precompiled regex pattern for component ref parsing (Issue #391)
+# This pattern is used in hot paths (called for every $ref in specs - ~5,000 times per pipeline run)
+_COMPONENT_REF_PATTERN = re.compile(r"^#/components/(\w+)/(.+)$")
 
 # Default configuration
 DEFAULT_CONFIG = {
@@ -149,7 +152,7 @@ def get_component_from_ref(ref: str) -> tuple[str, str] | None:
     Returns (component_type, component_name) or None if not a local component ref.
     """
     # Match patterns like #/components/schemas/MySchema
-    match = re.match(r"^#/components/(\w+)/(.+)$", ref)
+    match = _COMPONENT_REF_PATTERN.match(ref)
     if match:
         return match.group(1), match.group(2)
     return None

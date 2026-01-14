@@ -36,6 +36,26 @@ from validation_reporter import (
 
 console = Console()
 
+# Precompiled regex pattern for path parameter resolution (Issue #391)
+# Used in resolve_path_parameters() to handle remaining unresolved parameters
+_PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
+
+
+def _compile_patterns(patterns: list[str]) -> list[re.Pattern]:
+    """Compile glob patterns to regex for efficient matching (Issue #391).
+
+    Args:
+        patterns: List of glob patterns with * wildcards
+
+    Returns:
+        List of compiled regex patterns
+    """
+    compiled = []
+    for pattern in patterns:
+        regex_pattern = pattern.replace("*", ".*")
+        compiled.append(re.compile(regex_pattern))
+    return compiled
+
 
 # Default configuration
 DEFAULT_CONFIG = {
@@ -178,22 +198,37 @@ def should_skip_endpoint(endpoint: dict[str, Any], config: dict) -> tuple[bool, 
     if validate_methods and method not in validate_methods:
         return True, f"Method {method} not in validate list"
 
-    # Check path patterns to skip
+    # Check path patterns to skip (Issue #391: pattern caching)
     skip_patterns = filters.get("skip_patterns", [])
-    for pattern in skip_patterns:
-        regex_pattern = pattern.replace("*", ".*")
-        if re.match(regex_pattern, path):
-            return True, f"Path matches skip pattern: {pattern}"
+    if skip_patterns:
+        # Cache compiled patterns using function attribute
+        if not hasattr(should_skip_endpoint, "_skip_cache"):
+            should_skip_endpoint._skip_cache = {}
 
-    # Check include patterns
+        skip_cache_key = tuple(skip_patterns)
+        if skip_cache_key not in should_skip_endpoint._skip_cache:
+            should_skip_endpoint._skip_cache[skip_cache_key] = _compile_patterns(skip_patterns)
+
+        skip_compiled = should_skip_endpoint._skip_cache[skip_cache_key]
+        for i, pattern_obj in enumerate(skip_compiled):
+            if pattern_obj.match(path):
+                return True, f"Path matches skip pattern: {skip_patterns[i]}"
+
+    # Check include patterns (Issue #391: pattern caching)
     include_patterns = filters.get("include_patterns", [])
     if include_patterns:
-        matched = False
-        for pattern in include_patterns:
-            regex_pattern = pattern.replace("*", ".*")
-            if re.match(regex_pattern, path):
-                matched = True
-                break
+        # Cache compiled patterns using function attribute
+        if not hasattr(should_skip_endpoint, "_include_cache"):
+            should_skip_endpoint._include_cache = {}
+
+        include_cache_key = tuple(include_patterns)
+        if include_cache_key not in should_skip_endpoint._include_cache:
+            should_skip_endpoint._include_cache[include_cache_key] = _compile_patterns(
+                include_patterns
+            )
+
+        include_compiled = should_skip_endpoint._include_cache[include_cache_key]
+        matched = any(pattern_obj.match(path) for pattern_obj in include_compiled)
         if not matched:
             return True, "Path doesn't match any include pattern"
 
@@ -222,8 +257,8 @@ def resolve_path_parameters(path: str, parameters: list[dict]) -> str:
             sample_value = sample_values.get(param_name, "sample")
             resolved = resolved.replace(f"{{{param_name}}}", sample_value)
 
-    # Handle any remaining unresolved parameters
-    return re.sub(r"\{[^}]+\}", "sample", resolved)
+    # Handle any remaining unresolved parameters (Issue #391: precompiled pattern)
+    return _PATH_PARAM_PATTERN.sub("sample", resolved)
 
 
 async def validate_endpoint(
