@@ -322,12 +322,21 @@ async def validate_endpoint(
                 status="error",
                 error=str(e),
             )
-        except Exception as e:
+        except ValueError as e:
+            # Invalid URL format, invalid timeout, etc.
             return EndpointResult(
                 path=path,
                 method=method,
                 status="error",
-                error=str(e),
+                error=f"Configuration error: {str(e)}",
+            )
+        except TypeError as e:
+            # Type mismatches in config or URL construction
+            return EndpointResult(
+                path=path,
+                method=method,
+                status="error",
+                error=f"Type error in endpoint validation: {str(e)}",
             )
 
 
@@ -389,8 +398,14 @@ async def validate_spec(
             elif endpoint_result.status == "error":
                 result.errors.append(f"{endpoint_result.path}: {endpoint_result.error}")
 
-    except Exception as e:
-        result.errors.append(str(e))
+    except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
+        result.errors.append(f"Cannot read spec file {spec_path.name}: {str(e)}")
+    except json.JSONDecodeError as e:
+        result.errors.append(f"Spec file {spec_path.name} contains invalid JSON: {str(e)}")
+    except (KeyError, AttributeError, TypeError) as e:
+        result.errors.append(f"Spec structure error in {spec_path.name}: {str(e)}")
+    except ValueError as e:
+        result.errors.append(f"Invalid configuration for {spec_path.name}: {str(e)}")
 
     return result
 
