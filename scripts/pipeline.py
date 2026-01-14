@@ -1502,9 +1502,40 @@ def run_pipeline(
                 processed_specs[spec_file.name] = spec
                 stats.files_succeeded += 1
 
-            except Exception as e:
+            except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
                 stats.files_failed += 1
-                stats.errors.append({"file": spec_file.name, "error": str(e)})
+                stats.errors.append({
+                    "file": spec_file.name,
+                    "error": f"File I/O error: {str(e)}",
+                    "type": "file_error"
+                })
+                if not config.get("processing", {}).get("continue_on_error", True):
+                    raise
+            except json.JSONDecodeError as e:
+                stats.files_failed += 1
+                stats.errors.append({
+                    "file": spec_file.name,
+                    "error": f"Invalid JSON: {str(e)}",
+                    "type": "json_error"
+                })
+                if not config.get("processing", {}).get("continue_on_error", True):
+                    raise
+            except (KeyError, TypeError, ValueError) as e:
+                stats.files_failed += 1
+                stats.errors.append({
+                    "file": spec_file.name,
+                    "error": f"Spec structure error: {str(e)}",
+                    "type": "structure_error"
+                })
+                if not config.get("processing", {}).get("continue_on_error", True):
+                    raise
+            except AttributeError as e:
+                stats.files_failed += 1
+                stats.errors.append({
+                    "file": spec_file.name,
+                    "error": f"Pipeline processing error: {str(e)}",
+                    "type": "pipeline_error"
+                })
                 if not config.get("processing", {}).get("continue_on_error", True):
                     raise
 
