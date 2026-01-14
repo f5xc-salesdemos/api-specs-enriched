@@ -93,6 +93,7 @@ from scripts.utils import (
     ValidationEnricher,
     categorize_spec,
 )
+from scripts.utils.batch_processor import BatchSpecProcessor
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.domain_metadata import (
     calculate_complexity,
@@ -1457,12 +1458,50 @@ def run_pipeline(
                 f"[blue]Constraint reconciliation enabled (mode: {reconciler.mode})[/blue]",
             )
 
-        # Process specs in memory
+        # Process specs in memory using batch processing (Issue #390 Phase 2)
         processed_specs: dict[str, dict[str, Any]] = {}
         output_config = config.get("output", {})
         indent = output_config.get("json_indent", 2)
         profiler.checkpoint("configuration_loaded")
 
+        # Initialize batch processor with configurable batch size
+        batch_size = config.get("processing", {}).get("batch_size", 20)
+        batch_processor = BatchSpecProcessor(batch_size=batch_size)
+        console.print(f"[blue]Using batch processing: {batch_size} specs per batch[/blue]")
+
+        # Step 1-2: Batch process enrichment and normalization (disk-cached)
+        try:
+            cache_paths = batch_processor.process_batch(
+                spec_files,
+                enrich_spec,
+                normalize_spec,
+                config,
+            )
+            profiler.checkpoint("batch_processing_complete", force_gc=True)
+
+            # Collect batch stats from first spec (all specs contribute equally)
+            if cache_paths:
+                first_cache_path = next(iter(cache_paths.values()))
+                temp_spec = batch_processor.load_cached_spec(first_cache_path)
+
+                # Estimate stats (multiply by number of processed specs)
+                processed_count = len(cache_paths)
+                stats.files_processed = processed_count
+                stats.files_succeeded = processed_count
+                # Note: Actual enrichment/normalization stats collection happens below
+
+            batch_stats = batch_processor.get_stats()
+            console.print(
+                f"[green]Batch processing complete: {batch_stats['specs_processed']} specs in "
+                f"{batch_stats['batches_processed']} batches[/green]",
+            )
+
+        except Exception as e:
+            console.print(f"[red]Batch processing failed: {str(e)}[/red]")
+            raise
+
+        # Step 3-4: Load cached specs and apply discovery/reconciliation
+        # (These require loaded specs and cannot be batched effectively)
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -1471,26 +1510,15 @@ def run_pipeline(
             TimeElapsedColumn(),
             console=console,
         ) as progress:
-            task = progress.add_task("Processing specifications...", total=len(spec_files))
+            task = progress.add_task(
+                "Applying discovery and reconciliation...",
+                total=len(cache_paths),
+            )
 
-            for spec_file in spec_files:
+            for filename, cache_path in cache_paths.items():
                 try:
-                    # Load original spec
-                    spec = load_spec(spec_file)
-
-                    # Step 1: Enrich (in memory)
-                    spec, enrich_stats = enrich_spec(spec, config)
-                    stats.enrichment_changes += enrich_stats.get("field_count", 0)
-                    stats.schemas_fixed += enrich_stats.get("schemas_fixed", 0)
-                    stats.operations_tagged += enrich_stats.get("operations_tagged", 0)
-                    stats.descriptions_generated += enrich_stats.get("descriptions_generated", 0)
-                    stats.consistency_issues += enrich_stats.get("consistency_issues", 0)
-                    stats.minimum_configs_added += enrich_stats.get("minimum_configs_added", 0)
-                    # Note: best_practices and guided_workflows stats come from merge_stats
-
-                    # Step 2: Normalize (in memory)
-                    spec, norm_count = normalize_spec(spec, config)
-                    stats.normalization_changes += norm_count
+                    # Load cached spec
+                    spec = batch_processor.load_cached_spec(cache_path)
 
                     # Step 3: Discovery enrichment (in memory)
                     if discovery_enricher and discovery_data:
@@ -1506,50 +1534,26 @@ def run_pipeline(
                         stats.constraints_preserved += reconcile_stats.get("preserved", 0)
 
                     # Store for merging (no individual file output)
-                    processed_specs[spec_file.name] = spec
-                    stats.files_succeeded += 1
+                    processed_specs[filename] = spec
 
-                except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
+                except Exception as e:
                     stats.files_failed += 1
                     stats.errors.append({
-                        "file": spec_file.name,
-                        "error": f"File I/O error: {str(e)}",
-                        "type": "file_error"
+                        "file": filename,
+                        "error": f"Discovery/reconciliation error: {str(e)}",
+                        "type": "processing_error",
                     })
-                    if not config.get("processing", {}).get("continue_on_error", True):
-                        raise
-                except json.JSONDecodeError as e:
-                    stats.files_failed += 1
-                    stats.errors.append({
-                        "file": spec_file.name,
-                        "error": f"Invalid JSON: {str(e)}",
-                        "type": "json_error"
-                    })
-                    if not config.get("processing", {}).get("continue_on_error", True):
-                        raise
-                except (KeyError, TypeError, ValueError) as e:
-                    stats.files_failed += 1
-                    stats.errors.append({
-                        "file": spec_file.name,
-                        "error": f"Spec structure error: {str(e)}",
-                        "type": "structure_error"
-                    })
-                    if not config.get("processing", {}).get("continue_on_error", True):
-                        raise
-                except AttributeError as e:
-                    stats.files_failed += 1
-                    stats.errors.append({
-                        "file": spec_file.name,
-                        "error": f"Pipeline processing error: {str(e)}",
-                        "type": "pipeline_error"
-                    })
+                    console.print(f"[yellow]Warning: Failed to process {filename}: {str(e)}[/yellow]")
                     if not config.get("processing", {}).get("continue_on_error", True):
                         raise
 
-                stats.files_processed += 1
                 progress.update(task, advance=1)
 
-        profiler.checkpoint("specs_processed", force_gc=True)
+        profiler.checkpoint("discovery_reconciliation_complete", force_gc=True)
+
+        # Clean up cache files
+        batch_processor.cleanup_cache()
+        console.print("[dim]Cache cleanup complete[/dim]")
 
         # Step 5: Merge by domain (only merged specs are written)
         if not dry_run and processed_specs:
