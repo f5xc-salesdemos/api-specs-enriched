@@ -93,6 +93,7 @@ from scripts.utils import (
     ValidationEnricher,
     categorize_spec,
 )
+from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -1391,184 +1392,202 @@ def run_pipeline(
     Returns:
         PipelineStats with processing summary.
     """
-    stats = PipelineStats()
+    # Initialize memory profiler (Issue #390)
+    with MemoryProfiler() as profiler:
+        profiler.checkpoint("pipeline_start")
 
-    # Find all spec files
-    spec_files = sorted(input_dir.glob("*.json"))
-    if not spec_files:
-        console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
+        stats = PipelineStats()
+
+        # Find all spec files
+        spec_files = sorted(input_dir.glob("*.json"))
+        if not spec_files:
+            console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
+            return stats
+
+        console.print(f"[blue]Found {len(spec_files)} specification files[/blue]")
+        profiler.checkpoint("specs_discovered")
+
+        # Create output directory and clean old files
+        if not dry_run:
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            # Remove all existing JSON spec files to ensure clean state
+            # This prevents rogue/stale files from previous runs
+            for json_file in output_dir.glob("*.json"):
+                json_file.unlink()
+                console.print(f"[dim]Cleaned: {json_file.name}[/dim]")
+
+        # Load discovery enrichment configuration
+        discovery_config_path = Path("config/discovery_enrichment.yaml")
+        discovery_config: dict = {}
+        if discovery_config_path.exists():
+            with discovery_config_path.open() as f:
+                discovery_config = yaml.safe_load(f) or {}
+
+        # Check if discovery enrichment is enabled
+        discovery_enabled = config.get("discovery_enrichment", {}).get("enabled", False)
+        discovery_enricher = None
+        discovery_data = None
+
+        if discovery_enabled:
+            discovery_settings = discovery_config.get("discovery_enrichment", {})
+            discovered_dir = Path(discovery_settings.get("discovered_specs_dir", "specs/discovered"))
+
+            if discovered_dir.exists() and (discovered_dir / "openapi.json").exists():
+                console.print("[blue]Loading discovery data for enrichment...[/blue]")
+                discovery_enricher = DiscoveryEnricher(discovery_settings)
+                discovery_data = discovery_enricher.load_discovery_data(discovered_dir)
+                console.print(
+                    f"[green]Discovery data loaded: {len(discovery_data.schemas)} schemas, "
+                    f"{len(discovery_data.paths)} paths[/green]",
+                )
+            else:
+                console.print(
+                    "[yellow]Discovery enrichment enabled but no discovery data found[/yellow]",
+                )
+
+        # Check if constraint reconciliation is enabled
+        reconciliation_config = discovery_config.get("reconciliation", {})
+        reconciliation_enabled = reconciliation_config.get("enabled", True) and discovery_enabled
+        reconciler = None
+
+        if reconciliation_enabled:
+            reconciler = ConstraintReconciler(reconciliation_config)
+            console.print(
+                f"[blue]Constraint reconciliation enabled (mode: {reconciler.mode})[/blue]",
+            )
+
+        # Process specs in memory
+        processed_specs: dict[str, dict[str, Any]] = {}
+        output_config = config.get("output", {})
+        indent = output_config.get("json_indent", 2)
+        profiler.checkpoint("configuration_loaded")
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Processing specifications...", total=len(spec_files))
+
+            for spec_file in spec_files:
+                try:
+                    # Load original spec
+                    spec = load_spec(spec_file)
+
+                    # Step 1: Enrich (in memory)
+                    spec, enrich_stats = enrich_spec(spec, config)
+                    stats.enrichment_changes += enrich_stats.get("field_count", 0)
+                    stats.schemas_fixed += enrich_stats.get("schemas_fixed", 0)
+                    stats.operations_tagged += enrich_stats.get("operations_tagged", 0)
+                    stats.descriptions_generated += enrich_stats.get("descriptions_generated", 0)
+                    stats.consistency_issues += enrich_stats.get("consistency_issues", 0)
+                    stats.minimum_configs_added += enrich_stats.get("minimum_configs_added", 0)
+                    # Note: best_practices and guided_workflows stats come from merge_stats
+
+                    # Step 2: Normalize (in memory)
+                    spec, norm_count = normalize_spec(spec, config)
+                    stats.normalization_changes += norm_count
+
+                    # Step 3: Discovery enrichment (in memory)
+                    if discovery_enricher and discovery_data:
+                        spec = discovery_enricher.enrich_with_discoveries(spec, discovery_data)
+                        discovery_stats = discovery_enricher.get_stats()
+                        stats.discovery_enriched += discovery_stats.get("fields_enriched", 0)
+
+                    # Step 4: Constraint reconciliation (in memory)
+                    if reconciler:
+                        spec, reconcile_report = reconciler.reconcile_spec(spec)
+                        reconcile_stats = reconcile_report.get("statistics", {})
+                        stats.constraints_reconciled += reconcile_stats.get("reconciled", 0)
+                        stats.constraints_preserved += reconcile_stats.get("preserved", 0)
+
+                    # Store for merging (no individual file output)
+                    processed_specs[spec_file.name] = spec
+                    stats.files_succeeded += 1
+
+                except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
+                    stats.files_failed += 1
+                    stats.errors.append({
+                        "file": spec_file.name,
+                        "error": f"File I/O error: {str(e)}",
+                        "type": "file_error"
+                    })
+                    if not config.get("processing", {}).get("continue_on_error", True):
+                        raise
+                except json.JSONDecodeError as e:
+                    stats.files_failed += 1
+                    stats.errors.append({
+                        "file": spec_file.name,
+                        "error": f"Invalid JSON: {str(e)}",
+                        "type": "json_error"
+                    })
+                    if not config.get("processing", {}).get("continue_on_error", True):
+                        raise
+                except (KeyError, TypeError, ValueError) as e:
+                    stats.files_failed += 1
+                    stats.errors.append({
+                        "file": spec_file.name,
+                        "error": f"Spec structure error: {str(e)}",
+                        "type": "structure_error"
+                    })
+                    if not config.get("processing", {}).get("continue_on_error", True):
+                        raise
+                except AttributeError as e:
+                    stats.files_failed += 1
+                    stats.errors.append({
+                        "file": spec_file.name,
+                        "error": f"Pipeline processing error: {str(e)}",
+                        "type": "pipeline_error"
+                    })
+                    if not config.get("processing", {}).get("continue_on_error", True):
+                        raise
+
+                stats.files_processed += 1
+                progress.update(task, advance=1)
+
+        profiler.checkpoint("specs_processed", force_gc=True)
+
+        # Step 5: Merge by domain (only merged specs are written)
+        if not dry_run and processed_specs:
+            console.print("[blue]Merging specifications by domain...[/blue]")
+            version = get_version()
+
+            domain_specs, merge_stats = merge_specs_by_domain(processed_specs, version)
+            stats.domains_created = merge_stats["domains"]
+            stats.paths_merged = merge_stats["paths"]
+            stats.schemas_merged = merge_stats["schemas"]
+            stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
+            stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
+
+            profiler.checkpoint("specs_merged")
+
+            # Save domain specs
+            for domain, spec in domain_specs.items():
+                save_spec(spec, output_dir / f"{domain}.json", indent=indent)
+
+            # Create master spec
+            master = create_master_spec(domain_specs, version)
+            save_spec(master, output_dir / "openapi.json", indent=indent)
+
+            # Create index
+            index = create_spec_index(domain_specs, version)
+            save_spec(index, output_dir / "index.json", indent=indent)
+
+            console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
+
+        profiler.checkpoint("pipeline_complete")
+
+        # Save memory profiling report (Issue #390)
+        report_dir = Path("reports")
+        report_dir.mkdir(parents=True, exist_ok=True)
+        profiler.save_report(report_dir / "memory-profile.json")
+        console.print("[blue]Memory profiling report saved to reports/memory-profile.json[/blue]")
+
         return stats
-
-    console.print(f"[blue]Found {len(spec_files)} specification files[/blue]")
-
-    # Create output directory and clean old files
-    if not dry_run:
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Remove all existing JSON spec files to ensure clean state
-        # This prevents rogue/stale files from previous runs
-        for json_file in output_dir.glob("*.json"):
-            json_file.unlink()
-            console.print(f"[dim]Cleaned: {json_file.name}[/dim]")
-
-    # Load discovery enrichment configuration
-    discovery_config_path = Path("config/discovery_enrichment.yaml")
-    discovery_config: dict = {}
-    if discovery_config_path.exists():
-        with discovery_config_path.open() as f:
-            discovery_config = yaml.safe_load(f) or {}
-
-    # Check if discovery enrichment is enabled
-    discovery_enabled = config.get("discovery_enrichment", {}).get("enabled", False)
-    discovery_enricher = None
-    discovery_data = None
-
-    if discovery_enabled:
-        discovery_settings = discovery_config.get("discovery_enrichment", {})
-        discovered_dir = Path(discovery_settings.get("discovered_specs_dir", "specs/discovered"))
-
-        if discovered_dir.exists() and (discovered_dir / "openapi.json").exists():
-            console.print("[blue]Loading discovery data for enrichment...[/blue]")
-            discovery_enricher = DiscoveryEnricher(discovery_settings)
-            discovery_data = discovery_enricher.load_discovery_data(discovered_dir)
-            console.print(
-                f"[green]Discovery data loaded: {len(discovery_data.schemas)} schemas, "
-                f"{len(discovery_data.paths)} paths[/green]",
-            )
-        else:
-            console.print(
-                "[yellow]Discovery enrichment enabled but no discovery data found[/yellow]",
-            )
-
-    # Check if constraint reconciliation is enabled
-    reconciliation_config = discovery_config.get("reconciliation", {})
-    reconciliation_enabled = reconciliation_config.get("enabled", True) and discovery_enabled
-    reconciler = None
-
-    if reconciliation_enabled:
-        reconciler = ConstraintReconciler(reconciliation_config)
-        console.print(
-            f"[blue]Constraint reconciliation enabled (mode: {reconciler.mode})[/blue]",
-        )
-
-    # Process specs in memory
-    processed_specs: dict[str, dict[str, Any]] = {}
-    output_config = config.get("output", {})
-    indent = output_config.get("json_indent", 2)
-
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Processing specifications...", total=len(spec_files))
-
-        for spec_file in spec_files:
-            try:
-                # Load original spec
-                spec = load_spec(spec_file)
-
-                # Step 1: Enrich (in memory)
-                spec, enrich_stats = enrich_spec(spec, config)
-                stats.enrichment_changes += enrich_stats.get("field_count", 0)
-                stats.schemas_fixed += enrich_stats.get("schemas_fixed", 0)
-                stats.operations_tagged += enrich_stats.get("operations_tagged", 0)
-                stats.descriptions_generated += enrich_stats.get("descriptions_generated", 0)
-                stats.consistency_issues += enrich_stats.get("consistency_issues", 0)
-                stats.minimum_configs_added += enrich_stats.get("minimum_configs_added", 0)
-                # Note: best_practices and guided_workflows stats come from merge_stats
-
-                # Step 2: Normalize (in memory)
-                spec, norm_count = normalize_spec(spec, config)
-                stats.normalization_changes += norm_count
-
-                # Step 3: Discovery enrichment (in memory)
-                if discovery_enricher and discovery_data:
-                    spec = discovery_enricher.enrich_with_discoveries(spec, discovery_data)
-                    discovery_stats = discovery_enricher.get_stats()
-                    stats.discovery_enriched += discovery_stats.get("fields_enriched", 0)
-
-                # Step 4: Constraint reconciliation (in memory)
-                if reconciler:
-                    spec, reconcile_report = reconciler.reconcile_spec(spec)
-                    reconcile_stats = reconcile_report.get("statistics", {})
-                    stats.constraints_reconciled += reconcile_stats.get("reconciled", 0)
-                    stats.constraints_preserved += reconcile_stats.get("preserved", 0)
-
-                # Store for merging (no individual file output)
-                processed_specs[spec_file.name] = spec
-                stats.files_succeeded += 1
-
-            except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
-                stats.files_failed += 1
-                stats.errors.append({
-                    "file": spec_file.name,
-                    "error": f"File I/O error: {str(e)}",
-                    "type": "file_error"
-                })
-                if not config.get("processing", {}).get("continue_on_error", True):
-                    raise
-            except json.JSONDecodeError as e:
-                stats.files_failed += 1
-                stats.errors.append({
-                    "file": spec_file.name,
-                    "error": f"Invalid JSON: {str(e)}",
-                    "type": "json_error"
-                })
-                if not config.get("processing", {}).get("continue_on_error", True):
-                    raise
-            except (KeyError, TypeError, ValueError) as e:
-                stats.files_failed += 1
-                stats.errors.append({
-                    "file": spec_file.name,
-                    "error": f"Spec structure error: {str(e)}",
-                    "type": "structure_error"
-                })
-                if not config.get("processing", {}).get("continue_on_error", True):
-                    raise
-            except AttributeError as e:
-                stats.files_failed += 1
-                stats.errors.append({
-                    "file": spec_file.name,
-                    "error": f"Pipeline processing error: {str(e)}",
-                    "type": "pipeline_error"
-                })
-                if not config.get("processing", {}).get("continue_on_error", True):
-                    raise
-
-            stats.files_processed += 1
-            progress.update(task, advance=1)
-
-    # Step 5: Merge by domain (only merged specs are written)
-    if not dry_run and processed_specs:
-        console.print("[blue]Merging specifications by domain...[/blue]")
-        version = get_version()
-
-        domain_specs, merge_stats = merge_specs_by_domain(processed_specs, version)
-        stats.domains_created = merge_stats["domains"]
-        stats.paths_merged = merge_stats["paths"]
-        stats.schemas_merged = merge_stats["schemas"]
-        stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
-        stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
-
-        # Save domain specs
-        for domain, spec in domain_specs.items():
-            save_spec(spec, output_dir / f"{domain}.json", indent=indent)
-
-        # Create master spec
-        master = create_master_spec(domain_specs, version)
-        save_spec(master, output_dir / "openapi.json", indent=indent)
-
-        # Create index
-        index = create_spec_index(domain_specs, version)
-        save_spec(index, output_dir / "index.json", indent=indent)
-
-        console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
-
-    return stats
 
 
 def print_summary(stats: PipelineStats) -> None:
