@@ -32,6 +32,12 @@ DEFAULT_CONFIG = {
     },
 }
 
+# Security limits for ZIP extraction
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB per file
+MAX_TOTAL_SIZE = 500 * 1024 * 1024  # 500 MB total extracted
+MAX_COMPRESSION_RATIO = 100  # Reject >100:1 compression
+MAX_FILE_COUNT = 1000  # Maximum number of files
+
 
 def load_config(config_path: Path | None = None) -> dict:
     """Load configuration from YAML file or use defaults."""
@@ -147,6 +153,51 @@ def download_zip(url: str, output_path: Path, timeout: int = 300) -> bool:
         return False
 
 
+def validate_zip_member_path(member_name: str) -> bool:
+    """Validate ZIP member path for security.
+
+    Rejects:
+    - Absolute paths
+    - Relative path components (..)
+    - Hidden paths with directory traversal attempts
+
+    Returns:
+        True if path is safe, False otherwise
+    """
+    # Reject absolute paths
+    if member_name.startswith("/"):
+        return False
+
+    # Reject path traversal attempts
+    if ".." in member_name.split("/"):
+        return False
+
+    # Reject paths starting with traversal
+    if member_name.startswith("../"):
+        return False
+
+    return True
+
+
+def validate_zip_member_size(info: zipfile.ZipInfo) -> tuple[bool, str]:
+    """Validate ZIP member for size-based attacks.
+
+    Returns:
+        (is_valid, error_message)
+    """
+    # Check file size limit
+    if info.file_size > MAX_FILE_SIZE:
+        return False, f"File too large: {info.filename} ({info.file_size} bytes)"
+
+    # Check compression ratio (zip bomb detection)
+    if info.file_size > 0 and info.compress_size > 0:
+        ratio = info.file_size / info.compress_size
+        if ratio > MAX_COMPRESSION_RATIO:
+            return False, f"Suspicious compression ratio: {info.filename} ({ratio:.0f}:1)"
+
+    return True, ""
+
+
 def extract_zip(zip_path: Path, output_dir: Path) -> list[str]:
     """Extract ZIP file to output directory."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -165,8 +216,33 @@ def extract_zip(zip_path: Path, output_dir: Path) -> list[str]:
         task = progress.add_task("Extracting specifications...", total=None)
 
         with zipfile.ZipFile(zip_path, "r") as zf:
+            total_size = 0  # Track cumulative size
+
             for member in zf.namelist():
                 if member.endswith(".json"):
+                    # Security: Validate path for traversal attempts
+                    if not validate_zip_member_path(member):
+                        console.print(f"[yellow]⚠️  Skipping suspicious path: {member}[/yellow]")
+                        continue
+
+                    # Security: Validate file size and compression ratio
+                    info = zf.getinfo(member)
+                    is_valid, error_msg = validate_zip_member_size(info)
+                    if not is_valid:
+                        console.print(f"[yellow]⚠️  {error_msg}[/yellow]")
+                        continue
+
+                    # Security: Check total extracted size
+                    total_size += info.file_size
+                    if total_size > MAX_TOTAL_SIZE:
+                        raise ValueError(
+                            f"Total extraction size exceeds limit: {total_size} > {MAX_TOTAL_SIZE}"
+                        )
+
+                    # Security: Check file count
+                    if len(extracted_files) >= MAX_FILE_COUNT:
+                        raise ValueError(f"File count exceeds limit: {MAX_FILE_COUNT}")
+
                     # Extract directly to output dir (flatten structure)
                     filename = Path(member).name
                     target_path = output_dir / filename
