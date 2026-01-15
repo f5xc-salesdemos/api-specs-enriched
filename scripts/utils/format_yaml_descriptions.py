@@ -26,8 +26,8 @@ def wrap_text(text: str, max_width: int = 100) -> list[str]:
     """
     # Preserve multiple spaces and special characters
     words = text.split()
-    lines = []
-    current_line = []
+    lines: list[str] = []
+    current_line: list[str] = []
     current_length = 0
 
     for word in words:
@@ -66,7 +66,7 @@ def convert_long_strings_to_folded_blocks(
         Modified data structure with long strings as folded blocks
     """
     if isinstance(data, dict):
-        result = {}
+        result: dict[str, str | dict | list] = {}
         for key, value in data.items():
             current_path = f"{_path}.{key}" if _path else key
 
@@ -77,7 +77,10 @@ def convert_long_strings_to_folded_blocks(
                 result[key] = "\n".join(wrapped_lines)
             elif isinstance(value, (dict, list)):
                 result[key] = convert_long_strings_to_folded_blocks(
-                    value, max_line_length, wrap_width, current_path,
+                    value,
+                    max_line_length,
+                    wrap_width,
+                    current_path,
                 )
             else:
                 result[key] = value
@@ -88,7 +91,10 @@ def convert_long_strings_to_folded_blocks(
         return [
             (
                 convert_long_strings_to_folded_blocks(
-                    item, max_line_length, wrap_width, f"{_path}[{i}]",
+                    item,
+                    max_line_length,
+                    wrap_width,
+                    f"{_path}[{i}]",
                 )
                 if isinstance(item, (dict, list))
                 else "\n".join(wrap_text(item, wrap_width))
@@ -111,7 +117,10 @@ def folded_scalar_representer(dumper: yaml.Dumper, data: str) -> yaml.ScalarNode
 
 
 def convert_yaml_file(
-    yaml_file: Path, max_line_length: int = 120, wrap_width: int = 100, dry_run: bool = False,
+    yaml_file: Path,
+    max_line_length: int = 120,
+    wrap_width: int = 100,
+    dry_run: bool = False,
 ) -> tuple[int, int]:
     """Convert long strings in a YAML file to folded blocks.
 

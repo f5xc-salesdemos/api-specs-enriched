@@ -1,0 +1,970 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+
+"""Tests for scripts/validate.py - Automated validation against live F5 XC endpoints.
+
+Tests cover:
+- Configuration loading and merging
+- Authentication header generation
+- Base URL resolution
+- Endpoint extraction from OpenAPI specs
+- Endpoint filtering logic
+- Pattern compilation and caching
+"""
+
+import os
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from scripts.validate import (
+    DEFAULT_CONFIG,
+    _compile_patterns,
+    _deep_merge,
+    extract_endpoints,
+    get_auth_headers,
+    get_base_url,
+    load_config,
+    should_skip_endpoint,
+)
+
+
+class TestConfigurationLoading:
+    """Test configuration loading and merging."""
+
+    def test_load_config_uses_defaults_when_no_file(self):
+        """Should return DEFAULT_CONFIG when no config file exists."""
+        result = load_config(Path("/nonexistent/config.yaml"))
+        assert result == DEFAULT_CONFIG
+
+    def test_load_config_uses_defaults_when_path_is_none(self):
+        """Should return DEFAULT_CONFIG when path is None."""
+        result = load_config(None)
+        assert result == DEFAULT_CONFIG
+
+    def test_load_config_merges_with_defaults(self, tmp_path):
+        """Should deep merge loaded config with defaults."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("""
+api:
+  timeout: 60
+scope:
+  sample_size: 10
+new_key: new_value
+""")
+
+        result = load_config(config_file)
+
+        # Check merged values
+        assert result["api"]["timeout"] == 60
+        assert result["api"]["base_url"] == DEFAULT_CONFIG["api"]["base_url"]
+        assert result["scope"]["sample_size"] == 10
+        assert result["scope"]["validate_methods"] == DEFAULT_CONFIG["scope"]["validate_methods"]
+        assert result["new_key"] == "new_value"
+
+    def test_deep_merge_preserves_base_values(self):
+        """Should preserve base dict values not in override."""
+        base = {"a": 1, "b": {"c": 2, "d": 3}}
+        override = {"b": {"c": 20}}
+
+        result = _deep_merge(base, override)
+
+        assert result["a"] == 1
+        assert result["b"]["c"] == 20
+        assert result["b"]["d"] == 3
+
+    def test_deep_merge_handles_nested_dicts(self):
+        """Should recursively merge nested dictionaries."""
+        base = {"level1": {"level2": {"level3": "base"}}}
+        override = {"level1": {"level2": {"level3": "override", "new": "value"}}}
+
+        result = _deep_merge(base, override)
+
+        assert result["level1"]["level2"]["level3"] == "override"
+        assert result["level1"]["level2"]["new"] == "value"
+
+    def test_deep_merge_overwrites_non_dict_values(self):
+        """Should overwrite non-dict values completely."""
+        base = {"key": "value", "list": [1, 2, 3]}
+        override = {"key": "new_value", "list": [4, 5]}
+
+        result = _deep_merge(base, override)
+
+        assert result["key"] == "new_value"
+        assert result["list"] == [4, 5]
+
+
+class TestAuthenticationHeaders:
+    """Test authentication header generation."""
+
+    @patch.dict(os.environ, {"F5XC_API_TOKEN": "test-token-12345"})
+    def test_get_auth_headers_uses_default_env_var(self):
+        """Should use F5XC_API_TOKEN by default."""
+        config = DEFAULT_CONFIG
+
+        headers = get_auth_headers(config)
+
+        assert headers["Authorization"] == "APIToken test-token-12345"
+
+    @patch.dict(os.environ, {"CUSTOM_TOKEN": "custom-token-67890"})
+    def test_get_auth_headers_uses_custom_env_var(self):
+        """Should use custom env var from config."""
+        config = {
+            "authentication": {
+                "env_vars": {
+                    "api_token": "CUSTOM_TOKEN",
+                },
+            },
+        }
+
+        headers = get_auth_headers(config)
+
+        assert headers["Authorization"] == "APIToken custom-token-67890"
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_get_auth_headers_returns_empty_when_no_token(self):
+        """Should return empty dict when no token in environment."""
+        config = DEFAULT_CONFIG
+
+        headers = get_auth_headers(config)
+
+        assert headers == {}
+
+    @patch.dict(os.environ, {"F5XC_API_TOKEN": ""})
+    def test_get_auth_headers_returns_empty_for_empty_token(self):
+        """Should return empty dict when token is empty string."""
+        config = DEFAULT_CONFIG
+
+        headers = get_auth_headers(config)
+
+        assert headers == {}
+
+
+class TestBaseURLResolution:
+    """Test API base URL resolution."""
+
+    @patch.dict(os.environ, {"F5XC_API_URL": "https://custom.api.com/"})
+    def test_get_base_url_prefers_env_var(self):
+        """Should prefer environment variable over config."""
+        config = {
+            "api": {"base_url": "https://config.api.com"},
+            "authentication": {"env_vars": {"api_url": "F5XC_API_URL"}},
+        }
+
+        url = get_base_url(config)
+
+        assert url == "https://custom.api.com"
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_get_base_url_falls_back_to_config(self):
+        """Should use config base_url when env var not set."""
+        config = {
+            "api": {"base_url": "https://config.api.com/"},
+            "authentication": {"env_vars": {}},
+        }
+
+        url = get_base_url(config)
+
+        assert url == "https://config.api.com"
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_get_base_url_uses_default_when_no_config(self):
+        """Should use default URL when nothing configured."""
+        config = {"authentication": {"env_vars": {}}}
+
+        url = get_base_url(config)
+
+        assert url == "https://console.ves.volterra.io"
+
+    @patch.dict(os.environ, {"F5XC_API_URL": "https://api.com/trailing/slash/"})
+    def test_get_base_url_strips_trailing_slash(self):
+        """Should strip trailing slashes from URL."""
+        config = {"authentication": {"env_vars": {"api_url": "F5XC_API_URL"}}}
+
+        url = get_base_url(config)
+
+        assert url == "https://api.com/trailing/slash"
+
+    @patch.dict(os.environ, {"CUSTOM_URL_VAR": "https://custom.com"})
+    def test_get_base_url_uses_custom_env_var_name(self):
+        """Should respect custom environment variable names."""
+        config = {
+            "authentication": {"env_vars": {"api_url": "CUSTOM_URL_VAR"}},
+        }
+
+        url = get_base_url(config)
+
+        assert url == "https://custom.com"
+
+
+class TestEndpointExtraction:
+    """Test endpoint extraction from OpenAPI specifications."""
+
+    def test_extract_endpoints_from_simple_spec(self):
+        """Should extract basic endpoint information."""
+        spec = {
+            "paths": {
+                "/users": {
+                    "get": {
+                        "operationId": "getUsers",
+                        "summary": "Get all users",
+                        "parameters": [],
+                        "responses": {"200": {"description": "Success"}},
+                    },
+                },
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert len(endpoints) == 1
+        assert endpoints[0]["path"] == "/users"
+        assert endpoints[0]["method"] == "GET"
+        assert endpoints[0]["operation_id"] == "getUsers"
+        assert endpoints[0]["summary"] == "Get all users"
+
+    def test_extract_endpoints_handles_multiple_methods(self):
+        """Should extract all HTTP methods from a path."""
+        spec = {
+            "paths": {
+                "/resource": {
+                    "get": {"operationId": "getResource", "responses": {}},
+                    "post": {"operationId": "createResource", "responses": {}},
+                    "delete": {"operationId": "deleteResource", "responses": {}},
+                },
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert len(endpoints) == 3
+        methods = {ep["method"] for ep in endpoints}
+        assert methods == {"GET", "POST", "DELETE"}
+
+    def test_extract_endpoints_handles_multiple_paths(self):
+        """Should extract endpoints from multiple paths."""
+        spec = {
+            "paths": {
+                "/users": {"get": {"responses": {}}},
+                "/posts": {"get": {"responses": {}}},
+                "/comments": {"get": {"responses": {}}},
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert len(endpoints) == 3
+        paths = {ep["path"] for ep in endpoints}
+        assert paths == {"/users", "/posts", "/comments"}
+
+    def test_extract_endpoints_includes_parameters(self):
+        """Should include operation parameters."""
+        spec = {
+            "paths": {
+                "/users/{id}": {
+                    "get": {
+                        "operationId": "getUserById",
+                        "parameters": [
+                            {"name": "id", "in": "path", "required": True},
+                            {"name": "fields", "in": "query"},
+                        ],
+                        "responses": {},
+                    },
+                },
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert len(endpoints[0]["parameters"]) == 2
+        assert endpoints[0]["parameters"][0]["name"] == "id"
+        assert endpoints[0]["parameters"][1]["name"] == "fields"
+
+    def test_extract_endpoints_handles_empty_paths(self):
+        """Should return empty list for spec with no paths."""
+        spec = {"paths": {}}
+
+        endpoints = extract_endpoints(spec)
+
+        assert endpoints == []
+
+    def test_extract_endpoints_skips_non_dict_path_items(self):
+        """Should skip malformed path items."""
+        spec = {
+            "paths": {
+                "/valid": {"get": {"responses": {}}},
+                "/invalid": "not a dict",
+                "/another": None,
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert len(endpoints) == 1
+        assert endpoints[0]["path"] == "/valid"
+
+    def test_extract_endpoints_handles_missing_operation_fields(self):
+        """Should use empty defaults for missing fields."""
+        spec = {
+            "paths": {
+                "/minimal": {
+                    "get": {},  # No operationId, summary, parameters, responses
+                },
+            },
+        }
+
+        endpoints = extract_endpoints(spec)
+
+        assert endpoints[0]["operation_id"] == ""
+        assert endpoints[0]["summary"] == ""
+        assert endpoints[0]["parameters"] == []
+        assert endpoints[0]["responses"] == {}
+
+
+class TestEndpointFiltering:
+    """Test endpoint filtering logic."""
+
+    def test_should_skip_endpoint_skips_post_by_default(self):
+        """Should skip POST method by default."""
+        endpoint = {"method": "POST", "path": "/api/resource"}
+        config = DEFAULT_CONFIG
+
+        skip, reason = should_skip_endpoint(endpoint, config)
+
+        assert skip is True
+        assert "POST" in reason
+
+    def test_should_skip_endpoint_allows_get_by_default(self):
+        """Should not skip GET method by default."""
+        endpoint = {"method": "GET", "path": "/api/resource"}
+        config = DEFAULT_CONFIG
+
+        skip, reason = should_skip_endpoint(endpoint, config)
+
+        assert skip is False
+
+    def test_should_skip_endpoint_respects_custom_validate_methods(self):
+        """Should only validate methods in validate_methods list."""
+        endpoint = {"method": "PUT", "path": "/api/resource"}
+        config = {
+            "scope": {"validate_methods": ["PUT", "PATCH"], "skip_methods": []},
+            "filters": {},
+        }
+
+        skip, reason = should_skip_endpoint(endpoint, config)
+
+        assert skip is False
+
+    def test_should_skip_endpoint_matches_skip_patterns(self):
+        """Should skip endpoints matching skip patterns."""
+        endpoint = {"method": "GET", "path": "/api/internal/debug"}
+        config = {
+            "scope": {"validate_methods": ["GET"], "skip_methods": []},
+            "filters": {"skip_patterns": ["/api/internal/*"], "include_patterns": []},
+        }
+
+        skip, reason = should_skip_endpoint(endpoint, config)
+
+        assert skip is True
+        assert "skip pattern" in reason.lower()
+
+    def test_should_skip_endpoint_respects_include_patterns(self):
+        """Should only validate endpoints matching include patterns."""
+        endpoint = {"method": "GET", "path": "/api/public/users"}
+        config = {
+            "scope": {"validate_methods": ["GET"], "skip_methods": []},
+            "filters": {
+                "skip_patterns": [],
+                "include_patterns": ["/api/public/*"],
+            },
+        }
+
+        skip, reason = should_skip_endpoint(endpoint, config)
+
+        assert skip is False
+
+
+class TestPatternCompilation:
+    """Test regex pattern compilation utility."""
+
+    def test_compile_patterns_converts_glob_to_regex(self):
+        """Should convert glob wildcards to regex."""
+        patterns = ["/api/*/debug", "/internal/*"]
+
+        compiled = _compile_patterns(patterns)
+
+        assert len(compiled) == 2
+        assert compiled[0].pattern == "/api/.*/debug"
+        assert compiled[1].pattern == "/internal/.*"
+
+    def test_compile_patterns_matches_correctly(self):
+        """Compiled patterns should match expected strings."""
+        patterns = ["/api/*/users"]
+        compiled = _compile_patterns(patterns)
+
+        assert compiled[0].match("/api/v1/users")
+        assert compiled[0].match("/api/v2/users")
+        assert not compiled[0].match("/api/users")
+
+    def test_compile_patterns_handles_empty_list(self):
+        """Should return empty list for empty input."""
+        compiled = _compile_patterns([])
+
+        assert compiled == []
+
+    def test_compile_patterns_handles_multiple_wildcards(self):
+        """Should handle multiple wildcards in single pattern."""
+        patterns = ["/api/*/namespaces/*/resources"]
+        compiled = _compile_patterns(patterns)
+
+        assert compiled[0].match("/api/v1/namespaces/default/resources")
+        assert compiled[0].match("/api/v2/namespaces/production/resources")
+
+
+class TestPathParameterResolution:
+    """Test path parameter resolution."""
+
+    def test_resolve_path_parameters_with_common_params(self):
+        """Should resolve common parameter types with sample values."""
+        from scripts.validate import resolve_path_parameters
+
+        path = "/api/namespaces/{namespace}/resources/{name}"
+        parameters = [
+            {"name": "namespace", "in": "path"},
+            {"name": "name", "in": "path"},
+        ]
+
+        resolved = resolve_path_parameters(path, parameters)
+
+        assert resolved == "/api/namespaces/system/resources/test"
+
+    def test_resolve_path_parameters_with_id(self):
+        """Should resolve id parameter with test-id."""
+        from scripts.validate import resolve_path_parameters
+
+        path = "/api/resources/{id}"
+        parameters = [{"name": "id", "in": "path"}]
+
+        resolved = resolve_path_parameters(path, parameters)
+
+        assert resolved == "/api/resources/test-id"
+
+    def test_resolve_path_parameters_with_unknown_params(self):
+        """Should use 'sample' for unknown parameter types."""
+        from scripts.validate import resolve_path_parameters
+
+        path = "/api/{unknown}/{another}"
+        parameters = [
+            {"name": "unknown", "in": "path"},
+            {"name": "another", "in": "path"},
+        ]
+
+        resolved = resolve_path_parameters(path, parameters)
+
+        assert resolved == "/api/sample/sample"
+
+    def test_resolve_path_parameters_skips_query_params(self):
+        """Should not resolve query parameters."""
+        from scripts.validate import resolve_path_parameters
+
+        path = "/api/resources/{id}"
+        parameters = [
+            {"name": "id", "in": "path"},
+            {"name": "filter", "in": "query"},
+        ]
+
+        resolved = resolve_path_parameters(path, parameters)
+
+        assert resolved == "/api/resources/test-id"
+
+    def test_resolve_path_parameters_handles_unresolved_braces(self):
+        """Should replace unresolved curly braces with 'sample'."""
+        from scripts.validate import resolve_path_parameters
+
+        path = "/api/{unhandled}/resources"
+        parameters = []  # No parameters provided
+
+        resolved = resolve_path_parameters(path, parameters)
+
+        assert resolved == "/api/sample/resources"
+
+
+class TestAsyncEndpointValidation:
+    """Test async endpoint validation functions."""
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_successful_response(self):
+        """Should validate endpoint with successful response."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        # Mock client and response
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"metadata": {}, "spec": {}}
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        endpoint = {
+            "path": "/api/test",
+            "method": "GET",
+            "parameters": [],
+        }
+
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "available"
+        assert result.status_code == 200
+        assert result.schema_match is True
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_authentication_error(self):
+        """Should handle 401/403 as available but unauthenticated."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_response = MagicMock()
+        mock_response.status_code = 401
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "available"  # 401 is considered available
+        assert result.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_timeout(self):
+        """Should handle request timeout."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        import httpx
+
+        from scripts.validate import validate_endpoint
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(side_effect=httpx.TimeoutException("Request timed out"))
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "error"
+        assert "timed out" in result.error.lower()
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_request_error(self):
+        """Should handle general request errors."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        import httpx
+
+        from scripts.validate import validate_endpoint
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(side_effect=httpx.RequestError("Connection failed"))
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "error"
+        assert "Connection failed" in result.error
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_skipped(self):
+        """Should skip endpoint based on config."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_client = AsyncMock()
+        endpoint = {"path": "/api/test", "method": "POST", "parameters": []}
+        config = DEFAULT_CONFIG  # Default skips POST
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "skipped"
+        assert "POST" in result.error
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_invalid_json_response(self):
+        """Should detect invalid JSON in response."""
+        import asyncio
+        import json
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.schema_match is False
+        assert "not valid JSON" in result.discrepancies[0]
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_missing_expected_structure(self):
+        """Should detect missing expected F5 XC structure."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"unexpected": "structure"}  # Missing metadata/spec/items
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert len(result.discrepancies) > 0
+        assert "missing expected F5 XC structure" in result.discrepancies[0]
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_with_path_parameters(self):
+        """Should resolve path parameters before validation."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"items": []}
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        endpoint = {
+            "path": "/api/namespaces/{namespace}/resources",
+            "method": "GET",
+            "parameters": [{"name": "namespace", "in": "path"}],
+        }
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        # Verify path parameters were resolved
+        mock_client.request.assert_called_once()
+        call_args = mock_client.request.call_args
+        assert "system" in call_args.kwargs["url"]  # namespace resolved to "system"
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_value_error(self):
+        """Should handle ValueError from configuration issues."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(side_effect=ValueError("Invalid timeout"))
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "error"
+        assert "Configuration error" in result.error
+
+    @pytest.mark.asyncio
+    async def test_validate_endpoint_type_error(self):
+        """Should handle TypeError from type mismatches."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_endpoint
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(side_effect=TypeError("Type mismatch"))
+
+        endpoint = {"path": "/api/test", "method": "GET", "parameters": []}
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_endpoint(
+            mock_client,
+            "https://api.example.com",
+            endpoint,
+            config,
+            semaphore,
+        )
+
+        assert result.status == "error"
+        assert "Type error" in result.error
+
+
+class TestSpecValidation:
+    """Test spec file validation."""
+
+    @pytest.mark.asyncio
+    async def test_validate_spec_processes_endpoints(self, tmp_path):
+        """Should process all endpoints in a spec."""
+        import asyncio
+        import json
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_spec
+
+        # Create test spec file
+        spec_file = tmp_path / "test.json"
+        spec_file.write_text(
+            json.dumps(
+                {
+                    "paths": {
+                        "/test1": {"get": {"operationId": "test1", "responses": {}}},
+                        "/test2": {"get": {"operationId": "test2", "responses": {}}},
+                    },
+                },
+            ),
+        )
+
+        # Mock successful responses
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"items": []}
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_spec(spec_file, config, mock_client, semaphore)
+
+        assert result.endpoints_total == 2
+        assert result.filename == "test.json"
+
+    @pytest.mark.asyncio
+    async def test_validate_spec_handles_file_not_found(self):
+        """Should handle missing spec file."""
+        import asyncio
+        from pathlib import Path
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_spec
+
+        mock_client = AsyncMock()
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_spec(Path("/nonexistent.json"), config, mock_client, semaphore)
+
+        assert len(result.errors) > 0
+        assert "Cannot read spec file" in result.errors[0]
+
+    @pytest.mark.asyncio
+    async def test_validate_spec_handles_invalid_json(self, tmp_path):
+        """Should handle invalid JSON in spec file."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_spec
+
+        spec_file = tmp_path / "invalid.json"
+        spec_file.write_text("{ invalid json }")
+
+        mock_client = AsyncMock()
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_spec(spec_file, config, mock_client, semaphore)
+
+        assert len(result.errors) > 0
+        assert "invalid JSON" in result.errors[0]
+
+    @pytest.mark.asyncio
+    async def test_validate_spec_samples_large_endpoint_list(self, tmp_path):
+        """Should sample endpoints when spec has too many."""
+        import asyncio
+        import json
+        from unittest.mock import AsyncMock
+
+        from scripts.validate import validate_spec
+
+        # Create spec with 100 endpoints
+        paths = {
+            f"/test{i}": {"get": {"operationId": f"test{i}", "responses": {}}} for i in range(100)
+        }
+        spec_file = tmp_path / "large.json"
+        spec_file.write_text(json.dumps({"paths": paths}))
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"items": []}
+
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+
+        config = DEFAULT_CONFIG
+        semaphore = asyncio.Semaphore(10)
+
+        result = await validate_spec(spec_file, config, mock_client, semaphore)
+
+        assert result.endpoints_total == 100
+        # Should sample based on max_endpoints_per_spec (50 by default)
+        assert len(result.endpoint_results) <= 50
+        assert result.endpoints_validated > 0
+
+
+class TestReportGeneration:
+    """Test validation report generation."""
+
+    def test_generate_report_creates_json_file(self, tmp_path):
+        """Should generate JSON report file."""
+        from scripts.validate import ValidationStats, generate_report
+
+        stats = ValidationStats()
+        stats.specs_processed = 5
+        stats.total_endpoints = 100
+        stats.endpoints_validated = 90
+        stats.endpoints_available = 85
+        stats.schema_matches = 80
+
+        output_path = tmp_path / "report.json"
+        generate_report(stats, output_path)
+
+        assert output_path.exists()
+
+        # Verify report structure
+        import json
+
+        with output_path.open() as f:
+            report = json.load(f)
+
+        assert "timestamp" in report
+        assert report["summary"]["specs_processed"] == 5
+        assert report["summary"]["total_endpoints"] == 100
+
+    def test_generate_report_calculates_percentages(self, tmp_path):
+        """Should calculate availability and schema match percentages."""
+        from scripts.validate import ValidationStats, generate_report
+
+        stats = ValidationStats()
+        stats.endpoints_validated = 100
+        stats.endpoints_available = 80
+        stats.schema_matches = 70
+
+        output_path = tmp_path / "report.json"
+        generate_report(stats, output_path)
+
+        import json
+
+        with output_path.open() as f:
+            report = json.load(f)
+
+        assert report["summary"]["availability_percentage"] == 80.0
+        assert report["summary"]["schema_match_percentage"] == 87.5  # 70/80 * 100
+
+    def test_generate_report_handles_zero_division(self, tmp_path):
+        """Should handle zero division gracefully."""
+        from scripts.validate import ValidationStats, generate_report
+
+        stats = ValidationStats()
+        stats.endpoints_validated = 0
+        stats.endpoints_available = 0
+
+        output_path = tmp_path / "report.json"
+        generate_report(stats, output_path)
+
+        import json
+
+        with output_path.open() as f:
+            report = json.load(f)
+
+        assert report["summary"]["availability_percentage"] == 0
+        assert report["summary"]["schema_match_percentage"] == 0

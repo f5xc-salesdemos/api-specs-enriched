@@ -22,7 +22,7 @@ def validate_config_interdependencies() -> list[str]:
     Returns:
         List of error messages (empty if valid)
     """
-    errors = []
+    errors: list[str] = []
     config_dir = Path("config")
 
     # Load all configs
@@ -87,8 +87,7 @@ def validate_config_interdependencies() -> list[str]:
         if not required_fields.issubset(actual_fields):
             missing = required_fields - actual_fields
             errors.append(
-                f"Pattern {i} in operation_descriptions.yaml "
-                f"missing required fields: {missing}",
+                f"Pattern {i} in operation_descriptions.yaml missing required fields: {missing}",
             )
 
     # Validate: method_fallbacks in operation_descriptions have required structure
@@ -118,8 +117,7 @@ def validate_config_interdependencies() -> list[str]:
         if not required_fields.issubset(actual_fields):
             missing = required_fields - actual_fields
             errors.append(
-                f"Resource '{resource}' in minimum_configs.yaml "
-                f"missing required fields: {missing}",
+                f"Resource '{resource}' in minimum_configs.yaml missing required fields: {missing}",
             )
 
     # Validate: resource_metadata has required structure

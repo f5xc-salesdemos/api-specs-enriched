@@ -22,15 +22,15 @@ from typing import Any
 
 import yaml
 
-# Precompiled regex pattern for performance (used in hot paths)
-_CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
-
 from .domain_categorizer import DomainCategorizer
 from .extension_constants import (
     X_F5XC_CLI_DOMAIN,
     X_F5XC_MINIMUM_CONFIGURATION,
     X_F5XC_REQUIRED_FOR,
 )
+
+# Precompiled regex pattern for performance (used in hot paths)
+_CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
 
 logger = logging.getLogger(__name__)
 
