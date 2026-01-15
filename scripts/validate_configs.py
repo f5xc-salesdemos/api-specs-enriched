@@ -27,13 +27,13 @@ def validate_config_interdependencies() -> list[str]:
 
     # Load all configs
     try:
-        with open(config_dir / "minimum_configs.yaml") as f:
+        with (config_dir / "minimum_configs.yaml").open() as f:
             min_configs = yaml.safe_load(f) or {}
 
-        with open(config_dir / "resource_metadata.yaml") as f:
+        with (config_dir / "resource_metadata.yaml").open() as f:
             resource_metadata = yaml.safe_load(f) or {}
 
-        with open(config_dir / "operation_descriptions.yaml") as f:
+        with (config_dir / "operation_descriptions.yaml").open() as f:
             op_descriptions = yaml.safe_load(f) or {}
 
     except FileNotFoundError as e:
@@ -45,22 +45,20 @@ def validate_config_interdependencies() -> list[str]:
     min_resources = min_configs.get("resources", {})
     metadata_resources = resource_metadata.get("resources", {})
 
-    for resource in min_resources.keys():
-        if resource not in metadata_resources:
-            errors.append(
-                f"Resource '{resource}' in minimum_configs.yaml "
-                f"not found in resource_metadata.yaml"
-            )
+    errors.extend(
+        f"Resource '{resource}' in minimum_configs.yaml not found in resource_metadata.yaml"
+        for resource in min_resources
+        if resource not in metadata_resources
+    )
 
     # Validate: resources in operation_descriptions exist in resource_metadata
     op_resources = op_descriptions.get("resources", {})
 
-    for resource in op_resources.keys():
-        if resource not in metadata_resources:
-            errors.append(
-                f"Resource '{resource}' in operation_descriptions.yaml "
-                f"not found in resource_metadata.yaml"
-            )
+    errors.extend(
+        f"Resource '{resource}' in operation_descriptions.yaml not found in resource_metadata.yaml"
+        for resource in op_resources
+        if resource not in metadata_resources
+    )
 
     # Validate: consistent description structure in operation_descriptions
     for resource, descriptions in op_resources.items():
@@ -74,7 +72,7 @@ def validate_config_interdependencies() -> list[str]:
             missing = required_tiers - actual_tiers
             errors.append(
                 f"Resource '{resource}' in operation_descriptions.yaml "
-                f"missing description tiers: {missing}"
+                f"missing description tiers: {missing}",
             )
 
     # Validate: patterns in operation_descriptions have required fields
@@ -90,7 +88,7 @@ def validate_config_interdependencies() -> list[str]:
             missing = required_fields - actual_fields
             errors.append(
                 f"Pattern {i} in operation_descriptions.yaml "
-                f"missing required fields: {missing}"
+                f"missing required fields: {missing}",
             )
 
     # Validate: method_fallbacks in operation_descriptions have required structure
@@ -106,7 +104,7 @@ def validate_config_interdependencies() -> list[str]:
             missing = required_tiers - actual_tiers
             errors.append(
                 f"Method '{method}' in operation_descriptions.yaml "
-                f"missing description tiers: {missing}"
+                f"missing description tiers: {missing}",
             )
 
     # Validate: minimum_configs have required structure
@@ -121,7 +119,7 @@ def validate_config_interdependencies() -> list[str]:
             missing = required_fields - actual_fields
             errors.append(
                 f"Resource '{resource}' in minimum_configs.yaml "
-                f"missing required fields: {missing}"
+                f"missing required fields: {missing}",
             )
 
     # Validate: resource_metadata has required structure
@@ -136,7 +134,7 @@ def validate_config_interdependencies() -> list[str]:
             missing = required_fields - actual_fields
             errors.append(
                 f"Resource '{resource}' in resource_metadata.yaml "
-                f"missing required fields: {missing}"
+                f"missing required fields: {missing}",
             )
 
     return errors
