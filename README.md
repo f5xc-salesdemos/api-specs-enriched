@@ -1,274 +1,424 @@
 # f5xc-api-enriched
 
-F5 Distributed Cloud API enrichment tools and utilities.
+Automated OpenAPI enrichment pipeline for F5 Distributed Cloud API specifications, enhancing developer experience with comprehensive descriptions, metadata, and standardized extensions.
 
-## API Enrichment Pipeline
+## Overview
 
-This repository provides comprehensive OpenAPI specification enrichment for F5 Distributed Cloud APIs, enhancing developer experience with detailed descriptions, examples, and metadata.
+This repository transforms F5 Distributed Cloud's 270+ OpenAPI specifications into enriched, developer-friendly documentation with:
 
-### Key Achievements
+- **100% Description Coverage**: All 32,141 describable properties have meaningful descriptions
+- **DRY-Compliant Content**: Pattern-based generation preventing redundant information
+- **Multi-Tier Descriptions**: Short (≤60 chars), medium (≤150 chars), long (≤500 chars) for different use cases
+- **Standardized Extensions**: Custom OpenAPI extensions for metadata, configuration, and tooling integration
 
-- **100% Description Coverage**: All describable API properties (32,141/32,141) now have meaningful descriptions
-- **OpenCode Integration**: Replaced external CLI dependencies with programmatic OpenCode API for domain description generation
-- **Comprehensive Patterns**: 140+ field description patterns and 80+ short description patterns for consistent API documentation
-- **Quality Assurance**: 99% meaningful descriptions with DRY compliance validation and character limit enforcement
+## Key Features
 
-### Enrichment Features
+### Description Enrichment
 
-| Feature | Description | Coverage |
-|---------|-------------|----------|
-| **Property Descriptions** | Full descriptions for all API schema properties | 32,141 properties (100%) |
-| **Short Descriptions** | Concise descriptions for CLI tools and UI | 21,422 properties (37.8%) |
-| **Domain Descriptions** | 3-tier descriptions (short/medium/long) for API domains | 270+ specifications |
-| **CLI Metadata** | Minimum configurations and examples for resource creation | 5 priority resources + auto-generated |
-| **Resource Metadata** | Rich metadata for IDE tooling and AI assistants | 90+ resources |
+- **Property Descriptions**: 32,141 properties with full descriptions (100% coverage)
+- **Short Descriptions**: 21,422 properties with CLI-optimized descriptions (37.8% coverage)
+- **Domain Descriptions**: 270+ specifications with 3-tier descriptions (short/medium/long)
+- **Operation Descriptions**: DRY-compliant, noun-first descriptions for API operations
+- **Pattern System**: 140+ field patterns + 80+ short description patterns + 8 operation patterns
 
-### Pipeline Components
+### Metadata Enrichment
 
-| Component | Purpose | Output |
-|-----------|---------|--------|
-| **Download** | ETag-cached F5 spec retrieval | `specs/original/` (gitignored) |
-| **Enrich** | Branding, grammar, and description enrichment | Enhanced OpenAPI specs |
-| **Normalize** | Schema reference resolution and type fixes | Consistent schemas |
-| **Merge** | Domain-specific spec generation | `docs/specifications/api/*.json` |
-| **Discover** | Live API exploration (VPN required) | `specs/discovered/openapi.json` |
+- **Configuration Metadata**: Minimum configurations for 90+ resources (5 explicit + auto-generated)
+- **Operation Metadata**: Danger levels, required fields, side effects for all operations
+- **Resource Metadata**: Rich metadata for tooling integration
+- **Best Practices**: Domain-specific operational knowledge and guided workflows
+- **Acronym Expansion**: 450+ industry acronyms and F5-specific terminology
 
-### Usage
+### Quality & Validation
+
+- **99% Meaningful Descriptions**: Not generic fallbacks
+- **DRY Compliance**: 5-layer validation preventing redundant content
+- **Character Limits**: Enforced limits for each description tier
+- **Grammar Enhancement**: Automated grammar correction for technical writing
+- **Consistency Validation**: Cross-specification validation
+
+## Architecture
+
+### Pipeline Stages
+
+```
+1. Download    → ETag-cached F5 spec retrieval
+2. Enrich      → Descriptions, branding, grammar, metadata
+3. Normalize   → Schema references, type fixes, consistency
+4. Merge       → Domain-specific spec generation
+5. Validate    → Spectral linting + live API validation
+6. Deploy      → GitHub Pages (Swagger UI + Scalar)
+```
+
+### Enrichment Pipeline (17 Steps)
+
+| Step | Enricher | Purpose |
+|------|----------|---------|
+| 1 | SchemaFixer | Fix invalid schemas and missing components |
+| 2 | BrandingTransformer | Branding consistency |
+| 3 | TagGenerator | Generate operation tags from paths |
+| 4 | DescriptionEnricher | Domain descriptions (short/medium/long) |
+| 5 | FieldDescriptionEnricher | Property descriptions (140+ patterns) |
+| 6 | GrammarImprover | Automated grammar correction |
+| 7 | DescriptionValidator | DRY compliance, quality validation |
+| 8 | DescriptionStructureTransformer | Convert block quotes to proper structure |
+| 9 | AcronymEnricher | Add acronym definitions to specs |
+| 10 | PropertyDescriptionShortEnricher | CLI-optimized short descriptions (80+ patterns) |
+| 11 | ResourceExamplesEnricher | Add tiered resource examples |
+| 12 | FieldMetadataEnricher | Add field-level metadata |
+| 13 | ValidationEnricher | Add validation rules and patterns |
+| 14 | **OperationDescriptionEnricher** | **DRY-compliant operation descriptions** |
+| 15 | OperationMetadataEnricher | Danger levels, required fields, side effects |
+| 16 | MinimumConfigurationEnricher | Minimum viable configurations |
+| 17 | ReadOnlyEnricher | Mark API-computed fields as readOnly |
+
+### Discovery & Reconciliation (VPN Required)
+
+Live API exploration to discover undocumented behavior:
 
 ```bash
-# Full enrichment pipeline
-make pipeline
-
-# Individual steps
-make download    # Fetch latest F5 specs
-make enrich      # Apply enrichments
-make normalize   # Normalize schemas
-make merge       # Generate domain specs
-
-# Documentation
-make serve       # Serve docs locally (http://localhost:8000)
+export F5XC_API_URL="https://tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+make discover              # Explore live API
+make push-discovery        # Commit discovery data for CI/CD
 ```
 
-### Documentation Links
+**Discovery Features**:
 
-- [Enriched API Specifications](https://robinmordasiewicz.github.io/f5xc-api-enriched/)
-- [Swagger UI](https://robinmordasiewicz.github.io/f5xc-api-enriched/swagger-ui/)
-- [Scalar Documentation](https://robinmordasiewicz.github.io/f5xc-api-enriched/scalar/)
-- [GitHub Repository](https://github.com/robinmordasiewicz/f5xc-api-enriched)
+- Tighter constraints detection (e.g., API enforces maxLength:63 vs spec allows 1024)
+- New undocumented constraints (pattern validation, enum restrictions)
+- Response time profiling (p50/p95/p99 latencies)
+- Rate limiting behavior
+- Undocumented fields
 
-## Subscription & Licensing Architecture
+## Quick Start
 
-F5 Distributed Cloud uses a **Plan-Based Access Control (PBAC)** system with addon services organized into subscription tiers.
+### Prerequisites
 
-### Subscription Tiers
+```bash
+# Python 3.11+ required
+python --version
 
-F5 XC uses two subscription tiers:
+# Install dependencies
+make install
 
-| Tier | Description |
-|------|-------------|
-| **STANDARD** | Base tier with core functionality |
-| **ADVANCED** | Premium tier with advanced features |
-
-> **Note**: The API enum `schemaAddonServiceTierType` includes deprecated values (`BASIC`, `PREMIUM`) for backward compatibility. Only `STANDARD` and `ADVANCED` are active tiers. See [Issue #164](https://github.com/robinmordasiewicz/f5xc-api-enriched/issues/164) for deprecation tracking.
-
-### Tier Identification Methods
-
-#### AddonServiceTierType Enum
-
-Schema: `schemaAddonServiceTierType`
-
-```json
-{
-  "tier": "STANDARD"
-}
+# Install pre-commit hooks (runs full pipeline on every commit)
+make pre-commit-install
 ```
 
-Active values: `STANDARD`, `ADVANCED`
+### Basic Usage
 
-Deprecated values: `NO_TIER`, `BASIC`, `PREMIUM`
+```bash
+# Full pipeline (download → enrich → normalize → merge)
+make build
 
-#### Addon Service Naming Convention
+# Quick rebuild (skip download, use existing specs)
+make rebuild
 
-Pattern: `f5xc_{feature}_{tier}`
+# Individual stages
+make download       # Fetch latest F5 specs (ETag cached)
+make pipeline       # Run enrichment pipeline
+make lint           # Spectral OpenAPI linting
+make validate       # Test curl examples against live API
 
-| Service | Standard | Advanced |
-|---------|----------|----------|
-| WAAP | `f5xc_waap_standard` | `f5xc_waap_advanced` |
-| SecureMesh | `f5xc_securemesh_standard` | `f5xc_securemesh_advanced` |
-| CDN | `f5xc_content_delivery_network_standard` | `f5xc_content_delivery_network_advanced` |
-| AppStack | `f5xc_appstack_standard` | - |
-| BigIP iRule | `f5xc_big_ip_irule_standard` | - |
-| BigIP Utilities | `f5xc_bigip_utilities_standard` | - |
-| Delegated Access | `f5xc_delegated_access_standard` | - |
-| Site Management | `f5xc_site_management_standard` | - |
-| Synthetic Monitoring | `f5xc_synthetic_monitoring_standard` | - |
-| Web App Scanning | `f5xc_web_app_scanning_standard` | - |
+# Development
+make serve          # Serve docs locally (http://localhost:8000)
+make clean          # Remove generated files
+```
 
-### Subscription Specifications (18 Files)
+### CI/CD Integration
 
-**Core Subscription & Plan Management (6 specs)**:
+The repository uses GitHub Actions for automated releases:
 
-| Spec | Purpose |
+```yaml
+Trigger: Daily schedule, push to main, manual dispatch
+Process:
+  1. Check for spec updates (ETag comparison)
+  2. Download changed specs
+  3. Run enrichment pipeline
+  4. Validate with Spectral + live API
+  5. Auto-version (semantic versioning)
+  6. Create GitHub release
+  7. Deploy to GitHub Pages
+```
+
+**Version Bumping**:
+
+- New API domains → **Minor** version (e.g., 1.0.15 → 1.1.0)
+- Spec updates (no new domains) → **Patch** version (e.g., 1.0.15 → 1.0.16)
+- Pipeline/config changes → **Patch** version
+- Breaking changes → **Major** version (commit message: `[major]` or `BREAKING CHANGE`)
+
+## Operation Description System
+
+### Problem: Redundant Descriptions
+
+**Before** (verb-first, redundant):
+
+```yaml
+# Command: <tool> <domain> create <resource>
+x-f5xc-operation-metadata:
+  purpose: "Create new http_loadbalancer"  # ❌ Redundant - user typed "create"
+```
+
+**After** (noun-first, DRY-compliant):
+
+```yaml
+# Command: <tool> <domain> create <resource>
+x-f5xc-operation-metadata:
+  purpose: "HTTP/HTTPS load balancer with origin pools and routing rules"  # ✅
+```
+
+### Three-Tier Matching Strategy
+
+```
+1. Exact Match: "http_loadbalancer" → explicit description
+2. Pattern Match: ".*loadbalancer.*" → pattern-based description
+3. Method Fallback: POST → "Resource creation operation"
+```
+
+### Configuration
+
+`config/operation_descriptions.yaml`:
+
+- 10 high-priority resources (explicit descriptions)
+- 8 pattern matchers (regex-based matching)
+- 5 HTTP method fallbacks (POST/GET/PUT/PATCH/DELETE)
+
+## Using Enriched Specifications
+
+### Accessing Extensions
+
+The enriched specifications include custom OpenAPI extensions in the `x-f5xc-*` namespace. These extensions provide metadata for building tools, CLI interfaces, and AI assistants.
+
+#### Operation Metadata
+
+Access operation-level metadata for command interfaces:
+
+```javascript
+// JavaScript/TypeScript example
+const operation = spec.paths["/api/config/namespaces/{namespace}/http_loadbalancers"]["post"];
+const metadata = operation["x-f5xc-operation-metadata"];
+
+console.log(metadata.purpose);          // "HTTP/HTTPS load balancer with origin pools..."
+console.log(metadata.danger_level);     // "medium"
+console.log(metadata.required_fields);  // ["metadata.name", "metadata.namespace"]
+```
+
+```python
+# Python example
+operation = spec["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["post"]
+metadata = operation.get("x-f5xc-operation-metadata", {})
+
+print(metadata.get("purpose"))          # "HTTP/HTTPS load balancer with origin pools..."
+print(metadata.get("danger_level"))     # "medium"
+print(metadata.get("required_fields"))  # ["metadata.name", "metadata.namespace"]
+```
+
+#### Minimum Configurations
+
+Access minimum viable configurations for resource creation:
+
+```javascript
+// JavaScript/TypeScript example
+const schema = spec.components.schemas["HttpLoadBalancerCreateRequest"];
+const minConfig = schema["x-f5xc-minimum-configuration"];
+
+console.log(minConfig.description);     // Minimum configuration description
+console.log(minConfig.required_fields); // ["metadata.name", "metadata.namespace"]
+console.log(minConfig.example_yaml);    // YAML configuration template
+```
+
+```python
+# Python example
+schema = spec["components"]["schemas"]["HttpLoadBalancerCreateRequest"]
+min_config = schema.get("x-f5xc-minimum-configuration", {})
+
+print(min_config.get("description"))     # Minimum configuration description
+print(min_config.get("required_fields")) # ["metadata.name", "metadata.namespace"]
+print(min_config.get("example_yaml"))    # YAML configuration template
+```
+
+#### Resource Metadata
+
+Access rich resource metadata from the specification index:
+
+```javascript
+// JavaScript/TypeScript example
+const index = await fetch("https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/index.json");
+const data = await index.json();
+
+const resource = data.primary_resources.find(r => r.name === "http_loadbalancer");
+console.log(resource.description);       // Full resource description
+console.log(resource.tier);              // "Standard"
+console.log(resource.dependencies);      // {required: ["origin_pool"], optional: [...]}
+```
+
+```python
+# Python example
+import requests
+
+response = requests.get("https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/index.json")
+data = response.json()
+
+resource = next(r for r in data["primary_resources"] if r["name"] == "http_loadbalancer")
+print(resource["description"])       # Full resource description
+print(resource["tier"])              # "Standard"
+print(resource["dependencies"])      # {required: ["origin_pool"], optional: [...]}
+```
+
+### Multi-Tier Descriptions
+
+Specifications include three description tiers optimized for different use cases:
+
+| Tier | Max Length | Use Case | Access Path |
+|------|-----------|----------|-------------|
+| `short` | 60 chars | CLI columns, tooltips | `property["x-f5xc-description-short"]` |
+| `medium` | 150 chars | Help text, summaries | `spec.info["x-f5xc-description-medium"]` |
+| `long` | 500 chars | Documentation, AI context | `property.description` |
+
+```javascript
+// Accessing description tiers
+const property = schema.properties["origin_pool"];
+
+// Short (CLI display)
+const shortDesc = property["x-f5xc-description-short"];  // "Backend server pool"
+
+// Long (full documentation)
+const longDesc = property.description;  // "Origin pool defines a collection of backend..."
+```
+
+## Documentation
+
+### Published Documentation
+
+- **API Specs Index**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/>
+- **Swagger UI**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/swagger-ui/>
+- **Scalar UI**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/scalar/>
+
+### Developer Documentation
+
+- **CLAUDE.md**: Comprehensive AI assistant instructions and technical details
+- **MIGRATION.md**: Extension namespace migration (x-ves-*→ x-f5xc-*)
+- **CHANGELOG.md**: Auto-generated release notes
+
+## Configuration
+
+### Key Configuration Files
+
+| File | Purpose |
 |------|---------|
-| `subscription.ves-swagger.json` | Main Subscribe/Unsubscribe operations |
-| `pbac.plan.ves-swagger.json` | Plan definition and listing |
-| `billing.plan_transition.ves-swagger.json` | Plan migration workflow |
-| `usage.plan.ves-swagger.json` | Usage plans and billing |
-| `usage.subscription.ves-swagger.json` | Subscription details APIs |
-| `billing.payment_method.ves-swagger.json` | Payment method management |
+| `config/enrichment.yaml` | Branding, acronyms, grammar rules |
+| `config/normalization.yaml` | Schema normalization rules |
+| `config/domain_descriptions.yaml` | Domain descriptions (3 tiers) |
+| `config/operation_descriptions.yaml` | Operation descriptions (DRY-compliant) |
+| `config/field_descriptions.yaml` | Field description patterns (140+) |
+| `config/property_description_short.yaml` | Short description patterns (80+) |
+| `config/minimum_configs.yaml` | Minimum viable configurations |
+| `config/resource_metadata.yaml` | Per-resource metadata (90+ resources) |
+| `config/extension_registry.yaml` | All x-f5xc-* extensions (50+) |
 
-**Addon Infrastructure (2 specs)**:
+### Extension Namespace
 
-| Spec | Purpose |
-|------|---------|
-| `pbac.addon_service.ves-swagger.json` | Addon service definitions with tier enum |
-| `pbac.addon_subscription.ves-swagger.json` | Addon subscription lifecycle |
+All custom extensions use the `x-f5xc-*` namespace:
 
-**Service-Specific Subscriptions (10 specs)**:
+- **Spec-level**: `x-f5xc-cli-domain`, `x-f5xc-enriched-version`, `x-f5xc-glossary`
+- **Schema-level**: `x-f5xc-minimum-configuration`, `x-f5xc-display-name`, `x-f5xc-namespace-scope`
+- **Property-level**: `x-f5xc-description-short`, `x-f5xc-validation`, `x-f5xc-examples`
+- **Operation-level**: `x-f5xc-operation-metadata`, `x-f5xc-danger-level`, `x-f5xc-required-fields`
 
-| Spec | Service |
-|------|---------|
-| `ai_data.bfdp.subscription.ves-swagger.json` | Bot Defense Data Intelligence |
-| `shape.client_side_defense.subscription.ves-swagger.json` | Client-side Defense |
-| `shape.data_delivery.subscription.ves-swagger.json` | Data Delivery/CDN |
-| `dns_zone.subscription.ves-swagger.json` | DNS Zone |
-| `malware_protection.subscription.ves-swagger.json` | Malware Protection |
-| `shape.mobile_app_shield.subscription.ves-swagger.json` | Mobile App Shield |
-| `shape.mobile_integrator.subscription.ves-swagger.json` | Mobile Integrator |
-| `nginx.one.subscription.ves-swagger.json` | NGINX One |
-| `observability.subscription.ves-swagger.json` | Observability |
-| `shape.bot_defense.subscription.ves-swagger.json` | Bot Defense |
+See `config/extension_registry.yaml` for complete documentation.
 
-### API Endpoints for Tier Detection
+## Multi-Environment Support
 
-| Endpoint | Purpose | Returns |
-|----------|---------|---------|
-| `GET /api/web/namespaces/system/usage_plans/current` | Current plan | Plan with `usage_plan_type` |
-| `GET /api/web/namespaces/system/usage_plans/custom_list` | All available plans | `ListUsagePlansRsp` |
-| `GET /api/web/namespaces/system/addon_services/{name}/activation-status` | Single service status | `tier` + `state` |
-| `GET /api/web/namespaces/system/addon_services/{name}/all-activation-status` | All tiers status | Multi-tier status |
-| `GET /api/web/namespaces/{ns}/quota/usage` | Quota limits | Tier-specific limits |
-| `GET /api/web/custom/namespaces/shared/addon_services/{name}` | Service details | Full addon spec |
+The specifications support multi-environment, multi-tenant deployments through server variables:
 
-### PBAC Access Control States
+```yaml
+servers:
+  - url: https://{tenant}.{console_url}/api/v1/namespaces/{namespace}
+    variables:
+      tenant: {default: "example-corp"}
+      console_url: {default: "console.ves.volterra.io"}
+      namespace: {default: "default"}
+```
 
-| State | Description |
-|-------|-------------|
-| `AS_AC_NONE` | Not subscribed or pending |
-| `AS_AC_ALLOWED` | Access granted (tier permits) |
-| `AS_AC_PBAC_DENY` | Plan doesn't include this service |
-| `AS_AC_PBAC_DENY_UPGRADE_PLAN` | Requires plan upgrade |
-| `AS_AC_PBAC_DENY_CONTACT_SALES` | Contact sales required |
-| `AS_AC_PBAC_DENY_AS_AC_EOL` | Service end of life |
+**Environment Variables**:
 
-### Subscription States
+- `F5XC_TENANT`: Tenant identifier
+- `F5XC_CONSOLE_URL`: Console URL base
+- `F5XC_DEFAULT_NAMESPACE`: Default namespace
+- `F5XC_ENVIRONMENT`: Environment designation (production/staging/development)
+- `F5XC_REGION`: Geographic region
+- `F5XC_DOMAIN_PREFIX`: Domain naming convention
 
-**Addon Service States**:
+## Statistics
 
-| State | Description |
-|-------|-------------|
-| `AS_PENDING` | Pending activation |
-| `AS_SUBSCRIBED` | Successfully subscribed |
-| `AS_ERROR` | Error state |
+### Coverage Metrics
 
-**Subscription Lifecycle States**:
+```
+Total Specifications: 270
+Total Properties: 56,706
+Properties with Descriptions: 32,141 (56.7% - 100% of describable)
+Properties with Short Descriptions: 21,422 (37.8%)
+$ref Properties: 24,565 (appropriately excluded)
+Quality Score: 99% meaningful descriptions
+```
 
-| State | Description |
-|-------|-------------|
-| `SUBSCRIPTION_PENDING` | Awaiting enablement |
-| `SUBSCRIPTION_ENABLED` | Active |
-| `SUBSCRIPTION_DISABLE_PENDING` | Disable in progress |
-| `SUBSCRIPTION_DISABLED` | Disabled |
+### Pipeline Performance
 
-### Plan Types
+```
+Average Processing Time: ~2 minutes (270 specs)
+Peak Memory Usage: 154 MB
+Cache Hit Rate: ~85% (ETag-based)
+Parallel Batch Processing: 14 batches
+Discovery Enrichment: 1,239,194 constraints reconciled
+```
 
-| Type | Description |
-|------|-------------|
-| `FREE` | Freemium (no payment required) |
-| `INDIVIDUAL` | Single-user paid plan |
-| `TEAM` | Multi-user paid plan |
-| `ORGANIZATION` | Enterprise paid plan |
+## Development
 
-### Tenant Types
+### Running Tests
 
-| Type | Description |
-|------|-------------|
-| `FREEMIUM` | Free tenant (no custom domain) |
-| `ENTERPRISE` | Enterprise tenant (has custom domain) |
+```bash
+# All tests
+pytest
 
-#### TenantType to Subscription Tier Mapping
+# Specific test suites
+pytest tests/test_operation_description_enricher.py -v
+pytest tests/test_deprecated_tier_enricher.py -v
 
-The `tenant_type` field in the API response maps to subscription tier access:
+# With coverage
+pytest --cov=scripts --cov-report=html
+```
 
-| TenantType | Subscription Tier | Feature Access |
-|------------|-------------------|----------------|
-| `FREEMIUM` | **Standard** | Base tier features only |
-| `ENTERPRISE` | **Advanced** | Full feature access including advanced capabilities |
+### Pre-commit Hooks
 
-**API Endpoint**: `GET /api/web/namespaces/system/usage_plans/current`
+The repository uses pre-commit hooks that run on every commit:
 
-**Response field**: `plans[].tenant_type`
+```yaml
+Hooks:
+  - F5 XC API Enrichment Pipeline (full rebuild)
+  - Spectral linting (all 270+ specs)
+  - Ruff (linting + formatting)
+  - MyPy (type checking)
+  - Security checks (gitleaks, detect-private-key)
+  - File hygiene (trailing whitespace, line endings)
+```
 
-> **Implementation Note**: When determining subscription tier from API responses, map `ENTERPRISE` → "Advanced" and `FREEMIUM` → "Standard". For unknown values, default to "Standard" for fail-safe behavior. See [xcsh implementation](https://github.com/robinmordasiewicz/xcsh/blob/main/pkg/subscription/client.go#L411-L422) for reference.
+**Note**: Every commit triggers a full pipeline run (~50 seconds). This ensures specification consistency.
 
-### Activation Types
+### Contributing
 
-| Type | Description |
-|------|-------------|
-| `self_activation` | User can subscribe directly |
-| `partially_managed_activation` | Requires some backend intervention |
-| `managed_activation` | Complete manual SRE intervention |
+1. Create feature branch: `git checkout -b feature/issue-XXX-description`
+2. Make changes
+3. Commit (pre-commit hooks will run automatically)
+4. Push and create PR
+5. CI/CD will validate and auto-merge if approved
 
-### Plan Transition Methods
+## License
 
-| Method | Description |
-|--------|-------------|
-| `TRANSITION_METHOD_SUPPORT` | Requires support ticket |
-| `TRANSITION_METHOD_WIZARD` | Self-service UI wizard |
-| `TRANSITION_METHOD_RECREATE` | Requires tenant recreation |
+MIT License - Copyright (c) 2026 Robin Mordasiewicz
 
-### Feature Comparison (Standard vs Advanced)
+## Support
 
-| Capability | Standard | Advanced |
-|------------|----------|----------|
-| Basic functionality | Yes | Yes |
-| Service networking | Yes | Yes |
-| CDN, DNS, App Stack | Yes | Yes |
-| API discovery & protection | No | Yes |
-| Behavioral bot mitigation | No | Yes |
-| Layer 7 DDoS mitigation | No | Yes |
-| Advanced multi-cloud networking | No | Yes |
-
-### Quota/Limits by Tier
-
-Tiers differ in resource limits (from `default_quota`):
-
-- **Object limits**: Virtual hosts, origin pools, etc.
-- **API rate limits**: Requests per second
-- **Resource limits**: Bandwidth, request counts
-
-### Marketplace Integrations
-
-**Azure Marketplace** (`marketplace.xc_saas`):
-
-- `SignupXCSaaS` - Process signup from Azure entitlement
-- Token-based provisioning with HMAC security
-
-**AWS Marketplace** (`marketplace.aws_account`):
-
-- AWS-specific integration for marketplace purchases
-
-### Subscription Flow
-
-1. **Signup** - User selects plan (determines included/allowed services)
-2. **Plan Assignment** - Plan defines `included_services` (auto-subscribed) and `allowed_services`
-3. **Subscribe** - Create addon_subscription for desired services
-4. **Activation** - Based on activation type (self/partial/managed)
-5. **Access Control** - PBAC validates tier access at runtime
-6. **Catalog View** - Filtered by user's plan showing access status
-
-### References
-
-- [F5 Product Comparison](https://www.f5.com/products/get-f5/compare)
-- AddonServiceTierType enum: `pbac.addon_service` spec
-- PBAC access states: `pbac.catalog` spec
+- **Issues**: [GitHub Issues](https://github.com/robinmordasiewicz/f5xc-api-enriched/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/robinmordasiewicz/f5xc-api-enriched/discussions)
