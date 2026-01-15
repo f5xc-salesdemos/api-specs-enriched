@@ -24,6 +24,9 @@ import yaml
 
 from scripts.utils.extension_constants import X_F5XC_DESCRIPTION_MEDIUM, X_F5XC_DESCRIPTION_SHORT
 
+# Precompiled regex pattern for performance (used in hot paths)
+_WHITESPACE_NORMALIZE_PATTERN = re.compile(r"\s+")
+
 
 @dataclass
 class PropertyDescriptionShortStats:
@@ -630,7 +633,7 @@ class PropertyDescriptionShortEnricher:
             cleaned = pattern.sub("", cleaned)
 
         # Normalize whitespace
-        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        cleaned = _WHITESPACE_NORMALIZE_PATTERN.sub(" ", cleaned).strip()
 
         return cleaned  # noqa: RET504
 
@@ -698,7 +701,7 @@ class PropertyDescriptionShortEnricher:
             result = result[0].upper() + result[1:]
 
         # Clean up any double spaces
-        result = re.sub(r"\s+", " ", result).strip()
+        result = _WHITESPACE_NORMALIZE_PATTERN.sub(" ", result).strip()
 
         return result  # noqa: RET504
 

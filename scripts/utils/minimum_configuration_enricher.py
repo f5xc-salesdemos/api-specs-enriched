@@ -22,6 +22,9 @@ from typing import Any
 
 import yaml
 
+# Precompiled regex pattern for performance (used in hot paths)
+_CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
+
 from .domain_categorizer import DomainCategorizer
 from .extension_constants import (
     X_F5XC_CLI_DOMAIN,
@@ -360,7 +363,7 @@ class MinimumConfigurationEnricher:
         resource_name = (
             schema_name.split("Create")[0].split("Update")[0].split("Get")[0].split("Delete")[0]
         )
-        resource_name = re.sub(r"(?<!^)(?=[A-Z])", "_", resource_name).lower()
+        resource_name = _CAMELCASE_TO_SNAKE_PATTERN.sub("_", resource_name).lower()
 
         # Convert to plural form for API endpoint (simple heuristic)
         if resource_name.endswith("y"):
@@ -446,7 +449,7 @@ class MinimumConfigurationEnricher:
                     return base_name
 
         # Try converting case variations (e.g., HttpLoadbalancer -> http_loadbalancer)
-        snake_case = re.sub(r"(?<!^)(?=[A-Z])", "_", working_name).lower()
+        snake_case = _CAMELCASE_TO_SNAKE_PATTERN.sub("_", working_name).lower()
         if snake_case in self.resources:
             return snake_case
 

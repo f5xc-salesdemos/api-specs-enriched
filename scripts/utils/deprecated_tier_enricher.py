@@ -28,6 +28,10 @@ import yaml
 
 from scripts.utils.extension_constants import X_F5XC_MINIMUM_CONFIGURATION
 
+# Precompiled regex patterns for performance (used in hot paths)
+_WHITESPACE_NORMALIZE_PATTERN = re.compile(r"\s+")
+_COMMA_PERIOD_PATTERN = re.compile(r",\s*\.")
+
 logger = logging.getLogger(__name__)
 
 
@@ -105,9 +109,11 @@ class DeprecatedTierEnricher:
         self.config: dict[str, Any] = {}
         self.patterns: list[re.Pattern[str]] = []
         self.transformations: dict[str, str] = dict(TIER_TRANSFORMATIONS)
+        self._compiled_transformation_patterns: list[tuple[re.Pattern[str], re.Pattern[str], str]] = []
         self.stats = DeprecatedTierStats()
 
         self._load_config()
+        self._compile_transformation_patterns()
 
     def _load_config(self) -> None:
         """Load configuration from YAML file."""
@@ -143,6 +149,18 @@ class DeprecatedTierEnricher:
         except yaml.YAMLError:
             logger.exception("Failed to parse config")
             self.patterns = [re.compile(p) for p in self.DEFAULT_PATTERNS]
+
+    def _compile_transformation_patterns(self) -> None:
+        """Precompile transformation patterns for performance."""
+        self._compiled_transformation_patterns = []
+        for deprecated, current in self.transformations.items():
+            # Pattern for list items like "- BASIC:"
+            list_pattern = re.compile(rf"(-\s*){deprecated}(:)", re.IGNORECASE)
+            # Pattern for standalone mentions
+            standalone_pattern = re.compile(rf"\b{deprecated}\b")
+            self._compiled_transformation_patterns.append(
+                (list_pattern, standalone_pattern, current)
+            )
 
     def enrich(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Transform deprecated tier values in specification.
@@ -238,24 +256,15 @@ class DeprecatedTierEnricher:
 
         # Replace references to deprecated tiers with their current equivalents
         new_desc = original_desc
-        for deprecated, current in self.transformations.items():
+        for list_pattern, standalone_pattern, current in self._compiled_transformation_patterns:
             # Replace mentions like "- BASIC: basic\n" with "- STANDARD: standard\n"
-            new_desc = re.sub(
-                rf"(-\s*){deprecated}(:)",
-                rf"\g<1>{current}\g<2>",
-                new_desc,
-                flags=re.IGNORECASE,
-            )
+            new_desc = list_pattern.sub(rf"\g<1>{current}\g<2>", new_desc)
             # Replace standalone mentions
-            new_desc = re.sub(
-                rf"\b{deprecated}\b",
-                current,
-                new_desc,
-            )
+            new_desc = standalone_pattern.sub(current, new_desc)
 
         # Clean up any double spaces or trailing commas
-        new_desc = re.sub(r"\s+", " ", new_desc)
-        new_desc = re.sub(r",\s*\.", ".", new_desc)
+        new_desc = _WHITESPACE_NORMALIZE_PATTERN.sub(" ", new_desc)
+        new_desc = _COMMA_PERIOD_PATTERN.sub(".", new_desc)
         new_desc = new_desc.strip()
 
         if new_desc != original_desc:

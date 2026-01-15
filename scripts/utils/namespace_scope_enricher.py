@@ -25,6 +25,14 @@ import yaml
 
 from .extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_NAMESPACE_SCOPE
 
+# Precompiled regex patterns for performance (used in hot paths)
+_TRAILING_API_PATTERN = re.compile(r"\s+API\s*$", re.IGNORECASE)
+_TRAILING_SERVICE_PATTERN = re.compile(r"\s+Service\s*$", re.IGNORECASE)
+_ACRONYM_SPLIT_PATTERN = re.compile(r"([A-Z]+)([A-Z][a-z])")
+_CAMELCASE_SPLIT_PATTERN = re.compile(r"([a-z\d])([A-Z])")
+_WHITESPACE_HYPHEN_PATTERN = re.compile(r"[\s\-]+")
+_MULTIPLE_UNDERSCORES_PATTERN = re.compile(r"_+")
+
 logger = logging.getLogger(__name__)
 
 
@@ -212,20 +220,20 @@ class NamespaceScopeEnricher:
             Resource type in snake_case
         """
         # Remove common suffixes
-        title = re.sub(r"\s+API\s*$", "", title, flags=re.IGNORECASE)
-        title = re.sub(r"\s+Service\s*$", "", title, flags=re.IGNORECASE)
+        title = _TRAILING_API_PATTERN.sub("", title)
+        title = _TRAILING_SERVICE_PATTERN.sub("", title)
 
         # Convert to snake_case
         # First handle acronyms (uppercase sequences followed by uppercase+lowercase)
-        title = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", title)
+        title = _ACRONYM_SPLIT_PATTERN.sub(r"\1_\2", title)
         # Then handle regular camelCase
-        title = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", title)
+        title = _CAMELCASE_SPLIT_PATTERN.sub(r"\1_\2", title)
         # Replace spaces and hyphens with underscores
-        title = re.sub(r"[\s\-]+", "_", title)
+        title = _WHITESPACE_HYPHEN_PATTERN.sub("_", title)
         # Convert to lowercase and clean up
         resource_type = title.lower().strip("_")
         # Remove duplicate underscores and return
-        return re.sub(r"_+", "_", resource_type)
+        return _MULTIPLE_UNDERSCORES_PATTERN.sub("_", resource_type)
 
     def _extract_resource_from_paths(self, paths: dict[str, Any]) -> str:
         """Extract resource type from API paths.
