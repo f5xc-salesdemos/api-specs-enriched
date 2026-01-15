@@ -325,5 +325,7 @@ class BatchSpecProcessor:
         Returns:
             Path to cache file
         """
+        # Ensure cache directory exists before returning path
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
         cache_filename = f"{spec_file.stem}_processed.json"
         return self.cache_dir / cache_filename
