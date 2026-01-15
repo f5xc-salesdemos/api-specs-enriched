@@ -45,7 +45,8 @@ def discover_all_endpoints() -> list[tuple[str, str, str, dict]]:
                     continue
                 for method, operation in methods.items():
                     if method.lower() in ["get", "post", "put", "patch", "delete"] and isinstance(
-                        operation, dict,
+                        operation,
+                        dict,
                     ):
                         endpoints.append((spec_name, path, method.lower(), operation))
         except (json.JSONDecodeError, OSError):

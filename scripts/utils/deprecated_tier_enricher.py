@@ -109,7 +109,9 @@ class DeprecatedTierEnricher:
         self.config: dict[str, Any] = {}
         self.patterns: list[re.Pattern[str]] = []
         self.transformations: dict[str, str] = dict(TIER_TRANSFORMATIONS)
-        self._compiled_transformation_patterns: list[tuple[re.Pattern[str], re.Pattern[str], str]] = []
+        self._compiled_transformation_patterns: list[
+            tuple[re.Pattern[str], re.Pattern[str], str]
+        ] = []
         self.stats = DeprecatedTierStats()
 
         self._load_config()
@@ -159,7 +161,7 @@ class DeprecatedTierEnricher:
             # Pattern for standalone mentions
             standalone_pattern = re.compile(rf"\b{deprecated}\b")
             self._compiled_transformation_patterns.append(
-                (list_pattern, standalone_pattern, current)
+                (list_pattern, standalone_pattern, current),
             )
 
     def enrich(self, spec: dict[str, Any]) -> dict[str, Any]:
