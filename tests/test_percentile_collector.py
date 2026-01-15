@@ -2,7 +2,7 @@
 
 """Unit tests for PercentileCollector."""
 
-# ruff: noqa: SLF001, TRY002, ERA001
+# ruff: noqa: TRY002, ERA001
 
 import asyncio
 

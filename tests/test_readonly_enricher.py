@@ -301,7 +301,7 @@ class TestReadOnlyEnricherPatterns:
     )
     def test_metadata_patterns_match(self, enricher: ReadOnlyEnricher, schema_name: str) -> None:
         """Verify metadata patterns match expected schema names."""
-        assert enricher._matches_patterns(schema_name, enricher.metadata_patterns)  # noqa: SLF001
+        assert enricher._matches_patterns(schema_name, enricher.metadata_patterns)
 
     @pytest.mark.parametrize(
         "schema_name",
@@ -314,7 +314,7 @@ class TestReadOnlyEnricherPatterns:
     )
     def test_object_ref_patterns_match(self, enricher: ReadOnlyEnricher, schema_name: str) -> None:
         """Verify ObjectRef patterns match expected schema names."""
-        assert enricher._matches_patterns(schema_name, enricher.object_ref_patterns)  # noqa: SLF001
+        assert enricher._matches_patterns(schema_name, enricher.object_ref_patterns)
 
     @pytest.mark.parametrize(
         "schema_name",
@@ -331,8 +331,8 @@ class TestReadOnlyEnricherPatterns:
         schema_name: str,
     ) -> None:
         """Verify patterns don't match regular resource schemas."""
-        assert not enricher._matches_patterns(schema_name, enricher.metadata_patterns)  # noqa: SLF001
-        assert not enricher._matches_patterns(schema_name, enricher.object_ref_patterns)  # noqa: SLF001
+        assert not enricher._matches_patterns(schema_name, enricher.metadata_patterns)
+        assert not enricher._matches_patterns(schema_name, enricher.object_ref_patterns)
 
 
 class TestReadOnlyEnricherIntegration:
@@ -340,14 +340,14 @@ class TestReadOnlyEnricherIntegration:
 
     def test_enricher_is_exported(self) -> None:
         """Verify ReadOnlyEnricher is exported from scripts.utils."""
-        from scripts.utils import ReadOnlyEnricher as ExportedEnricher  # noqa: PLC0415
+        from scripts.utils import ReadOnlyEnricher as ExportedEnricher
 
         assert ExportedEnricher is not None
         assert ExportedEnricher.__name__ == "ReadOnlyEnricher"
 
     def test_enricher_can_be_instantiated(self) -> None:
         """Verify enricher can be instantiated without errors."""
-        from scripts.utils import ReadOnlyEnricher as ExportedEnricher  # noqa: PLC0415
+        from scripts.utils import ReadOnlyEnricher as ExportedEnricher
 
         enricher = ExportedEnricher()
         assert enricher is not None

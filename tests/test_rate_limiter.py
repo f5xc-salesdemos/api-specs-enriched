@@ -120,13 +120,13 @@ class TestRateLimiterInitialization:
         """Test that initial tokens equal burst limit."""
         config = RateLimitConfig(burst_limit=15)
         limiter = RateLimiter(config)
-        assert limiter._tokens == 15.0  # noqa: SLF001
+        assert limiter._tokens == 15.0
 
     def test_init_backoff_equals_base(self):
         """Test that initial backoff equals backoff_base."""
         config = RateLimitConfig(backoff_base=3.0)
         limiter = RateLimiter(config)
-        assert limiter._current_backoff == 3.0  # noqa: SLF001
+        assert limiter._current_backoff == 3.0
 
 
 class TestTokenBucketMechanism:
@@ -136,10 +136,10 @@ class TestTokenBucketMechanism:
     async def test_acquire_decrements_tokens(self):
         """Test that acquire decrements token count."""
         limiter = RateLimiter(RateLimitConfig(burst_limit=10))
-        initial_tokens = limiter._tokens  # noqa: SLF001
+        initial_tokens = limiter._tokens
 
         await limiter.acquire()
-        assert limiter._tokens == initial_tokens - 1  # noqa: SLF001
+        assert limiter._tokens == initial_tokens - 1
 
         limiter.release()
 
@@ -172,13 +172,13 @@ class TestTokenBucketMechanism:
         limiter = RateLimiter(config)
 
         # Consume all tokens
-        limiter._tokens = 0  # noqa: SLF001
-        limiter._last_update = time.monotonic() - 0.5  # noqa: SLF001
+        limiter._tokens = 0
+        limiter._last_update = time.monotonic() - 0.5
 
         # Refill should add 5 tokens (10 rps * 0.5s)
-        limiter._refill_tokens()  # noqa: SLF001
+        limiter._refill_tokens()
 
-        assert limiter._tokens >= 4.9  # noqa: SLF001
+        assert limiter._tokens >= 4.9
 
     def test_tokens_capped_at_burst_limit(self):
         """Test that tokens don't exceed burst limit."""
@@ -186,11 +186,11 @@ class TestTokenBucketMechanism:
         limiter = RateLimiter(config)
 
         # Set last update far in the past to get many new tokens
-        limiter._last_update = time.monotonic() - 100  # noqa: SLF001
+        limiter._last_update = time.monotonic() - 100
 
-        limiter._refill_tokens()  # noqa: SLF001
+        limiter._refill_tokens()
 
-        assert limiter._tokens == 10.0  # noqa: SLF001
+        assert limiter._tokens == 10.0
 
 
 class TestExponentialBackoff:
@@ -202,10 +202,10 @@ class TestExponentialBackoff:
         config = RateLimitConfig(backoff_base=1.0, backoff_multiplier=2.0)
         limiter = RateLimiter(config)
 
-        initial_backoff = limiter._current_backoff  # noqa: SLF001
+        initial_backoff = limiter._current_backoff
         await limiter.handle_rate_limit_response()
 
-        assert limiter._current_backoff == initial_backoff * 2.0  # noqa: SLF001
+        assert limiter._current_backoff == initial_backoff * 2.0
 
     @pytest.mark.asyncio
     async def test_backoff_capped_at_max(self):
@@ -220,7 +220,7 @@ class TestExponentialBackoff:
         # First hit: 30 * 3 = 90, but capped at 60
         await limiter.handle_rate_limit_response()
 
-        assert limiter._current_backoff == 60.0  # noqa: SLF001
+        assert limiter._current_backoff == 60.0
 
     @pytest.mark.asyncio
     async def test_retry_after_honored(self):
@@ -257,10 +257,10 @@ class TestExponentialBackoff:
         config = RateLimitConfig(backoff_base=1.0)
         limiter = RateLimiter(config)
 
-        limiter._current_backoff = 30.0  # noqa: SLF001
+        limiter._current_backoff = 30.0
         limiter.reset_backoff()
 
-        assert limiter._current_backoff == 1.0  # noqa: SLF001
+        assert limiter._current_backoff == 1.0
 
     def test_reset_retries(self):
         """Test reset_retries zeroes retry counter."""
@@ -294,27 +294,27 @@ class TestContextManager:
         limiter = RateLimiter(config)
 
         # Artificially increase backoff
-        limiter._current_backoff = 10.0  # noqa: SLF001
+        limiter._current_backoff = 10.0
         limiter.stats.retries = 3
 
         async with limiter:
             pass
 
-        assert limiter._current_backoff == 1.0  # noqa: SLF001
+        assert limiter._current_backoff == 1.0
         assert limiter.stats.retries == 0
 
     @pytest.mark.asyncio
     async def test_context_manager_on_exception(self):
         """Test context manager behavior on exception."""
         limiter = RateLimiter()
-        limiter._current_backoff = 10.0  # noqa: SLF001
+        limiter._current_backoff = 10.0
 
         with pytest.raises(ValueError, match="Test error"):
             async with limiter:
                 raise ValueError("Test error")
 
         # Backoff should not reset on exception
-        assert limiter._current_backoff == 10.0  # noqa: SLF001
+        assert limiter._current_backoff == 10.0
 
 
 class TestStatistics:
@@ -443,7 +443,7 @@ class TestEdgeCases:
         """Test with burst limit of 1."""
         config = RateLimitConfig(burst_limit=1)
         limiter = RateLimiter(config)
-        assert limiter._tokens == 1.0  # noqa: SLF001
+        assert limiter._tokens == 1.0
 
     @pytest.mark.asyncio
     async def test_immediate_release(self):

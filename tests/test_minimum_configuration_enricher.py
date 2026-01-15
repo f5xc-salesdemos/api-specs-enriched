@@ -88,42 +88,42 @@ class TestResourceDetection:
     def test_detect_direct_match(self):
         """Test direct schema name match."""
         enricher = MinimumConfigurationEnricher()
-        assert enricher._detect_resource_type("http_loadbalancer") == "http_loadbalancer"  # noqa: SLF001
-        assert enricher._detect_resource_type("origin_pool") == "origin_pool"  # noqa: SLF001
+        assert enricher._detect_resource_type("http_loadbalancer") == "http_loadbalancer"
+        assert enricher._detect_resource_type("origin_pool") == "origin_pool"
 
     def test_detect_with_request_suffix(self):
         """Test detection with Request suffix."""
         enricher = MinimumConfigurationEnricher()
         assert (
-            enricher._detect_resource_type("http_loadbalancerCreateRequest") == "http_loadbalancer"  # noqa: SLF001
+            enricher._detect_resource_type("http_loadbalancerCreateRequest") == "http_loadbalancer"
         )
-        assert enricher._detect_resource_type("origin_poolCreateRequest") == "origin_pool"  # noqa: SLF001
+        assert enricher._detect_resource_type("origin_poolCreateRequest") == "origin_pool"
 
     def test_detect_with_spec_type_suffix(self):
         """Test detection with SpecType suffix."""
         enricher = MinimumConfigurationEnricher()
         assert (
-            enricher._detect_resource_type("http_loadbalancerCreateSpecType") == "http_loadbalancer"  # noqa: SLF001
+            enricher._detect_resource_type("http_loadbalancerCreateSpecType") == "http_loadbalancer"
         )
-        assert enricher._detect_resource_type("healthcheckCreateSpecType") == "healthcheck"  # noqa: SLF001
+        assert enricher._detect_resource_type("healthcheckCreateSpecType") == "healthcheck"
 
     def test_detect_with_response_suffix(self):
         """Test detection with Response suffix."""
         enricher = MinimumConfigurationEnricher()
-        assert enricher._detect_resource_type("origin_poolCreateResponse") == "origin_pool"  # noqa: SLF001
-        assert enricher._detect_resource_type("tcp_loadbalancerGetResponse") == "tcp_loadbalancer"  # noqa: SLF001
+        assert enricher._detect_resource_type("origin_poolCreateResponse") == "origin_pool"
+        assert enricher._detect_resource_type("tcp_loadbalancerGetResponse") == "tcp_loadbalancer"
 
     def test_detect_partial_matching(self):
         """Test partial matching for compound names."""
         enricher = MinimumConfigurationEnricher()
         # Should find 'app_firewall' in longer name
-        result = enricher._detect_resource_type("app_firewallSomeOtherType")  # noqa: SLF001
+        result = enricher._detect_resource_type("app_firewallSomeOtherType")
         assert result == "app_firewall"
 
     def test_detect_no_match(self):
         """Test detection with non-matching schema."""
         enricher = MinimumConfigurationEnricher()
-        result = enricher._detect_resource_type("SomeRandomSchema")  # noqa: SLF001
+        result = enricher._detect_resource_type("SomeRandomSchema")
         assert result is None
 
     def test_detect_http_loadbalancer_variants(self):
@@ -139,7 +139,7 @@ class TestResourceDetection:
             "http_loadbalancerGetSpecType",
         ]
         for variant in variants:
-            result = enricher._detect_resource_type(variant)  # noqa: SLF001
+            result = enricher._detect_resource_type(variant)
             assert result == "http_loadbalancer", f"Failed to detect {variant}"
 
 
@@ -152,7 +152,7 @@ class TestRequiredFieldExtraction:
         resource_type = "http_loadbalancer"
         schema = {}
 
-        required = enricher._extract_required_fields(resource_type, schema)  # noqa: SLF001
+        required = enricher._extract_required_fields(resource_type, schema)
         assert isinstance(required, list)
         assert len(required) > 0
         # Should include metadata.name and metadata.namespace
@@ -225,7 +225,7 @@ class TestDomainMapping:
     def test_get_domain_for_http_loadbalancer(self):
         """Test domain mapping for http_loadbalancer."""
         enricher = MinimumConfigurationEnricher()
-        domain = enricher._get_domain_for_resource(  # noqa: SLF001
+        domain = enricher._get_domain_for_resource(
             "http_loadbalancer",
             "http_loadbalancerCreateRequest",
         )
@@ -235,14 +235,14 @@ class TestDomainMapping:
     def test_get_domain_for_app_firewall(self):
         """Test domain mapping for app_firewall."""
         enricher = MinimumConfigurationEnricher()
-        domain = enricher._get_domain_for_resource("app_firewall", "app_firewallCreateRequest")  # noqa: SLF001
+        domain = enricher._get_domain_for_resource("app_firewall", "app_firewallCreateRequest")
         assert domain == "waf"
 
     def test_get_domain_explicit_config(self):
         """Test that explicit domain in config is used."""
         enricher = MinimumConfigurationEnricher()
         # http_loadbalancer should have explicit domain configured
-        domain = enricher._get_domain_for_resource(  # noqa: SLF001
+        domain = enricher._get_domain_for_resource(
             "http_loadbalancer",
             "http_loadbalancerCreateRequest",
         )

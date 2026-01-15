@@ -51,7 +51,7 @@ class TestFieldMetadataEnricherBasics:
         enricher = FieldMetadataEnricher()
         assert enricher.preserve_existing is True
         assert len(enricher.field_patterns) > 0
-        assert len(enricher._compiled_patterns) > 0  # noqa: SLF001
+        assert len(enricher._compiled_patterns) > 0
 
     def test_config_loading_missing_file(self):
         """Test enricher loads defaults when config file missing."""
@@ -76,7 +76,7 @@ class TestDescriptionEnrichment:
     def test_name_field_gets_description(self, enricher):
         """Test that name field gets description."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert X_F5XC_DESCRIPTION in prop
         assert "name" in prop[X_F5XC_DESCRIPTION].lower()
@@ -84,7 +84,7 @@ class TestDescriptionEnrichment:
     def test_email_field_gets_description(self, enricher):
         """Test that email field gets description."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "email", "TestSchema")
 
         assert X_F5XC_DESCRIPTION in prop
         assert "email" in prop[X_F5XC_DESCRIPTION].lower()
@@ -92,7 +92,7 @@ class TestDescriptionEnrichment:
     def test_port_field_gets_description(self, enricher):
         """Test that port field gets description."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "port", "TestSchema")
 
         assert X_F5XC_DESCRIPTION in prop
         assert "port" in prop[X_F5XC_DESCRIPTION].lower()
@@ -101,7 +101,7 @@ class TestDescriptionEnrichment:
         """Test that existing descriptions are preserved."""
         existing_desc = "Custom description"
         prop = {"type": "string", X_F5XC_DESCRIPTION: existing_desc}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert prop[X_F5XC_DESCRIPTION] == existing_desc
 
@@ -112,7 +112,7 @@ class TestValidationEnrichment:
     def test_name_field_gets_validation(self, enricher):
         """Test that name field gets validation constraints."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert X_F5XC_VALIDATION in prop
         validation = prop[X_F5XC_VALIDATION]
@@ -121,7 +121,7 @@ class TestValidationEnrichment:
     def test_port_field_gets_validation(self, enricher):
         """Test that port field gets port range validation."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "port", "TestSchema")
 
         assert X_F5XC_VALIDATION in prop
         validation = prop[X_F5XC_VALIDATION]
@@ -131,7 +131,7 @@ class TestValidationEnrichment:
     def test_email_field_gets_email_format(self, enricher):
         """Test that email field gets email format validation."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "email", "TestSchema")
 
         assert X_F5XC_VALIDATION in prop
         validation = prop[X_F5XC_VALIDATION]
@@ -141,7 +141,7 @@ class TestValidationEnrichment:
         """Test that existing validation is preserved."""
         existing_validation = {"minLength": 10}
         prop = {"type": "string", X_F5XC_VALIDATION: existing_validation}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert prop[X_F5XC_VALIDATION] == existing_validation
 
@@ -152,7 +152,7 @@ class TestExampleEnrichment:
     def test_name_field_gets_examples(self, enricher):
         """Test that name field gets examples."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert X_F5XC_EXAMPLES in prop
         examples = prop[X_F5XC_EXAMPLES]
@@ -163,7 +163,7 @@ class TestExampleEnrichment:
     def test_email_field_gets_examples(self, enricher):
         """Test that email field gets email examples."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "email", "TestSchema")
 
         assert X_F5XC_EXAMPLES in prop
         examples = prop[X_F5XC_EXAMPLES]
@@ -172,7 +172,7 @@ class TestExampleEnrichment:
     def test_port_field_gets_examples(self, enricher):
         """Test that port field gets port examples."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "port", "TestSchema")
 
         assert X_F5XC_EXAMPLES in prop
 
@@ -180,7 +180,7 @@ class TestExampleEnrichment:
         """Test that existing examples are preserved."""
         existing_examples = [{"value": "custom", "context": "test"}]
         prop = {"type": "string", X_F5XC_EXAMPLES: existing_examples}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert prop[X_F5XC_EXAMPLES] == existing_examples
 
@@ -191,7 +191,7 @@ class TestCompletionEnrichment:
     def test_name_field_gets_completion(self, enricher):
         """Test that name field gets completion info."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert X_F5XC_COMPLETION in prop
         assert "type" in prop[X_F5XC_COMPLETION]
@@ -199,7 +199,7 @@ class TestCompletionEnrichment:
     def test_email_field_gets_email_completion(self, enricher):
         """Test that email field gets email completion."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "email", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "email", "TestSchema")
 
         assert X_F5XC_COMPLETION in prop
         completion = prop[X_F5XC_COMPLETION]
@@ -208,7 +208,7 @@ class TestCompletionEnrichment:
     def test_port_field_gets_port_completion(self, enricher):
         """Test that port field gets port completion."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "port", "TestSchema")
 
         assert X_F5XC_COMPLETION in prop
         completion = prop[X_F5XC_COMPLETION]
@@ -218,7 +218,7 @@ class TestCompletionEnrichment:
         """Test that existing completion is preserved."""
         existing_completion = {"type": "custom"}
         prop = {"type": "string", X_F5XC_COMPLETION: existing_completion}
-        enricher._enrich_property(prop, "name", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "name", "TestSchema")
 
         assert prop[X_F5XC_COMPLETION] == existing_completion
 
@@ -229,7 +229,7 @@ class TestDefaultsEnrichment:
     def test_port_field_gets_default(self, enricher):
         """Test that port field gets default value."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "port", "TestSchema")
 
         # Port should have defaults defined in config
         if X_F5XC_DEFAULTS in prop:
@@ -366,7 +366,7 @@ class TestEdgeCases:
     def test_non_matching_fields_skipped(self, enricher):
         """Test that non-matching fields are not enriched."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "arbitrary_field", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "arbitrary_field", "TestSchema")
 
         # Should not add any x-f5xc-* fields for non-matching fields
         f5xc_keys = [k for k in prop if k.startswith("x-f5xc-")]
@@ -407,27 +407,27 @@ class TestPatternMatching:
     def test_exact_pattern_match(self, enricher):
         """Test that patterns match end-of-field-name correctly."""
         # Should match - 'name' field directly or as a word boundary match
-        assert enricher._find_pattern("name") is not None  # noqa: SLF001
+        assert enricher._find_pattern("name") is not None
 
         # Note: 'user_name' won't match \bname$ because the word boundary before 'name'
         # is not at the start of 'user_name', it's in the middle (_)
         # So 'user_name' and 'resource_name' correctly do NOT match
 
         # Test that underscore-separated compound words don't match single word patterns
-        assert enricher._find_pattern("user_name") is None  # noqa: SLF001  # Expected: doesn't match \bname$
+        assert enricher._find_pattern("user_name") is None  # Expected: doesn't match \bname$
 
         # But 'namespace' DOES match \bname$ because of the word boundary before 'name'
-        assert enricher._find_pattern("namespace") is not None  # noqa: SLF001
+        assert enricher._find_pattern("namespace") is not None
 
         # Verify enrichment happens for matching patterns
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "namespace", "TestSchema")  # noqa: SLF001
+        enricher._enrich_property(prop, "namespace", "TestSchema")
         assert X_F5XC_DESCRIPTION in prop  # "namespace" matches \bname$ due to word boundary
 
     def test_multiple_pattern_matching(self, enricher):
         """Test behavior when multiple patterns could match."""
         # If a field matches multiple patterns, first one wins
-        pattern = enricher._find_pattern("email_address")  # noqa: SLF001
+        pattern = enricher._find_pattern("email_address")
 
         # Should match email pattern
         if pattern:

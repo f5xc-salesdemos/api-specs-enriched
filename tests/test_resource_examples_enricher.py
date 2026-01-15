@@ -338,10 +338,10 @@ class TestValidationToggle:
     def test_set_validation_enabled(self, enricher):
         """Test setting validation enabled/disabled."""
         enricher.set_validation_enabled(False)
-        assert enricher._validate_examples is False  # noqa: SLF001
+        assert enricher._validate_examples is False
 
         enricher.set_validation_enabled(True)
-        assert enricher._validate_examples is True  # noqa: SLF001
+        assert enricher._validate_examples is True
 
 
 class TestMultipleDomains:
