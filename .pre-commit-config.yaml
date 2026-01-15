@@ -43,6 +43,16 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
         verbose: true
+
+      # Config Interdependency Validator
+      # Validates cross-file references and consistency in config/
+      - id: validate-configs
+        name: Validate config interdependencies
+        entry: python -m scripts.validate_configs
+        language: system
+        files: ^config/.*\.yaml$
+        pass_filenames: false
+        stages: [pre-commit]
   # =============================================================================
   # SECURITY HOOKS
   # =============================================================================
@@ -118,6 +128,69 @@ repos:
         exclude: ^specs/original/
 
   # =============================================================================
+  # JSON SCHEMA VALIDATION - check-jsonschema
+  # =============================================================================
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.36.0
+    hooks:
+      - id: check-jsonschema
+        name: Validate enrichment config
+        files: ^config/enrichment\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/enrichment.schema.json
+          - config/enrichment.yaml
+
+      - id: check-jsonschema
+        name: Validate normalization config
+        files: ^config/normalization\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/normalization.schema.json
+          - config/normalization.yaml
+
+      - id: check-jsonschema
+        name: Validate discovery config
+        files: ^config/discovery\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/discovery.schema.json
+          - config/discovery.yaml
+
+      - id: check-jsonschema
+        name: Validate server variables config
+        files: ^config/server_variables\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/server_variables.schema.json
+          - config/server_variables.yaml
+
+      - id: check-jsonschema
+        name: Validate operation descriptions config
+        files: ^config/operation_descriptions\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/operation_descriptions.schema.json
+          - config/operation_descriptions.yaml
+
+      - id: check-jsonschema
+        name: Validate resource metadata config
+        files: ^config/resource_metadata\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/resource_metadata.schema.json
+          - config/resource_metadata.yaml
+
+      - id: check-jsonschema
+        name: Validate minimum configs
+        files: ^config/minimum_configs\.yaml$
+        args:
+          - --schemafile
+          - config/schemas/minimum_configs.schema.json
+          - config/minimum_configs.yaml
+
+  # =============================================================================
   # GITHUB ACTIONS LINTING - actionlint
   # =============================================================================
 
@@ -183,7 +256,8 @@ repos:
     rev: v0.43.0
     hooks:
       - id: markdownlint
-        args: ['--fix', '--disable', 'MD013', 'MD033', 'MD041', '--']
+        args: ['--fix', '--disable', 'MD013', 'MD033', 'MD041', 'MD060', '--']
+        exclude: ^claudedocs/
 
 
 # =============================================================================

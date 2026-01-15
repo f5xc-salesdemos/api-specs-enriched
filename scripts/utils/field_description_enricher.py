@@ -469,11 +469,12 @@ class FieldDescriptionEnricher:
         if prop_type in type_descriptions:
             return type_descriptions[prop_type]
 
-        if prop_type == "object":
-            # For simple objects, provide a basic description
-            # Avoid complex nested objects
-            if not prop.get("properties") or len(prop.get("properties", {})) <= 3:
-                return "Object configuration"
+        # For simple objects, provide a basic description
+        # Avoid complex nested objects
+        if prop_type == "object" and (
+            not prop.get("properties") or len(prop.get("properties", {})) <= 3
+        ):
+            return "Object configuration"
 
         return None
 

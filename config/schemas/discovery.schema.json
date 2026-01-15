@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "F5 XC API Discovery Configuration",
+  "description": "Schema for API discovery configuration",
+  "type": "object",
+  "required": ["discovery"],
+  "properties": {
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "api_url": {
+          "type": "string",
+          "description": "API URL from environment variable"
+        },
+        "auth_token": {
+          "type": "string",
+          "description": "Authentication token from environment variable"
+        },
+        "rate_limit": {
+          "type": "object",
+          "properties": {
+            "requests_per_second": {
+              "type": "number",
+              "minimum": 0
+            },
+            "burst_limit": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "backoff_base": {
+              "type": "number",
+              "minimum": 0
+            },
+            "backoff_max": {
+              "type": "number",
+              "minimum": 0
+            },
+            "backoff_multiplier": {
+              "type": "number",
+              "minimum": 1
+            },
+            "retry_attempts": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "exploration": {
+          "type": "object",
+          "properties": {
+            "namespaces": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "methods": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+              }
+            },
+            "timeout_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_endpoints_per_run": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_individual_resources": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "skip_patterns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "schema_inference": {
+          "type": "object"
+        },
+        "diff_analysis": {
+          "type": "object"
+        },
+        "output": {
+          "type": "object"
+        },
+        "cli": {
+          "type": "object"
+        },
+        "logging": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

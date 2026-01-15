@@ -9,6 +9,8 @@ descriptions flow through the pipeline correctly.
 Issue: #408 - OperationMetadataEnricher overwrites DRY-compliant purpose descriptions
 """
 
+from typing import ClassVar
+
 import pytest
 
 from scripts.utils.operation_description_enricher import OperationDescriptionEnricher
@@ -189,7 +191,7 @@ class TestDRYComplianceAcrossEnrichers:
     """Test DRY compliance is maintained through the enricher pipeline."""
 
     @pytest.mark.parametrize(
-        "resource_type,expected_prefix",
+        ("resource_type", "expected_prefix"),
         [
             ("http_loadbalancer", "HTTP"),
             ("origin_pool", "Backend"),
@@ -243,10 +245,10 @@ class TestAllExplicitResources:
     """
 
     # Complete inventory of all 10 explicit resources from config/operation_descriptions.yaml
-    # Format: (resource_type, expected_short_description, api_path_pattern)
+    # Test data format: resource_type, expected_short_description, api_path_pattern
     # NOTE: EXPLICIT_RESOURCES_FULL_PIPELINE includes xfail for namespace due to path extraction limitation
     # EXPLICIT_RESOURCES_PRESERVATION tests don't need xfail since they don't use path extraction
-    EXPLICIT_RESOURCES_FULL_PIPELINE = [
+    EXPLICIT_RESOURCES_FULL_PIPELINE: ClassVar[list] = [
         (
             "http_loadbalancer",
             "HTTP/HTTPS load balancer with origin pools and routing rules",
@@ -309,7 +311,7 @@ class TestAllExplicitResources:
     ]
 
     # Preservation tests don't use path extraction, so no xfail needed for namespace
-    EXPLICIT_RESOURCES_PRESERVATION = [
+    EXPLICIT_RESOURCES_PRESERVATION: ClassVar[list] = [
         (
             "http_loadbalancer",
             "HTTP/HTTPS load balancer with origin pools and routing rules",
@@ -363,7 +365,7 @@ class TestAllExplicitResources:
     ]
 
     @pytest.mark.parametrize(
-        "resource_type,expected_description,api_path",
+        ("resource_type", "expected_description", "api_path"),
         EXPLICIT_RESOURCES_FULL_PIPELINE,
         ids=[_get_resource_id(r) for r in EXPLICIT_RESOURCES_FULL_PIPELINE],
     )
@@ -437,7 +439,7 @@ class TestAllExplicitResources:
         )
 
     @pytest.mark.parametrize(
-        "resource_type,expected_description,api_path",
+        ("resource_type", "expected_description", "api_path"),
         EXPLICIT_RESOURCES_PRESERVATION,
         ids=[f"{r[0]}_metadata_only" for r in EXPLICIT_RESOURCES_PRESERVATION],
     )
@@ -517,8 +519,8 @@ class TestAllPatternMatchers:
     """
 
     # Complete inventory of all 8 patterns from config/operation_descriptions.yaml
-    # Format: (pattern_name, resource_example, expected_short_description)
-    PATTERN_MATCHERS = [
+    # Test data format: pattern_name, resource_example, expected_short_description
+    PATTERN_MATCHERS: ClassVar[list] = [
         # Pattern 1: .*loadbalancer.*
         (
             "loadbalancer_pattern",
@@ -620,7 +622,7 @@ class TestAllPatternMatchers:
     ]
 
     @pytest.mark.parametrize(
-        "pattern_name,resource_type,expected_description",
+        ("pattern_name", "resource_type", "expected_description"),
         PATTERN_MATCHERS,
         ids=[p[0] for p in PATTERN_MATCHERS],
     )
@@ -689,8 +691,8 @@ class TestAllMethodFallbacks:
     """
 
     # Complete inventory of all 5 method fallbacks from config
-    # Format: (method, expected_short_description)
-    METHOD_FALLBACKS = [
+    # Test data format: method, expected_short_description
+    METHOD_FALLBACKS: ClassVar[list] = [
         ("post", "Create new"),
         ("get", "List all"),
         ("put", "Replace existing"),
@@ -699,7 +701,7 @@ class TestAllMethodFallbacks:
     ]
 
     @pytest.mark.parametrize(
-        "method,expected_pattern",
+        ("method", "expected_pattern"),
         METHOD_FALLBACKS,
         ids=[f"method_{m[0].upper()}" for m in METHOD_FALLBACKS],
     )
@@ -1006,7 +1008,7 @@ class TestHTTPMethodFallbacks:
     """Test HTTP method fallbacks for verb-first descriptions."""
 
     @pytest.mark.parametrize(
-        "method,expected_pattern",
+        ("method", "expected_pattern"),
         [
             ("get", "List all"),
             ("post", "Create new"),

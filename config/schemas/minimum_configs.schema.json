@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "F5 XC Minimum Configurations",
+  "description": "Schema for minimum viable configuration templates",
+  "type": "object",
+  "required": ["resources"],
+  "properties": {
+    "resources": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "required": ["description", "required_fields", "example_yaml"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "example_yaml": {
+              "type": "string",
+              "minLength": 1
+            },
+            "example_xcsh": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional CLI example for downstream projects"
+            },
+            "example_json": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional JSON configuration example"
+            },
+            "example_curl": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional curl command example"
+            }
+          }
+        }
+      }
+    }
+  }
+}

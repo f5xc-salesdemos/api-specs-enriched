@@ -243,7 +243,7 @@ class TestSpecEnrichment:
 
     def test_enrich_multiple_operations(self, enricher, sample_spec):
         """Test enrichment handles multiple operations."""
-        result = enricher.enrich_spec(sample_spec)
+        enricher.enrich_spec(sample_spec)
         stats = enricher.get_stats()
 
         # Should have processed 5 operations (2 GET, 2 POST, 1 DELETE)
@@ -254,7 +254,7 @@ class TestSpecEnrichment:
         """Test all short descriptions are ≤60 characters."""
         result = enricher.enrich_spec(sample_spec)
 
-        for path, path_item in result["paths"].items():
+        for path_item in result["paths"].values():
             for method in ["get", "post", "delete"]:
                 if method in path_item:
                     operation = path_item[method]

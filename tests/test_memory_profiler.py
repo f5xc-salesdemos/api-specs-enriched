@@ -105,8 +105,8 @@ class TestMemoryProfiler:
     def test_checkpoint_recording(self):
         """Verify checkpoints are recorded correctly."""
         with MemoryProfiler() as profiler:
-            checkpoint1 = profiler.checkpoint("checkpoint1")
-            checkpoint2 = profiler.checkpoint("checkpoint2")
+            profiler.checkpoint("checkpoint1")
+            profiler.checkpoint("checkpoint2")
 
             assert len(profiler.stats.checkpoints) == 2
             assert profiler.stats.checkpoints[0].name == "checkpoint1"
@@ -116,7 +116,7 @@ class TestMemoryProfiler:
         """Verify checkpoint with forced garbage collection."""
         with MemoryProfiler() as profiler:
             # Create some garbage
-            large_list = [i for i in range(10000)]
+            large_list = list(range(10000))
             del large_list
 
             checkpoint = profiler.checkpoint("after_gc", force_gc=True)
@@ -328,7 +328,7 @@ class TestIntegration:
                 processed = [str(spec) for spec in specs_data]
                 profiler.checkpoint("specs_processed", force_gc=True)
 
-                # Merge (simulate)
+                # Simulate merge step
                 merged = {"merged": processed[:100]}
                 profiler.checkpoint("specs_merged")
 

@@ -173,10 +173,7 @@ def validate_zip_member_path(member_name: str) -> bool:
         return False
 
     # Reject paths starting with traversal
-    if member_name.startswith("../"):
-        return False
-
-    return True
+    return not member_name.startswith("../")
 
 
 def validate_zip_member_size(info: zipfile.ZipInfo) -> tuple[bool, str]:
