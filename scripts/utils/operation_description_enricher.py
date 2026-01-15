@@ -266,10 +266,17 @@ class OperationDescriptionEnricher:
                 # Get description using matching strategy (use 'short' tier for purpose)
                 description = self.get_description(resource_type, method, tier="short")
 
-                if description:
+                # Preserve existing purpose - only set if not already present (Issue #408)
+                existing_purpose = metadata.get("purpose")
+                if existing_purpose:
+                    # Purpose already exists - preserve it, don't overwrite
+                    self.stats.descriptions_skipped += 1
+                elif description:
+                    # No existing purpose - apply generated description
                     metadata["purpose"] = description
                     self.stats.descriptions_applied += 1
                 else:
+                    # No existing purpose and no generated description
                     self.stats.descriptions_skipped += 1
 
         return spec

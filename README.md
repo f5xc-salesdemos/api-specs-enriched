@@ -41,7 +41,7 @@ This repository transforms F5 Distributed Cloud's 270+ OpenAPI specifications in
 
 ### Pipeline Stages
 
-```
+```text
 1. Download    → ETag-cached F5 spec retrieval
 2. Enrich      → Descriptions, branding, grammar, metadata
 3. Normalize   → Schema references, type fixes, consistency
@@ -171,7 +171,7 @@ x-f5xc-operation-metadata:
 
 ### Three-Tier Matching Strategy
 
-```
+```text
 1. Exact Match: "http_loadbalancer" → explicit description
 2. Pattern Match: ".*loadbalancer.*" → pattern-based description
 3. Method Fallback: POST → "Resource creation operation"
@@ -302,7 +302,7 @@ const longDesc = property.description;  // "Origin pool defines a collection of 
 - **MIGRATION.md**: Extension namespace migration (x-ves-*→ x-f5xc-*)
 - **CHANGELOG.md**: Auto-generated release notes
 
-## Configuration
+## Configuration Files and Extensions
 
 ### Key Configuration Files
 
@@ -355,7 +355,7 @@ servers:
 
 ### Coverage Metrics
 
-```
+```text
 Total Specifications: 270
 Total Properties: 56,706
 Properties with Descriptions: 32,141 (56.7% - 100% of describable)
@@ -366,7 +366,7 @@ Quality Score: 99% meaningful descriptions
 
 ### Pipeline Performance
 
-```
+```text
 Average Processing Time: ~2 minutes (270 specs)
 Peak Memory Usage: 154 MB
 Cache Hit Rate: ~85% (ETag-based)

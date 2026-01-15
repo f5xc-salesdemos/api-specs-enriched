@@ -226,6 +226,7 @@ class OperationMetadataEnricher:
         """Build comprehensive operation metadata object.
 
         Creates x-f5xc-operation-metadata containing all operation context and constraints.
+        Preserves existing purpose field if set by OperationDescriptionEnricher.
 
         Args:
             method: HTTP method
@@ -246,8 +247,13 @@ class OperationMetadataEnricher:
         common_errors = self._generate_common_errors(operation)
         performance_impact = self._assess_performance_impact(method, path, operation)
 
+        # PRESERVE existing purpose from OperationDescriptionEnricher if present
+        existing_metadata = operation.get(f"{self.extension_prefix}-operation-metadata", {})
+        existing_purpose = existing_metadata.get("purpose")
+        purpose = existing_purpose or self._generate_purpose(method, path, resource_type)
+
         return {
-            "purpose": self._generate_purpose(method, path, resource_type),
+            "purpose": purpose,
             "required_fields": required_fields,
             "optional_fields": optional_fields,
             "field_docs": field_docs,
@@ -263,7 +269,15 @@ class OperationMetadataEnricher:
         }
 
     def _generate_purpose(self, method: str, path: str, resource_type: str) -> str:
-        """Generate purpose description for an operation.
+        """Generate fallback purpose description for an operation.
+
+        This method generates verb-first descriptions as a fallback when
+        OperationDescriptionEnricher has not provided a DRY-compliant,
+        noun-first description.
+
+        Priority:
+        1. OperationDescriptionEnricher's noun-first description (if present)
+        2. This method's verb-first fallback (if no prior description)
 
         Args:
             method: HTTP method
@@ -271,7 +285,7 @@ class OperationMetadataEnricher:
             resource_type: Resource type identifier
 
         Returns:
-            Purpose description
+            Purpose description (verb-first fallback)
         """
         if method == "GET":
             if "{name}" in path or "{id}" in path:

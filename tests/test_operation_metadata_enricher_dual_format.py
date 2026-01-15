@@ -290,6 +290,99 @@ class TestDualFormatSupport:
         assert post_op_metadata["purpose"] != delete_op_metadata["purpose"]
 
 
+class TestPurposePreservation:
+    """Test purpose field preservation behavior (Issue #408)."""
+
+    def test_existing_purpose_preserved(self, enricher):
+        """Test that existing purpose field is preserved, not overwritten."""
+        spec = {
+            "paths": {
+                "/api/config/namespaces/{namespace}/http_loadbalancers": {
+                    "post": {
+                        "operationId": "createHttpLoadBalancer",
+                        "x-f5xc-operation-metadata": {
+                            "purpose": "HTTP/HTTPS load balancer with origin pools",
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        post_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["post"]
+        metadata = post_op["x-f5xc-operation-metadata"]
+
+        # Purpose should be preserved, not overwritten with "Create new http-loadbalancer"
+        assert metadata["purpose"] == "HTTP/HTTPS load balancer with origin pools"
+        assert not metadata["purpose"].startswith("Create")
+
+    def test_fallback_purpose_when_none_exists(self, enricher):
+        """Test that fallback purpose is generated when none exists."""
+        spec = {
+            "paths": {
+                "/api/config/namespaces/{namespace}/test_items": {
+                    "post": {
+                        "operationId": "createTestItem",
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        post_op = result["paths"]["/api/config/namespaces/{namespace}/test_items"]["post"]
+        metadata = post_op["x-f5xc-operation-metadata"]
+
+        # Should generate verb-first fallback
+        assert metadata["purpose"] == "Create new test-item"
+
+    def test_empty_purpose_gets_fallback(self, enricher):
+        """Test that empty string purpose gets fallback."""
+        spec = {
+            "paths": {
+                "/api/config/namespaces/{namespace}/widgets": {
+                    "delete": {
+                        "operationId": "deleteWidget",
+                        "x-f5xc-operation-metadata": {
+                            "purpose": "",
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        del_op = result["paths"]["/api/config/namespaces/{namespace}/widgets"]["delete"]
+        metadata = del_op["x-f5xc-operation-metadata"]
+
+        # Empty string is falsy, should get fallback
+        assert metadata["purpose"] == "Delete widget"
+
+    def test_noun_first_preserved_over_verb_first_fallback(self, enricher):
+        """Test that noun-first descriptions take priority over verb-first fallbacks."""
+        spec = {
+            "paths": {
+                "/api/config/namespaces/{namespace}/origin_pools": {
+                    "post": {
+                        "operationId": "createOriginPool",
+                        "x-f5xc-operation-metadata": {
+                            "purpose": "Backend server pool for load balancing",
+                        },
+                    },
+                },
+            },
+        }
+
+        result = enricher.enrich_spec(spec)
+        post_op = result["paths"]["/api/config/namespaces/{namespace}/origin_pools"]["post"]
+        metadata = post_op["x-f5xc-operation-metadata"]
+
+        # Should preserve noun-first description
+        assert metadata["purpose"] == "Backend server pool for load balancing"
+        # Should NOT be verb-first
+        assert not metadata["purpose"].startswith("Create")
+        assert "new" not in metadata["purpose"].lower()
+
+
 class TestEdgeCases:
     """Test edge cases in dual-format generation."""
 
