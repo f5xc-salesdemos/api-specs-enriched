@@ -141,6 +141,7 @@ class TestValidatePatterns:
 
     def test_should_skip_endpoint_caching(self):
         """Verify endpoint skipping uses cached patterns."""
+        from scripts import validate
         from scripts.validate import should_skip_endpoint
 
         config = {
@@ -160,8 +161,9 @@ class TestValidatePatterns:
         should_skip2, reason2 = should_skip_endpoint(endpoint2, config)
         assert not should_skip2
 
-        # Verify cache was created
-        assert hasattr(should_skip_endpoint, "_skip_cache")
+        # Verify module-level caches exist (implementation uses module-level caching)
+        assert hasattr(validate, "_skip_patterns_cache")
+        assert hasattr(validate, "_include_patterns_cache")
 
     def test_resolve_path_parameters_with_precompiled(self):
         """Verify path parameter resolution uses precompiled pattern."""

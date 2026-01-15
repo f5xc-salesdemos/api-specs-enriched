@@ -55,7 +55,7 @@ class TestOperationMetadataEnricherBasics:
         """Test enricher initializes with default config."""
         enricher = OperationMetadataEnricher()
         assert len(enricher.danger_levels) > 0
-        assert enricher.extension_prefix == "x-ves"
+        assert enricher.extension_prefix == "x-f5xc"
 
     def test_config_loading_missing_file(self):
         """Test enricher loads defaults when config file missing."""
@@ -311,20 +311,20 @@ class TestSpecEnrichment:
 
         # Check GET operation enriched
         list_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["get"]
-        assert "x-ves-danger-level" in list_op
-        assert list_op["x-ves-danger-level"] == "low"
+        assert "x-f5xc-danger-level" in list_op
+        assert list_op["x-f5xc-danger-level"] == "low"
 
         # Check DELETE operation enriched
         delete_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers/{name}"][
             "delete"
         ]
-        assert "x-ves-danger-level" in delete_op
-        assert delete_op["x-ves-danger-level"] == "high"
-        assert delete_op.get("x-ves-confirmation-required") is True
+        assert "x-f5xc-danger-level" in delete_op
+        assert delete_op["x-f5xc-danger-level"] == "high"
+        assert delete_op.get("x-f5xc-confirmation-required") is True
 
         # Check POST operation has required fields
         create_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["post"]
-        assert "x-ves-required-fields" in create_op
+        assert "x-f5xc-required-fields" in create_op
 
     def test_stats_updated(self, enricher, simple_spec):
         """Test stats are updated after enrichment."""
