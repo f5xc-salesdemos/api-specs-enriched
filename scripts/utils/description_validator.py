@@ -9,7 +9,7 @@ from operationId and schema names.
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import yaml
 
@@ -25,7 +25,7 @@ class DescriptionValidator:
 
     # Placeholder description patterns to detect and flag
     # These are generic or template descriptions that add no value
-    PLACEHOLDER_PATTERNS = [
+    PLACEHOLDER_PATTERNS: ClassVar[list[str]] = [
         r"can be used for messages where no values are needed",
         r"this can be used for",
         r"no description available",
@@ -339,11 +339,7 @@ class DescriptionValidator:
         if not description or not description.strip():
             return True
 
-        for pattern in self._placeholder_patterns:
-            if pattern.search(description):
-                return True
-
-        return False
+        return any(pattern.search(description) for pattern in self._placeholder_patterns)
 
     def _format_resource_name(self, resource: str) -> str:
         """Format a resource name for human readability.

@@ -1681,3 +1681,54 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+
+  # ===========================================================================
+  # virtual domain
+  # ===========================================================================
+  virtual_host:
+    description: "Virtual host configuration mapping domain names to HTTP load balancers"
+    description_short: "DNS name mapping to routes and load balancers"
+    tier: "Standard"
+    icon: "🌐"
+    category: "Load Balancing"
+    supports_logs: true
+    supports_metrics: true
+    dependencies:
+      required: []
+      optional: ["http_loadbalancer", "certificate", "route"]
+    relationship_hints:
+      - "http_loadbalancer: Maps domain names to HTTP load balancers"
+      - "certificate: TLS/SSL certificates for secure connections"
+      - "route: HTTP routing rules for path-based distribution"
+
+  route:
+    description: "HTTP route configuration matching request paths and headers to origin pools"
+    description_short: "HTTP routing rule for path-based traffic distribution"
+    tier: "Standard"
+    icon: "🛣️"
+    category: "Load Balancing"
+    supports_logs: true
+    supports_metrics: true
+    dependencies:
+      required: []
+      optional: ["origin_pool", "http_loadbalancer"]
+    relationship_hints:
+      - "origin_pool: Backend pools for traffic distribution"
+      - "http_loadbalancer: Associated load balancer"
+
+  # ===========================================================================
+  # waf domain
+  # ===========================================================================
+  waf_policy:
+    description: "WAF security policy protecting web applications from common attacks"
+    description_short: "Security policy for application protection"
+    tier: "WAAP"
+    icon: "🛡️"
+    category: "Security"
+    supports_logs: true
+    supports_metrics: true
+    dependencies:
+      required: []
+      optional: ["http_loadbalancer"]
+    relationship_hints:
+      - "http_loadbalancer: Applies security protection to HTTP load balancers"

@@ -34,7 +34,7 @@ def discover_all_endpoints() -> list[tuple[str, str, str, dict]]:
 
     for spec_file in sorted(SPECS_DIR.glob("*.json")):
         try:
-            with open(spec_file) as f:
+            with spec_file.open() as f:
                 spec = json.load(f)
 
             spec_name = spec_file.stem
@@ -44,9 +44,10 @@ def discover_all_endpoints() -> list[tuple[str, str, str, dict]]:
                 if not isinstance(methods, dict):
                     continue
                 for method, operation in methods.items():
-                    if method.lower() in ["get", "post", "put", "patch", "delete"]:
-                        if isinstance(operation, dict):
-                            endpoints.append((spec_name, path, method.lower(), operation))
+                    if method.lower() in ["get", "post", "put", "patch", "delete"] and isinstance(
+                        operation, dict,
+                    ):
+                        endpoints.append((spec_name, path, method.lower(), operation))
         except (json.JSONDecodeError, OSError):
             # Skip malformed specs
             continue
@@ -364,7 +365,7 @@ class TestEnrichmentQuality:
 
         too_long = []
 
-        for spec_name, path, method, original_op in sampled:
+        for _spec_name, path, method, original_op in sampled:
             spec = {
                 "paths": {
                     path: {
@@ -453,7 +454,7 @@ class TestHTTPMethodEnrichment:
         random.seed(hash(method))
         sampled = random.sample(method_endpoints, sample_size)
 
-        for spec_name, path, m, original_op in sampled:
+        for _spec_name, path, m, original_op in sampled:
             spec = {
                 "paths": {
                     path: {
@@ -511,7 +512,7 @@ class TestEnrichmentStatistics:
         random.seed(999)
         sampled = random.sample(ALL_ENDPOINTS, sample_size)
 
-        for spec_name, path, method, original_op in sampled:
+        for _spec_name, path, method, original_op in sampled:
             stats["methods"][method] = stats["methods"].get(method, 0) + 1
 
             spec = {
@@ -572,7 +573,7 @@ class TestPreExistingPurposePreservation:
 
         overwritten = []
 
-        for spec_name, path, method, original_op in sampled:
+        for _spec_name, path, method, original_op in sampled:
             pre_existing_purpose = "Custom pre-existing description for testing"
 
             # Create operation with pre-existing purpose

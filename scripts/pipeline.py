@@ -1500,7 +1500,7 @@ def run_pipeline(
             # Collect batch stats from first spec (all specs contribute equally)
             if cache_paths:
                 first_cache_path = next(iter(cache_paths.values()))
-                temp_spec = batch_processor.load_cached_spec(first_cache_path)
+                batch_processor.load_cached_spec(first_cache_path)
 
                 # Estimate stats (multiply by number of processed specs)
                 processed_count = len(cache_paths)

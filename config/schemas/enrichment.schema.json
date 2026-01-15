@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "F5 XC API Enrichment Configuration",
+  "description": "Schema for enrichment configuration controlling API specification processing",
+  "type": "object",
+  "required": ["source", "paths", "branding"],
+  "properties": {
+    "source": {
+      "type": "object",
+      "required": ["url", "etag_file", "version_file"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Source URL for F5 API specifications"
+        },
+        "etag_file": {
+          "type": "string",
+          "description": "Path to ETag cache file"
+        },
+        "version_file": {
+          "type": "string",
+          "description": "Path to version tracking file"
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "required": ["original", "enriched", "reports"],
+      "properties": {
+        "original": {
+          "type": "string",
+          "description": "Path to original source specifications"
+        },
+        "enriched": {
+          "type": "string",
+          "description": "Path to processed output specifications"
+        },
+        "reports": {
+          "type": "string",
+          "description": "Path to generated reports"
+        }
+      }
+    },
+    "branding": {
+      "type": "object",
+      "required": ["protected_patterns", "replacements"],
+      "properties": {
+        "protected_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Regex patterns to protect from transformation"
+        },
+        "replacements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["pattern", "replacement"],
+            "properties": {
+              "pattern": {
+                "type": "string",
+                "description": "Regex pattern to match"
+              },
+              "replacement": {
+                "type": "string",
+                "description": "Replacement text"
+              },
+              "case_sensitive": {
+                "type": "boolean",
+                "description": "Whether matching is case-sensitive"
+              }
+            }
+          }
+        }
+      }
+    },
+    "field_descriptions": {
+      "type": "object",
+      "description": "Field description patterns for enrichment"
+    },
+    "property_patterns": {
+      "type": "object",
+      "description": "Property patterns for enrichment"
+    }
+  }
+}
