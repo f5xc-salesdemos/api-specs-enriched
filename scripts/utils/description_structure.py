@@ -17,6 +17,10 @@ import yaml
 
 from scripts.utils.extension_constants import X_F5XC_EXAMPLE
 
+# Precompiled regex patterns for performance (used in hot paths)
+_MULTIPLE_NEWLINES_PATTERN = re.compile(r"\n{3,}")
+_DOUBLE_SPACE_AFTER_PERIOD_PATTERN = re.compile(r"\.  +")
+
 
 class DescriptionStructureTransformer:
     """Transforms description fields by extracting embedded metadata.
@@ -314,13 +318,13 @@ class DescriptionStructureTransformer:
     def _cleanup_whitespace(self, text: str) -> str:
         """Final cleanup of whitespace in description."""
         # Remove excessive blank lines (more than 2 newlines in a row)
-        result = re.sub(r"\n{3,}", "\n\n", text)
+        result = _MULTIPLE_NEWLINES_PATTERN.sub("\n\n", text)
 
         # Remove leading/trailing whitespace
         result = result.strip()
 
         # Ensure proper spacing after sentences (but don't double-space)
-        return re.sub(r"\.  +", ". ", result)
+        return _DOUBLE_SPACE_AFTER_PERIOD_PATTERN.sub(". ", result)
 
     def get_stats(self) -> dict[str, Any]:
         """Return configuration statistics."""

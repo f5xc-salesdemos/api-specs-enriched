@@ -13,6 +13,10 @@ from typing import Any, ClassVar
 
 import yaml
 
+# Precompiled regex patterns for performance (used in hot paths)
+_CAMELCASE_SPLIT_PATTERN = re.compile(r"([a-z])([A-Z])")
+_ACRONYM_SPLIT_PATTERN = re.compile(r"([A-Z]+)([A-Z][a-z])")
+
 
 class DescriptionValidator:
     """Validates and auto-generates missing descriptions.
@@ -214,8 +218,8 @@ class DescriptionValidator:
 
         # Handle camelCase: getUserById -> Get user by ID
         # Split on uppercase letters
-        words = re.sub(r"([a-z])([A-Z])", r"\1 \2", operation_id)
-        words = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", words)
+        words = _CAMELCASE_SPLIT_PATTERN.sub(r"\1 \2", operation_id)
+        words = _ACRONYM_SPLIT_PATTERN.sub(r"\1 \2", words)
 
         # Split and clean
         word_list = words.split()
@@ -297,8 +301,8 @@ class DescriptionValidator:
                 break
 
         # Split camelCase
-        words = re.sub(r"([a-z])([A-Z])", r"\1 \2", name)
-        words = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", words)
+        words = _CAMELCASE_SPLIT_PATTERN.sub(r"\1 \2", name)
+        words = _ACRONYM_SPLIT_PATTERN.sub(r"\1 \2", words)
 
         word_list = words.split()
         if not word_list:
