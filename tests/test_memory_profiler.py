@@ -48,7 +48,8 @@ class TestMemoryCheckpoint:
 
         # Should be parseable as ISO format
         from datetime import datetime
-        datetime.fromisoformat(checkpoint.timestamp.replace('+00:00', ''))
+
+        datetime.fromisoformat(checkpoint.timestamp.replace("+00:00", ""))
 
 
 class TestMemoryStats:
@@ -259,6 +260,7 @@ class TestStandaloneFunctions:
 
         # Cleanup
         import tracemalloc
+
         tracemalloc.stop()
 
     def test_checkpoint_memory_without_setup(self):

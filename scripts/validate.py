@@ -40,6 +40,10 @@ console = Console()
 # Used in resolve_path_parameters() to handle remaining unresolved parameters
 _PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
 
+# Pattern caching for should_skip_endpoint (Issue #391)
+_skip_patterns_cache: dict[tuple[str, ...], list[re.Pattern]] = {}
+_include_patterns_cache: dict[tuple[str, ...], list[re.Pattern]] = {}
+
 
 def _compile_patterns(patterns: list[str]) -> list[re.Pattern]:
     """Compile glob patterns to regex for efficient matching (Issue #391).
@@ -201,15 +205,12 @@ def should_skip_endpoint(endpoint: dict[str, Any], config: dict) -> tuple[bool, 
     # Check path patterns to skip (Issue #391: pattern caching)
     skip_patterns = filters.get("skip_patterns", [])
     if skip_patterns:
-        # Cache compiled patterns using function attribute
-        if not hasattr(should_skip_endpoint, "_skip_cache"):
-            should_skip_endpoint._skip_cache = {}
-
+        # Cache compiled patterns using module-level cache
         skip_cache_key = tuple(skip_patterns)
-        if skip_cache_key not in should_skip_endpoint._skip_cache:
-            should_skip_endpoint._skip_cache[skip_cache_key] = _compile_patterns(skip_patterns)
+        if skip_cache_key not in _skip_patterns_cache:
+            _skip_patterns_cache[skip_cache_key] = _compile_patterns(skip_patterns)
 
-        skip_compiled = should_skip_endpoint._skip_cache[skip_cache_key]
+        skip_compiled = _skip_patterns_cache[skip_cache_key]
         for i, pattern_obj in enumerate(skip_compiled):
             if pattern_obj.match(path):
                 return True, f"Path matches skip pattern: {skip_patterns[i]}"
@@ -217,17 +218,14 @@ def should_skip_endpoint(endpoint: dict[str, Any], config: dict) -> tuple[bool, 
     # Check include patterns (Issue #391: pattern caching)
     include_patterns = filters.get("include_patterns", [])
     if include_patterns:
-        # Cache compiled patterns using function attribute
-        if not hasattr(should_skip_endpoint, "_include_cache"):
-            should_skip_endpoint._include_cache = {}
-
+        # Cache compiled patterns using module-level cache
         include_cache_key = tuple(include_patterns)
-        if include_cache_key not in should_skip_endpoint._include_cache:
-            should_skip_endpoint._include_cache[include_cache_key] = _compile_patterns(
-                include_patterns
+        if include_cache_key not in _include_patterns_cache:
+            _include_patterns_cache[include_cache_key] = _compile_patterns(
+                include_patterns,
             )
 
-        include_compiled = should_skip_endpoint._include_cache[include_cache_key]
+        include_compiled = _include_patterns_cache[include_cache_key]
         matched = any(pattern_obj.match(path) for pattern_obj in include_compiled)
         if not matched:
             return True, "Path doesn't match any include pattern"
@@ -363,7 +361,7 @@ async def validate_endpoint(
                 path=path,
                 method=method,
                 status="error",
-                error=f"Configuration error: {str(e)}",
+                error=f"Configuration error: {e!s}",
             )
         except TypeError as e:
             # Type mismatches in config or URL construction
@@ -371,7 +369,7 @@ async def validate_endpoint(
                 path=path,
                 method=method,
                 status="error",
-                error=f"Type error in endpoint validation: {str(e)}",
+                error=f"Type error in endpoint validation: {e!s}",
             )
 
 
@@ -434,13 +432,13 @@ async def validate_spec(
                 result.errors.append(f"{endpoint_result.path}: {endpoint_result.error}")
 
     except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
-        result.errors.append(f"Cannot read spec file {spec_path.name}: {str(e)}")
+        result.errors.append(f"Cannot read spec file {spec_path.name}: {e!s}")
     except json.JSONDecodeError as e:
-        result.errors.append(f"Spec file {spec_path.name} contains invalid JSON: {str(e)}")
+        result.errors.append(f"Spec file {spec_path.name} contains invalid JSON: {e!s}")
     except (KeyError, AttributeError, TypeError) as e:
-        result.errors.append(f"Spec structure error in {spec_path.name}: {str(e)}")
+        result.errors.append(f"Spec structure error in {spec_path.name}: {e!s}")
     except ValueError as e:
-        result.errors.append(f"Invalid configuration for {spec_path.name}: {str(e)}")
+        result.errors.append(f"Invalid configuration for {spec_path.name}: {e!s}")
 
     return result
 

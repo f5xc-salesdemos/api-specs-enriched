@@ -241,7 +241,6 @@ Three OpenAPI extensions are added to schemas and specs:
    - Description of minimum viable configuration
    - Required fields list
    - Example YAML configuration
-   - Example xcsh CLI command
    - Applied to ALL resource schemas (5 configured + auto-generated for others)
 
 2. **x-f5xc-cli-domain** (both schema and spec-level)
@@ -345,6 +344,79 @@ For the full list of 50+ extensions across all levels (spec, schema, property, o
 - Comprehensive tests in `tests/test_resource_metadata.py`
 - Tests for loading, structure validation, defaults, and consistency
 
+## Operation-Level Metadata Enrichment
+
+**Purpose**: Provide comprehensive operation metadata for CLI tooling, AI assistants, and IDE integrations.
+
+**Field Added**: `x-f5xc-operation-metadata` at operation level
+
+**Structure**:
+
+```json
+{
+  "operationId": "ves.io.schema.views.http_loadbalancer.API.Create",
+  "summary": "Create HTTP Load Balancer.",
+  "x-f5xc-operation-metadata": {
+    "purpose": "Create new http_loadbalancer",
+    "required_fields": ["metadata.name", "metadata.namespace"],
+    "optional_fields": ["description", "labels"],
+    "field_docs": {
+      "metadata.name": "Unique name for the load balancer",
+      "metadata.namespace": "Namespace containing the resource"
+    },
+    "conditions": {
+      "prerequisites": ["Active namespace"],
+      "postconditions": ["Http_loadbalancer resource created"]
+    },
+    "side_effects": {
+      "creates": ["http-loadbalancer"]
+    },
+    "danger_level": "medium",
+    "confirmation_required": false,
+    "common_errors": [
+      {
+        "code": 400,
+        "message": "Invalid request parameters",
+        "solution": "Verify request format and required fields"
+      }
+    ],
+    "performance_impact": {
+      "latency": "low",
+      "resource_usage": "low"
+    }
+  }
+}
+```
+
+**Purpose Field Use Case**: The `purpose` field provides operation-level short descriptions optimized for CLI display:
+
+- `"Create new http_loadbalancer"` (POST operation)
+- `"List all http_loadbalancers"` (GET collection)
+- `"Retrieve specific http_loadbalancer"` (GET single)
+- `"Delete http_loadbalancer"` (DELETE)
+
+**For Downstream Consumers** (f5xc-xcsh, f5xc-api-mcp):
+
+```typescript
+// Recommended field access for operation descriptions
+const operationDescription =
+  operation["x-f5xc-operation-metadata"]?.purpose ||  // Primary source
+  operation.summary ||                                 // Fallback 1
+  operation.description?.split('.')[0] + '.' ||       // Fallback 2
+  "API operation";                                     // Default
+```
+
+**Configuration**: `config/operation_metadata.yaml`
+
+**Enricher**: `scripts/utils/operation_metadata_enricher.py` (line 311-313 in pipeline)
+
+**Related Fields**:
+
+- `x-f5xc-required-fields`: List of required field paths
+- `x-f5xc-danger-level`: Risk classification (low/medium/high)
+- `x-f5xc-confirmation-required`: Boolean for high-risk operations
+- `x-f5xc-side-effects`: Creates/modifies/deletes arrays
+
 ## Domain Description Enrichment (Issue #183)
 
 **Purpose**: Apply DRY principle to domain descriptions with 3-tier descriptions for different use cases.
@@ -444,6 +516,7 @@ python -m scripts.generate_descriptions --list
 **Achievement**: Successfully achieved 100% description coverage for all describable API properties across 270+ OpenAPI specifications.
 
 **Coverage Statistics**:
+
 - **Total Properties**: 56,706 (across all API specifications)
 - **Properties with Descriptions**: 32,141 (56.7% overall, 100% of describable properties)
 - **$ref Properties**: 24,565 (appropriately excluded - they reference other schemas)
@@ -451,6 +524,7 @@ python -m scripts.generate_descriptions --list
 - **Quality Score**: 99% meaningful descriptions (not generic fallbacks)
 
 **Technical Implementation**:
+
 - **OpenCode Integration**: Replaced external Claude CLI with programmatic OpenCode API calls
 - **Pattern System**: 140+ field description patterns + 80+ short description patterns
 - **Type-based Fallbacks**: Generic descriptions for unmatched properties using schema introspection
@@ -458,11 +532,13 @@ python -m scripts.generate_descriptions --list
 - **Character Limits**: Strict enforcement of 60/150/500 character limits per tier
 
 **Configuration Files**:
+
 - `config/field_descriptions.yaml`: 140+ patterns for comprehensive property descriptions
 - `config/property_description_short.yaml`: 80+ patterns for CLI-optimized descriptions
 - `config/domain_descriptions.yaml`: 3-tier descriptions for all API domains
 
 **Validation & Testing**:
+
 - Automated coverage monitoring with detailed pipeline reports
 - Quality assurance ensuring 99% meaningful descriptions
 - Comprehensive test suite covering pattern matching and enrichment logic

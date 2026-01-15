@@ -8,7 +8,6 @@ supporting both JSON and markdown output formats.
 
 import logging
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 
 from path_config import PathConfig

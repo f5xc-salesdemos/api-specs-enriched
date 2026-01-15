@@ -49,7 +49,7 @@ class DeprecatedTierStats:
     schemas_transformed: int = 0
     values_transformed: int = 0
     descriptions_updated: int = 0
-    cli_examples_fixed: int = 0
+    curl_examples_fixed: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -59,7 +59,7 @@ class DeprecatedTierStats:
             "schemas_transformed": self.schemas_transformed,
             "values_transformed": self.values_transformed,
             "descriptions_updated": self.descriptions_updated,
-            "cli_examples_fixed": self.cli_examples_fixed,
+            "curl_examples_fixed": self.curl_examples_fixed,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -82,8 +82,8 @@ class DeprecatedTierEnricher:
         r".*TierType$",
     ]
 
-    # CLI example patterns to fix (lowercase versions)
-    CLI_REPLACEMENTS: ClassVar[dict[str, str]] = {
+    # Tier value replacements for API curl examples
+    TIER_REPLACEMENTS: ClassVar[dict[str, str]] = {
         "subscription_basic_tier": "subscription_standard_tier",
         "subscription_premium_tier": "subscription_advanced_tier",
         "basic_tier": "standard_tier",
@@ -166,8 +166,8 @@ class DeprecatedTierEnricher:
             if self._matches_tier_pattern(schema_name):
                 self._clean_tier_schema(schema_name, schema_def)
 
-            # Also fix CLI examples in any schema with x-f5xc-minimum-configuration
-            self._fix_cli_examples(schema_def)
+            # Also fix deprecated tier values in curl examples
+            self._fix_curl_examples(schema_def)
 
         return spec
 
@@ -262,8 +262,8 @@ class DeprecatedTierEnricher:
             schema["description"] = new_desc
             self.stats.descriptions_updated += 1
 
-    def _fix_cli_examples(self, schema: dict[str, Any]) -> None:
-        """Fix CLI examples that reference deprecated tiers.
+    def _fix_curl_examples(self, schema: dict[str, Any]) -> None:
+        """Fix deprecated tier values in API curl examples.
 
         Args:
             schema: Schema definition dictionary
@@ -276,12 +276,12 @@ class DeprecatedTierEnricher:
         if not example_cmd:
             return
 
-        # Check if any deprecated patterns are in the command
+        # Check if any deprecated tier values are in the curl example
         new_cmd = example_cmd
-        for old_pattern, new_pattern in self.CLI_REPLACEMENTS.items():
+        for old_pattern, new_pattern in self.TIER_REPLACEMENTS.items():
             if old_pattern in new_cmd:
                 new_cmd = new_cmd.replace(old_pattern, new_pattern)
-                self.stats.cli_examples_fixed += 1
+                self.stats.curl_examples_fixed += 1
 
         if new_cmd != example_cmd:
             min_config["example_curl"] = new_cmd

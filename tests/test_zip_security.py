@@ -3,7 +3,6 @@
 """Security tests for ZIP extraction."""
 
 import zipfile
-from pathlib import Path
 
 import pytest
 

@@ -45,7 +45,7 @@ class TestGrammarPatterns:
         text_with_doubles = "Hello  World"
         result = improver._fix_double_spaces(text_with_doubles)
         assert "  " not in result
-        assert "Hello World" == result
+        assert result == "Hello World"
 
         # Test sentence capitalization
         text_lowercase = "hello world. this is a test."

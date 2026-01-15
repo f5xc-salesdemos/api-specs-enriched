@@ -141,7 +141,6 @@ schema_level:
       description: "Text description of minimum config"
       required_fields: "Array of required field names"
       example_yaml: "YAML example configuration"
-      example_cli: "CLI command example"
     migrated_from: "x-ves-minimum-configuration"
 
   x-f5xc-namespace-scope:
@@ -285,6 +284,25 @@ operation_level:
     consumers: [cli, mcp]
     example: ["Deletes associated origin pools", "Invalidates CDN cache"]
     migrated_from: "x-ves-side-effects"
+
+  x-f5xc-operation-metadata:
+    type: object
+    purpose: Comprehensive operation metadata for CLI tooling and AI assistants
+    consumers: [cli, mcp, ide]
+    properties:
+      purpose: "Human-readable operation purpose (e.g., 'Create new http_loadbalancer')"
+      required_fields: "Array of required field paths"
+      optional_fields: "Array of optional field paths"
+      field_docs: "Object mapping field names to descriptions"
+      conditions: "Prerequisites and postconditions"
+      side_effects: "Creates/modifies/deletes arrays"
+      danger_level: "Risk classification (low/medium/high)"
+      confirmation_required: "Boolean for high-risk operations"
+      common_errors: "Array of error documentation objects"
+      performance_impact: "Latency and resource usage estimates"
+    migrated_from: "x-ves-operation-metadata"
+    added_in: "3.0.0"
+    issue: "#292"
 
   x-f5xc-discovered-response-time:
     type: object
