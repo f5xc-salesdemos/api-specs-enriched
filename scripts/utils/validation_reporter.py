@@ -39,8 +39,11 @@ class SpecValidationResult:
     endpoints_total: int = 0
     endpoints_validated: int = 0
     endpoints_available: int = 0
+    endpoints_unavailable: int = 0
     endpoints_skipped: int = 0
     schema_matches: int = 0
+    schema_mismatches: int = 0
+    endpoint_results: list[EndpointResult] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
 
