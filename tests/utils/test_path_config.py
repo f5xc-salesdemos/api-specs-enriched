@@ -67,7 +67,7 @@ def test_path_config_reports_dir_property(temp_config_dir):
     _, config_path = temp_config_dir
 
     # Reset singleton for test
-    PathConfig._instance = None  # noqa: SLF001
+    PathConfig._instance = None
 
     config = PathConfig(config_path)
     assert str(config.reports_dir) == "test_reports"
@@ -78,7 +78,7 @@ def test_path_config_specs_original_dir_property(temp_config_dir):
     _, config_path = temp_config_dir
 
     # Reset singleton for test
-    PathConfig._instance = None  # noqa: SLF001
+    PathConfig._instance = None
 
     config = PathConfig(config_path)
     assert str(config.specs_original_dir) == "test_specs/original"
@@ -89,7 +89,7 @@ def test_path_config_output_dir_property(temp_config_dir):
     _, config_path = temp_config_dir
 
     # Reset singleton for test
-    PathConfig._instance = None  # noqa: SLF001
+    PathConfig._instance = None
 
     config = PathConfig(config_path)
     assert str(config.docs_api_dir) == "test_docs/api"
@@ -100,7 +100,7 @@ def test_path_config_handles_missing_file():
     missing_path = Path("/nonexistent/paths.yaml")
 
     # Reset singleton for test
-    PathConfig._instance = None  # noqa: SLF001
+    PathConfig._instance = None
 
     config = PathConfig(missing_path)
     # Should not raise, should use defaults
@@ -112,7 +112,7 @@ def test_path_config_ensure_dir_exists(temp_config_dir):
     _, config_path = temp_config_dir
 
     # Reset singleton for test
-    PathConfig._instance = None  # noqa: SLF001
+    PathConfig._instance = None
 
     config = PathConfig(config_path)
     result = config.ensure_report_dir_exists()

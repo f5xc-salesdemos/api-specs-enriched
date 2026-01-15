@@ -8,7 +8,6 @@ Tests the new operation-level enrichment functionality added in Issue #314:
 - x-f5xc-discovered-error-catalog
 """
 
-# ruff: noqa: SLF001
 # Tests intentionally access private methods to verify internal behavior
 
 import pytest

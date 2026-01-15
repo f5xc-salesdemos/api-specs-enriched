@@ -178,35 +178,35 @@ class TestFirstSentenceExtraction:
     def test_extract_first_sentence_simple(self, enricher):
         """Test extracting first sentence from simple text."""
         text = "This is the first sentence. This is the second sentence."
-        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        result = enricher._extract_first_sentence(text)
         assert result == "This is the first sentence."
 
     def test_extract_first_sentence_no_period(self, enricher):
         """Test handling text without period."""
         text = "This is a sentence without a period at the end"
-        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        result = enricher._extract_first_sentence(text)
         assert result.endswith(".")
 
     def test_extract_first_sentence_exclamation(self, enricher):
         """Test extracting sentence ending with exclamation."""
         text = "Warning! This is important. More text here."
-        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        result = enricher._extract_first_sentence(text)
         assert result == "Warning!"
 
     def test_extract_first_sentence_question(self, enricher):
         """Test extracting sentence ending with question mark."""
         text = "What is this? This explains it."
-        result = enricher._extract_first_sentence(text)  # noqa: SLF001
+        result = enricher._extract_first_sentence(text)
         assert result == "What is this?"
 
     def test_extract_first_sentence_empty(self, enricher):
         """Test empty text returns None."""
-        result = enricher._extract_first_sentence("")  # noqa: SLF001
+        result = enricher._extract_first_sentence("")
         assert result is None
 
     def test_extract_first_sentence_none(self, enricher):
         """Test None text returns None."""
-        result = enricher._extract_first_sentence(None)  # type: ignore[arg-type]  # noqa: SLF001
+        result = enricher._extract_first_sentence(None)  # type: ignore[arg-type]
         assert result is None
 
 
@@ -216,27 +216,27 @@ class TestStyleTransformations:
     def test_transform_the_x_is_pattern(self, enricher):
         """Test transforming 'The X is used to...' pattern."""
         text = "The configuration is used to specify options."
-        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        result = enricher._apply_style_rules(text)
         assert result.startswith("Specifies") or "configuration" in result.lower()
 
     def test_transform_this_field_pattern(self, enricher):
         """Test transforming 'This field specifies...' pattern."""
         text = "This field specifies the timeout value."
-        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        result = enricher._apply_style_rules(text)
         # Should remove "This field specifies"
         assert not result.lower().startswith("this field")
 
     def test_transform_an_article_pattern(self, enricher):
         """Test removing leading article 'An/A'."""
         text = "An option for configuring the system."
-        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        result = enricher._apply_style_rules(text)
         # Should remove leading "An"
         assert not result.startswith("An ")
 
     def test_capitalize_first_letter(self, enricher):
         """Test first letter is capitalized."""
         text = "lowercase start of sentence."
-        result = enricher._apply_style_rules(text)  # noqa: SLF001
+        result = enricher._apply_style_rules(text)
         assert result[0].isupper()
 
 
@@ -246,31 +246,31 @@ class TestDescriptionCleaning:
     def test_remove_examples(self, enricher):
         """Test removal of example sections."""
         text = "Configure the system. Example: config.yaml contains settings."
-        result = enricher._clean_description(text)  # noqa: SLF001
+        result = enricher._clean_description(text)
         assert "Example:" not in result
 
     def test_remove_http_links(self, enricher):
         """Test removal of HTTP links."""
         text = "See documentation. For more info see https://docs.example.com/page."
-        result = enricher._clean_description(text)  # noqa: SLF001
+        result = enricher._clean_description(text)
         assert "https://" not in result
 
     def test_remove_inline_code(self, enricher):
         """Test removal of inline code blocks."""
         text = "Use the `config` command to set values."
-        result = enricher._clean_description(text)  # noqa: SLF001
+        result = enricher._clean_description(text)
         assert "`config`" not in result
 
     def test_remove_code_blocks(self, enricher):
         """Test removal of code blocks."""
         text = "Configure like this: ```yaml\nkey: value\n``` Then proceed."
-        result = enricher._clean_description(text)  # noqa: SLF001
+        result = enricher._clean_description(text)
         assert "```" not in result
 
     def test_normalize_whitespace(self, enricher):
         """Test whitespace normalization."""
         text = "Multiple   spaces   and\nnewlines\tand tabs."
-        result = enricher._clean_description(text)  # noqa: SLF001
+        result = enricher._clean_description(text)
         assert "  " not in result
         assert "\n" not in result
         assert "\t" not in result
@@ -282,7 +282,7 @@ class TestSmartTruncation:
     def test_truncate_at_word_boundary(self, enricher):
         """Test truncation happens at word boundaries."""
         text = "This is a very long description that needs to be truncated properly."
-        result = enricher._smart_truncate(text, 30)  # noqa: SLF001
+        result = enricher._smart_truncate(text, 30)
         # Should end with ellipsis and not cut mid-word
         assert result.endswith("...")
         assert len(result) <= 30
@@ -290,14 +290,14 @@ class TestSmartTruncation:
     def test_truncate_preserves_short_text(self, enricher):
         """Test short text is not truncated."""
         text = "Short text."
-        result = enricher._smart_truncate(text, 100)  # noqa: SLF001
+        result = enricher._smart_truncate(text, 100)
         assert result == text
         assert "..." not in result
 
     def test_truncate_removes_trailing_punctuation(self, enricher):
         """Test trailing punctuation is removed before ellipsis."""
         text = "A sentence, with punctuation, that gets cut."
-        result = enricher._smart_truncate(text, 30)  # noqa: SLF001
+        result = enricher._smart_truncate(text, 30)
         # Should not end with ",...""
         assert not result.endswith(",...")
 
@@ -616,7 +616,7 @@ class TestLengthValidation:
 
     def test_generated_description_within_target(self, enricher, long_description):
         """Test generated descriptions are within target range."""
-        short_desc = enricher._extract_and_transform(long_description)  # noqa: SLF001
+        short_desc = enricher._extract_and_transform(long_description)
 
         if short_desc:
             # Should be at least 40 chars (relaxed minimum for some extractions)
@@ -852,7 +852,7 @@ class TestMultipleSentenceExtraction:
     def test_extract_multiple_sentences(self, enricher):
         """Test extraction of multiple sentences."""
         text = "First sentence here. Second sentence follows. Third sentence completes it."
-        result = enricher._extract_multiple_sentences(text, max_count=3)  # noqa: SLF001
+        result = enricher._extract_multiple_sentences(text, max_count=3)
 
         assert len(result) == 3
         assert "First sentence here." in result[0]
@@ -860,13 +860,13 @@ class TestMultipleSentenceExtraction:
     def test_extract_multiple_sentences_limited(self, enricher):
         """Test sentence extraction respects max_count."""
         text = "One. Two. Three. Four. Five."
-        result = enricher._extract_multiple_sentences(text, max_count=2)  # noqa: SLF001
+        result = enricher._extract_multiple_sentences(text, max_count=2)
 
         assert len(result) == 2
 
     def test_extract_multiple_sentences_empty(self, enricher):
         """Test sentence extraction with empty text."""
-        result = enricher._extract_multiple_sentences("", max_count=3)  # noqa: SLF001
+        result = enricher._extract_multiple_sentences("", max_count=3)
         assert result == []
 
 

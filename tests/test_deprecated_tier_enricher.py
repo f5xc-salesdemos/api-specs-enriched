@@ -269,20 +269,20 @@ class TestPatternMatching:
 
     def test_matches_addon_service_tier_type(self, enricher):
         """Test pattern matches AddonServiceTierType schemas."""
-        assert enricher._matches_tier_pattern("schemaAddonServiceTierType")  # noqa: SLF001
-        assert enricher._matches_tier_pattern("pbacAddonServiceTierType")  # noqa: SLF001
-        assert enricher._matches_tier_pattern("SomeAddonServiceTierType")  # noqa: SLF001
+        assert enricher._matches_tier_pattern("schemaAddonServiceTierType")
+        assert enricher._matches_tier_pattern("pbacAddonServiceTierType")
+        assert enricher._matches_tier_pattern("SomeAddonServiceTierType")
 
     def test_matches_tier_type(self, enricher):
         """Test pattern matches TierType schemas."""
-        assert enricher._matches_tier_pattern("SomeTierType")  # noqa: SLF001
-        assert enricher._matches_tier_pattern("SubscriptionTierType")  # noqa: SLF001
+        assert enricher._matches_tier_pattern("SomeTierType")
+        assert enricher._matches_tier_pattern("SubscriptionTierType")
 
     def test_does_not_match_non_tier_schemas(self, enricher):
         """Test pattern does not match non-tier schemas."""
-        assert not enricher._matches_tier_pattern("UserProfile")  # noqa: SLF001
-        assert not enricher._matches_tier_pattern("LoadBalancerConfig")  # noqa: SLF001
-        assert not enricher._matches_tier_pattern("TierSettings")  # noqa: SLF001
+        assert not enricher._matches_tier_pattern("UserProfile")
+        assert not enricher._matches_tier_pattern("LoadBalancerConfig")
+        assert not enricher._matches_tier_pattern("TierSettings")
 
 
 class TestEdgeCases:
