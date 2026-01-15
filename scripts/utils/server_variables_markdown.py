@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from report_base import BaseReporter
 
 logger = logging.getLogger(__name__)

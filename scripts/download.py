@@ -206,7 +206,7 @@ def extract_zip(zip_path: Path, output_dir: Path) -> list[str]:
     for existing_file in output_dir.glob("*.json"):
         existing_file.unlink()
 
-    extracted_files = []
+    extracted_files: list[str] = []
 
     with Progress(
         SpinnerColumn(),
@@ -236,7 +236,7 @@ def extract_zip(zip_path: Path, output_dir: Path) -> list[str]:
                     total_size += info.file_size
                     if total_size > MAX_TOTAL_SIZE:
                         raise ValueError(
-                            f"Total extraction size exceeds limit: {total_size} > {MAX_TOTAL_SIZE}"
+                            f"Total extraction size exceeds limit: {total_size} > {MAX_TOTAL_SIZE}",
                         )
 
                     # Security: Check file count

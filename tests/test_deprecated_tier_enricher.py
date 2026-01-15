@@ -59,8 +59,8 @@ def spec_without_deprecated_tiers():
 
 
 @pytest.fixture
-def spec_with_cli_examples():
-    """Create a spec with deprecated CLI examples."""
+def spec_with_curl_examples():
+    """Create a spec with deprecated tier values in curl examples."""
     return {
         "components": {
             "schemas": {
@@ -98,7 +98,7 @@ class TestDeprecatedTierEnricherBasics:
         assert stats["schemas_transformed"] == 0
         assert stats["values_transformed"] == 0
         assert stats["descriptions_updated"] == 0
-        assert stats["cli_examples_fixed"] == 0
+        assert stats["curl_examples_fixed"] == 0
 
     def test_stats_reset(self):
         """Test stats can be reset."""
@@ -118,7 +118,7 @@ class TestDeprecatedTierStatsDataclass:
             schemas_transformed=2,
             values_transformed=4,
             descriptions_updated=2,
-            cli_examples_fixed=1,
+            curl_examples_fixed=1,
             errors=[{"file": "test.json", "error": "test error"}],
         )
         result = stats.to_dict()
@@ -126,7 +126,7 @@ class TestDeprecatedTierStatsDataclass:
         assert result["schemas_transformed"] == 2
         assert result["values_transformed"] == 4
         assert result["descriptions_updated"] == 2
-        assert result["cli_examples_fixed"] == 1
+        assert result["curl_examples_fixed"] == 1
         assert result["error_count"] == 1
 
 
@@ -220,12 +220,12 @@ class TestDescriptionTransformation:
         assert "ADVANCED" in description
 
 
-class TestCLIExampleTransformation:
-    """Test CLI example transformation."""
+class TestCurlExampleTransformation:
+    """Test curl example transformation for deprecated tier values."""
 
-    def test_cli_example_basic_to_standard(self, enricher, spec_with_cli_examples):
-        """Test CLI examples are updated from basic to standard."""
-        result = enricher.enrich(spec_with_cli_examples)
+    def test_curl_example_basic_to_standard(self, enricher, spec_with_curl_examples):
+        """Test curl examples are updated from basic to standard."""
+        result = enricher.enrich(spec_with_curl_examples)
         example_cmd = result["components"]["schemas"]["TestSchema"]["x-f5xc-minimum-configuration"][
             "example_curl"
         ]
@@ -233,15 +233,15 @@ class TestCLIExampleTransformation:
         assert "subscription_basic_tier" not in example_cmd
         assert "subscription_standard_tier" in example_cmd
 
-    def test_cli_example_stats_updated(self, enricher, spec_with_cli_examples):
-        """Test CLI example stats are updated."""
-        enricher.enrich(spec_with_cli_examples)
+    def test_curl_example_stats_updated(self, enricher, spec_with_curl_examples):
+        """Test curl example stats are updated."""
+        enricher.enrich(spec_with_curl_examples)
         stats = enricher.get_stats()
 
-        assert stats["cli_examples_fixed"] >= 1
+        assert stats["curl_examples_fixed"] >= 1
 
-    def test_cli_example_premium_to_advanced(self, enricher):
-        """Test CLI examples with premium are updated to advanced."""
+    def test_curl_example_premium_to_advanced(self, enricher):
+        """Test curl examples with premium are updated to advanced."""
         spec = {
             "components": {
                 "schemas": {

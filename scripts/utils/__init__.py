@@ -24,6 +24,7 @@ from .grammar import GrammarImprover
 from .guided_workflow_enricher import GuidedWorkflowEnricher
 from .minimum_configuration_enricher import MinimumConfigurationEnricher
 from .namespace_scope_enricher import NamespaceScopeEnricher
+from .operation_description_enricher import OperationDescriptionEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .property_description_short_enricher import PropertyDescriptionShortEnricher
 from .readonly_enricher import ReadOnlyEnricher
@@ -58,6 +59,7 @@ __all__ = [
     "GuidedWorkflowEnricher",
     "MinimumConfigurationEnricher",
     "NamespaceScopeEnricher",
+    "OperationDescriptionEnricher",
     "OperationMetadataEnricher",
     "PropertyDescriptionShortEnricher",
     "ReadOnlyEnricher",

@@ -63,7 +63,6 @@ if TYPE_CHECKING:
 
 import yaml
 from rich.console import Console
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
 # Import processing modules
@@ -84,6 +83,7 @@ from scripts.utils import (
     GrammarImprover,
     GuidedWorkflowEnricher,
     MinimumConfigurationEnricher,
+    OperationDescriptionEnricher,
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
     ReadOnlyEnricher,
@@ -94,7 +94,6 @@ from scripts.utils import (
     categorize_spec,
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
-from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -117,6 +116,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_REQUIRES_TIER,
     X_F5XC_USE_CASES,
 )
+from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
@@ -307,17 +307,22 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = validation_enricher.enrich_spec(spec)
     validation_stats = validation_enricher.get_stats()
 
-    # 14. Operation metadata enrichment (add danger levels, required fields, side effects)
+    # 14. Operation description enrichment (DRY-compliant, noun-first purpose descriptions)
+    operation_description_enricher = OperationDescriptionEnricher()
+    spec = operation_description_enricher.enrich_spec(spec)
+    op_desc_stats = operation_description_enricher.get_stats()
+
+    # 15. Operation metadata enrichment (add danger levels, required fields, side effects)
     operation_metadata_enricher = OperationMetadataEnricher()
     spec = operation_metadata_enricher.enrich_spec(spec)
     op_stats = operation_metadata_enricher.get_stats()
 
-    # 15. Minimum configuration enrichment (add x-ves-minimum-configuration extensions)
+    # 16. Minimum configuration enrichment (add x-ves-minimum-configuration extensions)
     minimum_config_enricher = MinimumConfigurationEnricher()
     spec = minimum_config_enricher.enrich_spec(spec)
     min_config_stats = minimum_config_enricher.get_stats()
 
-    # 16. ReadOnly field enrichment (mark API-computed fields as readOnly)
+    # 17. ReadOnly field enrichment (mark API-computed fields as readOnly)
     readonly_enricher = ReadOnlyEnricher()
     spec = readonly_enricher.enrich_spec(spec)
     readonly_stats = readonly_enricher.get_stats()
@@ -350,6 +355,10 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         ),
         "validation_rules_added": validation_stats.get("patterns_added", 0),
         "validation_constraints_added": validation_stats.get("constraints_added", 0),
+        "operation_descriptions_applied": op_desc_stats.get("descriptions_applied", 0),
+        "operation_desc_exact_matches": op_desc_stats.get("exact_matches", 0),
+        "operation_desc_pattern_matches": op_desc_stats.get("pattern_matches", 0),
+        "operation_desc_method_fallbacks": op_desc_stats.get("method_fallbacks", 0),
         "operations_enriched": op_stats.get("operations_enriched", 0),
         "required_fields_added": op_stats.get("required_fields_added", 0),
         "danger_levels_assigned": op_stats.get("danger_levels_assigned", 0),
@@ -421,44 +430,51 @@ def _remove_ref_siblings(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return cleaned_spec, removed_count
 
 
-def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], int]:
+def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dict[str, int]]:
     """Apply normalization to fix structural issues.
 
-    Returns (normalized_spec, change_count).
+    Returns (normalized_spec, stats_dict).
     """
     norm_config = config.get("normalization", {})
-    total_changes = 0
+    stats: dict[str, int] = {
+        "ref_siblings_removed": 0,
+        "orphan_refs_fixed": 0,
+        "orphan_request_bodies_inlined": 0,
+        "empty_operations_removed": 0,
+        "types_normalized": 0,
+        "invalid_examples_fixed": 0,
+    }
 
     # 0. Remove properties that are siblings to $ref (OpenAPI compliance)
     spec, count = _remove_ref_siblings(spec)
-    total_changes += count
+    stats["ref_siblings_removed"] = count
 
     # 1. Fix orphan $refs
     if norm_config.get("fix_orphan_refs", True):
         spec, count = _fix_orphan_refs(spec, norm_config)
-        total_changes += count
+        stats["orphan_refs_fixed"] = count
 
     # 2. Inline orphan requestBodies
     if norm_config.get("inline_orphan_request_bodies", True):
         spec, count = _inline_orphan_request_bodies(spec)
-        total_changes += count
+        stats["orphan_request_bodies_inlined"] = count
 
     # 3. Remove empty operations
     if norm_config.get("remove_empty_objects", True):
         spec, count = _remove_empty_operations(spec)
-        total_changes += count
+        stats["empty_operations_removed"] = count
 
     # 4. Normalize types
     if norm_config.get("type_standardization", True):
         spec, count = _normalize_types(spec)
-        total_changes += count
+        stats["types_normalized"] = count
 
     # 5. Fix invalid example schemas
     if norm_config.get("fix_invalid_examples", True):
         spec, count = _fix_invalid_examples(spec)
-        total_changes += count
+        stats["invalid_examples_fixed"] = count
 
-    return spec, total_changes
+    return spec, stats
 
 
 def _fix_orphan_refs(spec: dict[str, Any], _config: dict) -> tuple[dict[str, Any], int]:
@@ -1432,7 +1448,9 @@ def run_pipeline(
 
         if discovery_enabled:
             discovery_settings = discovery_config.get("discovery_enrichment", {})
-            discovered_dir = Path(discovery_settings.get("discovered_specs_dir", "specs/discovered"))
+            discovered_dir = Path(
+                discovery_settings.get("discovered_specs_dir", "specs/discovered"),
+            )
 
             if discovered_dir.exists() and (discovered_dir / "openapi.json").exists():
                 console.print("[blue]Loading discovery data for enrichment...[/blue]")
@@ -1497,12 +1515,12 @@ def run_pipeline(
             )
 
         except Exception as e:
-            console.print(f"[red]Batch processing failed: {str(e)}[/red]")
+            console.print(f"[red]Batch processing failed: {e!s}[/red]")
             raise
 
         # Step 3-4: Batch process discovery/reconciliation (Phase 3 optimization)
         # Process in batches to avoid accumulating all specs in memory
-        if discovery_enricher and discovery_data or reconciler:
+        if (discovery_enricher and discovery_data) or reconciler:
             console.print("[blue]Applying discovery and reconciliation in batches...[/blue]")
 
             # Create wrapper functions with statistics tracking
@@ -1546,7 +1564,7 @@ def run_pipeline(
                 )
 
             except Exception as e:
-                console.print(f"[red]Discovery/reconciliation batch processing failed: {str(e)}[/red]")
+                console.print(f"[red]Discovery/reconciliation batch processing failed: {e!s}[/red]")
                 raise
 
         profiler.checkpoint("discovery_reconciliation_complete", force_gc=True)
@@ -1561,7 +1579,9 @@ def run_pipeline(
                 try:
                     processed_specs[filename] = batch_processor.load_cached_spec(cache_path)
                 except Exception as e:
-                    console.print(f"[yellow]Warning: Failed to load {filename} from cache: {str(e)}[/yellow]")
+                    console.print(
+                        f"[yellow]Warning: Failed to load {filename} from cache: {e!s}[/yellow]",
+                    )
                     stats.files_failed += 1
 
             profiler.checkpoint("specs_loaded_for_merge", force_gc=True)

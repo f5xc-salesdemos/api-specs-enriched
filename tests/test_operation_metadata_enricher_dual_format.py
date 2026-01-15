@@ -85,8 +85,8 @@ class TestDualFormatSupport:
         get_op = result["paths"]["/api/resources"]["get"]
 
         # Old format fields should be present
-        assert "x-ves-danger-level" in get_op
-        assert "x-ves-required-fields" in get_op or "x-ves-danger-level" in get_op
+        assert "x-f5xc-danger-level" in get_op
+        assert "x-ves-required-fields" in get_op or "x-f5xc-danger-level" in get_op
 
     def test_new_format_comprehensive_metadata(self, enricher, simple_spec):
         """Test that new comprehensive metadata is added."""
@@ -94,8 +94,8 @@ class TestDualFormatSupport:
         get_op = result["paths"]["/api/resources"]["get"]
 
         # New format field should be present
-        assert "x-ves-operation-metadata" in get_op
-        metadata = get_op["x-ves-operation-metadata"]
+        assert "x-f5xc-operation-metadata" in get_op
+        metadata = get_op["x-f5xc-operation-metadata"]
 
         # Verify comprehensive metadata structure
         assert "purpose" in metadata
@@ -113,7 +113,7 @@ class TestDualFormatSupport:
         """Test purpose generation for GET list operation."""
         result = enricher.enrich_spec(simple_spec)
         get_op = result["paths"]["/api/resources"]["get"]
-        metadata = get_op["x-ves-operation-metadata"]
+        metadata = get_op["x-f5xc-operation-metadata"]
 
         assert "List" in metadata["purpose"]
         assert "resources" in metadata["purpose"]
@@ -122,7 +122,7 @@ class TestDualFormatSupport:
         """Test purpose generation for GET single resource operation."""
         result = enricher.enrich_spec(simple_spec)
         get_op = result["paths"]["/api/resources/{id}"]["get"]
-        metadata = get_op["x-ves-operation-metadata"]
+        metadata = get_op["x-f5xc-operation-metadata"]
 
         assert "Retrieve" in metadata["purpose"]
         assert "resource" in metadata["purpose"]
@@ -131,7 +131,7 @@ class TestDualFormatSupport:
         """Test purpose generation for POST create operation."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         assert "Create" in metadata["purpose"]
         assert "resource" in metadata["purpose"]
@@ -140,7 +140,7 @@ class TestDualFormatSupport:
         """Test purpose generation for DELETE operation."""
         result = enricher.enrich_spec(simple_spec)
         delete_op = result["paths"]["/api/resources/{id}"]["delete"]
-        metadata = delete_op["x-ves-operation-metadata"]
+        metadata = delete_op["x-f5xc-operation-metadata"]
 
         assert "Delete" in metadata["purpose"]
         assert "resource" in metadata["purpose"]
@@ -149,7 +149,7 @@ class TestDualFormatSupport:
         """Test identification of required fields."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         # Name is required, description is optional
         assert "name" in metadata["required_fields"]
@@ -159,7 +159,7 @@ class TestDualFormatSupport:
         """Test extraction of field documentation."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         field_docs = metadata["field_docs"]
         assert "name" in field_docs
@@ -171,8 +171,8 @@ class TestDualFormatSupport:
         result = enricher.enrich_spec(simple_spec)
         get_op = result["paths"]["/api/resources"]["get"]
 
-        old_format_level = get_op["x-ves-danger-level"]
-        new_format_level = get_op["x-ves-operation-metadata"]["danger_level"]
+        old_format_level = get_op["x-f5xc-danger-level"]
+        new_format_level = get_op["x-f5xc-operation-metadata"]["danger_level"]
 
         assert old_format_level == new_format_level
 
@@ -180,7 +180,7 @@ class TestDualFormatSupport:
         """Test confirmation requirement for high-danger operations."""
         result = enricher.enrich_spec(simple_spec)
         delete_op = result["paths"]["/api/resources/{id}"]["delete"]
-        metadata = delete_op["x-ves-operation-metadata"]
+        metadata = delete_op["x-f5xc-operation-metadata"]
 
         # DELETE is high danger, so confirmation should be required
         if metadata["danger_level"] == "high":
@@ -190,7 +190,7 @@ class TestDualFormatSupport:
         """Test mapping of HTTP status codes to user-friendly errors."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         errors = metadata["common_errors"]
 
@@ -207,7 +207,7 @@ class TestDualFormatSupport:
         """Test performance impact assessment."""
         result = enricher.enrich_spec(simple_spec)
         get_op = result["paths"]["/api/resources"]["get"]
-        metadata = get_op["x-ves-operation-metadata"]
+        metadata = get_op["x-f5xc-operation-metadata"]
 
         impact = metadata["performance_impact"]
         assert "latency" in impact
@@ -219,7 +219,7 @@ class TestDualFormatSupport:
         """Test that side effects are preserved in comprehensive metadata."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         # POST should have side effects
         assert "side_effects" in metadata
@@ -244,7 +244,7 @@ class TestDualFormatSupport:
 
         result = enricher.enrich_spec(spec)
         post_op = result["paths"]["/api/namespaces/{namespace}/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         conditions = metadata["conditions"]
         assert "prerequisites" in conditions
@@ -255,7 +255,7 @@ class TestDualFormatSupport:
         """Test postcondition generation for create operation."""
         result = enricher.enrich_spec(simple_spec)
         post_op = result["paths"]["/api/resources"]["post"]
-        metadata = post_op["x-ves-operation-metadata"]
+        metadata = post_op["x-f5xc-operation-metadata"]
 
         conditions = metadata["conditions"]
         postconditions = conditions["postconditions"]
@@ -267,7 +267,7 @@ class TestDualFormatSupport:
         """Test postcondition generation for delete operation."""
         result = enricher.enrich_spec(simple_spec)
         delete_op = result["paths"]["/api/resources/{id}"]["delete"]
-        metadata = delete_op["x-ves-operation-metadata"]
+        metadata = delete_op["x-f5xc-operation-metadata"]
 
         conditions = metadata["conditions"]
         postconditions = conditions["postconditions"]
@@ -279,10 +279,10 @@ class TestDualFormatSupport:
         """Test that metadata for different operations is independent."""
         result = enricher.enrich_spec(simple_spec)
 
-        get_op_metadata = result["paths"]["/api/resources"]["get"]["x-ves-operation-metadata"]
-        post_op_metadata = result["paths"]["/api/resources"]["post"]["x-ves-operation-metadata"]
+        get_op_metadata = result["paths"]["/api/resources"]["get"]["x-f5xc-operation-metadata"]
+        post_op_metadata = result["paths"]["/api/resources"]["post"]["x-f5xc-operation-metadata"]
         delete_op_metadata = result["paths"]["/api/resources/{id}"]["delete"][
-            "x-ves-operation-metadata"
+            "x-f5xc-operation-metadata"
         ]
 
         # Each should have different purpose
@@ -310,7 +310,7 @@ class TestEdgeCases:
         operation = result["paths"]["/api/resource"]["get"]
 
         # Should still generate metadata
-        assert "x-ves-operation-metadata" in operation
+        assert "x-f5xc-operation-metadata" in operation
 
     def test_operation_without_request_body(self, enricher):
         """Test handling operation with no request body."""
@@ -327,7 +327,7 @@ class TestEdgeCases:
 
         result = enricher.enrich_spec(spec)
         operation = result["paths"]["/api/resource"]["get"]
-        metadata = operation["x-ves-operation-metadata"]
+        metadata = operation["x-f5xc-operation-metadata"]
 
         # Optional fields should be empty
         assert metadata["optional_fields"] == []

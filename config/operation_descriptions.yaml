@@ -1,0 +1,152 @@
+# Operation Description Patterns
+#
+# Purpose: Provide noun-first, DRY-compliant operation descriptions for CLI tooling and AI assistants
+#
+# Context: The downstream xcsh CLI pattern is: xcsh <domain-group> <verb> <resource-type>
+# Example: xcsh virtual create http_loadbalancer
+#
+# Since the user already provides the verb (create/list/get/delete), operation descriptions
+# should NOT start with verbs. Instead, they should describe WHAT the resource is/does.
+#
+# Pattern Matching:
+# - resource_type: The API resource being operated on (e.g., "http_loadbalancer", "origin_pool")
+# - method: HTTP method (GET, POST, PUT, PATCH, DELETE)
+# - path_pattern: Optional regex for path-based matching
+#
+# Description Tiers:
+# - short: ≤60 chars - For CLI help text, tooltips
+# - medium: ≤150 chars - For extended help, summaries
+# - long: ≤500 chars - For documentation, AI context
+#
+# Style Guide:
+# - Noun-first structure (not verb-first)
+# - No CRUD verbs (Create, List, Delete, etc.)
+# - No brand names (F5, Distributed Cloud)
+# - Technical specificity over generic descriptions
+# - Complete thoughts only
+# - DRY compliant (avoid redundancy with CLI verbs)
+
+enabled: true
+
+# High-priority resources (explicit configurations)
+resources:
+  http_loadbalancer:
+    short: "HTTP/HTTPS load balancer with origin pools and routing rules"
+    medium: "Layer 7 load balancing for HTTP/HTTPS traffic with advanced routing, health checks, and WAF integration"
+    long: "Application load balancer supporting HTTP/HTTPS protocols with origin pool management, advanced routing rules, health monitoring, TLS termination, and optional WAF policy integration for comprehensive traffic management and security"
+
+  origin_pool:
+    short: "Backend server pool for load balancing and failover"
+    medium: "Collection of backend servers with health monitoring, load distribution algorithms, and automatic failover capabilities"
+    long: "Backend server pool configuration defining origin endpoints, health check policies, load balancing algorithms (round-robin, least-connections, random), automatic failover behavior, and endpoint-specific weighting for intelligent traffic distribution"
+
+  app_firewall:
+    short: "Web application firewall for threat protection"
+    medium: "WAF policy protecting applications from OWASP Top 10 threats, DDoS attacks, and malicious traffic with customizable rules"
+    long: "Web Application and API Protection (WAAP) policy providing defense against OWASP Top 10 vulnerabilities, SQL injection, XSS attacks, DDoS mitigation, bot detection, and API-specific threats through signature-based and behavioral analysis with configurable allow/block rules"
+
+  virtual_host:
+    short: "DNS name mapping to routes and load balancers"
+    medium: "Virtual host configuration mapping domain names to HTTP load balancers with TLS certificate management and routing policies"
+    long: "Virtual host defining DNS domain name associations with HTTP load balancers, TLS/SSL certificate management, HTTP to HTTPS redirection, custom headers, CORS policies, and advanced routing rules for multi-tenant application hosting"
+
+  healthcheck:
+    short: "Endpoint health monitoring configuration"
+    medium: "Health check policy monitoring backend endpoint availability with HTTP, TCP, or custom probe configurations"
+    long: "Health monitoring policy defining probe type (HTTP, HTTPS, TCP, UDP, custom), check intervals, timeout thresholds, success/failure criteria, and automated endpoint state management for ensuring traffic only reaches healthy backends"
+
+  tcp_loadbalancer:
+    short: "Layer 4 TCP load balancer for non-HTTP traffic"
+    medium: "TCP load balancing for non-HTTP protocols with origin pool management, health checks, and connection tracking"
+    long: "Layer 4 load balancer supporting TCP protocol with transparent proxy capabilities, origin pool configuration, connection state tracking, health monitoring, source IP preservation, and support for any TCP-based application protocol"
+
+  certificate:
+    short: "TLS/SSL certificate for secure connections"
+    medium: "X.509 certificate management for TLS termination with automatic renewal and private key security"
+    long: "TLS/SSL certificate resource managing X.509 certificates for secure communication, supporting Let's Encrypt auto-renewal, custom CA certificates, private key storage with encryption, certificate chain management, and SNI-based serving"
+
+  namespace:
+    short: "Logical resource grouping and multi-tenancy boundary"
+    medium: "Kubernetes-style namespace providing resource isolation, access control, and multi-tenant environment separation"
+    long: "Namespace resource establishing logical boundaries for resource organization, multi-tenant isolation, role-based access control (RBAC), quota management, and environment separation (development, staging, production) with inherited policies and settings"
+
+  route:
+    short: "HTTP routing rule for path-based traffic distribution"
+    medium: "HTTP route configuration matching request paths and headers to origin pools with advanced routing capabilities"
+    long: "HTTP routing policy defining path-based, header-based, or query parameter-based traffic distribution rules, supporting regex matching, weighted routing, A/B testing, canary deployments, request/response transformations, and traffic splitting across multiple origin pools"
+
+  waf_policy:
+    short: "Security policy for application protection"
+    medium: "WAF security policy protecting web applications from common attacks with OWASP rule sets and custom signatures"
+    long: "Web Application Firewall policy configuration defining protection rules, OWASP ModSecurity core rule sets, custom signature detection, false positive management, geo-blocking, rate limiting, bot mitigation, and detailed attack logging with blocking or monitoring modes"
+
+# Pattern-based descriptions for auto-generation
+# Used when no explicit resource description is configured
+patterns:
+  - resource_pattern: ".*loadbalancer.*"
+    short: "Load balancing configuration for traffic distribution"
+    medium: "Load balancer managing traffic distribution across backend servers with health monitoring and failover"
+    long: "Load balancer configuration defining traffic distribution policies, backend server pools, health monitoring, automatic failover, and advanced routing capabilities for high availability and scalability"
+
+  - resource_pattern: ".*pool.*"
+    short: "Backend server pool configuration"
+    medium: "Collection of backend servers with load balancing and health check policies"
+    long: "Backend server pool defining origin endpoints, health monitoring policies, load distribution algorithms, and automatic failover behavior for reliable service delivery"
+
+  - resource_pattern: ".*policy.*"
+    short: "Configuration policy for resource behavior"
+    medium: "Policy defining behavior rules, conditions, and actions for resource management"
+    long: "Policy configuration establishing rules, conditions, triggers, and automated actions governing resource behavior, access control, and operational characteristics"
+
+  - resource_pattern: ".*firewall.*|.*waf.*"
+    short: "Security policy for threat protection"
+    medium: "Security policy protecting resources from threats with customizable rules and monitoring"
+    long: "Security policy configuration providing threat protection through rule-based filtering, signature detection, behavioral analysis, and automated response capabilities with detailed logging and alerting"
+
+  - resource_pattern: ".*route.*|.*routing.*"
+    short: "Traffic routing configuration"
+    medium: "Routing rules directing traffic based on paths, headers, or conditions to appropriate backends"
+    long: "Traffic routing configuration defining path-based, header-based, or conditional traffic distribution with support for weighted routing, A/B testing, canary deployments, and dynamic backend selection"
+
+  - resource_pattern: ".*health.*|.*monitor.*"
+    short: "Health monitoring configuration"
+    medium: "Health check policy monitoring endpoint availability with configurable probes and thresholds"
+    long: "Health monitoring policy defining probe types, check intervals, success/failure criteria, and automated state management ensuring traffic reaches only healthy and responsive endpoints"
+
+  - resource_pattern: ".*certificate.*|.*cert.*|.*tls.*|.*ssl.*"
+    short: "TLS/SSL certificate management"
+    medium: "Certificate configuration for secure TLS/SSL connections with automatic renewal capabilities"
+    long: "TLS/SSL certificate management supporting X.509 certificates, automatic renewal workflows, private key security, certificate chain configuration, and multi-domain SNI serving for secure communications"
+
+  - resource_pattern: ".*namespace.*|.*tenant.*"
+    short: "Resource isolation and multi-tenancy boundary"
+    medium: "Namespace providing logical separation, access control, and resource organization"
+    long: "Namespace configuration establishing logical boundaries for resource isolation, multi-tenant separation, role-based access control, quota management, and environment-based organization with inherited policies"
+
+# Fallback descriptions by HTTP method
+# Used when no resource-specific or pattern-based description matches
+method_fallbacks:
+  POST:
+    short: "Resource creation operation"
+    medium: "Operation creating new resource with specified configuration"
+    long: "Resource creation operation accepting configuration parameters and establishing a new managed resource with automated provisioning and validation"
+
+  GET:
+    short: "Resource retrieval operation"
+    medium: "Operation fetching current resource state and configuration"
+    long: "Resource retrieval operation returning current state, configuration parameters, and operational status with filtering and pagination support"
+
+  PUT:
+    short: "Resource replacement operation"
+    medium: "Operation replacing entire resource configuration with new definition"
+    long: "Resource replacement operation updating complete resource configuration, potentially modifying all fields with validation and atomic updates"
+
+  PATCH:
+    short: "Resource modification operation"
+    medium: "Operation updating specific resource fields while preserving others"
+    long: "Resource modification operation applying partial updates to specific configuration fields with merge semantics and validation"
+
+  DELETE:
+    short: "Resource deletion operation"
+    medium: "Operation removing resource and cleaning up associated resources"
+    long: "Resource deletion operation permanently removing resource, cleaning up dependencies, and optionally cascading deletions to related resources with confirmation requirements"

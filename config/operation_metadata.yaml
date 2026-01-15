@@ -1,5 +1,5 @@
 enabled: true
-extension_prefix: 'x-ves'
+extension_prefix: 'x-f5xc'
 
 # HTTP method base danger levels
 danger_levels:
@@ -46,49 +46,32 @@ side_effects:
     PATCH: 'modifies'
     DELETE: 'deletes'
 
-# CLI example generation
-cli_examples:
-  generate_examples: true
-  max_examples_per_operation: 3
-  formats:
-    get_specific: 'f5xcctl {domain} {resource} get {name} --namespace {namespace}'
-    list_all: 'f5xcctl {domain} {resource} list --namespace {namespace}'
-    basic_create: 'f5xcctl {domain} {resource} create {name} --namespace {namespace}'
-    file_based: 'f5xcctl {domain} {resource} create -f {file}.yaml'
-    update: 'f5xcctl {domain} {resource} update {name} --namespace {namespace} -f {file}.yaml'
-    delete: 'f5xcctl {domain} {resource} delete {name} --namespace {namespace}'
-
 # Operation Metadata Extensions:
 # ===============================
 #
-# x-ves-required-fields (array of strings)
+# x-f5xc-required-fields (array of strings)
 # - List of required field paths for the operation
 # - Format: "fieldName" or "parent.child" for nested
 # - Example: ["metadata.name", "metadata.namespace", "spec.protocol"]
 #
-# x-ves-optional-fields (array of strings)
+# x-f5xc-optional-fields (array of strings)
 # - List of optional but recommended fields
 # - Same format as required fields
 #
-# x-ves-danger-level (string)
+# x-f5xc-danger-level (string)
 # - Risk classification: "low" | "medium" | "high"
 # - low: Read-only operations (GET, HEAD, OPTIONS)
 # - medium: Create/update operations (POST, PUT, PATCH) or system operations
 # - high: Destructive operations (DELETE) or security-critical changes
 #
-# x-ves-confirmation-required (boolean)
+# x-f5xc-confirmation-required (boolean)
 # - Whether CLI tools should prompt for confirmation
 # - Automatically true for danger_level: "high"
 #
-# x-ves-side-effects (object)
+# x-f5xc-side-effects (object)
 # - Documents what the operation creates/modifies/deletes
 # - Fields: creates[], modifies[], deletes[] (arrays of resource types)
 # - Example: {creates: ["http_loadbalancer"], modifies: [], deletes: []}
-#
-# x-ves-cli-examples (array of objects)
-# - Provides CLI usage examples for the operation
-# - Each example: {description, command, use_case, warning?}
-# - Warning field optional, for dangerous operations
 #
 # Danger Level Algorithm:
 # =======================

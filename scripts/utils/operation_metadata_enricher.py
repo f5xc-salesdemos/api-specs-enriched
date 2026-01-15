@@ -2,11 +2,11 @@
 
 """Operation Metadata Enricher for OpenAPI specifications.
 
-Adds operation-level metadata for CLI tooling:
+Adds operation-level metadata for CLI tooling and AI assistants:
 - Required fields extraction (from request body schema)
 - Danger level classification (low/medium/high)
 - Side effects determination
-- CLI example generation
+- Operation purpose descriptions
 
 Conservative approach: only applies well-established patterns.
 Uses x-f5xc-* extensions to store operation metadata.
