@@ -34,6 +34,8 @@ class ExporterStats:
     server_defaults_exported: int = 0
     conditional_requirements_exported: int = 0
     minimum_configs_exported: int = 0
+    oneof_defaults_exported: int = 0
+    ui_vs_server_defaults_exported: int = 0
     warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -46,6 +48,8 @@ class ExporterStats:
             "server_defaults_exported": self.server_defaults_exported,
             "conditional_requirements_exported": self.conditional_requirements_exported,
             "minimum_configs_exported": self.minimum_configs_exported,
+            "oneof_defaults_exported": self.oneof_defaults_exported,
+            "ui_vs_server_defaults_exported": self.ui_vs_server_defaults_exported,
             "warnings": self.warnings,
         }
 
@@ -139,6 +143,21 @@ class ValidationExporter:
 
         if "minimum_configurations" in include_sections or not include_sections:
             spec["minimum_configurations"] = self._export_minimum_configurations()
+
+        # Export OneOf defaults (from discovered_defaults.yaml)
+        oneof_defaults = self._export_oneof_defaults()
+        if oneof_defaults:
+            spec["oneof_defaults"] = oneof_defaults
+
+        # Export UI vs Server defaults discrepancies
+        ui_vs_server = self._export_ui_vs_server_defaults()
+        if ui_vs_server:
+            spec["ui_vs_server_defaults"] = ui_vs_server
+
+        # Export advanced_options defaults
+        advanced_defaults = self._export_advanced_options_defaults()
+        if advanced_defaults:
+            spec["advanced_options_defaults"] = advanced_defaults
 
         # Add extension mapping for downstream tools
         spec["extensions"] = self._export_extension_mapping()
@@ -299,6 +318,68 @@ class ValidationExporter:
     def _export_extension_mapping(self) -> dict[str, str]:
         """Export OpenAPI extension field name mapping."""
         return self.config.get("extension_mapping", {})
+
+    def _export_oneof_defaults(self) -> dict[str, Any]:
+        """Export OneOf field default selections from discovered_defaults.yaml."""
+        # Load discovered_defaults.yaml for oneof_defaults
+        discovered_path = self.config_path.parent / "discovered_defaults.yaml"
+        if not discovered_path.exists():
+            return {}
+
+        with discovered_path.open() as f:
+            discovered_config = yaml.safe_load(f) or {}
+
+        result: dict[str, Any] = {}
+        resources = discovered_config.get("resources", {})
+
+        for resource_name, resource_config in resources.items():
+            oneof_defaults = resource_config.get("oneof_defaults", {})
+            if oneof_defaults:
+                result[resource_name] = oneof_defaults
+                self.stats.oneof_defaults_exported += len(oneof_defaults)
+
+        return result
+
+    def _export_ui_vs_server_defaults(self) -> dict[str, Any]:
+        """Export UI vs Server default discrepancies from discovered_defaults.yaml."""
+        # Load discovered_defaults.yaml for ui_vs_server_defaults
+        discovered_path = self.config_path.parent / "discovered_defaults.yaml"
+        if not discovered_path.exists():
+            return {}
+
+        with discovered_path.open() as f:
+            discovered_config = yaml.safe_load(f) or {}
+
+        result: dict[str, Any] = {}
+        resources = discovered_config.get("resources", {})
+
+        for resource_name, resource_config in resources.items():
+            ui_vs_server = resource_config.get("ui_vs_server_defaults", {})
+            if ui_vs_server:
+                result[resource_name] = ui_vs_server
+                self.stats.ui_vs_server_defaults_exported += len(ui_vs_server)
+
+        return result
+
+    def _export_advanced_options_defaults(self) -> dict[str, Any]:
+        """Export advanced_options defaults from discovered_defaults.yaml."""
+        # Load discovered_defaults.yaml for advanced_options_defaults
+        discovered_path = self.config_path.parent / "discovered_defaults.yaml"
+        if not discovered_path.exists():
+            return {}
+
+        with discovered_path.open() as f:
+            discovered_config = yaml.safe_load(f) or {}
+
+        result: dict[str, Any] = {}
+        resources = discovered_config.get("resources", {})
+
+        for resource_name, resource_config in resources.items():
+            advanced_defaults = resource_config.get("advanced_options_defaults", {})
+            if advanced_defaults:
+                result[resource_name] = advanced_defaults
+
+        return result
 
     def get_stats(self) -> dict[str, Any]:
         """Get export statistics.
