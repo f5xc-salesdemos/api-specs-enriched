@@ -21,7 +21,7 @@ from typing import Any
 
 import yaml
 
-from .extension_constants import X_F5XC_SERVER_DEFAULT
+from .extension_constants import X_F5XC_RECOMMENDED_VALUE, X_F5XC_SERVER_DEFAULT
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ class DefaultValueEnrichmentStats:
     schemas_matched: int = 0
     defaults_added: int = 0
     nested_defaults_added: int = 0
+    recommended_added: int = 0
     markers_added: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
@@ -44,6 +45,7 @@ class DefaultValueEnrichmentStats:
             "schemas_matched": self.schemas_matched,
             "defaults_added": self.defaults_added,
             "nested_defaults_added": self.nested_defaults_added,
+            "recommended_added": self.recommended_added,
             "markers_added": self.markers_added,
             "error_count": len(self.errors),
             "errors": self.errors,
@@ -132,7 +134,7 @@ class DefaultValueEnricher:
 
         for schema_name, schema in schemas.items():
             self.stats.schemas_processed += 1
-            self._enrich_schema(schema_name, schema)
+            self._enrich_schema(schema_name, schema, schemas)
 
         logger.info("Default value enrichment complete: %s", self.stats.to_dict())
         return spec
@@ -141,12 +143,14 @@ class DefaultValueEnricher:
         self,
         schema_name: str,
         schema: dict[str, Any],
+        all_schemas: dict[str, Any],
     ) -> None:
         """Enrich individual schema with server-applied default values.
 
         Args:
             schema_name: Name of the schema
             schema: Schema definition
+            all_schemas: All schemas from the spec for $ref resolution
         """
         resource_config = self._match_resource(schema_name)
 
@@ -162,7 +166,11 @@ class DefaultValueEnricher:
 
             # Apply nested defaults
             nested = resource_config.get("nested", {})
-            self._apply_nested_defaults(schema, nested)
+            self._apply_nested_defaults(schema, nested, all_schemas)
+
+            # Apply recommended values for required fields
+            recommended = resource_config.get("recommended", {})
+            self._apply_recommended_to_properties(schema, recommended)
 
         except Exception as e:
             logger.exception("Error enriching schema %s with defaults", schema_name)
@@ -226,15 +234,18 @@ class DefaultValueEnricher:
         self,
         schema: dict[str, Any],
         nested: dict[str, dict[str, Any]],
+        all_schemas: dict[str, Any],
     ) -> None:
         """Apply nested default values to schema properties.
 
         For nested objects like http_health_check within healthcheck,
         this applies defaults to properties within the nested object.
+        Supports both inline properties and $ref references.
 
         Args:
             schema: Schema definition
             nested: Dictionary of property_name -> {nested_prop_name -> default_value}
+            all_schemas: All schemas from the spec for $ref resolution
         """
         if not nested:
             return
@@ -255,12 +266,14 @@ class DefaultValueEnricher:
             # Handle inline object properties
             nested_properties = parent_prop.get("properties", {})
 
-            # Handle $ref to another schema (we can't modify the referenced schema here,
-            # but we can add defaults to allOf/oneOf structures)
+            # Handle $ref to another schema - resolve and apply to referenced schema
             if "$ref" in parent_prop:
-                # For $ref, we need to handle this at the schema resolution level
-                # Skip for now - referenced schemas should be enriched separately
-                continue
+                ref_path = parent_prop["$ref"]
+                # Extract schema name from "#/components/schemas/healthcheckHttpHealthCheck"
+                ref_schema_name = ref_path.split("/")[-1]
+                if ref_schema_name in all_schemas:
+                    ref_schema = all_schemas[ref_schema_name]
+                    nested_properties = ref_schema.get("properties", {})
 
             if nested_properties:
                 for nested_prop_name, default_value in nested_defaults.items():
@@ -274,6 +287,37 @@ class DefaultValueEnricher:
                         if add_marker:
                             nested_prop_schema[X_F5XC_SERVER_DEFAULT] = True
                             self.stats.markers_added += 1
+
+    def _apply_recommended_to_properties(
+        self,
+        schema: dict[str, Any],
+        recommended: dict[str, Any],
+    ) -> None:
+        """Apply recommended values to schema properties.
+
+        Recommended values are suggested values for required fields that match
+        what the F5 XC web interface pre-populates. Unlike defaults (which are
+        server-applied when omitted), recommended values are suggestions for
+        fields that must be explicitly provided.
+
+        Args:
+            schema: Schema definition
+            recommended: Dictionary of property_name -> recommended_value
+        """
+        if not recommended:
+            return
+
+        properties = schema.get("properties", {})
+        if not properties:
+            return
+
+        for prop_name, recommended_value in recommended.items():
+            if prop_name in properties:
+                prop_schema = properties[prop_name]
+
+                # Add x-f5xc-recommended-value extension
+                prop_schema[X_F5XC_RECOMMENDED_VALUE] = recommended_value
+                self.stats.recommended_added += 1
 
     def get_stats(self) -> dict[str, Any]:
         """Get enrichment statistics.

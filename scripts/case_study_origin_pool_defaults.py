@@ -407,7 +407,7 @@ class OriginPoolCaseStudy:
             read_url = (
                 f"{self.api_url}/api/config/namespaces/{self.namespace}/origin_pools/{test_name}"
             )
-            read_status, read_body, read_error = await self._execute_request(
+            read_status, read_body, _ = await self._execute_request(
                 client,
                 "GET",
                 read_url,
@@ -699,7 +699,9 @@ def generate_markdown_report(report: CaseStudyReport, output_path: Path) -> None
         lines.append("Add the following discovered defaults:")
         lines.append("```yaml")
         lines.append("origin_pool:")
-        lines.append('  description: "Origin pool server-applied defaults discovered through API testing"')
+        lines.append(
+            '  description: "Origin pool server-applied defaults discovered through API testing"',
+        )
         lines.append('  schema_pattern: "origin_pool.*SpecType"')
         lines.append("  defaults:")
         for field, value in report.discovered_defaults.items():

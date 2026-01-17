@@ -361,7 +361,7 @@ class HealthcheckCaseStudy:
             read_url = (
                 f"{self.api_url}/api/config/namespaces/{self.namespace}/healthchecks/{test_name}"
             )
-            read_status, read_body, read_error = await self._execute_request(
+            read_status, read_body, _ = await self._execute_request(
                 client,
                 "GET",
                 read_url,
