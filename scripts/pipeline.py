@@ -92,6 +92,7 @@ from scripts.utils import (
     SchemaFixer,
     TagGenerator,
     ValidationEnricher,
+    ValidationExporter,
     categorize_spec,
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
@@ -1634,6 +1635,20 @@ def run_pipeline(
             # Create index
             index = create_spec_index(domain_specs, version)
             save_spec(index, output_dir / "index.json", indent=indent)
+
+            # Export validation specification for downstream consumers
+            try:
+                validation_exporter = ValidationExporter()
+                validation_exporter.export(output_dir / "validation.json")
+                validation_stats = validation_exporter.get_stats()
+                console.print(
+                    f"[green]Exported validation.json: "
+                    f"{validation_stats['resources_processed']} resources, "
+                    f"{validation_stats['required_fields_exported']} required fields, "
+                    f"{validation_stats['enum_values_exported']} enum values[/green]",
+                )
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to export validation spec: {e}[/yellow]")
 
             console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
 

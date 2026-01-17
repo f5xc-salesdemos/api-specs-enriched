@@ -1,0 +1,514 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+#
+# Centralized Validation Schema for F5 XC API
+#
+# This file serves as the single source of truth for API validation constraints
+# to be consumed by downstream projects (CLI tools, Terraform providers, AI assistants).
+#
+# Version: 1.0.0
+# See: docs/VALIDATION_SPEC.md for consumer documentation
+
+version: "1.0.0"
+description: "Centralized validation specification for F5 XC API"
+
+# =============================================================================
+# EXPORT CONFIGURATION
+# =============================================================================
+
+export:
+  # Output path for generated validation.json
+  output_path: "docs/specifications/api/validation.json"
+
+  # Include these sections in exported validation spec
+  include_sections:
+    - required_fields
+    - enum_values
+    - constraints
+    - patterns
+    - server_defaults
+    - conditional_requirements
+    - minimum_configurations
+
+  # JSON Schema version for exported schema
+  json_schema_version: "https://json-schema.org/draft/2020-12/schema"
+
+# =============================================================================
+# REQUIRED FIELDS BY OPERATION
+# =============================================================================
+
+required_fields:
+  # Common metadata fields required for all resources
+  common:
+    all_operations:
+      - "metadata.name"
+      - "metadata.namespace"
+
+  # Per-resource required fields
+  resources:
+    http_loadbalancer:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.domains"
+        - "spec.routes"
+        - "spec.origin_pools"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.domains"
+
+    origin_pool:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.origin_servers"
+        - "spec.port"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.origin_servers"
+        - "spec.port"
+
+    healthcheck:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.interval"
+        - "spec.timeout"
+        - "spec.healthy_threshold"
+        - "spec.unhealthy_threshold"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.interval"
+        - "spec.timeout"
+        - "spec.healthy_threshold"
+        - "spec.unhealthy_threshold"
+
+    tcp_loadbalancer:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.origin_pools"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.origin_pools"
+
+    app_firewall:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+
+    certificate:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.certificate_url"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+        - "spec.certificate_url"
+
+    service_policy:
+      create:
+        - "metadata.name"
+        - "metadata.namespace"
+      update:
+        - "metadata.name"
+        - "metadata.namespace"
+      minimum_config:
+        - "metadata.name"
+        - "metadata.namespace"
+
+# =============================================================================
+# ENUM/ALLOWED VALUES
+# =============================================================================
+
+enum_values:
+  # Load balancing algorithms
+  loadbalancer_algorithm:
+    description: "Load balancing algorithm for distributing traffic across origin servers"
+    values:
+      - value: "ROUND_ROBIN"
+        description: "Each healthy endpoint selected in round robin order"
+        is_default: true
+      - value: "LEAST_REQUEST"
+        description: "Endpoint with fewest active requests selected"
+      - value: "RING_HASH"
+        description: "Consistent hashing using ring hash of endpoint names"
+      - value: "RANDOM"
+        description: "Random healthy endpoint selection"
+      - value: "LB_OVERRIDE"
+        description: "Hash policy inherited from parent load balancer"
+
+  # Endpoint selection policy
+  endpoint_selection:
+    description: "Policy for selecting endpoints from local and remote sites"
+    values:
+      - value: "DISTRIBUTED"
+        description: "Consider both remote and local endpoints for load balancing"
+        is_default: true
+      - value: "LOCAL_ONLY"
+        description: "Only local endpoints used for load balancing"
+      - value: "LOCAL_PREFERRED"
+        description: "Prefer local endpoints, fall back to remote if unavailable"
+
+  # Health check types
+  health_check_type:
+    description: "Type of health check to perform"
+    values:
+      - value: "HTTP"
+        description: "HTTP/HTTPS health check with configurable path and headers"
+      - value: "TCP"
+        description: "TCP connection health check"
+      - value: "UDP"
+        description: "UDP/ICMP health check"
+
+  # WAF detection modes
+  waf_mode:
+    description: "WAF operation mode"
+    values:
+      - value: "MONITORING"
+        description: "Log threats without blocking (default)"
+        is_default: true
+      - value: "BLOCKING"
+        description: "Block detected threats"
+
+  # TLS configuration
+  tls_mode:
+    description: "TLS termination mode"
+    values:
+      - value: "NO_TLS"
+        description: "No TLS, plaintext connection"
+        is_default: true
+      - value: "TLS"
+        description: "TLS enabled with certificate"
+      - value: "MTLS"
+        description: "Mutual TLS with client certificate verification"
+
+# =============================================================================
+# VALIDATION CONSTRAINTS BY FIELD TYPE/PATTERN
+# =============================================================================
+
+constraints:
+  # Type-level defaults (applied to all fields of this type)
+  type_defaults:
+    string:
+      minLength: 0
+      maxLength: 1024
+      comment: "Conservative default for string fields"
+
+    integer:
+      minimum: 0
+      maximum: 2147483647  # int32 max
+      comment: "Conservative default for integer fields"
+
+  # Pattern-based constraints (matched against field names)
+  patterns:
+    - pattern: '\bport$'
+      constraints:
+        minimum: 1
+        maximum: 65535
+      confidence: 0.99
+      comment: "Valid TCP/UDP port range"
+
+    - pattern: '\b(vlan)?_?id$'
+      constraints:
+        minimum: 1
+        maximum: 4094
+      confidence: 0.95
+      comment: "Valid VLAN ID range (802.1Q)"
+
+    - pattern: '\bemail$'
+      constraints:
+        format: 'email'
+        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+      confidence: 0.99
+      comment: "RFC 5322 compliant email validation"
+
+    - pattern: '\burl$'
+      constraints:
+        format: 'uri'
+      confidence: 0.95
+      comment: "URL must be valid URI format"
+
+    - pattern: '\buuid$'
+      constraints:
+        format: 'uuid'
+      confidence: 0.99
+      comment: "UUID format validation (RFC 4122)"
+
+    - pattern: '\btimestamp$'
+      constraints:
+        format: 'date-time'
+      confidence: 0.95
+      comment: "ISO 8601 date-time format"
+
+    - pattern: '\b(ipv4|ipaddress|ip_addr)$'
+      constraints:
+        format: 'ipv4'
+      confidence: 0.95
+      comment: "IPv4 address format validation"
+
+    - pattern: '\bname$'
+      constraints:
+        minLength: 1
+        maxLength: 63
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      confidence: 0.90
+      comment: "Kubernetes-style naming convention"
+
+    - pattern: '\bnamespace$'
+      constraints:
+        minLength: 1
+        maxLength: 63
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      confidence: 0.95
+      comment: "Kubernetes namespace naming convention"
+
+    - pattern: '\b(interval|timeout)$'
+      constraints:
+        minimum: 1
+        maximum: 600
+      confidence: 0.90
+      comment: "Time duration in seconds (1s to 10min)"
+
+    - pattern: '\b(healthy_threshold|unhealthy_threshold)$'
+      constraints:
+        minimum: 1
+        maximum: 16
+      confidence: 0.95
+      comment: "Health check threshold count"
+
+    - pattern: '\bjitter_percent$'
+      constraints:
+        minimum: 0
+        maximum: 100
+      confidence: 0.95
+      comment: "Percentage value for jitter"
+
+# =============================================================================
+# SERVER-APPLIED DEFAULTS
+# =============================================================================
+
+server_defaults:
+  description: "Values automatically applied by the F5 XC API when fields are omitted"
+
+  resources:
+    origin_pool:
+      spec:
+        no_tls: {}
+        healthcheck: []
+        loadbalancer_algorithm: "ROUND_ROBIN"
+        endpoint_selection: "DISTRIBUTED"
+
+    healthcheck:
+      spec:
+        jitter: 0
+        jitter_percent: 0
+
+    app_firewall:
+      spec:
+        allow_all_response_codes: {}
+        default_anonymization: {}
+        default_bot_setting: {}
+        default_detection_settings: {}
+        disable_ai_enhancements: {}
+        monitoring: {}
+        use_default_blocking_page: {}
+
+# =============================================================================
+# CONDITIONAL REQUIREMENTS
+# =============================================================================
+
+conditional_requirements:
+  description: "Fields required or mutually exclusive based on context"
+
+  resources:
+    http_loadbalancer:
+      mutually_exclusive:
+        - fields: ["spec.dns_name", "spec.advertise"]
+          reason: "Choose either DNS-based or advertised traffic routing"
+        - fields: ["spec.certificate_chain", "spec.tls_config.vault_secret"]
+          reason: "Certificate source: inline or vault"
+      conditional:
+        - field: "spec.certificate"
+          required_when:
+            field: "spec.https"
+            condition: "present"
+          reason: "Required for TLS termination"
+
+    healthcheck:
+      mutually_exclusive:
+        - fields: ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"]
+          reason: "Choose exactly one health check type"
+
+    tcp_loadbalancer:
+      mutually_exclusive:
+        - fields: ["spec.listen_port", "spec.port_ranges"]
+          reason: "Specify either a single port or port ranges (port_choice)"
+        - fields: ["spec.listener.tcp_port", "spec.listener.udp_port"]
+          reason: "Specify either TCP or UDP protocol"
+
+    service_policy:
+      mutually_exclusive:
+        - fields:
+            - "spec.allow_all_requests"
+            - "spec.deny_all_requests"
+            - "spec.allow_list"
+            - "spec.deny_list"
+            - "spec.rule_list"
+          reason: "Choose exactly one rule type"
+
+# =============================================================================
+# MINIMUM CONFIGURATIONS
+# =============================================================================
+
+minimum_configurations:
+  description: "Minimum viable configuration for creating resources"
+
+  resources:
+    http_loadbalancer:
+      description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+      example_json: |
+        {
+          "metadata": {
+            "name": "example-lb",
+            "namespace": "default"
+          },
+          "spec": {
+            "domains": ["example.com"],
+            "http": [{"port": 80}],
+            "routes": [{"prefix": "/", "origin_pool": {"pool_name": "pool"}}],
+            "origin_pools": [{"name": "pool", "origins": [{"hostname": "backend.example.com"}]}]
+          }
+        }
+
+    origin_pool:
+      description: "Backend origin servers for load balancing"
+      example_json: |
+        {
+          "metadata": {
+            "name": "backend-pool",
+            "namespace": "default"
+          },
+          "spec": {
+            "origin_servers": [
+              {"public_name": {"dns_name": "backend1.example.com"}},
+              {"public_name": {"dns_name": "backend2.example.com"}}
+            ],
+            "port": 8080
+          }
+        }
+
+    healthcheck:
+      description: "Health check configuration for monitoring origin servers"
+      example_json: |
+        {
+          "metadata": {
+            "name": "http-health",
+            "namespace": "default"
+          },
+          "spec": {
+            "http_health_check": {"path": "/health", "use_origin_server_hostname": true},
+            "interval": 15,
+            "timeout": 3,
+            "unhealthy_threshold": 1,
+            "healthy_threshold": 3,
+            "jitter_percent": 30
+          }
+        }
+
+    tcp_loadbalancer:
+      description: "TCP/UDP load balancer for non-HTTP protocols"
+      example_json: |
+        {
+          "metadata": {
+            "name": "database-lb",
+            "namespace": "default"
+          },
+          "spec": {
+            "listener": {"port": 5432, "protocol": "TCP"},
+            "origin_pools": [{"pool_name": "postgres-cluster"}]
+          }
+        }
+
+    app_firewall:
+      description: "Web Application Firewall (WAF) policy"
+      example_json: |
+        {
+          "metadata": {
+            "name": "default-waf",
+            "namespace": "default"
+          },
+          "spec": {
+            "detection_settings": {"signature_detection": true},
+            "monitoring": {}
+          }
+        }
+
+    certificate:
+      description: "TLS certificate for securing HTTPS endpoints"
+      example_json: |
+        {
+          "metadata": {
+            "name": "example-cert",
+            "namespace": "default"
+          },
+          "spec": {
+            "certificate_url": "string:///BASE64_ENCODED_CERTIFICATE"
+          }
+        }
+
+# =============================================================================
+# EXTENSION MAPPING
+# =============================================================================
+
+extension_mapping:
+  description: "OpenAPI extension field names used in enriched specs"
+
+  required_for: "x-f5xc-required-for"
+  server_default: "x-f5xc-server-default"
+  recommended_value: "x-f5xc-recommended-value"
+  conditions: "x-f5xc-conditions"
+  minimum_configuration: "x-f5xc-minimum-configuration"
+  validation: "x-f5xc-validation"
+
+# =============================================================================
+# RECONCILIATION STRATEGY
+# =============================================================================
+
+reconciliation:
+  description: "Strategy for resolving conflicts between constraint sources"
+
+  priority_order:
+    - "existing"    # Constraints in original OpenAPI spec (highest priority)
+    - "discovery"   # Constraints from live API discovery
+    - "inferred"    # Constraints from pattern matching (lowest priority)
+
+  behavior:
+    existing_wins: true
+    log_conflicts: true
+    merge_non_conflicting: true

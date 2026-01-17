@@ -33,6 +33,7 @@ from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
 from .tag_generator import TagGenerator
 from .validation_enricher import ValidationEnricher
+from .validation_exporter import ValidationExporter
 
 __all__ = [
     "AcronymEnricher",
@@ -69,5 +70,6 @@ __all__ = [
     "SchemaFixer",
     "TagGenerator",
     "ValidationEnricher",
+    "ValidationExporter",
     "categorize_spec",
 ]
