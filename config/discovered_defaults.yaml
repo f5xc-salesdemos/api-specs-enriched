@@ -93,13 +93,59 @@ resources:
       swagger_specs: []
 
   # ============================================================================
-  # Origin Pools (To be expanded after API testing)
+  # Origin Pools (Verified via case study 2026-01-17)
   # ============================================================================
 
-  # origin_pool:
-  #   description: "Origin pool server-applied defaults"
-  #   schema_pattern: "origin_pool.*SpecType"
-  #   defaults: {}
+  origin_pool:
+    description: "Origin pool server-applied defaults discovered through API testing"
+    schema_pattern: "origin_pool.*SpecType"
+    # Top-level spec defaults (verified via case study 2026-01-17)
+    # Note: spec.port is REQUIRED (no default) - causes 400 error if omitted
+    # Note: spec.origin_servers requires minimum 1 item
+    defaults:
+      # TLS to origin disabled by default
+      no_tls: {}
+      # No health checks configured by default
+      healthcheck: []
+      # Load balancing algorithm (ROUND_ROBIN, LEAST_ACTIVE, RANDOM, RING_HASH, LEAST_REQUEST)
+      loadbalancer_algorithm: "ROUND_ROBIN"
+      # Endpoint selection strategy (DISTRIBUTED, LOCAL_ONLY, LOCAL_PREFERRED)
+      endpoint_selection: "DISTRIBUTED"
+    # Constrained value definitions for CLI tooling
+    # These enums document allowed values for fields with pre-determined choices
+    enums:
+      loadbalancer_algorithm:
+        description: "Load balancing algorithm for distributing traffic across origin servers"
+        values:
+          - value: "ROUND_ROBIN"
+            description: "Each healthy endpoint selected in round robin order"
+            is_default: true
+          - value: "LEAST_REQUEST"
+            description: "Endpoint with fewest active requests selected"
+          - value: "RING_HASH"
+            description: "Consistent hashing using ring hash of endpoint names"
+          - value: "RANDOM"
+            description: "Random healthy endpoint selection"
+          - value: "LB_OVERRIDE"
+            description: "Hash policy inherited from parent load balancer"
+      endpoint_selection:
+        description: "Policy for selecting endpoints from local and remote sites"
+        values:
+          - value: "DISTRIBUTED"
+            description: "Consider both remote and local endpoints for load balancing"
+            is_default: true
+          - value: "LOCAL_ONLY"
+            description: "Only local endpoints used for load balancing"
+          - value: "LOCAL_PREFERRED"
+            description: "Prefer local endpoints, fall back to remote if unavailable"
+    # Nested defaults within origin_servers items
+    nested:
+      origin_servers:
+        # Labels for origin server (empty by default)
+        labels: {}
+      public_name:
+        # DNS refresh interval (0 = use system default)
+        refresh_interval: 0
 
   # ============================================================================
   # HTTP Load Balancers (To be expanded after API testing)
