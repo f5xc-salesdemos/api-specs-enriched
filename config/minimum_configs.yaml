@@ -124,12 +124,14 @@ resources:
       - "metadata.name"
       - "metadata.namespace"
       - "spec.origin_servers"  # Required, min_items: 1
+      - "spec.port"  # Required - no default (verified via case study 2026-01-17)
 
     context_requirements:
       - field: "spec.health_checks"
         contexts: ["monitoring", "availability"]
         reason: "Recommended for health monitoring"
 
+    # Minimum example - only required fields (verified via case study 2026-01-17)
     example_yaml: |
       apiVersion: v1
       kind: origin_pool
@@ -137,19 +139,15 @@ resources:
         name: backend-pool
         namespace: default
       spec:
-        origins:
-          - origin_server:
-              hostname: backend1.example.com
-              port: 8080
-          - origin_server:
-              hostname: backend2.example.com
-              port: 8080
-        health_checks:
-          - health_check_name: http-health-check
-        connection_timeout_ms: 3600
-        idle_timeout_ms: 900000
+        origin_servers:
+          - public_name:
+              dns_name: backend1.example.com
+          - public_name:
+              dns_name: backend2.example.com
+        port: 8080
 
-    # Example JSON configuration (preferred format)
+    # Example JSON configuration - minimum required fields
+    # Server applies defaults: no_tls={}, loadbalancer_algorithm=ROUND_ROBIN, endpoint_selection=DISTRIBUTED
     example_json: |
       {
         "metadata": {
@@ -157,13 +155,11 @@ resources:
           "namespace": "default"
         },
         "spec": {
-          "origins": [
-            {"origin_server": {"hostname": "backend1.example.com", "port": 8080}},
-            {"origin_server": {"hostname": "backend2.example.com", "port": 8080}}
+          "origin_servers": [
+            {"public_name": {"dns_name": "backend1.example.com"}},
+            {"public_name": {"dns_name": "backend2.example.com"}}
           ],
-          "health_checks": [{"health_check_name": "http-health-check"}],
-          "connection_timeout_ms": 3600,
-          "idle_timeout_ms": 900000
+          "port": 8080
         }
       }
 
@@ -177,6 +173,20 @@ resources:
     cli:
       domain: "virtual"
       resource_name: "origin_pool"
+
+    # Constrained fields - enum values for CLI help/autocomplete
+    # These fields have pre-determined allowed values (not arbitrary input)
+    constrained_fields:
+      - field: "spec.loadbalancer_algorithm"
+        type: "enum"
+        values: ["ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM", "LB_OVERRIDE"]
+        default: "ROUND_ROBIN"
+        description: "Load balancing algorithm for distributing traffic"
+      - field: "spec.endpoint_selection"
+        type: "enum"
+        values: ["DISTRIBUTED", "LOCAL_ONLY", "LOCAL_PREFERRED"]
+        default: "DISTRIBUTED"
+        description: "Policy for selecting endpoints from local/remote sites"
 
   # ============================================================================
 
