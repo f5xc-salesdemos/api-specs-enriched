@@ -34,6 +34,9 @@ The validation specification is published as `docs/specifications/api/validation
   "server_defaults": { ... },
   "conditional_requirements": { ... },
   "minimum_configurations": { ... },
+  "oneof_defaults": { ... },
+  "ui_vs_server_defaults": { ... },
+  "advanced_options_defaults": { ... },
   "extensions": { ... }
 }
 ```
@@ -204,7 +207,7 @@ Values automatically applied by the F5 XC API when fields are omitted.
 
 **Usage in CLI help text:**
 
-```
+```text
 $ xcsh origin-pool create --help
 
 DEFAULTS (server-applied):
@@ -268,6 +271,100 @@ Minimum viable configurations with working examples.
           }
         }
       }
+    }
+  }
+}
+```
+
+### OneOf Defaults
+
+For fields with mutually exclusive choices (OneOf patterns), these specify which option is selected by default when none is explicitly provided.
+
+```json
+{
+  "oneof_defaults": {
+    "origin_pool": {
+      "port_choice": "port",
+      "tls_choice": "no_tls",
+      "circuit_breaker_choice": "default_circuit_breaker",
+      "outlier_detection_choice": "disable_outlier_detection",
+      "panic_threshold_type": "no_panic_threshold",
+      "subset_choice": "disable_subsets",
+      "http_protocol_type": "auto_http_config",
+      "proxy_protocol_choice": "disable_proxy_protocol",
+      "lb_source_ip_persistence_choice": "disable_lb_source_ip_persistance"
+    }
+  }
+}
+```
+
+**Usage:**
+
+```python
+def get_oneof_default(resource_type: str, oneof_group: str) -> str:
+    spec = load_validation_spec()
+    return spec["oneof_defaults"].get(resource_type, {}).get(oneof_group)
+
+# Example: Get default TLS choice for origin_pool
+default_tls = get_oneof_default("origin_pool", "tls_choice")  # Returns "no_tls"
+```
+
+### UI vs Server Defaults
+
+⚠️ **Important**: UI pre-selected values may differ from server-applied defaults!
+
+This section documents cases where the F5 XC web console pre-selects different values than what the API applies when fields are omitted.
+
+```json
+{
+  "ui_vs_server_defaults": {
+    "origin_pool": {
+      "loadbalancer_algorithm": {
+        "ui_default": "LB_OVERRIDE",
+        "server_default": "ROUND_ROBIN",
+        "note": "UI pre-selects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+      }
+    }
+  }
+}
+```
+
+**Usage:**
+
+```python
+def warn_ui_server_mismatch(resource_type: str) -> list[str]:
+    """Generate warnings for fields where UI and server defaults differ."""
+    spec = load_validation_spec()
+    warnings = []
+
+    mismatches = spec.get("ui_vs_server_defaults", {}).get(resource_type, {})
+    for field, info in mismatches.items():
+        if info["ui_default"] != info["server_default"]:
+            warnings.append(
+                f"Field '{field}': UI shows '{info['ui_default']}' but "
+                f"server applies '{info['server_default']}' if omitted"
+            )
+    return warnings
+```
+
+### Advanced Options Defaults
+
+Default values for the `advanced_options` object when not explicitly specified.
+
+```json
+{
+  "advanced_options_defaults": {
+    "origin_pool": {
+      "connection_timeout": 2000,
+      "http_idle_timeout": 300000,
+      "same_as_endpoint_port": {},
+      "default_circuit_breaker": {},
+      "disable_outlier_detection": {},
+      "no_panic_threshold": {},
+      "disable_subsets": {},
+      "auto_http_config": {},
+      "disable_proxy_protocol": {},
+      "disable_lb_source_ip_persistance": {}
     }
   }
 }

@@ -99,12 +99,13 @@ resources:
       swagger_specs: []
 
   # ============================================================================
-  # Origin Pools (Verified via case study 2026-01-17)
+  # Origin Pools (Enhanced 2026-01-17 with all 15 UI options)
   # ============================================================================
 
   origin_pool:
     description: "Origin pool server-applied defaults discovered through API testing"
     schema_pattern: "origin_pool.*SpecType"
+
     # Top-level spec defaults (verified via case study 2026-01-17)
     # Note: spec.port is REQUIRED (no default) - causes 400 error if omitted
     # Note: spec.origin_servers requires minimum 1 item
@@ -117,23 +118,91 @@ resources:
       loadbalancer_algorithm: "ROUND_ROBIN"
       # Endpoint selection strategy (DISTRIBUTED, LOCAL_ONLY, LOCAL_PREFERRED)
       endpoint_selection: "DISTRIBUTED"
+
+    # Recommended values for required fields (used by UI/CLI/AI assistants)
+    # These match F5 XC web interface pre-populated values for consistency
+    recommended:
+      port: 443
+      connection_timeout: 2000
+      http_idle_timeout: 300000
+
+    # =========================================================================
+    # advanced_options defaults (UI options 3, 7-15)
+    # These are applied when advanced_options is not specified
+    # =========================================================================
+    advanced_options_defaults:
+      # UI Option 7: Connection Timeout (milliseconds)
+      connection_timeout: 2000
+      # UI Option 8: HTTP Idle Timeout (milliseconds)
+      http_idle_timeout: 300000
+      # UI Option 3: Health check port - default uses endpoint port
+      same_as_endpoint_port: {}
+      # UI Option 9: Circuit breaker - use default settings
+      default_circuit_breaker: {}
+      # UI Option 10: Outlier detection - disabled
+      disable_outlier_detection: {}
+      # UI Option 11: Panic threshold - none
+      no_panic_threshold: {}
+      # UI Option 12: Subset load balancing - disabled
+      disable_subsets: {}
+      # UI Option 13: HTTP protocol - auto negotiation
+      auto_http_config: {}
+      # UI Option 14: Proxy protocol - disabled
+      disable_proxy_protocol: {}
+      # UI Option 15: LB source IP persistence - disabled
+      disable_lb_source_ip_persistance: {}
+
+    # =========================================================================
+    # OneOf field default selections
+    # Maps OneOf group names to their default selection when omitted
+    # =========================================================================
+    oneof_defaults:
+      # UI Option 1: Port Configuration
+      port_choice: "port"  # Most common is explicit port
+      # UI Option 2: Connection Pool Reuse
+      upstream_conn_pool_reuse: "enable_conn_pool_reuse"
+      # UI Option 3: Health Check Port
+      health_check_port_choice: "same_as_endpoint_port"
+      # UI Option 6: TLS to Origin
+      tls_choice: "no_tls"
+      # UI Option 9: Circuit Breaker
+      circuit_breaker_choice: "default_circuit_breaker"
+      # UI Option 10: Outlier Detection
+      outlier_detection_choice: "disable_outlier_detection"
+      # UI Option 11: Panic Threshold
+      panic_threshold_type: "no_panic_threshold"
+      # UI Option 12: Subset Load Balancing
+      subset_choice: "disable_subsets"
+      # UI Option 13: HTTP Protocol
+      http_protocol_type: "auto_http_config"
+      # UI Option 14: Proxy Protocol
+      proxy_protocol_choice: "disable_proxy_protocol"
+      # UI Option 15: LB Source IP Persistence
+      lb_source_ip_persistence_choice: "disable_lb_source_ip_persistance"
+
+    # =========================================================================
     # Constrained value definitions for CLI tooling
     # These enums document allowed values for fields with pre-determined choices
+    # =========================================================================
     enums:
+      # UI Option 4: Load Balancer Algorithm
       loadbalancer_algorithm:
         description: "Load balancing algorithm for distributing traffic across origin servers"
         values:
+          # NOTE: UI default is LB_OVERRIDE, but server applies ROUND_ROBIN if omitted
+          - value: "LB_OVERRIDE"
+            description: "Hash policy inherited from parent load balancer"
+            is_ui_default: true
           - value: "ROUND_ROBIN"
             description: "Each healthy endpoint selected in round robin order"
-            is_default: true
+            is_server_default: true
           - value: "LEAST_REQUEST"
             description: "Endpoint with fewest active requests selected"
           - value: "RING_HASH"
             description: "Consistent hashing using ring hash of endpoint names"
           - value: "RANDOM"
             description: "Random healthy endpoint selection"
-          - value: "LB_OVERRIDE"
-            description: "Hash policy inherited from parent load balancer"
+      # UI Option 5: Endpoint Selection
       endpoint_selection:
         description: "Policy for selecting endpoints from local and remote sites"
         values:
@@ -144,6 +213,17 @@ resources:
             description: "Only local endpoints used for load balancing"
           - value: "LOCAL_PREFERRED"
             description: "Prefer local endpoints, fall back to remote if unavailable"
+
+    # =========================================================================
+    # UI vs Server Defaults
+    # Documents where UI pre-selected values differ from API behavior
+    # =========================================================================
+    ui_vs_server_defaults:
+      loadbalancer_algorithm:
+        ui_default: "LB_OVERRIDE"
+        server_default: "ROUND_ROBIN"
+        note: "UI pre-selects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+
     # Nested defaults within origin_servers items
     nested:
       origin_servers:
@@ -152,24 +232,6 @@ resources:
       public_name:
         # DNS refresh interval (0 = use system default)
         refresh_interval: 0
-
-  # ============================================================================
-  # HTTP Load Balancers (To be expanded after API testing)
-  # ============================================================================
-
-  # http_loadbalancer:
-  #   description: "HTTP load balancer server-applied defaults"
-  #   schema_pattern: "http_loadbalancer.*SpecType"
-  #   defaults: {}
-
-  # ============================================================================
-  # TCP Load Balancers (To be expanded after API testing)
-  # ============================================================================
-
-  # tcp_loadbalancer:
-  #   description: "TCP load balancer server-applied defaults"
-  #   schema_pattern: "tcp_loadbalancer.*SpecType"
-  #   defaults: {}
 
 # Documentation for adding new defaults:
 # 1. Create resource in F5 XC with minimal/empty spec via API

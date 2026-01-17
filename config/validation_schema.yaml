@@ -208,6 +208,127 @@ enum_values:
       - value: "MTLS"
         description: "Mutual TLS with client certificate verification"
 
+  # ============================================================================
+  # Origin Pool OneOf Enums (Issue #472 - 15 UI Options)
+  # ============================================================================
+
+  # UI Option 1: Origin Server Port (OneOf)
+  port_choice:
+    description: "Origin server port configuration method"
+    values:
+      - value: "port"
+        description: "Explicit port number (1-65535)"
+      - value: "automatic_port"
+        description: "Port automatically assigned"
+      - value: "lb_port"
+        description: "Use load balancer port"
+
+  # UI Option 2: Connection Pool Reuse (OneOf)
+  upstream_conn_pool_reuse:
+    description: "Upstream connection pool reuse state"
+    values:
+      - value: "enable_conn_pool_reuse"
+        description: "Enable connection pool reuse"
+        is_default: true
+      - value: "disable_conn_pool_reuse"
+        description: "Disable connection pool reuse"
+
+  # UI Option 3: Health Check Port (OneOf)
+  health_check_port_choice:
+    description: "Port used for health checks"
+    values:
+      - value: "same_as_endpoint_port"
+        description: "Use endpoint port for health checks"
+        is_default: true
+      - value: "health_check_port"
+        description: "Explicit health check port"
+
+  # UI Option 6: TLS to Origin (OneOf)
+  origin_tls_choice:
+    description: "TLS encryption to origin servers"
+    values:
+      - value: "no_tls"
+        description: "Disable TLS to origin"
+        is_default: true
+      - value: "use_tls"
+        description: "Enable TLS with configuration"
+
+  # UI Option 9: Circuit Breaker (OneOf)
+  circuit_breaker_choice:
+    description: "Circuit breaker configuration"
+    values:
+      - value: "default_circuit_breaker"
+        description: "Use default circuit breaker settings"
+        is_default: true
+      - value: "disable_circuit_breaker"
+        description: "Disable circuit breaker"
+      - value: "circuit_breaker"
+        description: "Custom circuit breaker configuration"
+
+  # UI Option 10: Outlier Detection (OneOf)
+  outlier_detection_choice:
+    description: "Outlier detection configuration"
+    values:
+      - value: "disable_outlier_detection"
+        description: "Disable outlier detection"
+        is_default: true
+      - value: "outlier_detection"
+        description: "Enable custom outlier detection"
+
+  # UI Option 11: Panic Threshold (OneOf)
+  panic_threshold_type:
+    description: "Panic threshold configuration"
+    values:
+      - value: "no_panic_threshold"
+        description: "No panic threshold"
+        is_default: true
+      - value: "panic_threshold"
+        description: "Custom panic threshold (0-100%)"
+
+  # UI Option 12: Subset Load Balancing (OneOf)
+  subset_choice:
+    description: "Subset load balancing configuration"
+    values:
+      - value: "disable_subsets"
+        description: "Disable subset load balancing"
+        is_default: true
+      - value: "enable_subsets"
+        description: "Enable subset load balancing"
+
+  # UI Option 13: HTTP Protocol (OneOf)
+  http_protocol_type:
+    description: "HTTP protocol configuration"
+    values:
+      - value: "auto_http_config"
+        description: "Automatic protocol negotiation"
+        is_default: true
+      - value: "http1_config"
+        description: "HTTP/1.x configuration"
+      - value: "http2_options"
+        description: "HTTP/2 configuration"
+
+  # UI Option 14: Proxy Protocol (OneOf)
+  proxy_protocol_choice:
+    description: "Proxy protocol configuration"
+    values:
+      - value: "disable_proxy_protocol"
+        description: "Disable proxy protocol"
+        is_default: true
+      - value: "proxy_protocol_v1"
+        description: "Proxy Protocol v1"
+      - value: "proxy_protocol_v2"
+        description: "Proxy Protocol v2"
+
+  # UI Option 15: LB Source IP Persistence (OneOf)
+  lb_source_ip_persistence_choice:
+    description: "LB source IP persistence configuration"
+    values:
+      - value: "disable_lb_source_ip_persistance"
+        description: "Disable LB source IP persistence"
+        is_default: true
+      - value: "enable_lb_source_ip_persistance"
+        description: "Enable LB source IP persistence"
+
 # =============================================================================
 # VALIDATION CONSTRAINTS BY FIELD TYPE/PATTERN
 # =============================================================================
@@ -364,6 +485,59 @@ conditional_requirements:
       mutually_exclusive:
         - fields: ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"]
           reason: "Choose exactly one health check type"
+
+    origin_pool:
+      mutually_exclusive:
+        # UI Option 1: Port Configuration
+        - fields: ["spec.port", "spec.automatic_port", "spec.lb_port"]
+          reason: "Choose exactly one port configuration method"
+        # UI Option 2: Connection Pool Reuse
+        - fields: ["spec.enable_conn_pool_reuse", "spec.disable_conn_pool_reuse"]
+          reason: "Choose exactly one connection pool reuse setting"
+        # UI Option 3: Health Check Port
+        - fields: ["spec.advanced_options.health_check_port", "spec.advanced_options.same_as_endpoint_port"]
+          reason: "Choose exactly one health check port method"
+        # UI Option 6: TLS to Origin
+        - fields: ["spec.no_tls", "spec.use_tls"]
+          reason: "Choose exactly one TLS configuration"
+        # UI Option 9: Circuit Breaker
+        - fields:
+            - "spec.advanced_options.default_circuit_breaker"
+            - "spec.advanced_options.disable_circuit_breaker"
+            - "spec.advanced_options.circuit_breaker"
+          reason: "Choose exactly one circuit breaker configuration"
+        # UI Option 10: Outlier Detection
+        - fields:
+            - "spec.advanced_options.disable_outlier_detection"
+            - "spec.advanced_options.outlier_detection"
+          reason: "Choose exactly one outlier detection configuration"
+        # UI Option 11: Panic Threshold
+        - fields:
+            - "spec.advanced_options.no_panic_threshold"
+            - "spec.advanced_options.panic_threshold"
+          reason: "Choose exactly one panic threshold configuration"
+        # UI Option 12: Subset Load Balancing
+        - fields:
+            - "spec.advanced_options.disable_subsets"
+            - "spec.advanced_options.enable_subsets"
+          reason: "Choose exactly one subset load balancing configuration"
+        # UI Option 13: HTTP Protocol
+        - fields:
+            - "spec.advanced_options.auto_http_config"
+            - "spec.advanced_options.http1_config"
+            - "spec.advanced_options.http2_options"
+          reason: "Choose exactly one HTTP protocol configuration"
+        # UI Option 14: Proxy Protocol
+        - fields:
+            - "spec.advanced_options.disable_proxy_protocol"
+            - "spec.advanced_options.proxy_protocol_v1"
+            - "spec.advanced_options.proxy_protocol_v2"
+          reason: "Choose exactly one proxy protocol configuration"
+        # UI Option 15: LB Source IP Persistence
+        - fields:
+            - "spec.advanced_options.disable_lb_source_ip_persistance"
+            - "spec.advanced_options.enable_lb_source_ip_persistance"
+          reason: "Choose exactly one LB source IP persistence configuration"
 
     tcp_loadbalancer:
       mutually_exclusive:
