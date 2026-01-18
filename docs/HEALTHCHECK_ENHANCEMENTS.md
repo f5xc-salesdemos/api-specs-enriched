@@ -223,15 +223,60 @@ assert create_spec['jitter'].get('default') == 0
 assert create_spec['jitter'].get('x-f5xc-server-default') == True
 ```
 
+## Accessing Defaults from validation.json
+
+Starting with v2.1.0, all defaults are consolidated in a unified resource-centric structure:
+
+```python
+import requests
+
+def load_healthcheck_defaults():
+    """Load healthcheck defaults from validation.json (v2.1.0+ unified structure)."""
+    url = "https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/api/validation.json"
+    spec = requests.get(url).json()
+
+    # Access unified defaults structure
+    healthcheck = spec["defaults"]["resources"]["healthcheck"]
+
+    return {
+        "server_applied": healthcheck.get("server_applied", {}),
+        "recommended": healthcheck.get("recommended", {}),
+    }
+
+# Example output:
+# {
+#     "server_applied": {"jitter": 0, "jitter_percent": 0},
+#     "recommended": {"timeout": 3, "interval": 15, "unhealthy_threshold": 1, "healthy_threshold": 3, "jitter_percent": 30}
+# }
+```
+
+**Access Patterns:**
+
+```python
+spec = load_validation_spec()
+
+# Get all healthcheck defaults
+hc_defaults = spec["defaults"]["resources"]["healthcheck"]
+
+# Get server-applied defaults (what API applies when omitted)
+server_applied = hc_defaults["server_applied"]  # {"jitter": 0, "jitter_percent": 0}
+
+# Get recommended values (F5 XC UI pre-populated values)
+recommended = hc_defaults["recommended"]  # {"timeout": 3, "interval": 15, ...}
+```
+
+> **Migration Note**: v2.1.0 consolidated `server_defaults`, `oneof_defaults`, `ui_vs_server_defaults`, and `advanced_options_defaults` into a single `defaults.resources.<resource>` structure. See [VALIDATION_SPEC.md](VALIDATION_SPEC.md) for full details.
+
 ## Related Resources
 
-- [Server-Applied Defaults Discovery](/docs/case-studies/healthcheck-defaults.md)
-- [Origin Pool Enhancements](/docs/ORIGIN_POOL_ENHANCEMENTS.md)
+- [Validation Specification](VALIDATION_SPEC.md) - Full validation.json format
+- [Origin Pool Enhancements](ORIGINPOOL_ENHANCEMENTS.md) - Origin pool defaults
 - [Minimum Configuration Guide](/config/minimum_configs.yaml)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1.0 | 2026-01-18 | Added unified defaults access documentation |
 | 2.0.30 | 2026-01-16 | Added nested defaults for `$ref` schemas (http_health_check) |
 | 2.0.29 | 2026-01-17 | Initial healthcheck defaults discovery |

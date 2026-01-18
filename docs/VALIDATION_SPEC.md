@@ -23,7 +23,7 @@ The validation specification is published as `docs/specifications/api/validation
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "generated_at": "2026-01-17T12:00:00Z",
   "source": "f5xc-api-enriched",
 
@@ -31,15 +31,14 @@ The validation specification is published as `docs/specifications/api/validation
   "enum_values": { ... },
   "constraints": { ... },
   "patterns": [ ... ],
-  "server_defaults": { ... },
   "conditional_requirements": { ... },
   "minimum_configurations": { ... },
-  "oneof_defaults": { ... },
-  "ui_vs_server_defaults": { ... },
-  "advanced_options_defaults": { ... },
+  "defaults": { ... },
   "extensions": { ... }
 }
 ```
+
+> **v2.1.0 Breaking Change**: The `defaults` section replaces the fragmented `server_defaults`, `oneof_defaults`, `ui_vs_server_defaults`, and `advanced_options_defaults` sections with a unified resource-centric structure.
 
 ## Sections
 
@@ -183,26 +182,97 @@ def get_field_constraints(field_name: str) -> dict:
     return constraints
 ```
 
-### Server Defaults
+### Defaults (Unified)
 
-Values automatically applied by the F5 XC API when fields are omitted.
+All default values organized by resource type. Consolidates server-applied, recommended, advanced options, OneOf choices, and UI vs server discrepancies into a single resource-centric structure.
 
 ```json
 {
-  "server_defaults": {
-    "description": "Values automatically applied by the F5 XC API when fields are omitted",
+  "defaults": {
+    "description": "All default values organized by resource type",
     "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        }
+      },
       "origin_pool": {
-        "spec": {
+        "server_applied": {
           "no_tls": {},
           "healthcheck": [],
           "loadbalancer_algorithm": "ROUND_ROBIN",
           "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI pre-selects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
         }
       }
     }
   }
 }
+```
+
+**Default Categories:**
+
+| Category | Description | Source |
+|----------|-------------|--------|
+| `server_applied` | Values API applies when fields omitted | Live API testing |
+| `recommended` | F5 XC UI pre-populated values | UI analysis |
+| `advanced_options` | Nested defaults within advanced_options | API discovery |
+| `oneof_choices` | Default OneOf selections | API behavior |
+| `ui_vs_server` | Where UI differs from API defaults | Comparative analysis |
+
+**Usage:**
+
+```python
+def get_default(resource: str, category: str, field: str = None) -> Any:
+    """Get default value from unified structure."""
+    spec = load_validation_spec()
+    defaults = spec.get("defaults", {}).get("resources", {}).get(resource, {})
+    category_data = defaults.get(category, {})
+    return category_data.get(field) if field else category_data
+
+# Examples:
+timeout = get_default("healthcheck", "recommended", "timeout")  # 3
+port = get_default("origin_pool", "recommended", "port")  # 443
+tls_choice = get_default("origin_pool", "oneof_choices", "tls_choice")  # "no_tls"
+lb_algo = get_default("origin_pool", "server_applied", "loadbalancer_algorithm")  # "ROUND_ROBIN"
 ```
 
 **Usage in CLI help text:**
@@ -213,6 +283,14 @@ $ xcsh origin-pool create --help
 DEFAULTS (server-applied):
   --loadbalancer-algorithm  ROUND_ROBIN (if omitted)
   --endpoint-selection      DISTRIBUTED (if omitted)
+
+RECOMMENDED VALUES:
+  --port                    443
+  --connection-timeout      2000ms
+
+ONEOF DEFAULTS:
+  --tls-choice              no_tls (disable TLS to origin)
+  --circuit-breaker-choice  default_circuit_breaker
 ```
 
 ### Conditional Requirements
@@ -276,100 +354,6 @@ Minimum viable configurations with working examples.
 }
 ```
 
-### OneOf Defaults
-
-For fields with mutually exclusive choices (OneOf patterns), these specify which option is selected by default when none is explicitly provided.
-
-```json
-{
-  "oneof_defaults": {
-    "origin_pool": {
-      "port_choice": "port",
-      "tls_choice": "no_tls",
-      "circuit_breaker_choice": "default_circuit_breaker",
-      "outlier_detection_choice": "disable_outlier_detection",
-      "panic_threshold_type": "no_panic_threshold",
-      "subset_choice": "disable_subsets",
-      "http_protocol_type": "auto_http_config",
-      "proxy_protocol_choice": "disable_proxy_protocol",
-      "lb_source_ip_persistence_choice": "disable_lb_source_ip_persistance"
-    }
-  }
-}
-```
-
-**Usage:**
-
-```python
-def get_oneof_default(resource_type: str, oneof_group: str) -> str:
-    spec = load_validation_spec()
-    return spec["oneof_defaults"].get(resource_type, {}).get(oneof_group)
-
-# Example: Get default TLS choice for origin_pool
-default_tls = get_oneof_default("origin_pool", "tls_choice")  # Returns "no_tls"
-```
-
-### UI vs Server Defaults
-
-⚠️ **Important**: UI pre-selected values may differ from server-applied defaults!
-
-This section documents cases where the F5 XC web console pre-selects different values than what the API applies when fields are omitted.
-
-```json
-{
-  "ui_vs_server_defaults": {
-    "origin_pool": {
-      "loadbalancer_algorithm": {
-        "ui_default": "LB_OVERRIDE",
-        "server_default": "ROUND_ROBIN",
-        "note": "UI pre-selects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
-      }
-    }
-  }
-}
-```
-
-**Usage:**
-
-```python
-def warn_ui_server_mismatch(resource_type: str) -> list[str]:
-    """Generate warnings for fields where UI and server defaults differ."""
-    spec = load_validation_spec()
-    warnings = []
-
-    mismatches = spec.get("ui_vs_server_defaults", {}).get(resource_type, {})
-    for field, info in mismatches.items():
-        if info["ui_default"] != info["server_default"]:
-            warnings.append(
-                f"Field '{field}': UI shows '{info['ui_default']}' but "
-                f"server applies '{info['server_default']}' if omitted"
-            )
-    return warnings
-```
-
-### Advanced Options Defaults
-
-Default values for the `advanced_options` object when not explicitly specified.
-
-```json
-{
-  "advanced_options_defaults": {
-    "origin_pool": {
-      "connection_timeout": 2000,
-      "http_idle_timeout": 300000,
-      "same_as_endpoint_port": {},
-      "default_circuit_breaker": {},
-      "disable_outlier_detection": {},
-      "no_panic_threshold": {},
-      "disable_subsets": {},
-      "auto_http_config": {},
-      "disable_proxy_protocol": {},
-      "disable_lb_source_ip_persistance": {}
-    }
-  }
-}
-```
-
 ## OpenAPI Extension Mapping
 
 The enriched OpenAPI specs use these extensions to embed validation metadata:
@@ -413,8 +397,20 @@ class F5XCValidator:
 
         return errors
 
-    def get_server_defaults(self, resource_type: str) -> dict:
-        return self.spec["server_defaults"]["resources"].get(resource_type, {})
+    def get_defaults(self, resource_type: str, category: str = None) -> dict:
+        """Get defaults for a resource, optionally filtered by category."""
+        resource_defaults = self.spec["defaults"]["resources"].get(resource_type, {})
+        if category:
+            return resource_defaults.get(category, {})
+        return resource_defaults
+
+    def get_server_applied(self, resource_type: str) -> dict:
+        """Get server-applied defaults for a resource."""
+        return self.get_defaults(resource_type, "server_applied")
+
+    def get_recommended(self, resource_type: str) -> dict:
+        """Get recommended values for a resource."""
+        return self.get_defaults(resource_type, "recommended")
 
     def get_minimum_config(self, resource_type: str) -> dict:
         return self.spec["minimum_configurations"]["resources"].get(resource_type, {}).get("example", {})
@@ -434,9 +430,30 @@ type ValidationSpec struct {
     RequiredFields           RequiredFieldsSpec           `json:"required_fields"`
     EnumValues               map[string]EnumSpec          `json:"enum_values"`
     Patterns                 []PatternSpec                `json:"patterns"`
-    ServerDefaults           ServerDefaultsSpec           `json:"server_defaults"`
+    Defaults                 DefaultsSpec                 `json:"defaults"`
     ConditionalRequirements  ConditionalRequirementsSpec  `json:"conditional_requirements"`
     MinimumConfigurations    MinimumConfigSpec            `json:"minimum_configurations"`
+}
+
+// DefaultsSpec represents the unified defaults structure
+type DefaultsSpec struct {
+    Description string                      `json:"description"`
+    Resources   map[string]ResourceDefaults `json:"resources"`
+}
+
+// ResourceDefaults contains all default categories for a resource
+type ResourceDefaults struct {
+    ServerApplied   map[string]interface{} `json:"server_applied,omitempty"`
+    Recommended     map[string]interface{} `json:"recommended,omitempty"`
+    AdvancedOptions map[string]interface{} `json:"advanced_options,omitempty"`
+    OneofChoices    map[string]string      `json:"oneof_choices,omitempty"`
+    UIVsServer      map[string]UIVsServer  `json:"ui_vs_server,omitempty"`
+}
+
+type UIVsServer struct {
+    UIDefault     string `json:"ui_default"`
+    ServerDefault string `json:"server_default"`
+    Note          string `json:"note,omitempty"`
 }
 
 func (v *ValidationSpec) ValidateCreate(resourceType string, data map[string]interface{}) []error {
@@ -520,9 +537,13 @@ Check the `version` field in the spec to ensure compatibility:
 
 ```python
 spec = load_validation_spec()
-if not spec["version"].startswith("1."):
-    raise ValueError(f"Unsupported validation spec version: {spec['version']}")
+version = spec["version"]
+major = int(version.split(".")[0])
+if major < 2:
+    raise ValueError(f"Unsupported validation spec version: {version}. Requires v2.x for unified defaults.")
 ```
+
+> **Migration Note**: v2.1.0 introduced the unified `defaults` structure. Code using `server_defaults`, `oneof_defaults`, `ui_vs_server_defaults`, or `advanced_options_defaults` must be updated to use `defaults.resources.<resource>.<category>`.
 
 ## Reconciliation Strategy
 

@@ -5,10 +5,10 @@
 # This file serves as the single source of truth for API validation constraints
 # to be consumed by downstream projects (CLI tools, Terraform providers, AI assistants).
 #
-# Version: 1.0.0
+# Version: 2.1.0
 # See: docs/VALIDATION_SPEC.md for consumer documentation
 
-version: "1.0.0"
+version: "2.1.0"
 description: "Centralized validation specification for F5 XC API"
 
 # =============================================================================
@@ -20,14 +20,16 @@ export:
   output_path: "docs/specifications/api/validation.json"
 
   # Include these sections in exported validation spec
+  # Note: v2.1.0 consolidates server_defaults, oneof_defaults, ui_vs_server_defaults,
+  # and advanced_options_defaults into a unified "defaults" section
   include_sections:
     - required_fields
     - enum_values
     - constraints
     - patterns
-    - server_defaults
     - conditional_requirements
     - minimum_configurations
+    - defaults  # Unified defaults (replaces server_defaults)
 
   # JSON Schema version for exported schema
   json_schema_version: "https://json-schema.org/draft/2020-12/schema"

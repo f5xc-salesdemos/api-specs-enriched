@@ -32,6 +32,8 @@ class ExporterStats:
     enum_values_exported: int = 0
     constraints_exported: int = 0
     server_defaults_exported: int = 0
+    recommended_values_exported: int = 0
+    advanced_options_exported: int = 0
     conditional_requirements_exported: int = 0
     minimum_configs_exported: int = 0
     oneof_defaults_exported: int = 0
@@ -46,6 +48,8 @@ class ExporterStats:
             "enum_values_exported": self.enum_values_exported,
             "constraints_exported": self.constraints_exported,
             "server_defaults_exported": self.server_defaults_exported,
+            "recommended_values_exported": self.recommended_values_exported,
+            "advanced_options_exported": self.advanced_options_exported,
             "conditional_requirements_exported": self.conditional_requirements_exported,
             "minimum_configs_exported": self.minimum_configs_exported,
             "oneof_defaults_exported": self.oneof_defaults_exported,
@@ -114,7 +118,7 @@ class ValidationExporter:
                 "json_schema_version",
                 "https://json-schema.org/draft/2020-12/schema",
             ),
-            "version": self.config.get("version", "1.0.0"),
+            "version": "2.1.0",  # Bumped for unified defaults structure
             "description": self.config.get("description", "F5 XC API Validation Specification"),
             "generated_at": datetime.now(tz=timezone.utc).isoformat(),
             "source": "f5xc-api-enriched",
@@ -135,29 +139,15 @@ class ValidationExporter:
         if "patterns" in include_sections or not include_sections:
             spec["patterns"] = self._export_patterns()
 
-        if "server_defaults" in include_sections or not include_sections:
-            spec["server_defaults"] = self._export_server_defaults()
-
         if "conditional_requirements" in include_sections or not include_sections:
             spec["conditional_requirements"] = self._export_conditional_requirements()
 
         if "minimum_configurations" in include_sections or not include_sections:
             spec["minimum_configurations"] = self._export_minimum_configurations()
 
-        # Export OneOf defaults (from discovered_defaults.yaml)
-        oneof_defaults = self._export_oneof_defaults()
-        if oneof_defaults:
-            spec["oneof_defaults"] = oneof_defaults
-
-        # Export UI vs Server defaults discrepancies
-        ui_vs_server = self._export_ui_vs_server_defaults()
-        if ui_vs_server:
-            spec["ui_vs_server_defaults"] = ui_vs_server
-
-        # Export advanced_options defaults
-        advanced_defaults = self._export_advanced_options_defaults()
-        if advanced_defaults:
-            spec["advanced_options_defaults"] = advanced_defaults
+        # NEW: Unified defaults section (replaces 5 separate sections)
+        # Consolidates server_defaults, recommended, advanced_options, oneof_defaults, ui_vs_server
+        spec["defaults"] = self._export_defaults()
 
         # Add extension mapping for downstream tools
         spec["extensions"] = self._export_extension_mapping()
@@ -312,6 +302,90 @@ class ValidationExporter:
                     result["resources"][resource_name]["example_raw"] = example_json
 
             self.stats.minimum_configs_exported += 1
+
+        return result
+
+    def _export_defaults(self) -> dict[str, Any]:
+        """Export all defaults in unified resource-centric structure.
+
+        Consolidates server_applied, recommended, advanced_options,
+        oneof_choices, and ui_vs_server into per-resource structure.
+
+        Returns:
+            Unified defaults dictionary with resources as top-level keys.
+        """
+        result: dict[str, Any] = {
+            "description": "All default values organized by resource type",
+            "resources": {},
+        }
+
+        # Load server_defaults from validation_schema.yaml
+        server_defaults_config = self.config.get("server_defaults", {})
+        server_defaults_resources = server_defaults_config.get("resources", {})
+
+        # Load discovered_defaults.yaml for recommended, advanced_options, oneof, ui_vs_server
+        discovered_path = self.config_path.parent / "discovered_defaults.yaml"
+        discovered_config: dict[str, Any] = {}
+        if discovered_path.exists():
+            with discovered_path.open() as f:
+                discovered_config = yaml.safe_load(f) or {}
+
+        discovered_resources = discovered_config.get("resources", {})
+
+        # Build unified structure per resource
+        all_resources = set(server_defaults_resources.keys()) | set(discovered_resources.keys())
+
+        for resource_name in sorted(all_resources):
+            resource_entry: dict[str, Any] = {}
+
+            # Server-applied defaults (from validation_schema.yaml)
+            if resource_name in server_defaults_resources:
+                server_data = server_defaults_resources[resource_name]
+                # Extract spec-level defaults, flattening the structure
+                if isinstance(server_data, dict) and "spec" in server_data:
+                    resource_entry["server_applied"] = server_data["spec"]
+                else:
+                    resource_entry["server_applied"] = server_data
+                self.stats.server_defaults_exported += 1
+
+            # From discovered_defaults.yaml
+            discovered = discovered_resources.get(resource_name, {})
+
+            # Recommended values (for required fields with sensible defaults)
+            if "recommended" in discovered:
+                resource_entry["recommended"] = discovered["recommended"]
+                self.stats.recommended_values_exported += len(discovered["recommended"])
+
+            # Advanced options defaults
+            if "advanced_options_defaults" in discovered:
+                resource_entry["advanced_options"] = discovered["advanced_options_defaults"]
+                self.stats.advanced_options_exported += 1
+
+            # OneOf default selections
+            if "oneof_defaults" in discovered:
+                resource_entry["oneof_choices"] = discovered["oneof_defaults"]
+                self.stats.oneof_defaults_exported += len(discovered["oneof_defaults"])
+
+            # UI vs Server default discrepancies
+            if "ui_vs_server_defaults" in discovered:
+                resource_entry["ui_vs_server"] = discovered["ui_vs_server_defaults"]
+                self.stats.ui_vs_server_defaults_exported += len(
+                    discovered["ui_vs_server_defaults"],
+                )
+
+            # Also check for top-level defaults in discovered_defaults.yaml
+            # (for resources like healthcheck that have defaults at resource level)
+            # Combine conditions: resource has defaults AND not in server_defaults AND not already set
+            if (
+                "defaults" in discovered
+                and resource_name not in server_defaults_resources
+                and "server_applied" not in resource_entry
+            ):
+                resource_entry["server_applied"] = discovered["defaults"]
+                self.stats.server_defaults_exported += 1
+
+            if resource_entry:
+                result["resources"][resource_name] = resource_entry
 
         return result
 
