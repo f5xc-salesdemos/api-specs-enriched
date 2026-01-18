@@ -363,22 +363,65 @@ curl -O https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/api
 curl -O https://raw.githubusercontent.com/robinmordasiewicz/f5xc-api-enriched/main/docs/specifications/api/validation.json
 ```
 
-Programmatic access:
+Programmatic access (v2.1.0+ unified structure):
 
 ```python
 import requests
 
 def load_origin_pool_validation():
+    """Load origin pool validation data using v2.1.0 unified defaults structure."""
     url = "https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/api/validation.json"
     spec = requests.get(url).json()
 
+    # Access unified defaults structure (v2.1.0+)
+    origin_pool = spec["defaults"]["resources"]["origin_pool"]
+
     return {
         "required": spec["required_fields"]["resources"]["origin_pool"],
-        "oneof_defaults": spec["oneof_defaults"]["origin_pool"],
-        "ui_vs_server": spec["ui_vs_server_defaults"]["origin_pool"],
-        "advanced_defaults": spec["advanced_options_defaults"]["origin_pool"]
+        "server_applied": origin_pool.get("server_applied", {}),
+        "recommended": origin_pool.get("recommended", {}),
+        "advanced_options": origin_pool.get("advanced_options", {}),
+        "oneof_choices": origin_pool.get("oneof_choices", {}),
+        "ui_vs_server": origin_pool.get("ui_vs_server", {}),
     }
+
+# Example output:
+# {
+#     "required": {"create": [...], "update": [...], "minimum_config": [...]},
+#     "server_applied": {"no_tls": {}, "loadbalancer_algorithm": "ROUND_ROBIN", ...},
+#     "recommended": {"port": 443, "connection_timeout": 2000, "http_idle_timeout": 300000},
+#     "advanced_options": {"connection_timeout": 2000, "same_as_endpoint_port": {}, ...},
+#     "oneof_choices": {"tls_choice": "no_tls", "circuit_breaker_choice": "default_circuit_breaker", ...},
+#     "ui_vs_server": {"loadbalancer_algorithm": {"ui_default": "LB_OVERRIDE", "server_default": "ROUND_ROBIN"}}
+# }
 ```
+
+**Access Patterns:**
+
+```python
+spec = load_validation_spec()
+
+# Get all origin_pool defaults
+op_defaults = spec["defaults"]["resources"]["origin_pool"]
+
+# Get server-applied defaults
+server_applied = op_defaults["server_applied"]
+# {"no_tls": {}, "healthcheck": [], "loadbalancer_algorithm": "ROUND_ROBIN", ...}
+
+# Get recommended values
+recommended = op_defaults["recommended"]
+# {"port": 443, "connection_timeout": 2000, "http_idle_timeout": 300000}
+
+# Get OneOf default selections
+oneof = op_defaults["oneof_choices"]
+# {"tls_choice": "no_tls", "circuit_breaker_choice": "default_circuit_breaker", ...}
+
+# Get UI vs Server discrepancies
+ui_vs_server = op_defaults["ui_vs_server"]
+# {"loadbalancer_algorithm": {"ui_default": "LB_OVERRIDE", "server_default": "ROUND_ROBIN"}}
+```
+
+> **Migration Note**: v2.1.0 consolidated `server_defaults`, `oneof_defaults`, `ui_vs_server_defaults`, and `advanced_options_defaults` into `defaults.resources.<resource>`. See [VALIDATION_SPEC.md](VALIDATION_SPEC.md) for full details.
 
 ---
 
@@ -406,11 +449,19 @@ python -m scripts.case_study_origin_pool_advanced --verbose
 
 ## Related Documentation
 
-- [VALIDATION_SPEC.md](VALIDATION_SPEC.md) - Full validation specification format
+- [VALIDATION_SPEC.md](VALIDATION_SPEC.md) - Full validation specification format (unified defaults v2.1.0+)
+- [HEALTHCHECK_ENHANCEMENTS.md](HEALTHCHECK_ENHANCEMENTS.md) - Healthcheck defaults and enhancements
 - [config/discovered_defaults.yaml](../config/discovered_defaults.yaml) - Raw discovery data
 - [config/validation_schema.yaml](../config/validation_schema.yaml) - Validation schema source
 
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.1.0 | 2026-01-18 | Updated to unified defaults structure in validation.json |
+| 2.0.33 | 2026-01-17 | Initial origin pool enhancements documentation |
+
 ---
 
-*Last Updated: 2026-01-17*
-*Version: 2.0.33*
+*Last Updated: 2026-01-18*
+*Version: 2.1.0*
