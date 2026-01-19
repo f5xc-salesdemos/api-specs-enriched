@@ -1,17 +1,6 @@
 # Healthcheck Schema Enrichments
 
-This document describes the enrichment metadata applied to healthcheck-related schemas in the F5 XC API specifications.
-
-## Overview
-
-The enriched specifications contain two categories of default value metadata:
-
-| Extension | Meaning | Implication |
-|-----------|---------|-------------|
-| `x-f5xc-server-default` | The F5 XC API server applies this value when the field is omitted | Field is optional; omitting it produces the documented default behavior |
-| `x-f5xc-recommended-value` | The F5 XC web console pre-populates this value for new resources | Field has no server default but this value represents typical configuration |
-
-**Key distinction**: Server-applied defaults are handled by the API automatically. Recommended values are suggestions that require explicit inclusion if desired.
+Enrichment metadata for healthcheck-related schemas. See [OpenAPI Extensions](DEVELOPMENT.md#openapi-extensions) for extension definitions.
 
 ## Enriched Schemas
 
@@ -27,7 +16,7 @@ Additionally, the nested schema `healthcheckHttpHealthCheck` contains enrichment
 
 ## Server-Applied Defaults
 
-Fields marked with `x-f5xc-server-default: true` have their `default` value applied by the F5 XC API server when omitted from requests. These fields are effectively optional—the API produces consistent behavior whether the field is explicitly set to the default value or omitted entirely.
+Fields marked with `x-f5xc-server-default: true` have their `default` value applied by the F5 XC API server when omitted from requests.
 
 ### Top-Level Fields
 
@@ -48,7 +37,7 @@ Fields marked with `x-f5xc-server-default: true` have their `default` value appl
 
 ## Recommended Values
 
-Fields marked with `x-f5xc-recommended-value` indicate values that the F5 XC web console pre-populates when creating new resources. Unlike server-applied defaults, these values are not automatically applied by the API—they represent typical configurations that align with console behavior. These values are derived from F5 XC UI observation and provide a baseline for generating configurations that match console-created resources.
+Fields marked with `x-f5xc-recommended-value` indicate values that the F5 XC web console pre-populates when creating new resources.
 
 ### Top-Level Fields
 
@@ -138,12 +127,9 @@ healthcheckCreateSpecType:
   x-f5xc-recommended-oneof-variant:
     health_check: "http_health_check"
 ```
-
 ## Data Access
 
 ### OpenAPI Specifications
-
-Enriched schemas are located in:
 
 | File | Content |
 |------|---------|
@@ -152,9 +138,7 @@ Enriched schemas are located in:
 
 ### validation.json Structure
 
-Healthcheck defaults are consolidated at:
-
-```
+```text
 defaults.resources.healthcheck
 ├── server_applied      # Fields with x-f5xc-server-default: true
 ├── recommended         # Fields with x-f5xc-recommended-value
@@ -164,17 +148,18 @@ defaults.resources.healthcheck
 
 ## Related Documentation
 
+- [Development Guide - OpenAPI Extensions](DEVELOPMENT.md#openapi-extensions) - Extension definitions and usage
 - [Validation Specification](VALIDATION_SPEC.md) - validation.json format and structure
 - [Origin Pool Enhancements](ORIGINPOOL_ENHANCEMENTS.md) - Origin pool schema enrichments
-- [Minimum Configuration](/config/minimum_configs.yaml) - Resource configuration definitions
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.1.3 | 2026-01-19 | Added `host_header_choice` OneOf group documentation for HTTP health check request parameters |
+| 2.1.4 | 2026-01-19 | Added `host_header_choice` OneOf group documentation for HTTP health check request parameters |
+| 2.1.3 | 2026-01-18 | Consolidated global extension docs to DEVELOPMENT.md; resource-specific data only |
 | 2.1.2 | 2026-01-18 | Rewritten as pure API reference; removed downstream examples and prescriptive language |
 | 2.1.1 | 2026-01-18 | Added nested recommended values, OneOf recommended variants, `x-f5xc-recommended-oneof-variant` extension |
 | 2.1.0 | 2026-01-18 | Added unified defaults structure in validation.json |
-| 2.0.30 | 2026-01-16 | Added nested defaults for `$ref` schemas (healthcheckHttpHealthCheck) |
+| 2.0.30 | 2026-01-16 | Added nested defaults for `$ref` schemas |
 | 2.0.29 | 2026-01-17 | Initial healthcheck defaults |
