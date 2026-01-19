@@ -60,11 +60,73 @@ Fields marked with `x-f5xc-recommended-value` indicate values that the F5 XC web
 
 ## OneOf Variant Recommendations
 
+Schemas containing mutually exclusive field groups (OneOf) include `x-f5xc-recommended-oneof-variant` to indicate which variant is most commonly used. This metadata identifies the typical choice when multiple options exist, based on F5 XC console defaults and common usage patterns.
+
+### Top-Level OneOf Groups
+
 | Schema | OneOf Group | Recommended Variant | Description |
 |--------|-------------|---------------------|-------------|
 | `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP health check type |
 | `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP health check type |
 
+### healthcheckHttpHealthCheck OneOf Groups
+
+| Schema | OneOf Group | Recommended Variant | Description |
+|--------|-------------|---------------------|-------------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | Host header for health check requests |
+
+#### Host Header Choice
+
+The `host_header_choice` OneOf group controls how the Host header is specified in health check HTTP requests.
+
+| Variant | Type | Description |
+|---------|------|-------------|
+| `use_origin_server_name` | `object` (empty) | Use the origin server name as the Host header. This is the default selection in the F5 XC console. |
+| `host_header` | `string` | Specify a custom Host header value for health check requests. |
+
+**API Schema Reference**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## OpenAPI Extensions Reference
+
+These vendor extensions are added to the standard OpenAPI schema to convey F5 XC-specific default behavior.
+
+### x-f5xc-server-default
+
+**Type**: `boolean`
+
+When `true`, indicates the accompanying `default` value is enforced by the F5 XC API server. Fields with this extension can be safely omitted from API requests—the server applies the default automatically.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**Type**: `any` (matches field type)
+
+Specifies a value that the F5 XC web console uses as a pre-populated default. This value is not server-enforced but represents the typical starting configuration for new resources created via the console.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**Type**: `object` (map of group name to variant name)
+
+For schemas with mutually exclusive field groups, identifies which variant is the default or most common choice. The key is the OneOf group name and the value is the recommended variant field name.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
 ## Data Access
 
 ### OpenAPI Specifications
@@ -94,9 +156,10 @@ defaults.resources.healthcheck
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1.4 | 2026-01-19 | Added `host_header_choice` OneOf group documentation for HTTP health check request parameters |
 | 2.1.3 | 2026-01-18 | Consolidated global extension docs to DEVELOPMENT.md; resource-specific data only |
-| 2.1.2 | 2026-01-18 | Rewritten as pure API reference; removed downstream examples |
-| 2.1.1 | 2026-01-18 | Added nested recommended values, OneOf recommended variants |
+| 2.1.2 | 2026-01-18 | Rewritten as pure API reference; removed downstream examples and prescriptive language |
+| 2.1.1 | 2026-01-18 | Added nested recommended values, OneOf recommended variants, `x-f5xc-recommended-oneof-variant` extension |
 | 2.1.0 | 2026-01-18 | Added unified defaults structure in validation.json |
 | 2.0.30 | 2026-01-16 | Added nested defaults for `$ref` schemas |
 | 2.0.29 | 2026-01-17 | Initial healthcheck defaults |
