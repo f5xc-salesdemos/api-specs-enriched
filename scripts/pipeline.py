@@ -94,6 +94,7 @@ from scripts.utils import (
     ValidationEnricher,
     ValidationExporter,
     categorize_spec,
+    get_version_from_tags,
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
 from scripts.utils.domain_metadata import (
@@ -1405,8 +1406,6 @@ def get_version() -> str:
 
     Uses tag-based versioning to eliminate race conditions from file-based versioning.
     """
-    from scripts.utils.version_calculator import get_version_from_tags
-
     version = get_version_from_tags()
     if version == "0.0.0":
         # Fallback to date-based version if no tags exist

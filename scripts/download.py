@@ -17,6 +17,8 @@ import yaml
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from scripts.utils.version_calculator import get_version_from_tags
+
 console = Console()
 
 # Default configuration
@@ -79,20 +81,14 @@ def save_etag(etag: str, etag_file: Path) -> None:
     etag_file.write_text(etag)
 
 
-def get_version(version_file: Path | None = None) -> str:
+def get_version() -> str:
     """Get version from git tags.
 
     Uses tag-based versioning to eliminate race conditions from file-based versioning.
-    The version_file parameter is kept for backward compatibility but is ignored.
-
-    Args:
-        version_file: Deprecated. Kept for backward compatibility.
 
     Returns:
         Version string in semver format (e.g., "2.0.38").
     """
-    from scripts.utils.version_calculator import get_version_from_tags
-
     return get_version_from_tags()
 
 

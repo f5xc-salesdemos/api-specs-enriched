@@ -50,6 +50,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_USE_CASES,
 )
 from scripts.utils.server_variables import ServerVariableHelper
+from scripts.utils.version_calculator import get_version_from_tags
 
 console = Console()
 
@@ -578,8 +579,6 @@ def get_enriched_version() -> str:
 
     Uses tag-based versioning to eliminate race conditions from file-based versioning.
     """
-    from scripts.utils.version_calculator import get_version_from_tags
-
     version = get_version_from_tags()
     if version == "0.0.0":
         # Fallback to date-based version if no tags exist

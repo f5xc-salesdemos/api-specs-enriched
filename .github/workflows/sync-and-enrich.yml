@@ -353,76 +353,74 @@ jobs:
             EXISTING_ENTRIES=$(awk '/^## Version/{if(++c==2)found=1}found' CHANGELOG.md || echo "")
           fi
 
-          # Build new changelog entry
-          NEW_ENTRY=$(cat << EOF
-## Version $FULL_VERSION ($DATE)
+          # Calculate statistics
+          ORIG_SPECS=$(find specs/original -name '*.json' 2>/dev/null | wc -l | xargs)
+          DOMAIN_COUNT=$(jq '.specifications | length' docs/specifications/api/index.json)
+          PATH_COUNT=$(jq '[.specifications[].path_count] | add' docs/specifications/api/index.json)
+          SCHEMA_COUNT=$(jq '[.specifications[].schema_count] | add' docs/specifications/api/index.json)
 
-### Version Information
-| Field | Value |
-|-------|-------|
-| Full Version | $FULL_VERSION |
-| Upstream Timestamp | $UPSTREAM_TS |
-| Upstream ETag | $UPSTREAM_ETAG |
-| Enriched Version | $ENRICHED_VER |
-
-### Release Type
-- **$BUMP_TYPE** release
-
-### Changes
-- Updated API specifications from F5 Distributed Cloud
-- Applied enrichment pipeline:
-  - Acronym normalization (100+ terms)
-  - Grammar improvements
-  - Branding updates (Volterra → F5 Distributed Cloud)
-- Applied normalization pipeline:
-  - Fixed orphan \$ref references
-  - Removed empty operations
-  - Type standardization
-- Validated with Spectral OpenAPI linter
-- Merged specifications by domain
-
-### Statistics
-- Original specs: $(find specs/original -name '*.json' 2>/dev/null | wc -l | xargs)
-- Domains: $(jq '.specifications | length' docs/specifications/api/index.json)
-- Total paths: $(jq '[.specifications[].path_count] | add' docs/specifications/api/index.json)
-- Total schemas: $(jq '[.specifications[].schema_count] | add' docs/specifications/api/index.json)
-EOF
-)
-
-          # Add discovery section if available
-          if [ "$HAS_DISCOVERY" = "true" ] && [ -n "$DISCOVERY_ENDPOINTS" ]; then
-            NEW_ENTRY="${NEW_ENTRY}
-
-### API Discovery Enrichment
-- Discovery timestamp: $DISCOVERY_TIMESTAMP
-- Endpoints explored: $DISCOVERY_SUCCESS / $DISCOVERY_ENDPOINTS
-- Applied x-discovered-* extensions from live API exploration
-- See \`reports/constraint-analysis.md\` for detailed comparison"
-          fi
-
-          NEW_ENTRY="${NEW_ENTRY}
-
-### Output Structure
-\`\`\`text
-docs/specifications/api/
-├── [domain].json        # Domain-specific specs
-├── openapi.json         # Master combined spec
-└── index.json           # Metadata index
-\`\`\`
-
-### Download
-- ZIP Package: F5xc-api-(${UPSTREAM_TS}-${ENRICHED_VER}).zip
-
-### Source
-- Source: F5 Distributed Cloud OpenAPI specifications
-- Upstream: $UPSTREAM_TS (ETag: $UPSTREAM_ETAG)
-"
-
-          # Write new changelog with prepended entry
+          # Write changelog directly to avoid heredoc YAML parsing issues
           {
             echo "# Changelog"
             echo ""
-            echo "$NEW_ENTRY"
+            echo "## Version $FULL_VERSION ($DATE)"
+            echo ""
+            echo "### Version Information"
+            echo "- **Full Version**: $FULL_VERSION"
+            echo "- **Upstream Timestamp**: $UPSTREAM_TS"
+            echo "- **Upstream ETag**: $UPSTREAM_ETAG"
+            echo "- **Enriched Version**: $ENRICHED_VER"
+            echo ""
+            echo "### Release Type"
+            echo "- **$BUMP_TYPE** release"
+            echo ""
+            echo "### Changes"
+            echo "- Updated API specifications from F5 Distributed Cloud"
+            echo "- Applied enrichment pipeline:"
+            echo "  - Acronym normalization (100+ terms)"
+            echo "  - Grammar improvements"
+            echo "  - Branding updates (Volterra → F5 Distributed Cloud)"
+            echo "- Applied normalization pipeline:"
+            echo "  - Fixed orphan \$ref references"
+            echo "  - Removed empty operations"
+            echo "  - Type standardization"
+            echo "- Validated with Spectral OpenAPI linter"
+            echo "- Merged specifications by domain"
+            echo ""
+            echo "### Statistics"
+            echo "- Original specs: $ORIG_SPECS"
+            echo "- Domains: $DOMAIN_COUNT"
+            echo "- Total paths: $PATH_COUNT"
+            echo "- Total schemas: $SCHEMA_COUNT"
+
+            # Add discovery section if available
+            if [ "$HAS_DISCOVERY" = "true" ] && [ -n "$DISCOVERY_ENDPOINTS" ]; then
+              echo ""
+              echo "### API Discovery Enrichment"
+              echo "- Discovery timestamp: $DISCOVERY_TIMESTAMP"
+              echo "- Endpoints explored: $DISCOVERY_SUCCESS / $DISCOVERY_ENDPOINTS"
+              echo "- Applied x-discovered-* extensions from live API exploration"
+              echo "- See \\\`reports/constraint-analysis.md\\\` for detailed comparison"
+            fi
+
+            echo ""
+            echo "### Output Structure"
+            echo "\\\`\\\`\\\`text"
+            echo "docs/specifications/api/"
+            echo "├── [domain].json        # Domain-specific specs"
+            echo "├── openapi.json         # Master combined spec"
+            echo "└── index.json           # Metadata index"
+            echo "\\\`\\\`\\\`"
+            echo ""
+            echo "### Download"
+            echo "- ZIP Package: F5xc-api-(${UPSTREAM_TS}-${ENRICHED_VER}).zip"
+            echo ""
+            echo "### Source"
+            echo "- Source: F5 Distributed Cloud OpenAPI specifications"
+            echo "- Upstream: $UPSTREAM_TS (ETag: $UPSTREAM_ETAG)"
+            echo ""
+
+            # Append existing entries
             if [ -n "$EXISTING_ENTRIES" ]; then
               echo "$EXISTING_ENTRIES"
             fi
