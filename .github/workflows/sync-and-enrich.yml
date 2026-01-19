@@ -93,7 +93,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 2  # Need previous commit for diff
+          fetch-depth: 0  # Full history needed for git describe --tags
+          fetch-tags: true  # Explicitly fetch tags for version calculation
 
       - name: Setup Python
         uses: actions/setup-python@v6.1.0
@@ -447,7 +448,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
           # Stage enriched outputs (NOT .version - it no longer exists)
-          git add CHANGELOG.md .etag docs/specifications/api/
+          # Use -f to add docs/specifications/api/ which is in .gitignore
+          git add -f CHANGELOG.md .etag docs/specifications/api/
 
           if ! git diff --staged --quiet; then
             # Create release commit with [skip ci] to prevent recursive workflow triggers
