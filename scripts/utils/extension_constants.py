@@ -67,6 +67,7 @@ X_F5XC_DEPRECATED = "x-f5xc-deprecated"
 X_F5XC_SERVER_DEFAULT = "x-f5xc-server-default"
 X_F5XC_RECOMMENDED_VALUE = "x-f5xc-recommended-value"
 X_F5XC_RECOMMENDED_ONEOF_VARIANT = "x-f5xc-recommended-oneof-variant"
+X_F5XC_CONFLICTS_WITH = "x-f5xc-conflicts-with"
 
 # =============================================================================
 # OPERATION-LEVEL EXTENSIONS (path operations)
@@ -124,6 +125,11 @@ PRESERVED_NATIVE_EXTENSIONS = frozenset(
     ],
 )
 
+# Pattern prefix for F5 native OneOf field extensions (used for conflict derivation)
+# Extensions like x-ves-oneof-field-{group_name} define mutually exclusive fields
+# These are preserved (not in frozenset since it's a prefix pattern match)
+X_VES_ONEOF_FIELD_PREFIX = "x-ves-oneof-field-"
+
 # =============================================================================
 # VALID EXTENSIONS SET
 # =============================================================================
@@ -165,6 +171,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_SERVER_DEFAULT,
         X_F5XC_RECOMMENDED_VALUE,
         X_F5XC_RECOMMENDED_ONEOF_VARIANT,
+        X_F5XC_CONFLICTS_WITH,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,
         X_F5XC_DANGER_LEVEL,

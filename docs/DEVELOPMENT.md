@@ -312,6 +312,7 @@ The enrichment pipeline uses vendor extensions to embed validation and default v
 | `x-f5xc-server-default` | The F5 XC API server applies this value when the field is omitted | Field is optional; omitting it produces the documented default behavior |
 | `x-f5xc-recommended-value` | The F5 XC web console pre-populates this value for new resources | Field has no server default but this value represents typical configuration |
 | `x-f5xc-recommended-oneof-variant` | The F5 XC console pre-selects this OneOf variant | Identifies the typical choice when multiple mutually exclusive options exist |
+| `x-f5xc-conflicts-with` | Lists other properties that cannot be used together with this field | Property is part of a OneOf group; only one of the conflicting properties can be specified |
 
 **Key distinction**: Server-applied defaults are handled by the API automatically. Recommended values are suggestions that require explicit inclusion if desired.
 
@@ -327,13 +328,14 @@ The enrichment pipeline uses vendor extensions to embed validation and default v
 - `update`: Required when updating the resource
 - `minimum_config`: Required for minimum viable configuration
 
-### Default Value Extensions
+### Default Value and OneOf Extensions
 
 | Extension | Purpose |
 |-----------|---------|
 | `x-f5xc-server-default: true` | Marks server-applied defaults |
 | `x-f5xc-recommended-value` | F5 XC console pre-populated value |
 | `x-f5xc-recommended-oneof-variant` | Recommended OneOf variant |
+| `x-f5xc-conflicts-with` | Mutual exclusivity with other OneOf properties |
 
 #### x-f5xc-server-default
 
@@ -372,6 +374,32 @@ healthcheckCreateSpecType:
   x-f5xc-recommended-oneof-variant:
     health_check: "http_health_check"
 ```
+
+#### x-f5xc-conflicts-with
+
+**Type**: `array` of strings
+
+**Added**: v3.2.0 (Issue #494)
+
+Declares mutual exclusivity relationships between OneOf group members. Auto-derived from `x-ves-oneof-field-*` extensions. This enables downstream tools (Terraform, CLI, MCP) to validate conflicts at schema level rather than runtime.
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**Use cases**:
+- Terraform providers can generate validation rules
+- CLI tools can warn about conflicting field combinations
+- AI assistants can generate correct OneOf configurations
+- IDE extensions can provide conflict-aware autocompletion
+
+**Source**: Auto-derived from F5 native `x-ves-oneof-field-*` extensions during pipeline enrichment.
 
 ### Validation Rule Implications
 

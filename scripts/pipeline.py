@@ -72,6 +72,7 @@ from scripts.utils import (
     AcronymNormalizer,
     BestPracticesEnricher,
     BrandingTransformer,
+    ConflictsWithEnricher,
     ConsistencyValidator,
     ConstraintReconciler,
     DefaultValueEnricher,
@@ -182,6 +183,7 @@ class PipelineStats:
     best_practices_enriched: int = 0
     guided_workflows_added: int = 0
     error_resolutions_added: int = 0
+    conflicts_with_added: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -1084,6 +1086,7 @@ def merge_specs_by_domain(
         "best_practices_enriched": 0,
         "guided_workflows_added": 0,
         "server_defaults_added": 0,
+        "conflicts_with_added": 0,
     }
 
     # Load description enricher for domain-specific descriptions
@@ -1097,6 +1100,10 @@ def merge_specs_by_domain(
     # Load enrichers that require merged schemas (Issue #449)
     # Server-applied defaults need the full merged schema to match patterns
     default_value_enricher = DefaultValueEnricher()
+
+    # Load conflicts-with enricher (Issue #494)
+    # Auto-derives mutual exclusivity from x-ves-oneof-field-* extensions
+    conflicts_with_enricher = ConflictsWithEnricher()
 
     for domain, spec_list in sorted(domain_specs.items()):
         domain_title = domain.replace("_", " ").title()
@@ -1240,6 +1247,13 @@ def merge_specs_by_domain(
             stats["server_defaults_added"],
             dv_stats.get("defaults_added", 0),
         )
+
+        # Conflicts-with: auto-derive mutual exclusivity from x-ves-oneof-field-* (Issue #494)
+        merged_spec = conflicts_with_enricher.enrich_spec(merged_spec)
+        cw_stats = conflicts_with_enricher.get_stats()
+        stats["conflicts_with_added"] += cw_stats.get("conflicts_added", 0)
+        # Reset stats for next domain to avoid double-counting
+        conflicts_with_enricher.reset_stats()
 
         merged[domain] = merged_spec
         stats["domains"] += 1
@@ -1619,6 +1633,7 @@ def run_pipeline(
             stats.schemas_merged = merge_stats["schemas"]
             stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
             stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
+            stats.conflicts_with_added = merge_stats.get("conflicts_with_added", 0)
 
             # Clear processed_specs to free memory before saving
             del processed_specs
@@ -1703,6 +1718,8 @@ def print_summary(stats: PipelineStats) -> None:
         table.add_row("Guided Workflows Added", str(stats.guided_workflows_added))
     if stats.error_resolutions_added > 0:
         table.add_row("Error Resolutions Added", str(stats.error_resolutions_added))
+    if stats.conflicts_with_added > 0:
+        table.add_row("Conflicts-With Added", str(stats.conflicts_with_added))
 
     console.print(table)
 
@@ -1738,6 +1755,7 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "best_practices_enriched": stats.best_practices_enriched,
             "guided_workflows_added": stats.guided_workflows_added,
             "error_resolutions_added": stats.error_resolutions_added,
+            "conflicts_with_added": stats.conflicts_with_added,
         },
         "errors": stats.errors,
     }
