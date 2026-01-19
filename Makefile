@@ -219,11 +219,11 @@ clean:
 	@echo "Cleaned generated files. Original specs preserved."
 
 # Deep clean - removes everything including downloaded specs
+# Note: Version is now derived from git tags, not .version file
 clean-all: clean
 	rm -rf specs/original
 	rm -rf specs/discovered
 	rm -f .etag
-	rm -f .version
 	@echo "Deep clean complete. Run 'make download' to fetch specs."
 
 # Quick rebuild - skip download, run pipeline only

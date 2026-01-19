@@ -1401,11 +1401,17 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
 
 
 def get_version() -> str:
-    """Get version from .version file or generate date-based version."""
-    version_file = Path(".version")
-    if version_file.exists():
-        return version_file.read_text().strip()
-    return datetime.now(tz=timezone.utc).strftime("%Y.%m.%d")
+    """Get version from git tags or generate date-based version.
+
+    Uses tag-based versioning to eliminate race conditions from file-based versioning.
+    """
+    from scripts.utils.version_calculator import get_version_from_tags
+
+    version = get_version_from_tags()
+    if version == "0.0.0":
+        # Fallback to date-based version if no tags exist
+        return datetime.now(tz=timezone.utc).strftime("%Y.%m.%d")
+    return version
 
 
 def run_pipeline(
