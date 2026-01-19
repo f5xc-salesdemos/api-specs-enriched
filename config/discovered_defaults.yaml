@@ -90,6 +90,23 @@ resources:
           expected_status_codes: ["200"]
           # Use origin server name for Host header
           use_origin_server_name: {}
+        # OneOf recommended variant for host header selection
+        # The host_header_choice field is a OneOf group; use_origin_server_name is the UI default
+        oneof_recommended:
+          host_header_choice: "use_origin_server_name"
+        # Constrained value definitions for CLI tooling
+        # These enums document allowed values for fields with pre-determined choices
+        enums:
+          host_header_choice:
+            description: "How to specify the Host header for health check requests"
+            values:
+              - value: "use_origin_server_name"
+                description: "Use the origin server name as the Host header (empty object)"
+                is_default: true
+              - value: "host_header"
+                description: "Specify a custom Host header value"
+                nested_fields:
+                  - host_header (required, string)
 
   # ============================================================================
   # Virtual Services - Rate Limiters

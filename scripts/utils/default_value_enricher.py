@@ -183,9 +183,12 @@ class DefaultValueEnricher:
             # Apply nested recommended values (within nested objects like http_health_check)
             self._apply_nested_recommended(schema, nested, all_schemas)
 
-            # Apply OneOf recommended variants
+            # Apply OneOf recommended variants (top-level)
             oneof_recommended = resource_config.get("oneof_recommended", {})
             self._apply_oneof_recommended(schema, oneof_recommended)
+
+            # Apply nested OneOf recommended variants (within $ref schemas)
+            self._apply_nested_oneof_recommended(schema, nested, all_schemas)
 
         except Exception as e:
             logger.exception("Error enriching schema %s with defaults", schema_name)
@@ -404,6 +407,51 @@ class DefaultValueEnricher:
                     nested_prop_schema = nested_properties[nested_prop_name]
                     nested_prop_schema[X_F5XC_RECOMMENDED_VALUE] = recommended_value
                     self.stats.nested_recommended_added += 1
+
+    def _apply_nested_oneof_recommended(
+        self,
+        schema: dict[str, Any],
+        nested: dict[str, dict[str, Any]],
+        all_schemas: dict[str, Any],
+    ) -> None:
+        """Apply OneOf recommended variants to nested schemas referenced via $ref.
+
+        For nested objects like http_health_check within healthcheck,
+        this applies x-f5xc-recommended-oneof-variant to the referenced schema
+        when the nested config contains an 'oneof_recommended' sub-key.
+
+        Args:
+            schema: Schema definition
+            nested: Dictionary of property_name -> nested config (with oneof_recommended sub-key)
+            all_schemas: All schemas from the spec for $ref resolution
+        """
+        if not nested:
+            return
+
+        properties = schema.get("properties", {})
+        if not properties:
+            return
+
+        for parent_prop_name, nested_config in nested.items():
+            # Only process if there's an 'oneof_recommended' sub-key
+            if "oneof_recommended" not in nested_config:
+                continue
+
+            if parent_prop_name not in properties:
+                continue
+
+            parent_prop = properties[parent_prop_name]
+
+            # Handle $ref to another schema - resolve and apply to referenced schema
+            if "$ref" in parent_prop:
+                ref_path = parent_prop["$ref"]
+                # Extract schema name from "#/components/schemas/healthcheckHttpHealthCheck"
+                ref_schema_name = ref_path.split("/")[-1]
+                if ref_schema_name in all_schemas:
+                    ref_schema = all_schemas[ref_schema_name]
+                    # Apply oneof_recommended to the referenced schema
+                    nested_oneof_recommended = nested_config["oneof_recommended"]
+                    self._apply_oneof_recommended(ref_schema, nested_oneof_recommended)
 
     def _apply_oneof_recommended(
         self,
