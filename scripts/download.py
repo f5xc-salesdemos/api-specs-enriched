@@ -6,7 +6,6 @@
 import argparse
 import json
 import os
-import re
 import sys
 import tempfile
 import zipfile
@@ -81,38 +80,20 @@ def save_etag(etag: str, etag_file: Path) -> None:
 
 
 def get_version(version_file: Path | None = None) -> str:
-    """Read version from .version file.
+    """Get version from git tags.
+
+    Uses tag-based versioning to eliminate race conditions from file-based versioning.
+    The version_file parameter is kept for backward compatibility but is ignored.
 
     Args:
-        version_file: Path to version file. Defaults to .version in current directory.
+        version_file: Deprecated. Kept for backward compatibility.
 
     Returns:
-        Version string in semver format (e.g., "1.0.0").
+        Version string in semver format (e.g., "2.0.38").
     """
-    if version_file is None:
-        version_file = Path(".version")
-    if version_file.exists():
-        return version_file.read_text().strip()
-    return "0.0.0"
+    from scripts.utils.version_calculator import get_version_from_tags
 
-
-def save_version(version: str, version_file: Path) -> None:
-    """Save version to local file only if not already semver format.
-
-    This prevents the download script from overwriting semver versions
-    that are managed by the CI/CD workflow.
-
-    Args:
-        version: Version string to save.
-        version_file: Path to version file.
-    """
-    if version_file.exists():
-        current = version_file.read_text().strip()
-        # Don't overwrite semver versions (managed by CI/CD)
-        if re.match(r"^\d+\.\d+\.\d+$", current):
-            return
-    version_file.parent.mkdir(parents=True, exist_ok=True)
-    version_file.write_text(version + "\n")
+    return get_version_from_tags()
 
 
 def download_zip(url: str, output_path: Path, timeout: int = 300) -> bool:
@@ -370,15 +351,12 @@ def main() -> int:
         console.print("[red]No files were extracted![/red]")
         return 1
 
-    # Save version and ETag
+    # Save ETag and get version from git tags
     etag_file = Path(config["source"]["etag_file"])
-    version_file = Path(config["source"]["version_file"])
-    version = get_version(version_file)
+    version = get_version()
 
     if remote_etag:
         save_etag(remote_etag, etag_file)
-
-    save_version(version, version_file)
 
     # Generate manifest
     generate_manifest(output_dir, extracted_files, version, remote_etag or "unknown")

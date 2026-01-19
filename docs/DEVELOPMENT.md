@@ -130,9 +130,10 @@ Releases are automated:
 1. Daily schedule (6 AM UTC) or push to main triggers workflow
 2. ETag check determines if F5 specs changed
 3. Pipeline processes and enriches specs
-4. Version auto-incremented based on changes
-5. GitHub Release created with changelog
-6. Documentation deployed to GitHub Pages
+4. Version calculated from git tags: `git describe --tags --abbrev=0`
+5. Direct commit + tag created (no version bump PR)
+6. GitHub Release created with changelog
+7. Documentation deployed to GitHub Pages
 
 **Version Bump Rules**:
 
@@ -450,13 +451,14 @@ cat reports/lint-report.json | jq '.errors'
 
 Fix issues in enrichment/normalization config, not the output files.
 
-### Version Conflicts
+### Version System
 
-```bash
-# Accept incoming version (workflow will correct it)
-git checkout --theirs .version
-git add .version
-git commit -m "resolve: accept workflow version"
+Version is derived from git tags (e.g., `v2.0.38`), eliminating race conditions that caused merge conflicts on concurrent PRs.
+
+```python
+# Version is calculated dynamically from git tags
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
 ```
 
 ### Missing Specs After Clone
@@ -555,13 +557,15 @@ make discover-dry-run
 
 | File | Purpose |
 |------|---------|
-| `.version` | Current semantic version |
 | `.etag` | Last downloaded ETag |
 | `CHANGELOG.md` | Auto-generated changelog |
 | `config/enrichment.yaml` | Enrichment rules |
 | `config/normalization.yaml` | Normalization rules |
 | `config/discovery.yaml` | Discovery settings |
 | `config/spectral.yaml` | Linting rules |
+| `scripts/utils/version_calculator.py` | Tag-based version calculation |
+
+**Note**: Version is derived from git tags (e.g., `v2.0.38`), not from a `.version` file.
 
 ## Related Documentation
 
