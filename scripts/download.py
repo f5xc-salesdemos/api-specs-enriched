@@ -6,7 +6,6 @@
 import argparse
 import json
 import os
-import re
 import sys
 import tempfile
 import zipfile

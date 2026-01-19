@@ -54,10 +54,10 @@ def calculate_next_version(current: str, bump_type: str) -> str:
 
     if bump_type == "major":
         return f"{major + 1}.0.0"
-    elif bump_type == "minor":
+    if bump_type == "minor":
         return f"{major}.{minor + 1}.0"
-    else:  # patch (default)
-        return f"{major}.{minor}.{patch + 1}"
+    # patch (default)
+    return f"{major}.{minor}.{patch + 1}"
 
 
 def is_valid_semver(version: str) -> bool:
