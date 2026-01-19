@@ -56,7 +56,7 @@ def calculate_next_version(current: str, bump_type: str) -> str:
         return f"{major + 1}.0.0"
     if bump_type == "minor":
         return f"{major}.{minor + 1}.0"
-    # patch (default)
+    # Default: patch bump
     return f"{major}.{minor}.{patch + 1}"
 
 
