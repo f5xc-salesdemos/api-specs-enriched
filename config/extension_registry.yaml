@@ -288,6 +288,73 @@ property_level:
     issue: "#494"
     note: "Enables downstream tools to validate conflicts at schema level rather than runtime"
 
+  x-f5xc-constraints:
+    type: object
+    purpose: Comprehensive constraint metadata for deterministic AI generation and validation
+    consumers: [terraform, cli, mcp, ide, ai-assistants]
+    properties:
+      type: "Field type (string, array, number, object)"
+      deterministic: "Boolean flag for high-confidence constraints (>= 0.9)"
+      category: "Constraint category (length, size, range, pattern, character, format)"
+      string:
+        minLength: "Minimum string length"
+        maxLength: "Maximum string length"
+        pattern: "Regular expression pattern"
+        characterSet:
+          allowed: "Character set allowed (regex)"
+          restricted: "Character set restricted (regex)"
+          required: "Character set required (regex)"
+          description: "Natural language description of character set"
+        format: "String format (dns-label, fqdn, email, url, uuid, date-time, etc.)"
+        formatDescription: "Format-specific validation rules and standards"
+        byteLength:
+          min: "Minimum byte length"
+          max: "Maximum byte length"
+        validation:
+          rfc: "RFC standard reference"
+          standard: "Industry standard reference (ISO 8601, E.164, PEM)"
+          customRule: "Additional validation logic description"
+      array:
+        minItems: "Minimum array items"
+        maxItems: "Maximum array items"
+        uniqueItems: "Boolean requiring unique items"
+      number:
+        minimum: "Minimum numeric value"
+        maximum: "Maximum numeric value"
+        multipleOf: "Value must be multiple of this number"
+        exclusiveMinimum: "Exclusive minimum boundary"
+        exclusiveMaximum: "Exclusive maximum boundary"
+      metadata:
+        source: "Constraint source (discovery, inferred, explicit)"
+        confidence: "Confidence score 0.0-1.0"
+        validatedAt: "ISO 8601 timestamp of validation"
+    added_in: "3.3.0"
+    issue: "#TBD"
+    source: "Pattern matching, discovery data, and x-ves-validation-rules mapping"
+    reconciliation: "EXISTING > DISCOVERY > INFERRED priority"
+    example:
+      type: "string"
+      deterministic: true
+      category: "naming"
+      string:
+        minLength: 1
+        maxLength: 63
+        pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+        characterSet:
+          allowed: "[a-z0-9-]"
+          restricted: "[^a-z0-9-]"
+          required: "[a-z0-9]"
+          description: "Lowercase alphanumeric with hyphens, not at start/end"
+        format: "dns-label"
+        formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
+        validation:
+          rfc: "RFC 1123"
+          standard: "Kubernetes resource naming"
+      metadata:
+        source: "inferred"
+        confidence: 0.95
+        validatedAt: "2026-01-19T00:00:00Z"
+
 # =============================================================================
 # OPERATION-LEVEL EXTENSIONS (path operations)
 # =============================================================================

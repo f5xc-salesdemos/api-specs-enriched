@@ -74,6 +74,7 @@ from scripts.utils import (
     BrandingTransformer,
     ConflictsWithEnricher,
     ConsistencyValidator,
+    ConstraintEnricher,
     ConstraintReconciler,
     DefaultValueEnricher,
     DescriptionEnricher,
@@ -312,6 +313,11 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = validation_enricher.enrich_spec(spec)
     validation_stats = validation_enricher.get_stats()
 
+    # 13.5. Constraint enrichment (add x-f5xc-constraints from patterns)
+    constraint_enricher = ConstraintEnricher(config_path=Path("config/constraint_patterns.yaml"))
+    spec = constraint_enricher.enrich_spec(spec)
+    constraint_stats = constraint_enricher.get_stats()
+
     # 14. Operation description enrichment (DRY-compliant, noun-first purpose descriptions)
     operation_description_enricher = OperationDescriptionEnricher()
     spec = operation_description_enricher.enrich_spec(spec)
@@ -375,6 +381,10 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "readonly_fields_marked": readonly_stats.get("total_fields_marked", 0),
         "readonly_metadata_schemas": readonly_stats.get("metadata_schemas_matched", 0),
         "readonly_objectref_schemas": readonly_stats.get("object_ref_schemas_matched", 0),
+        "constraints_added": constraint_stats.get("constraints_added", 0),
+        "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
+        "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
+        "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
         # Note: best_practices, guided_workflows, and server_defaults stats tracked
         # in merge_specs_by_domain() since they require merged schemas
     }
