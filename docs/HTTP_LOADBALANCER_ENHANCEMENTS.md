@@ -1,0 +1,393 @@
+# HTTP LoadBalancer Schema Enrichments
+
+Enrichment metadata for HTTP load balancer schemas. See [OpenAPI Extensions](DEVELOPMENT.md#openapi-extensions) for extension definitions.
+
+## Enriched Schemas
+
+### Pattern
+
+All schemas matching `viewshttp_loadbalancer.*SpecType` receive enrichments:
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## Minimum Configuration Metadata
+
+The `x-f5xc-minimum-configuration` extension provides comprehensive CLI metadata for creating minimal viable HTTP load balancers.
+
+### Required Fields
+
+| Field | Constraint | Description |
+|-------|-----------|-------------|
+| `metadata.name` | DNS label format: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Resource name |
+| `metadata.namespace` | DNS label format | Namespace |
+| `spec.domains` | Array, min_items: 1 | Domains to serve |
+
+### Load Balancer Type (OneOf Required)
+
+One of the following load balancer types must be specified:
+
+| Variant | Description |
+|---------|-------------|
+| `spec.http` | HTTP only |
+| `spec.https` | HTTPS with manual certificate |
+| `spec.https_auto_cert` | HTTPS with automatic certificate |
+| `spec.http_https` | Both HTTP and HTTPS |
+
+**Note**: The load balancer type OneOf group is referred to as:
+- `lb_type` in configuration files (short form in `config/minimum_configs.yaml`)
+- `loadbalancer_type` in OpenAPI spec native extensions (native field name)
+
+**API Schema Reference**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### Example Configuration
+
+**Minimal JSON configuration**:
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+**Server-applied defaults**: When omitted, the server applies defaults including `https_auto_cert.port=443`, `https_auto_cert.http_redirect=false`, `https_auto_cert.add_hsts=false`, `https_auto_cert.tls_config.default_security={}`, and multiple security feature defaults (see configuration file for complete list).
+
+## Mutually Exclusive Field Groups
+
+Fields marked with `x-f5xc-conflicts-with` indicate OneOf patterns. Only one field from each group can be specified.
+
+### Core Configuration Groups
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | Load balancer protocol type |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | How to advertise the load balancer |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | Traffic distribution algorithm |
+
+### HTTPS Configuration Groups (10 groups)
+
+#### TLS Configuration
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS security level |
+| `mtls` | `no_mtls`, `use_mtls` | Mutual TLS enabled or disabled |
+
+#### Protocol and Headers
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP protocol versions |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP header transformation type |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | Server name header handling |
+
+#### Connection Management
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | Path normalization enabled or disabled |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | Default or non-default load balancer |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 connection coalescing options |
+
+### Security Feature Groups (11 groups)
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | Web Application Firewall |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | Bot detection and mitigation |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | Rate limiting |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API discovery |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API testing |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API definition |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | Malware protection |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | Client-side defense |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP reputation |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | Threat mesh |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | Malicious user detection |
+
+### DDoS Protection Groups (4 groups)
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS mitigation action |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | Requests per second threshold |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | Client-side DDoS validation action |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS policy reference or none |
+
+### Other Settings Groups (5 groups)
+
+| Group Name | Fields | Description |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | Client challenge type for bot detection |
+| `user_identification` | `user_id_client_ip`, `user_identification` | User identification method |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | Trust client IP headers or not |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | Use system default or custom timeouts |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | Service policies from namespace or active list |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | Use default or custom sensitive data policy |
+
+## OneOf Variant Recommendations (Future Extension)
+
+**Status**: Not yet applied to http_loadbalancer schemas.
+
+Unlike healthcheck, which includes `x-f5xc-recommended-oneof-variant` to indicate the most common choice for OneOf groups, http_loadbalancer currently lacks this extension.
+
+### Comparison with Healthcheck
+
+**Healthcheck** (implemented):
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP LoadBalancer** (not yet implemented):
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
+```
+
+### Future Implementation
+
+To add this extension for http_loadbalancer:
+1. Observe F5 XC console default selections (e.g., which lb_type is pre-selected in the UI)
+2. Add configuration to `config/discovered_defaults.yaml`
+3. Re-run enrichment pipeline to apply extension
+
+**Expected structure when added**:
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # Example - requires verification
+```
+
+This extension would enable downstream tools to pre-select the most commonly used variant when presenting configuration options to users.
+
+## Constraint Metadata
+
+Fields marked with `x-f5xc-constraints` include validation constraints discovered from API analysis.
+
+### Array Constraints
+
+| Field | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### Integer Constraints
+
+| Field | Minimum | Maximum | Default | Description |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS port number |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | Connection idle timeout (milliseconds, 1s to 1h) |
+
+### Enum Constraints
+
+| Field | Values | Default | Description |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS security level |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP header transformation |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP protocol versions |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 connection coalescing |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | Load balancing algorithm |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | Layer 7 DDoS mitigation action |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | RPS threshold for DDoS detection |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | Client-side DDoS validation |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | Client challenge type |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Load balancer advertising |
+
+## OpenAPI Extensions Reference
+
+These vendor extensions are added to the standard OpenAPI schema to convey F5 XC-specific metadata.
+
+### x-f5xc-cli-domain
+
+**Type**: `string`
+
+Indicates the domain classification for CLI and tooling organization.
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**Type**: `object`
+
+Provides comprehensive metadata for creating minimal viable configurations. Includes:
+- Description
+- Required fields with constraints
+- Mutually exclusive groups
+- Example configurations (YAML, JSON)
+- curl command examples
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-conflicts-with
+
+**Type**: `array of strings`
+
+Lists field names that are mutually exclusive with the current field, indicating OneOf patterns.
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**Type**: `object`
+
+Provides validation constraints including array size limits, integer ranges, uniqueness requirements, and discovery metadata.
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    type: "array"
+    array:
+      minItems: 1
+      maxItems: 256
+      uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    type: "number"
+    number:
+      minimum: 1
+      maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short and x-f5xc-description-medium
+
+**Type**: `string`
+
+Provides alternative description lengths for different use cases:
+- `x-f5xc-description-short`: 60 characters max (CLI columns, badges)
+- `x-f5xc-description-medium`: 150 characters max (tooltips, summaries)
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**Type**: `any` (matches field type)
+
+Provides concrete field examples for documentation and tooling.
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**Type**: `array of strings`
+
+Indicates context-specific requirements using flags: `minimum_config`, `create`, `update`, `read`.
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## Data Access
+
+### OpenAPI Specifications
+
+| File | Content |
+|------|---------|
+| `docs/specifications/api/virtual.json` | All http_loadbalancer schemas with enrichments |
+| `docs/specifications/api/openapi.json` | Merged specification with all schemas |
+
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `config/minimum_configs.yaml` | Source of minimum configuration metadata (lines 16-297) |
+| `config/constraint_patterns.yaml` | Constraint pattern definitions |
+| `config/domain_descriptions.yaml` | Domain-level description metadata |
+
+### Schemas Enriched
+
+- `viewshttp_loadbalancerCreateSpecType` - Create operation schema
+- `viewshttp_loadbalancerReplaceSpecType` - Update operation schema
+- `viewshttp_loadbalancerGetSpecType` - Read operation schema
+
+## Related Documentation
+
+- [Development Guide - OpenAPI Extensions](DEVELOPMENT.md#openapi-extensions) - Extension definitions and usage
+- [Healthcheck Enhancements](HEALTHCHECK_ENHANCEMENTS.md) - Healthcheck schema enrichments (includes `x-f5xc-recommended-oneof-variant`)
+- [Origin Pool Enhancements](ORIGINPOOL_ENHANCEMENTS.md) - Origin pool schema enrichments
+- [Migration Guide](../MIGRATION.md) - Breaking changes and migration guidance
+- [Constraint Metadata Guide](CONSTRAINT_METADATA.md) - Detailed constraint validation documentation
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0.45 | 2026-01-20 | Initial http_loadbalancer enrichments documentation |
