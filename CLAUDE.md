@@ -120,6 +120,104 @@ python -m scripts.generate_descriptions --all
 
 **Application**: `scripts/utils/operation_description_enricher.py`
 
+### Constraint Metadata (v3.3.0)
+
+**Purpose**: Deterministic validation constraints for AI generation, CLI validation, and Terraform enforcement.
+
+**Extension**: `x-f5xc-constraints` (property-level)
+
+**Coverage**: 9,851 constraints across all API specs
+
+**Key Features**:
+
+1. **Deterministic AI Generation**: High-confidence constraints (>= 0.9) enable automated value generation
+2. **Type-Specific**: Separate constraint structures for string, array, number, object types
+3. **3-Tier Reconciliation**: EXISTING > DISCOVERY > INFERRED priority
+4. **Source Tracking**: Metadata includes origin (discovery/inferred/explicit) and confidence scores
+5. **Format Standards**: RFC/ISO references for validation (RFC 1123, ISO 8601, E.164, etc.)
+
+**Structure Example**:
+
+```json
+{
+  "x-f5xc-constraints": {
+    "type": "string",
+    "deterministic": true,
+    "category": "naming",
+    "string": {
+      "minLength": 1,
+      "maxLength": 63,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "format": "dns-label",
+      "characterSet": {
+        "allowed": "[a-z0-9-]",
+        "description": "Kubernetes resource naming"
+      }
+    },
+    "metadata": {
+      "source": "inferred",
+      "confidence": 0.95,
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+**Configuration**: `config/constraint_patterns.yaml` (50+ patterns)
+
+**Documentation**: [docs/CONSTRAINT_METADATA.md](docs/CONSTRAINT_METADATA.md)
+
+**Validation Examples**: [examples/constraints/](examples/constraints/)
+
+**Key Patterns**:
+
+| Pattern Type | Examples | Confidence |
+|--------------|----------|------------|
+| DNS Labels | `name`, `namespace` | 0.95 |
+| Network | `port`, `vlan_id`, `ip_address` | 0.99 |
+| Identifiers | `uuid`, `email`, `url` | 0.95-0.99 |
+| Temporal | `timestamp`, `date`, `time` | 0.90 |
+| Collections | `origins`, `tags`, `pools` | 0.90 |
+
+**AI Integration**:
+
+```python
+# Check if constraint is deterministic (confidence >= 0.9)
+if field.get("x-f5xc-constraints", {}).get("deterministic"):
+    # Generate value automatically
+    value = generate_from_pattern(constraints)
+else:
+    # Prompt user with hints
+    value = prompt_with_hints(constraints)
+```
+
+**CLI Integration**:
+
+- Pre-submission validation (reduce API errors)
+- Input hints with character set descriptions
+- Format-specific examples (dns-label, email, uuid)
+
+**Terraform Integration**:
+
+- Plan-time constraint validation
+- Schema generation with `ValidateDiagFunc`
+- Error messages with natural language descriptions
+
+**Validation Testing**:
+
+Use curl scripts to validate constraints against live API:
+
+```bash
+cd examples/constraints
+export F5XC_API_URL="https://tenant.console.ves.volterra.io"
+export F5XC_API_TOKEN="your-token"
+export F5XC_TENANT="your-tenant"
+
+./validate_dns_label.sh      # Test name constraints
+./validate_port_number.sh     # Test port ranges
+./validate_array_size.sh      # Test array limits
+```
+
 ---
 
 ## Configuration Reference

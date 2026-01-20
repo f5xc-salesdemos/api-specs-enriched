@@ -9,6 +9,7 @@ from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, Br
 from .conflicts_with_enricher import ConflictsWithEnricher
 from .consistency_validator import ConsistencyValidator
 from .constraint_analyzer import ConstraintAnalyzer
+from .constraint_enricher import ConstraintEnricher
 from .constraint_reconciler import ConstraintReconciler
 from .curl_validator import CurlExampleValidator
 from .default_value_enricher import DefaultValueEnricher
@@ -53,6 +54,7 @@ __all__ = [
     "ConflictsWithEnricher",
     "ConsistencyValidator",
     "ConstraintAnalyzer",
+    "ConstraintEnricher",
     "ConstraintReconciler",
     "CurlExampleValidator",
     "DefaultValueEnricher",

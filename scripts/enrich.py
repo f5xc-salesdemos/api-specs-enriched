@@ -29,6 +29,7 @@ from scripts.utils import (
     BrandingTransformer,
     BrandingValidator,
     ConsistencyValidator,
+    ConstraintEnricher,
     DeprecatedTierEnricher,
     DescriptionEnricher,
     DescriptionStructureTransformer,
@@ -272,6 +273,9 @@ def enrich_spec_file(
         tag_generator = TagGenerator()
         description_validator = DescriptionValidator()
         consistency_validator = ConsistencyValidator()
+        constraint_enricher = ConstraintEnricher(
+            config_path=Path("config/constraint_patterns.yaml")
+        )
 
         grammar_config = config.get("grammar", {})
         grammar_improver = GrammarImprover(
@@ -324,6 +328,9 @@ def enrich_spec_file(
         # 4.8. Domain description enrichment (apply DRY descriptions from config)
         description_enricher = DescriptionEnricher()
         spec = description_enricher.enrich_spec(spec)
+
+        # 4.9. Constraint enrichment (add x-f5xc-constraints from patterns)
+        spec = constraint_enricher.enrich_spec(spec)
 
         # 5. Acronym normalization
         spec = acronym_normalizer.normalize_spec(spec, target_fields)
@@ -381,6 +388,7 @@ def enrich_spec_file(
         consistency_stats = consistency_validator.get_stats()
         minimum_config_stats = minimum_configuration_enricher.get_stats()
         namespace_scope_stats = namespace_scope_enricher.get_stats()
+        constraint_stats = constraint_enricher.get_stats()
 
         return EnrichmentResult(
             filename=filename,
@@ -403,6 +411,10 @@ def enrich_spec_file(
                 "minimum_configs_added": minimum_config_stats.get("minimum_configs_added", 0),
                 "namespace_scopes_added": namespace_scope_stats.get("specs_enriched", 0),
                 "discovery_enrichments": discovery_enrichments,
+                "constraints_added": constraint_stats.get("constraints_added", 0),
+                "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
+                "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
+                "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
             },
             validation_passed=validation_passed,
             error=validation_error if not validation_passed else None,

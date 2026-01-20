@@ -1,0 +1,900 @@
+# F5 XC API Constraint Patterns
+# Purpose: Pattern-based constraint inference for x-f5xc-constraints extension
+# Usage: scripts/utils/constraint_enricher.py
+# Version: 2.0.0
+
+# Metadata
+metadata:
+  version: "2.0.0"
+  last_updated: "2026-01-19"
+  description: "Constraint patterns for F5 XC API enrichment pipeline"
+  confidence_thresholds:
+    high: 0.9  # Deterministic flag enabled
+    medium: 0.7  # Confidence score only
+    low: 0.5  # Advisory only
+
+# String Constraint Patterns
+# Pattern structure: field name regex → constraint metadata
+string_patterns:
+
+  # Identity and Naming (RFC 1123, Kubernetes standards)
+  - pattern: '\bname$'
+    description: "DNS label format resource name"
+    constraints:
+      minLength: 1
+      maxLength: 63
+      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      characterSet:
+        allowed: '[a-z0-9-]'
+        restricted: '[^a-z0-9-]'
+        required: '[a-z0-9]'
+        description: "Lowercase alphanumeric with hyphens, not at start/end"
+      format: "dns-label"
+      formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
+      validation:
+        rfc: "RFC 1123"
+        standard: "Kubernetes resource naming"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "naming"
+
+  - pattern: '\bnamespace$'
+    description: "Kubernetes namespace identifier"
+    constraints:
+      minLength: 1
+      maxLength: 63
+      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      characterSet:
+        allowed: '[a-z0-9-]'
+        description: "Kubernetes namespace format"
+      format: "dns-label"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "naming"
+
+  - pattern: '\b(user|username)$'
+    description: "User identifier or username"
+    constraints:
+      minLength: 1
+      maxLength: 64
+      pattern: '^[a-zA-Z0-9_.-]+$'
+      characterSet:
+        allowed: '[a-zA-Z0-9_.-]'
+        description: "Alphanumeric with underscores, dots, hyphens"
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "identity"
+
+  - pattern: '\b(display_?)?name$'
+    description: "Human-readable display name"
+    constraints:
+      minLength: 1
+      maxLength: 256
+      characterSet:
+        description: "Free text with UTF-8 support"
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "display"
+
+  - pattern: '\blabel$'
+    description: "Label or tag identifier"
+    constraints:
+      minLength: 1
+      maxLength: 128
+      pattern: '^[a-zA-Z0-9_.-]+$'
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "labeling"
+
+  # Network and Domain Formats
+  - pattern: '\b(dns|domain)_?name$'
+    description: "Fully qualified domain name"
+    constraints:
+      minLength: 1
+      maxLength: 253
+      pattern: '^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'
+      characterSet:
+        allowed: '[a-z0-9.-]'
+        description: "Dot-separated DNS labels"
+      format: "fqdn"
+      formatDescription: "RFC 1123 FQDN: lowercase, dot-separated labels, max 253 chars total"
+      validation:
+        rfc: "RFC 1123"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "network"
+
+  - pattern: '\b(fqdn|hostname)$'
+    description: "Fully qualified domain name or hostname"
+    constraints:
+      minLength: 1
+      maxLength: 253
+      pattern: '^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'
+      format: "fqdn"
+      validation:
+        rfc: "RFC 1123"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "network"
+
+  - pattern: '\burl$'
+    description: "URL or URI resource identifier"
+    constraints:
+      minLength: 1
+      maxLength: 2048
+      pattern: '^(https?|ftp)://[^\s/$.?#].[^\s]*$'
+      format: "uri"
+      formatDescription: "RFC 3986 URI with scheme (http, https, ftp)"
+      validation:
+        rfc: "RFC 3986"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "network"
+
+  - pattern: '\b(endpoint|api_?url)$'
+    description: "API endpoint URL"
+    constraints:
+      minLength: 1
+      maxLength: 2048
+      pattern: '^https?://[^\s/$.?#].[^\s]*$'
+      format: "uri"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "network"
+
+  - pattern: '\bip_?address$'
+    description: "IPv4 address"
+    constraints:
+      minLength: 7
+      maxLength: 15
+      pattern: '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$'
+      format: "ipv4"
+      formatDescription: "IPv4 dotted-decimal notation (e.g., 192.168.1.1)"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "network"
+
+  - pattern: '\bipv6_?address$'
+    description: "IPv6 address"
+    constraints:
+      minLength: 2
+      maxLength: 39
+      pattern: '^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'
+      format: "ipv6"
+      formatDescription: "IPv6 address in standard or compressed notation"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "network"
+
+  - pattern: '\bcidr$'
+    description: "CIDR notation for network range"
+    constraints:
+      minLength: 9
+      maxLength: 18
+      pattern: '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}/(3[0-2]|[12]?[0-9])$'
+      format: "cidr"
+      formatDescription: "CIDR notation (e.g., 10.0.0.0/24)"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "network"
+
+  - pattern: '\bmac_?address$'
+    description: "MAC address"
+    constraints:
+      minLength: 17
+      maxLength: 17
+      pattern: '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
+      format: "mac-address"
+      formatDescription: "MAC address (e.g., 00:1A:2B:3C:4D:5E)"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "network"
+
+  # Communication
+  - pattern: '\bemail$'
+    description: "Email address"
+    constraints:
+      minLength: 3
+      maxLength: 254
+      pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+      format: "email"
+      formatDescription: "RFC 5322 email address, max 254 characters"
+      validation:
+        rfc: "RFC 5322"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "communication"
+
+  - pattern: '\bphone$'
+    description: "Phone number"
+    constraints:
+      minLength: 10
+      maxLength: 15
+      pattern: '^\+?[1-9]\d{1,14}$'
+      format: "phone"
+      formatDescription: "E.164 phone number format (e.g., +12025551234)"
+      validation:
+        standard: "E.164"
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "communication"
+
+  # Identifiers
+  - pattern: '\buuid$'
+    description: "Universal unique identifier"
+    constraints:
+      minLength: 36
+      maxLength: 36
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+      format: "uuid"
+      formatDescription: "RFC 4122 UUID format (e.g., 550e8400-e29b-41d4-a716-446655440000)"
+      validation:
+        rfc: "RFC 4122"
+    metadata:
+      source: "inferred"
+      confidence: 0.99
+      category: "identifier"
+
+  - pattern: '\b(arn|resource_?id)$'
+    description: "AWS ARN or resource identifier"
+    constraints:
+      minLength: 1
+      maxLength: 2048
+      pattern: '^arn:aws:[a-z0-9-]+:[a-z0-9-]*:[0-9]{12}:[a-z0-9-/]+$'
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "identifier"
+
+  - pattern: '\bsecret$'
+    description: "Secret or sensitive token"
+    constraints:
+      minLength: 16
+      maxLength: 512
+      characterSet:
+        description: "Base64 or hexadecimal characters"
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "security"
+
+  - pattern: '\bapi_?key$'
+    description: "API authentication key"
+    constraints:
+      minLength: 20
+      maxLength: 256
+      characterSet:
+        allowed: '[a-zA-Z0-9_-]'
+        description: "Alphanumeric with underscores and hyphens"
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "security"
+
+  - pattern: '\btoken$'
+    description: "Authentication or authorization token"
+    constraints:
+      minLength: 20
+      maxLength: 4096
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "security"
+
+  # Temporal
+  - pattern: '\b(timestamp|created_?at|updated_?at)$'
+    description: "ISO 8601 timestamp"
+    constraints:
+      minLength: 20
+      maxLength: 30
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$'
+      format: "date-time"
+      formatDescription: "ISO 8601 date-time (e.g., 2026-01-19T12:00:00Z)"
+      validation:
+        standard: "ISO 8601"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "temporal"
+
+  - pattern: '\bdate$'
+    description: "Date in YYYY-MM-DD format"
+    constraints:
+      minLength: 10
+      maxLength: 10
+      pattern: '^\d{4}-\d{2}-\d{2}$'
+      format: "date"
+      formatDescription: "ISO 8601 date (e.g., 2026-01-19)"
+      validation:
+        standard: "ISO 8601"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "temporal"
+
+  - pattern: '\btime$'
+    description: "Time in HH:MM:SS format"
+    constraints:
+      minLength: 8
+      maxLength: 8
+      pattern: '^\d{2}:\d{2}:\d{2}$'
+      format: "time"
+      formatDescription: "Time format (e.g., 14:30:00)"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "temporal"
+
+  - pattern: '\btimezone$'
+    description: "IANA timezone identifier"
+    constraints:
+      minLength: 1
+      maxLength: 64
+      pattern: '^[A-Z][a-zA-Z_]+/[A-Z][a-zA-Z_]+$'
+      formatDescription: "IANA timezone database (e.g., America/New_York)"
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "temporal"
+
+  # Certificates and Cryptography
+  - pattern: '\bcertificate$'
+    description: "X.509 certificate in PEM format"
+    constraints:
+      minLength: 100
+      maxLength: 5242880  # 5 MB
+      pattern: '^-----BEGIN CERTIFICATE-----\n.*\n-----END CERTIFICATE-----$'
+      format: "pem"
+      formatDescription: "PEM-encoded X.509 certificate, max 5MB"
+      byteLength:
+        min: 100
+        max: 5242880
+      validation:
+        standard: "PEM"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "crypto"
+
+  - pattern: '\b(private_?key|public_?key)$'
+    description: "Cryptographic key in PEM format"
+    constraints:
+      minLength: 100
+      maxLength: 5242880  # 5 MB
+      pattern: '^-----BEGIN (RSA |EC |)?(PRIVATE |PUBLIC )?KEY-----\n.*\n-----END (RSA |EC |)?(PRIVATE |PUBLIC )?KEY-----$'
+      format: "pem"
+      byteLength:
+        min: 100
+        max: 5242880
+      validation:
+        standard: "PEM"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "crypto"
+
+  - pattern: '\bfingerprint$'
+    description: "Hash or fingerprint (hex format)"
+    constraints:
+      minLength: 32
+      maxLength: 128
+      pattern: '^[0-9a-fA-F]+$'
+      format: "hex"
+      characterSet:
+        allowed: '[0-9a-fA-F]'
+        description: "Hexadecimal characters only"
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "crypto"
+
+  # Content
+  - pattern: '\b(comment|description|note)$'
+    description: "Free-text comment or description"
+    constraints:
+      minLength: 0
+      maxLength: 4096
+      characterSet:
+        description: "Free text with UTF-8 support"
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "content"
+
+  - pattern: '\bpath$'
+    description: "File or URL path"
+    constraints:
+      minLength: 1
+      maxLength: 2048
+      pattern: '^[/a-zA-Z0-9._-]+$'
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "content"
+
+  - pattern: '\bquery$'
+    description: "Query string or search term"
+    constraints:
+      minLength: 0
+      maxLength: 2048
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "content"
+
+  - pattern: '\bregex$'
+    description: "Regular expression pattern"
+    constraints:
+      minLength: 1
+      maxLength: 1024
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "content"
+
+  # Format-Specific
+  - pattern: '\bjson$'
+    description: "JSON string"
+    constraints:
+      minLength: 2
+      maxLength: 1048576  # 1 MB
+      formatDescription: "Valid parseable JSON"
+      validation:
+        customRule: "Must be valid JSON"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "format"
+
+  - pattern: '\byaml$'
+    description: "YAML string"
+    constraints:
+      minLength: 1
+      maxLength: 1048576  # 1 MB
+      formatDescription: "Valid parseable YAML"
+      validation:
+        customRule: "Must be valid YAML"
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "format"
+
+  - pattern: '\bbase64$'
+    description: "Base64-encoded string"
+    constraints:
+      minLength: 0
+      maxLength: 1048576  # 1 MB
+      pattern: '^[A-Za-z0-9+/]*={0,2}$'
+      format: "base64"
+      characterSet:
+        allowed: '[A-Za-z0-9+/=]'
+        description: "Base64 alphabet"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "format"
+
+  - pattern: '\bhex$'
+    description: "Hexadecimal string"
+    constraints:
+      minLength: 0
+      maxLength: 1048576  # 1 MB
+      pattern: '^[0-9a-fA-F]+$'
+      format: "hex"
+      characterSet:
+        allowed: '[0-9a-fA-F]'
+        description: "Hexadecimal digits only"
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "format"
+
+# Array Constraint Patterns
+array_patterns:
+
+  - pattern: '\b(origins?|pools?|servers?)$'
+    description: "Array of origin servers or pools"
+    constraints:
+      minItems: 1
+      maxItems: 50
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "networking"
+
+  - pattern: '\btags?$'
+    description: "Array of tags or labels"
+    constraints:
+      minItems: 0
+      maxItems: 100
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "metadata"
+
+  - pattern: '\bdomains?$'
+    description: "Array of domain names"
+    constraints:
+      minItems: 1
+      maxItems: 32
+      uniqueItems: true
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "networking"
+
+  - pattern: '\belements?$'
+    description: "Generic array of elements"
+    constraints:
+      minItems: 0
+      maxItems: 512
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.70
+      category: "general"
+
+  - pattern: '\bitems?$'
+    description: "Generic array of items"
+    constraints:
+      minItems: 0
+      maxItems: 256
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.70
+      category: "general"
+
+  - pattern: '\brules?$'
+    description: "Array of policy rules"
+    constraints:
+      minItems: 0
+      maxItems: 100
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "policy"
+
+  - pattern: '\bips?$'
+    description: "Array of IP addresses"
+    constraints:
+      minItems: 0
+      maxItems: 100
+      uniqueItems: true
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "networking"
+
+  - pattern: '\bhosts?$'
+    description: "Array of hostnames"
+    constraints:
+      minItems: 0
+      maxItems: 100
+      uniqueItems: true
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "networking"
+
+  - pattern: '\bheaders?$'
+    description: "Array of HTTP headers"
+    constraints:
+      minItems: 0
+      maxItems: 50
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "http"
+
+  - pattern: '\bmembers?$'
+    description: "Array of group members"
+    constraints:
+      minItems: 0
+      maxItems: 200
+      uniqueItems: true
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "identity"
+
+  - pattern: '\bnetworks?$'
+    description: "Array of network configurations"
+    constraints:
+      minItems: 0
+      maxItems: 32
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "networking"
+
+  - pattern: '\bendpoints?$'
+    description: "Array of API endpoints"
+    constraints:
+      minItems: 0
+      maxItems: 100
+      uniqueItems: false
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "api"
+
+# Numeric Constraint Patterns
+number_patterns:
+
+  - pattern: '\bport$'
+    description: "Network port number"
+    constraints:
+      minimum: 1
+      maximum: 65535
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.99
+      category: "networking"
+
+  - pattern: '\b(vlan)?_?id$'
+    description: "VLAN identifier"
+    constraints:
+      minimum: 1
+      maximum: 4094
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.95
+      category: "networking"
+
+  - pattern: '\btimeout$'
+    description: "Timeout duration in seconds"
+    constraints:
+      minimum: 1
+      maximum: 3600
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "timing"
+
+  - pattern: '\binterval$'
+    description: "Interval duration in seconds"
+    constraints:
+      minimum: 1
+      maximum: 600
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.90
+      category: "timing"
+
+  - pattern: '\bretries?$'
+    description: "Number of retry attempts"
+    constraints:
+      minimum: 0
+      maximum: 10
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "resilience"
+
+  - pattern: '\bdelay$'
+    description: "Delay duration in milliseconds"
+    constraints:
+      minimum: 0
+      maximum: 60000
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.85
+      category: "timing"
+
+  - pattern: '\bweight$'
+    description: "Load balancing weight"
+    constraints:
+      minimum: 0
+      maximum: 100
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "load-balancing"
+
+  - pattern: '\bpriority$'
+    description: "Priority level"
+    constraints:
+      minimum: 0
+      maximum: 100
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.80
+      category: "ordering"
+
+  - pattern: '\bthreshold$'
+    description: "Threshold value or limit"
+    constraints:
+      minimum: 0
+      maximum: 1000
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "policy"
+
+  - pattern: '\blimit$'
+    description: "Maximum limit or quota"
+    constraints:
+      minimum: 1
+      maximum: 1000000
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "policy"
+
+  - pattern: '\bcount$'
+    description: "Item count or quantity"
+    constraints:
+      minimum: 0
+      maximum: 10000
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.70
+      category: "general"
+
+  - pattern: '\bsize$'
+    description: "Size in bytes"
+    constraints:
+      minimum: 0
+      maximum: 10737418240  # 10 GB
+      multipleOf: 1
+    metadata:
+      source: "inferred"
+      confidence: 0.75
+      category: "storage"
+
+# Discovery Mapping Rules
+# Maps x-ves-validation-rules to constraint structure
+discovery_mapping:
+
+  # String validation rules
+  string_rules:
+    - ves_rule: "ves.io.schema.rules.string.max_len"
+      constraint_field: "maxLength"
+      description: "Maximum string length from API validation"
+
+    - ves_rule: "ves.io.schema.rules.string.min_len"
+      constraint_field: "minLength"
+      description: "Minimum string length from API validation"
+
+    - ves_rule: "ves.io.schema.rules.string.pattern"
+      constraint_field: "pattern"
+      description: "Regex pattern from API validation"
+
+    - ves_rule: "ves.io.schema.rules.string.dns_name"
+      constraint_field: "format"
+      constraint_value: "dns-label"
+      description: "DNS name format validation"
+
+    - ves_rule: "ves.io.schema.rules.string.email"
+      constraint_field: "format"
+      constraint_value: "email"
+      description: "Email format validation"
+
+    - ves_rule: "ves.io.schema.rules.string.ipv4"
+      constraint_field: "format"
+      constraint_value: "ipv4"
+      description: "IPv4 address validation"
+
+    - ves_rule: "ves.io.schema.rules.string.ipv6"
+      constraint_field: "format"
+      constraint_value: "ipv6"
+      description: "IPv6 address validation"
+
+  # Array validation rules
+  array_rules:
+    - ves_rule: "ves.io.schema.rules.repeated.max_items"
+      constraint_field: "maxItems"
+      description: "Maximum array items from API validation"
+
+    - ves_rule: "ves.io.schema.rules.repeated.min_items"
+      constraint_field: "minItems"
+      description: "Minimum array items from API validation"
+
+    - ves_rule: "ves.io.schema.rules.repeated.unique"
+      constraint_field: "uniqueItems"
+      constraint_value: true
+      description: "Unique items requirement from API validation"
+
+  # Numeric validation rules
+  number_rules:
+    - ves_rule: "ves.io.schema.rules.int32.gte"
+      constraint_field: "minimum"
+      description: "Minimum value (greater than or equal)"
+
+    - ves_rule: "ves.io.schema.rules.int32.lte"
+      constraint_field: "maximum"
+      description: "Maximum value (less than or equal)"
+
+    - ves_rule: "ves.io.schema.rules.int32.gt"
+      constraint_field: "minimum"
+      exclusive: true
+      description: "Minimum value (greater than)"
+
+    - ves_rule: "ves.io.schema.rules.int32.lt"
+      constraint_field: "maximum"
+      exclusive: true
+      description: "Maximum value (less than)"
+
+    - ves_rule: "ves.io.schema.rules.int64.gte"
+      constraint_field: "minimum"
+      description: "Minimum value for int64"
+
+    - ves_rule: "ves.io.schema.rules.int64.lte"
+      constraint_field: "maximum"
+      description: "Maximum value for int64"
+
+# Reconciliation Rules
+# Priority: EXISTING > DISCOVERY > INFERRED
+reconciliation:
+  priority_order:
+    - "existing"  # Already present x-f5xc-constraints
+    - "discovery"  # From x-ves-validation-rules in discovery data
+    - "inferred"  # From pattern matching
+
+  conflict_resolution:
+    - rule: "preserve_existing"
+      description: "Never override existing x-f5xc-constraints"
+      priority: 1
+
+    - rule: "discovery_overrides_inferred"
+      description: "Discovery data overrides pattern inference"
+      priority: 2
+
+    - rule: "merge_non_conflicting"
+      description: "Merge constraints when no conflicts exist"
+      priority: 3
+
+    - rule: "max_confidence_wins"
+      description: "If same source, higher confidence wins"
+      priority: 4
+
+# Confidence Scoring
+confidence_scoring:
+  deterministic_threshold: 0.9  # Enable deterministic flag if >= 0.9
+
+  source_confidence:
+    existing: 1.0
+    discovery: 0.99
+    inferred: 0.85  # Base confidence for pattern matching
+
+  pattern_confidence_modifiers:
+    exact_match: 1.0  # Pattern exactly matches field name
+    partial_match: 0.9  # Pattern matches with prefix/suffix
+    fuzzy_match: 0.7  # Pattern matches with variations
+
+  validation_confidence_boost:
+    rfc_standard: 0.05  # Has RFC reference
+    industry_standard: 0.03  # Has industry standard reference
+    discovery_validated: 0.10  # Validated against discovery data
