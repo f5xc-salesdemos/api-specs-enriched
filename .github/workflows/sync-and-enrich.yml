@@ -50,8 +50,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Check for updates
+      - name: Check for GitHub Release updates
         id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Force download on push/dispatch events, check-only on schedule
           if [ "${{ github.event_name }}" = "push" ] || \
@@ -118,7 +120,9 @@ jobs:
       - name: Install Spectral CLI
         run: npm install -g @stoplight/spectral-cli
 
-      - name: Download specifications
+      - name: Download specifications from GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -m scripts.download --force
 
       - name: Check for Discovery Data
@@ -198,7 +202,7 @@ jobs:
           # Compare with previous release or mark as changed for new runs
           # Check for changes in source specs, pipeline config, or dependencies
           if git diff --quiet HEAD~1 HEAD -- \
-            specs/original/ .etag scripts/ config/ requirements.txt \
+            specs/original/ .github_release scripts/ config/ requirements.txt \
             .github/workflows/sync-and-enrich.yml; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             echo "⏭️  No changes in: specs, pipeline scripts, configs, or workflow"
@@ -208,7 +212,7 @@ jobs:
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
           # Determine change type for semantic versioning (as bash variable for use in this script)
-          if ! git diff --quiet HEAD~1 HEAD -- specs/original/ .etag; then
+          if ! git diff --quiet HEAD~1 HEAD -- specs/original/ .github_release; then
             CHANGE_TYPE="source"
             echo "Source spec changes detected"
           elif ! git diff --quiet HEAD~1 HEAD -- \
@@ -453,7 +457,7 @@ jobs:
 
           # Stage enriched outputs (NOT .version - it no longer exists)
           # Use -f to add docs/specifications/api/ which is in .gitignore
-          git add -f CHANGELOG.md .etag docs/specifications/api/
+          git add -f CHANGELOG.md .github_release docs/specifications/api/
 
           if ! git diff --staged --quiet; then
             # Create release commit with [skip ci] to prevent recursive workflow triggers

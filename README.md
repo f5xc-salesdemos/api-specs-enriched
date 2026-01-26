@@ -42,7 +42,7 @@ This repository transforms F5 Distributed Cloud's 270+ OpenAPI specifications in
 ### Pipeline Stages
 
 ```text
-1. Download    → ETag-cached F5 spec retrieval
+1. Download    → GitHub Releases (version-cached spec retrieval)
 2. Enrich      → Descriptions, branding, grammar, metadata
 3. Normalize   → Schema references, type fixes, consistency
 4. Merge       → Domain-specific spec generation
@@ -91,6 +91,29 @@ make push-discovery        # Commit discovery data for CI/CD
 - Rate limiting behavior
 - Undocumented fields
 
+### GitHub Release Integration
+
+API specifications are sourced from **[robinmordasiewicz/f5xc-api-fixed](https://github.com/robinmordasiewicz/f5xc-api-fixed)** via GitHub Releases.
+
+**Benefits**:
+- Pre-validated specs (268 domain specs, 5.7 MB compressed)
+- Version-based caching (faster than HTTP ETag)
+- Full control via source repository
+- Easy rollback to any release
+
+**Authentication** (optional but recommended):
+```bash
+# Set GitHub token for higher rate limits (5000/hr vs 60/hr)
+export GITHUB_TOKEN="ghp_your_personal_access_token"
+```
+
+**Release Format**:
+- Versioning: `vYYYY.MM.DD-N` (date-based with sequence)
+- Asset: `f5xc-api-fixed-v{version}.zip`
+- Contents: `domains/*.json` (268 domain specifications)
+
+**CI/CD**: GitHub Actions automatically uses `secrets.GITHUB_TOKEN` for authentication.
+
 ## Quick Start
 
 ### Prerequisites
@@ -116,7 +139,7 @@ make build
 make rebuild
 
 # Individual stages
-make download       # Fetch latest F5 specs (ETag cached)
+make download       # Fetch latest F5 specs from GitHub Releases (version cached)
 make pipeline       # Run enrichment pipeline
 make lint           # Spectral OpenAPI linting
 make validate       # Test curl examples against live API
@@ -133,7 +156,7 @@ The repository uses GitHub Actions for automated releases:
 ```yaml
 Trigger: Daily schedule, push to main, manual dispatch
 Process:
-  1. Check for spec updates (ETag comparison)
+  1. Check for spec updates (GitHub release version comparison)
   2. Download changed specs
   3. Run enrichment pipeline
   4. Validate with Spectral + live API
@@ -369,7 +392,7 @@ Quality Score: 99% meaningful descriptions
 ```text
 Average Processing Time: ~2 minutes (270 specs)
 Peak Memory Usage: 154 MB
-Cache Hit Rate: ~85% (ETag-based)
+Cache Hit Rate: ~85% (GitHub release version-based)
 Parallel Batch Processing: 14 batches
 Discovery Enrichment: 1,239,194 constraints reconciled
 ```
