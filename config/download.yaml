@@ -1,0 +1,73 @@
+# Download Configuration
+#
+# Controls how API specifications are downloaded from source.
+# Two source types supported: github_release (default) and http_download (legacy).
+
+source:
+  # Primary source: GitHub Releases (robinmordasiewicz/f5xc-api-fixed)
+  type: github_release
+
+  repository:
+    owner: robinmordasiewicz
+    name: f5xc-api-fixed
+
+  # Asset pattern for finding ZIP file in releases
+  # Matches: f5xc-api-fixed-v2026.01.22-2.zip, f5xc-api-fixed-vYYYY.MM.DD-N.zip
+  asset_pattern: "f5xc-api-fixed-v*.zip"
+
+  # Authentication: Set GITHUB_TOKEN environment variable for higher rate limits
+  # - Unauthenticated: 60 requests/hour
+  # - Authenticated: 5000 requests/hour
+  # - CI/CD: Uses secrets.GITHUB_TOKEN automatically
+
+  # Legacy HTTP download (for rollback if needed)
+  # Uncomment to revert to docs.cloud.f5.com source:
+  # type: http_download
+  # url: https://docs.cloud.f5.com/docs-v2/downloads/f5-distributed-cloud-open-api.zip
+  # etag_file: .etag
+
+paths:
+  # Output directory for extracted specifications
+  original: specs/original
+
+  # Version tracking file (replaces .etag for GitHub Releases)
+  version_file: .github_release
+
+extraction:
+  # Extract only domains/ directory from ZIP
+  # GitHub release structure: domains/*.json (268 domain specs)
+  include_patterns:
+    - "domains/*.json"
+
+  # Exclude master specs (not needed for domain processing)
+  exclude_patterns:
+    - "openapi.json"
+    - "openapi.yaml"
+
+  # Security limits for ZIP extraction
+  max_file_size: 10485760  # 10 MB per file
+  max_total_size: 524288000  # 500 MB total
+  max_compression_ratio: 100  # Reject >100:1 (zip bomb detection)
+  max_file_count: 1000  # Maximum files to extract
+
+# Configuration validation schema (for reference)
+schema:
+  source:
+    type:
+      enum: [github_release, http_download]
+      required: true
+    repository:
+      owner: {type: string, required_if: "type=github_release"}
+      name: {type: string, required_if: "type=github_release"}
+    asset_pattern: {type: string, default: "*.zip"}
+    url: {type: string, required_if: "type=http_download"}
+  paths:
+    original: {type: string, required: true}
+    version_file: {type: string, default: ".github_release"}
+  extraction:
+    include_patterns: {type: array, items: string}
+    exclude_patterns: {type: array, items: string}
+    max_file_size: {type: integer, minimum: 0}
+    max_total_size: {type: integer, minimum: 0}
+    max_compression_ratio: {type: integer, minimum: 1}
+    max_file_count: {type: integer, minimum: 1}
