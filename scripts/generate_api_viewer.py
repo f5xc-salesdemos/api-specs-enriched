@@ -66,6 +66,7 @@ def generate_domain_mdx(domain: str, title: str, description: str) -> str:
     return f"""---
 title: "{title}"
 description: "{description}"
+tableOfContents: false
 sidebar:
   badge:
     text: API
@@ -145,6 +146,7 @@ def generate_catalog_mdx(
     return f"""---
 title: API Reference
 description: Interactive API documentation for F5 Distributed Cloud services
+tableOfContents: false
 sidebar:
   order: 0
 ---
