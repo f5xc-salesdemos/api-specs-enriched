@@ -67,10 +67,6 @@ def generate_domain_mdx(domain: str, title: str, description: str) -> str:
 title: "{title}"
 description: "{description}"
 tableOfContents: false
-sidebar:
-  badge:
-    text: API
-    variant: note
 ---
 
 import {{ LinkCard }} from '@astrojs/starlight/components';
