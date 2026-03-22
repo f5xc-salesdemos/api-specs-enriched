@@ -3,7 +3,7 @@
   "info": {
     "title": "Authentication",
     "description": "Identity and access management providing APIs for configuring identity providers, access policies, and user credentials. Supports MFA, identity provider integration, and lifecycle operations for credential management across distributed deployments.",
-    "version": "2.1.47",
+    "version": "2.1.48",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -3954,7 +3954,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.140170+00:00"
+                "validatedAt": "2026-03-22T06:15:15.846473+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4071,7 +4071,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140270+00:00"
+                "validatedAt": "2026-03-22T06:15:15.846577+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4094,6 +4094,373 @@
           "example_yaml": "# Minimal example for api_credentialBulkRevokeResponse\nmetadata:\n  name: example\n  namespace: default\nspec:\n  credentials_failed: value\n  credentials_marked_for_deletion: value\n  error_message: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"credentials_failed\": \"value\",\n    \"credentials_marked_for_deletion\": \"value\",\n    \"error_message\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/api_credential_bulk_revoke_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
+        },
+        "x-f5xc-cli-domain": "api"
+      },
+      "api_credentialCreateKubeConfigRequest": {
+        "type": "object",
+        "description": "X-displayName: \"Create KubeConfig Request\"\nCreateKubeConfigRequest represents the request format for generating a KubeConfig.",
+        "title": "Create KubeConfig Request.",
+        "properties": {
+          "expiration_days": {
+            "type": "integer",
+            "description": "X-displayName: \"Expiry in Days\"\nQty of days of self credential expiration.",
+            "title": "Expiry in Days.",
+            "format": "int64",
+            "x-f5xc-example": "30",
+            "x-f5xc-description-short": "X-displayName: \"Expiry in Days\" Qty of days of self credential expiration.",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "x-f5xc-constraints": {
+              "type": "number",
+              "category": "general",
+              "number": {
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.846612+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "X-displayName: \"Name\"\nName of KubeConfig credential record. It will be saved in metadata.",
+            "title": "Name",
+            "x-f5xc-example": "svc-cred-app1",
+            "x-f5xc-description-short": "X-displayName: \"Name\" Name of KubeConfig credential record. It will be saved in metadata.",
+            "minLength": 0,
+            "maxLength": 16,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "restricted": "[^a-z0-9-]",
+                  "required": "[a-z0-9]",
+                  "description": "Lowercase alphanumeric with hyphens, not at start/end"
+                },
+                "format": "dns-label",
+                "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+                "validation": {
+                  "rfc": "RFC 1123",
+                  "standard": "Kubernetes resource naming"
+                }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.846652+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.072759+00:00"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "X-displayName: \"Namespace\"\nThe value of the namespace is always \"system\".",
+            "title": "Namespace",
+            "x-f5xc-example": "system",
+            "x-f5xc-description-short": "X-displayName: \"Namespace\" The value of the namespace is always \"system\".",
+            "minLength": 0,
+            "maxLength": 6,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "description": "Kubernetes namespace format"
+                },
+                "format": "dns-label"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.846686+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.072792+00:00"
+          },
+          "vk8s_cluster_name": {
+            "type": "string",
+            "description": "X-displayName: \"vK8s Cluster\"\nSpecifies the name of the virtual K8s cluster.",
+            "title": "Virtual K8s Cluster Name.",
+            "x-f5xc-example": "vk8s-product-app1",
+            "x-f5xc-description-short": "X-displayName: \"vK8s Cluster\" Specifies the name of the virtual K8s cluster.",
+            "minLength": 0,
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "general",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.846757+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "vk8s_namespace": {
+            "type": "string",
+            "description": "X-displayName: \"vK8s Namespace\"\nSpecifies the virtual Kubernetes namespace name.",
+            "title": "Virtual K8s Namespace.",
+            "x-f5xc-example": "app-ns1",
+            "x-f5xc-description-short": "X-displayName: \"vK8s Namespace\" Specifies the virtual Kubernetes namespace name.",
+            "minLength": 0,
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "general",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.846807+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "X-displayName: \"Create KubeConfig Request\" CreateKubeConfigRequest represents the request format for generating a KubeConfig.",
+        "x-f5xc-description-medium": "X-displayName: \"Create KubeConfig Request\" CreateKubeConfigRequest represents the request format for generating a KubeConfig.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for api_credentialCreateKubeConfigRequest",
+          "required_fields": [
+            "expiration_days",
+            "name",
+            "namespace",
+            "vk8s_cluster_name",
+            "vk8s_namespace"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for api_credentialCreateKubeConfigRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  expiration_days: value\n  name: value\n  namespace: value\n  vk8s_cluster_name: value\n  vk8s_namespace: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"expiration_days\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"vk8s_cluster_name\": \"value\",\n    \"vk8s_namespace\": \"value\"\n  }\n}",
+          "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/api_credentials\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
+        },
+        "x-f5xc-cli-domain": "api"
+      },
+      "api_credentialCreateKubeConfigServiceCredentialsRequest": {
+        "type": "object",
+        "description": "X-displayName: \"Create KubeConfig Service Credentials Request\"\nSpecifies the request format for creating KubeConfig service credentials.",
+        "title": "Create KubeConfig Service Credentials Request.",
+        "properties": {
+          "expiration_days": {
+            "type": "integer",
+            "description": "X-displayName: \"Expiry in Days\"\nThe number of days before the KubeConfig service credential expires.",
+            "title": "Expiry in Days.",
+            "format": "int64",
+            "x-f5xc-example": "30",
+            "x-f5xc-description-short": "X-displayName: \"Expiry in Days\" The number of days before the KubeConfig service credential expires.",
+            "x-f5xc-description-medium": "X-displayName: \"Expiry in Days\" The number of days before the KubeConfig service credential expires.",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "x-f5xc-constraints": {
+              "type": "number",
+              "category": "general",
+              "number": {
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.846839+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "X-displayName: \"Name\"\nName of KubeConfig service credential record. It will be saved in metadata.",
+            "title": "Name",
+            "x-f5xc-example": "svc-cred-app1",
+            "x-f5xc-description-short": "X-displayName: \"Name\" Name of KubeConfig service credential record. It will be saved in metadata.",
+            "minLength": 0,
+            "maxLength": 16,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "restricted": "[^a-z0-9-]",
+                  "required": "[a-z0-9]",
+                  "description": "Lowercase alphanumeric with hyphens, not at start/end"
+                },
+                "format": "dns-label",
+                "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+                "validation": {
+                  "rfc": "RFC 1123",
+                  "standard": "Kubernetes resource naming"
+                }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.846872+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.072854+00:00"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "X-displayName: \"Namespace\"\nValue of namespace is always \"system\".",
+            "title": "Namespace",
+            "x-f5xc-example": "system",
+            "x-f5xc-description-short": "X-displayName: \"Namespace\" Value of namespace is always \"system\".",
+            "minLength": 0,
+            "maxLength": 6,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "description": "Kubernetes namespace format"
+                },
+                "format": "dns-label"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.846906+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.072884+00:00"
+          },
+          "namespace_roles": {
+            "type": "array",
+            "description": "X-displayName: \"List of Roles\"\nnamespace\":\"system\",\"role\":\"VES-I/O-monitor-role\"}]\"\nSpecifies a list of namespace roles assigned to the KubeConfig service credentials.",
+            "title": "Roles",
+            "items": {
+              "$ref": "#/components/schemas/schemaNamespaceRoleType"
+            },
+            "x-f5xc-example": "[{",
+            "x-f5xc-description-short": "X-displayName: \"List of Roles\" namespace\":\"system\",\"role\":\"VES-I/O-monitor-role\"}]\" Specifies a list of namespace roles assigned to the KubeConfig...",
+            "x-f5xc-description-medium": "X-displayName: \"List of Roles\" namespace\":\"system\",\"role\":\"VES-I/O-monitor-role\"}]\" Specifies a list of namespace roles assigned to the KubeConfig service credentials.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "user_group_names": {
+            "type": "array",
+            "description": "X-displayName: \"Groups\"\ndev-group-1\"]\"\nList of user groups assigned to KubeConfig service credential.",
+            "title": "User Groups Names.",
+            "items": {
+              "type": "string"
+            },
+            "x-f5xc-example": "[",
+            "x-f5xc-description-short": "X-displayName: \"Groups\" dev-group-1\"]\" List of user groups assigned to KubeConfig service credential.",
+            "x-f5xc-description-medium": "X-displayName: \"Groups\" dev-group-1\"]\" List of user groups assigned to KubeConfig service credential.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "vk8s_kubeconfig": {
+            "$ref": "#/components/schemas/api_credentialVk8sKubeconfigType"
+          }
+        },
+        "x-f5xc-description-short": "X-displayName: \"Create KubeConfig Service Credentials Request\" Specifies the request format for creating KubeConfig service credentials.",
+        "x-f5xc-description-medium": "X-displayName: \"Create KubeConfig Service Credentials Request\" Specifies the request format for creating KubeConfig service credentials.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for api_credentialCreateKubeConfigServiceCredentialsRequest",
+          "required_fields": [
+            "expiration_days",
+            "name",
+            "namespace",
+            "namespace_roles",
+            "user_group_names",
+            "vk8s_kubeconfig"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for api_credentialCreateKubeConfigServiceCredentialsRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  expiration_days: value\n  name: value\n  namespace: value\n  namespace_roles: value\n  user_group_names: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"expiration_days\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"namespace_roles\": \"value\",\n    \"user_group_names\": \"value\"\n  }\n}",
+          "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/api_credentials\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
         "x-f5xc-cli-domain": "api"
       },
@@ -4126,7 +4493,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140304+00:00"
+                "validatedAt": "2026-03-22T06:15:15.846966+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4169,7 +4536,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140345+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847003+00:00"
               },
               "deterministic": true
             },
@@ -4181,7 +4548,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.391848+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.072953+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4208,7 +4575,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140379+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847036+00:00"
               },
               "deterministic": true
             },
@@ -4220,7 +4587,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.391881+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.072982+00:00"
           },
           "spec": {
             "$ref": "#/components/schemas/api_credentialCustomCreateSpecType"
@@ -4283,7 +4650,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140421+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847075+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4311,7 +4678,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140475+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847128+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4350,7 +4717,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140524+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847161+00:00"
               },
               "deterministic": true
             },
@@ -4362,7 +4729,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.391953+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073053+00:00"
           }
         },
         "x-f5xc-description-short": "CreateResponse is the response format for the credential's create request.",
@@ -4426,7 +4793,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140557+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847193+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4469,7 +4836,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140593+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847227+00:00"
               },
               "deterministic": true
             },
@@ -4481,7 +4848,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392016+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073114+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4508,7 +4875,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140626+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847260+00:00"
               },
               "deterministic": true
             },
@@ -4520,7 +4887,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392044+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073143+00:00"
           },
           "namespace_roles": {
             "type": "array",
@@ -4568,7 +4935,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140686+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847323+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4627,7 +4994,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140751+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847388+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4657,7 +5024,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140802+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847440+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4701,6 +5068,205 @@
         },
         "x-f5xc-cli-domain": "api"
       },
+      "api_credentialCreateSiteGlobalKubeConfigRequest": {
+        "type": "object",
+        "description": "X-displayName: \"Create Site Global KubeConfig Service Credentials Request\"\nCreateSiteGlobalKubeConfigRequest represents the request structure for creating Site Global Kube Config service credentials.",
+        "title": "Create Site Global KubeConfig Service Credentials Request.",
+        "properties": {
+          "expiration_days": {
+            "type": "integer",
+            "description": "X-displayName: \"Expiry in days\"\nQty of days of service credential expiration.",
+            "title": "Expiry in days.",
+            "format": "int64",
+            "x-f5xc-example": "30",
+            "x-f5xc-description-short": "X-displayName: \"Expiry in days\" Qty of days of service credential expiration.",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "x-f5xc-constraints": {
+              "type": "number",
+              "category": "general",
+              "number": {
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.847470+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "X-displayName: \"Name\"\nName of site global kube config service credential record. It will be saved in metadata.",
+            "title": "Name",
+            "x-f5xc-example": "svc-cred-app1",
+            "x-f5xc-description-short": "X-displayName: \"Name\" Name of site global kube config service credential record.",
+            "x-f5xc-description-medium": "X-displayName: \"Name\" Name of site global kube config service credential record. It will be saved in metadata.",
+            "minLength": 0,
+            "maxLength": 16,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "restricted": "[^a-z0-9-]",
+                  "required": "[a-z0-9]",
+                  "description": "Lowercase alphanumeric with hyphens, not at start/end"
+                },
+                "format": "dns-label",
+                "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+                "validation": {
+                  "rfc": "RFC 1123",
+                  "standard": "Kubernetes resource naming"
+                }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.847505+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.073260+00:00"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "X-displayName: \"Namespace\"\nValue of namespace is always \"system\".",
+            "title": "Namespace",
+            "x-f5xc-example": "system",
+            "x-f5xc-description-short": "X-displayName: \"Namespace\" Value of namespace is always \"system\".",
+            "minLength": 0,
+            "maxLength": 6,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "naming",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "characterSet": {
+                  "allowed": "[a-z0-9-]",
+                  "description": "Kubernetes namespace format"
+                },
+                "format": "dns-label"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-03-22T06:15:15.847538+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-original-maxLength": 1024,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-03-22T06:35:43.073289+00:00"
+          },
+          "namespace_roles": {
+            "type": "array",
+            "description": "X-displayName: \"List of roles\"\nVES-I/O-monitor-role\", \"VES-I/O-uam-admin-role\"]\"\nA list of roles per namespace that will be assigned to the service credentials.",
+            "title": "Roles",
+            "items": {
+              "$ref": "#/components/schemas/schemaNamespaceRoleType"
+            },
+            "x-f5xc-example": "[",
+            "x-f5xc-description-short": "X-displayName: \"List of roles\" VES-I/O-monitor-role\", \"VES-I/O-uam-admin-role\"]\" A list of roles per namespace that will be assigned to the...",
+            "x-f5xc-description-medium": "X-displayName: \"List of roles\" VES-I/O-monitor-role\", \"VES-I/O-uam-admin-role\"]\" A list of roles per namespace that will be assigned to the service credentials.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "site": {
+            "type": "string",
+            "description": "X-displayName: \"Site\"\nx-required\nName of the site for which KubeConfig is being requested.",
+            "title": "Site",
+            "x-f5xc-example": "ce398",
+            "x-f5xc-description-short": "X-displayName: \"Site\" x-required Name of the site for which KubeConfig is being requested.",
+            "minLength": 0,
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "type": "string",
+              "category": "general",
+              "string": {
+                "minLength": 0,
+                "maxLength": 1024
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-03-22T06:15:15.847588+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "user_group_names": {
+            "type": "array",
+            "description": "X-displayName: \"Groups\"\ndev-group-1\"]\"\nA list of user groups assigned to this service credential.",
+            "title": "User Groups Names.",
+            "items": {
+              "type": "string"
+            },
+            "x-f5xc-example": "[",
+            "x-f5xc-description-short": "X-displayName: \"Groups\" dev-group-1\"]\" A list of user groups assigned to this service credential.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "X-displayName: \"Create Site Global KubeConfig Service Credentials Request\" CreateSiteGlobalKubeConfigRequest represents the request structure for...",
+        "x-f5xc-description-medium": "X-displayName: \"Create Site Global KubeConfig Service Credentials Request\" CreateSiteGlobalKubeConfigRequest represents the request structure for creating Site Global Kube Config service credentials.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for api_credentialCreateSiteGlobalKubeConfigRequest",
+          "required_fields": [
+            "expiration_days",
+            "name",
+            "namespace",
+            "namespace_roles",
+            "site",
+            "user_group_names"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for api_credentialCreateSiteGlobalKubeConfigRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  expiration_days: value\n  name: value\n  namespace: value\n  namespace_roles: value\n  site: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"expiration_days\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"namespace_roles\": \"value\",\n    \"site\": \"value\"\n  }\n}",
+          "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/api_credentials\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
+        },
+        "x-f5xc-cli-domain": "api"
+      },
       "api_credentialCustomCreateSpecType": {
         "type": "object",
         "description": "Create request specification.",
@@ -4737,7 +5303,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140849+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847650+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4770,7 +5336,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140900+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847710+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4800,7 +5366,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.140951+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847763+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4907,7 +5473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.140992+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847805+00:00"
               },
               "deterministic": true
             },
@@ -4919,7 +5485,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392216+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073410+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4954,7 +5520,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.141026+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847841+00:00"
               },
               "deterministic": true
             },
@@ -4966,7 +5532,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392245+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073439+00:00"
           }
         },
         "x-f5xc-description-short": "GET credential object with a given name.",
@@ -5049,7 +5615,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141080+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847896+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5078,7 +5644,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141128+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847946+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5120,7 +5686,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.141159+00:00"
+                "validatedAt": "2026-03-22T06:15:15.847979+00:00"
               },
               "deterministic": true
             },
@@ -5132,7 +5698,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392317+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073512+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5159,7 +5725,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.141190+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848012+00:00"
               },
               "deterministic": true
             },
@@ -5171,7 +5737,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392346+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073540+00:00"
           },
           "namespace_access": {
             "$ref": "#/components/schemas/schemaNamespaceAccessType"
@@ -5198,7 +5764,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141221+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848044+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5211,7 +5777,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392394+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073590+00:00"
           },
           "user_email": {
             "type": "string",
@@ -5233,7 +5799,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141265+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848089+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5330,7 +5896,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.141372+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848195+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5359,7 +5925,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141422+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848245+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5386,7 +5952,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141463+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848287+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5415,7 +5981,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141524+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848339+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5444,7 +6010,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141569+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848385+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5483,7 +6049,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.141626+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848442+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5511,7 +6077,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141675+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848492+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5539,7 +6105,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141726+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848544+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5599,7 +6165,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-21T06:10:19.141766+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848582+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5665,7 +6231,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141862+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848636+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5694,7 +6260,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.141954+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848685+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5736,7 +6302,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.141989+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848730+00:00"
               },
               "deterministic": true
             },
@@ -5748,7 +6314,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392601+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073800+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5775,7 +6341,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142021+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848762+00:00"
               },
               "deterministic": true
             },
@@ -5787,7 +6353,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392631+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073830+00:00"
           },
           "type": {
             "$ref": "#/components/schemas/api_credentialAPICredentialType"
@@ -5811,7 +6377,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142053+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848792+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5824,7 +6390,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392670+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073869+00:00"
           },
           "user_email": {
             "type": "string",
@@ -5846,7 +6412,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142098+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848838+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5903,7 +6469,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-21T06:10:19.142133+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848876+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5969,7 +6535,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142186+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848935+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5998,7 +6564,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142235+00:00"
+                "validatedAt": "2026-03-22T06:15:15.848987+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6040,7 +6606,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142266+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849024+00:00"
               },
               "deterministic": true
             },
@@ -6052,7 +6618,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392753+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073951+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6079,7 +6645,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142297+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849058+00:00"
               },
               "deterministic": true
             },
@@ -6091,7 +6657,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392782+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.073980+00:00"
           },
           "namespace_access": {
             "$ref": "#/components/schemas/schemaNamespaceAccessType"
@@ -6118,7 +6684,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142327+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849093+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6131,7 +6697,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392830+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074028+00:00"
           },
           "user_email": {
             "type": "string",
@@ -6153,7 +6719,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142371+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849139+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6248,7 +6814,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.142446+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849223+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6340,7 +6906,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142484+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849266+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6375,7 +6941,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142530+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849301+00:00"
               },
               "deterministic": true
             },
@@ -6387,7 +6953,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392934+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074130+00:00"
           }
         },
         "x-f5xc-description-short": "RecreateScimTokenRequest is the request format for generating SCIM API credential.",
@@ -6432,7 +6998,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142560+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849332+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6482,7 +7048,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142597+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849370+00:00"
               },
               "deterministic": true
             },
@@ -6494,7 +7060,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.392974+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074170+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6529,7 +7095,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142630+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849406+00:00"
               },
               "deterministic": true
             },
@@ -6541,7 +7107,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393002+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074198+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6605,7 +7171,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142667+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849444+00:00"
               },
               "deterministic": true
             },
@@ -6617,7 +7183,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393032+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074228+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6645,7 +7211,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142696+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849476+00:00"
               },
               "deterministic": true
             },
@@ -6657,7 +7223,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393060+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074256+00:00"
           },
           "namespace_access": {
             "$ref": "#/components/schemas/schemaNamespaceAccessType"
@@ -6739,7 +7305,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142765+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849550+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6781,7 +7347,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142797+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849583+00:00"
               },
               "deterministic": true
             },
@@ -6793,7 +7359,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393128+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074324+00:00"
           }
         },
         "x-f5xc-description-short": "Response format for the credential's replace request.",
@@ -6851,7 +7417,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.142833+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849621+00:00"
               },
               "deterministic": true
             },
@@ -6863,7 +7429,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393158+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074354+00:00"
           }
         },
         "x-f5xc-description-short": "ScimTokenRequest is used for fetching or revoking scim token.",
@@ -6920,7 +7486,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.142908+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849712+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6991,7 +7557,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393215+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074410+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -7038,7 +7604,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.142966+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849779+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7074,7 +7640,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143019+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849836+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7153,7 +7719,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.143053+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849873+00:00"
               },
               "deterministic": true
             },
@@ -7165,7 +7731,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393269+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074464+00:00"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -7302,7 +7868,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.143138+00:00"
+                "validatedAt": "2026-03-22T06:15:15.849965+00:00"
               },
               "deterministic": true
             },
@@ -7314,7 +7880,7 @@
             },
             "x-original-maxLength": 256,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393336+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074531+00:00"
           },
           "role": {
             "type": "string",
@@ -7347,7 +7913,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.143210+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850035+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7433,7 +7999,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.143303+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850132+00:00"
               },
               "deterministic": true
             },
@@ -7445,7 +8011,7 @@
             },
             "x-original-maxLength": 1200,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393388+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074583+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -7520,7 +8086,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.143341+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850173+00:00"
               },
               "deterministic": true
             },
@@ -7532,7 +8098,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393437+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074632+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7561,7 +8127,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.143372+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850206+00:00"
               },
               "deterministic": true
             },
@@ -7573,7 +8139,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393465+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074660+00:00"
           },
           "uid": {
             "type": "string",
@@ -7596,7 +8162,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143404+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850239+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7610,7 +8176,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393494+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074690+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have.",
@@ -7661,7 +8227,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143444+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850280+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7673,7 +8239,7 @@
             "readOnly": true,
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393537+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074734+00:00"
           },
           "name": {
             "type": "string",
@@ -7709,7 +8275,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.143477+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850314+00:00"
               },
               "deterministic": true
             },
@@ -7721,7 +8287,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393565+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074763+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7750,7 +8316,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.143522+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850348+00:00"
               },
               "deterministic": true
             },
@@ -7762,7 +8328,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393593+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074791+00:00"
           },
           "tenant": {
             "type": "string",
@@ -7785,7 +8351,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143568+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850393+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7798,7 +8364,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393620+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074819+00:00"
           },
           "uid": {
             "type": "string",
@@ -7821,7 +8387,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143603+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850425+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7835,7 +8401,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393649+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074848+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -7917,7 +8483,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143644+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850465+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7948,7 +8514,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143689+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850509+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7959,7 +8525,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393701+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074904+00:00"
           },
           "status": {
             "type": "string",
@@ -7981,7 +8547,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143733+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850551+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7992,7 +8558,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393729+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.074932+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -8038,7 +8604,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143788+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850603+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8070,7 +8636,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143839+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850650+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8103,7 +8669,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143889+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850708+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8134,7 +8700,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143937+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850755+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8167,7 +8733,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.143988+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850805+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8196,7 +8762,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144039+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850855+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8265,7 +8831,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144111+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850923+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8305,7 +8871,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-21T06:10:19.144173+00:00"
+                "validatedAt": "2026-03-22T06:15:15.850993+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8317,7 +8883,7 @@
             "maxLength": 6,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393857+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075060+00:00"
           },
           "object_index": {
             "type": "integer",
@@ -8341,7 +8907,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144200+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851021+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8377,7 +8943,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144245+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851064+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8425,7 +8991,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144288+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851107+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8438,7 +9004,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393924+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075170+00:00"
           },
           "trace_info": {
             "type": "string",
@@ -8461,7 +9027,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144336+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851154+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8492,7 +9058,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144370+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851186+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8506,7 +9072,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.393963+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075241+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -8525,7 +9091,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144414+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851229+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8610,7 +9176,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144454+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851268+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8621,7 +9187,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.394013+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075310+00:00"
           },
           "name": {
             "type": "string",
@@ -8657,7 +9223,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.144487+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851301+00:00"
               },
               "deterministic": true
             },
@@ -8669,7 +9235,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.394041+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075339+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8698,7 +9264,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-03-21T06:10:19.144533+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851336+00:00"
               },
               "deterministic": true
             },
@@ -8710,7 +9276,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.394068+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075366+00:00"
           },
           "uid": {
             "type": "string",
@@ -8731,7 +9297,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-21T06:10:19.144567+00:00"
+                "validatedAt": "2026-03-22T06:15:15.851367+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8744,7 +9310,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-21T06:20:48.394098+00:00"
+            "x-reconciled-at": "2026-03-22T06:35:43.075396+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
