@@ -672,7 +672,6 @@ class ConstraintEnricher:
             },
         }
 
-
     def _merge_discovery_constraints(
         self,
         schema: dict,
@@ -791,17 +790,17 @@ class ConstraintEnricher:
         stats = self.stats.copy()
 
         # Calculate average confidence
-        if stats["confidence_scores"]:
-            stats["average_confidence"] = sum(stats["confidence_scores"]) / len(
-                stats["confidence_scores"],
-            )
+        scores: list[float] = stats["confidence_scores"]
+        if scores:
+            stats["average_confidence"] = sum(scores) / len(scores)
         else:
             stats["average_confidence"] = 0.0
 
         # Calculate coverage percentage
-        if stats["properties_analyzed"] > 0:
+        analyzed: int = stats["properties_analyzed"]
+        if analyzed > 0:
             stats["coverage_percentage"] = (
-                stats["constraints_added"] / stats["properties_analyzed"] * 100
+                int(stats["constraints_added"]) / analyzed * 100
             )
         else:
             stats["coverage_percentage"] = 0.0

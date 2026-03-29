@@ -369,7 +369,7 @@ def main() -> int:
     args = parser.parse_args()
 
     # Load configuration (for future extensibility)
-    _config = load_config()
+    load_config()
 
     # Collect environment variables
     env_vars = {

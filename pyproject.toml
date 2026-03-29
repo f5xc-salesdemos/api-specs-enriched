@@ -376,6 +376,17 @@ known-first-party = ["scripts"]
 combine-as-imports = true
 force-wrap-aliases = true
 
+# =============================================================================
+# ISORT - Import Sorting (match ruff's isort settings)
+# =============================================================================
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["scripts"]
+combine_as_imports = true
+force_wrap_aliases = true
+
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings
 convention = "google"
@@ -420,6 +431,7 @@ python_version = "3.10"
 warn_return_any = false
 warn_unused_configs = true
 ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
 strict_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -437,6 +449,11 @@ ignore_errors = true
 module = "scripts.*"
 # OpenAPI spec processing uses dict[str, Any] extensively
 warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = "scripts.utils.constraint_enricher"
+# Heavy dict manipulation with dynamic types from YAML configs and OpenAPI specs
+ignore_errors = true
 
 # =============================================================================
 # COVERAGE
@@ -458,3 +475,60 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
 ]
+
+# =============================================================================
+# PYLINT - Static Analysis
+# =============================================================================
+
+[tool.pylint.main]
+# Use multiple jobs for faster analysis
+jobs = 4
+# Source roots for import resolution
+source-roots = ["."]
+
+[tool.pylint.messages_control]
+# Disable rules handled by ruff or too strict for this codebase
+disable = [
+    # Handled by ruff
+    "C0114",  # missing-module-docstring (ruff D100)
+    "C0115",  # missing-class-docstring (ruff D101)
+    "C0116",  # missing-function-docstring (ruff D102/D103)
+    "C0301",  # line-too-long (ruff E501)
+    "C0303",  # trailing-whitespace (editorconfig)
+    "C0411",  # wrong-import-order (ruff I001)
+    "C0413",  # wrong-import-position (ruff E402)
+    "W0511",  # fixme/todo (allowed during development)
+    "W0611",  # unused-import (ruff F401)
+    "W0612",  # unused-variable (ruff F841)
+    "W0613",  # unused-argument (ruff ARG)
+    "W0622",  # redefined-builtin (ruff A)
+    "E0401",  # import-error (false positives in CI)
+    # Too strict for this codebase
+    "R0801",  # duplicate-code (enrichers share patterns by design)
+    "R0902",  # too-many-instance-attributes
+    "R0903",  # too-few-public-methods
+    "R0911",  # too-many-return-statements
+    "R0912",  # too-many-branches (ruff PLR0912)
+    "R0913",  # too-many-arguments (ruff PLR0913)
+    "R0914",  # too-many-locals
+    "R0915",  # too-many-statements (ruff PLR0915)
+    "R0917",  # too-many-positional-arguments
+    "R1702",  # too-many-nested-blocks
+    "C0302",  # too-many-lines
+    "W0718",  # broad-exception-caught (intentional in pipeline resilience)
+    "W0621",  # redefined-outer-name (common in test fixtures)
+    "W0603",  # global-statement (intentional singletons)
+    "W1514",  # unspecified-encoding (handled by ruff)
+    "C0415",  # import-outside-toplevel (conditional imports)
+    "C0206",  # consider-using-dict-items (style preference)
+    "C0103",  # invalid-name (handled by ruff N)
+    "W0404",  # reimported (handled by ruff F811)
+    "R0916",  # too-many-boolean-expressions
+    "R1714",  # consider-using-in (style preference)
+    "R1716",  # chained-comparison (style preference)
+    "R0904",  # too-many-public-methods
+    "C0412",  # ungrouped-imports (handled by ruff I)
+]
+
+[tool.pylint.format]
+max-line-length = 100
