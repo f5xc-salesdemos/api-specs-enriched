@@ -257,6 +257,8 @@ jobs:
 
       - name: Detect changes and bump version
         id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Check if enriched specs exist (pipeline generated them)
           if [ ! -f docs/specifications/api/index.json ]; then
@@ -265,30 +267,33 @@ jobs:
             exit 0
           fi
 
-          # Compare with previous release or mark as changed for new runs
-          # Check for changes in source specs, pipeline config, or dependencies
-          if git diff --quiet HEAD~1 HEAD -- \
-            specs/original/ .github_release scripts/ config/ requirements.txt \
-            .github/workflows/sync-and-enrich.yml; then
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            echo "⏭️  No changes in: specs, pipeline scripts, configs, or workflow"
-            exit 0
-          fi
-
-          echo "has_changes=true" >> "$GITHUB_OUTPUT"
-
-          # Determine change type for semantic versioning (as bash variable for use in this script)
-          if ! git diff --quiet HEAD~1 HEAD -- specs/original/ .github_release; then
+          # Force release if no GitHub releases exist yet (fresh repo / migration)
+          RELEASE_COUNT=$(gh release list --limit 1 2>/dev/null | wc -l)
+          if [ "${RELEASE_COUNT:-0}" -eq 0 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
             CHANGE_TYPE="source"
-            echo "Source spec changes detected"
-          elif ! git diff --quiet HEAD~1 HEAD -- \
-            config/ scripts/ requirements.txt \
-            .github/workflows/sync-and-enrich.yml; then
-            CHANGE_TYPE="pipeline"
-            echo "Pipeline/config/workflow changes detected"
+            echo "No releases found - forcing initial release"
           else
-            CHANGE_TYPE="unknown"
-            echo "Unknown change type"
+            # Compare with previous release or mark as changed for new runs
+            # Check for changes in source specs, pipeline config, or dependencies
+            if git diff --quiet HEAD~1 HEAD -- \
+              specs/original/ .github_release scripts/ config/ requirements.txt \
+              .github/workflows/sync-and-enrich.yml; then
+              echo "has_changes=false" >> "$GITHUB_OUTPUT"
+              echo "No changes in: specs, pipeline scripts, configs, or workflow"
+              exit 0
+            fi
+
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+            # Determine change type for semantic versioning (as bash variable for use in this script)
+            if git diff --quiet HEAD~1 HEAD -- specs/original/ .github_release; then
+              CHANGE_TYPE="pipeline"
+              echo "Pipeline/config/workflow changes detected"
+            else
+              CHANGE_TYPE="source"
+              echo "Source spec changes detected"
+            fi
           fi
 
           # Output change type for downstream steps
