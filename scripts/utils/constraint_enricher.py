@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""F5 XC API Constraint Enricher
+"""F5 XC API Constraint Enricher.
 
 Purpose: Enrich OpenAPI specifications with x-f5xc-constraints extension
 Based on: Pattern matching, discovery data, and API validation rules
@@ -29,10 +29,10 @@ logger = logging.getLogger(__name__)
 
 
 class PatternMatcher:
-    """Regex-based pattern matcher for field names"""
+    """Regex-based pattern matcher for field names."""
 
-    def __init__(self, patterns: dict[str, list[dict]]):
-        """Initialize pattern matcher with compiled regex patterns
+    def __init__(self, patterns: dict[str, list[dict]]) -> None:
+        """Initialize pattern matcher with compiled regex patterns.
 
         Args:
             patterns: Dict with 'string_patterns', 'array_patterns', 'number_patterns'
@@ -42,7 +42,7 @@ class PatternMatcher:
         self.number_patterns = self._compile_patterns(patterns.get("number_patterns", []))
 
     def _compile_patterns(self, pattern_list: list[dict]) -> list[tuple]:
-        """Compile regex patterns for efficiency
+        """Compile regex patterns for efficiency.
 
         Args:
             pattern_list: List of pattern dictionaries
@@ -61,19 +61,19 @@ class PatternMatcher:
         return compiled
 
     def match_string_pattern(self, field_name: str) -> dict | None:
-        """Match field name against string patterns"""
+        """Match field name against string patterns."""
         return self._match_against_patterns(field_name, self.string_patterns)
 
     def match_array_pattern(self, field_name: str) -> dict | None:
-        """Match field name against array patterns"""
+        """Match field name against array patterns."""
         return self._match_against_patterns(field_name, self.array_patterns)
 
     def match_number_pattern(self, field_name: str) -> dict | None:
-        """Match field name against number patterns"""
+        """Match field name against number patterns."""
         return self._match_against_patterns(field_name, self.number_patterns)
 
     def _match_against_patterns(self, field_name: str, patterns: list[tuple]) -> dict | None:
-        """Match field name against compiled patterns
+        """Match field name against compiled patterns.
 
         Args:
             field_name: Field name to match
@@ -89,11 +89,11 @@ class PatternMatcher:
 
 
 class StringConstraintExtractor:
-    """Extract string-specific constraints"""
+    """Extract string-specific constraints."""
 
     @staticmethod
     def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
-        """Extract string constraints from schema and pattern
+        """Extract string constraints from schema and pattern.
 
         Args:
             field_name: Name of the field
@@ -122,15 +122,15 @@ class StringConstraintExtractor:
                 if key not in constraints:
                     constraints[key] = value
 
-        return constraints if constraints else None
+        return constraints or None
 
 
 class ArrayConstraintExtractor:
-    """Extract array-specific constraints"""
+    """Extract array-specific constraints."""
 
     @staticmethod
     def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
-        """Extract array constraints from schema and pattern
+        """Extract array constraints from schema and pattern.
 
         Args:
             field_name: Name of the field
@@ -157,15 +157,15 @@ class ArrayConstraintExtractor:
                 if key not in constraints:
                     constraints[key] = value
 
-        return constraints if constraints else None
+        return constraints or None
 
 
 class NumericConstraintExtractor:
-    """Extract numeric-specific constraints"""
+    """Extract numeric-specific constraints."""
 
     @staticmethod
     def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
-        """Extract numeric constraints from schema and pattern
+        """Extract numeric constraints from schema and pattern.
 
         Args:
             field_name: Name of the field
@@ -196,15 +196,15 @@ class NumericConstraintExtractor:
                 if key not in constraints:
                     constraints[key] = value
 
-        return constraints if constraints else None
+        return constraints or None
 
 
 class ObjectConstraintExtractor:
-    """Extract object-specific constraints"""
+    """Extract object-specific constraints."""
 
     @staticmethod
     def extract(field_name: str, schema: dict) -> dict:
-        """Extract object constraints from schema
+        """Extract object constraints from schema.
 
         Args:
             field_name: Name of the field
@@ -223,11 +223,11 @@ class ObjectConstraintExtractor:
         if "required" in schema:
             constraints["required"] = schema["required"]
 
-        return constraints if constraints else None
+        return constraints or None
 
 
 class ConstraintReconciler:
-    """Reconcile constraints from multiple sources with priority"""
+    """Reconcile constraints from multiple sources with priority."""
 
     PRIORITY_ORDER = ["existing", "discovery", "inferred"]
 
@@ -238,7 +238,7 @@ class ConstraintReconciler:
         inferred: dict | None,
         confidence_threshold: float = 0.9,
     ) -> dict | None:
-        """Reconcile constraints from multiple sources
+        """Reconcile constraints from multiple sources.
 
         Priority: EXISTING > DISCOVERY > INFERRED
 
@@ -294,10 +294,10 @@ class ConstraintReconciler:
 
 
 class ConstraintEnricher:
-    """Main constraint enrichment orchestrator"""
+    """Main constraint enrichment orchestrator."""
 
-    def __init__(self, config_path: Path):
-        """Initialize constraint enricher
+    def __init__(self, config_path: Path) -> None:
+        """Initialize constraint enricher.
 
         Args:
             config_path: Path to constraint_patterns.yaml
@@ -321,16 +321,16 @@ class ConstraintEnricher:
         }
 
     def _load_config(self) -> dict:
-        """Load constraint patterns configuration"""
+        """Load constraint patterns configuration."""
         try:
             with open(self.config_path) as f:
                 return yaml.safe_load(f)
         except Exception as e:
-            logger.error(f"Failed to load config from {self.config_path}: {e}")
+            logger.exception(f"Failed to load config from {self.config_path}: {e}")
             raise
 
     def enrich_spec(self, spec: dict) -> dict:
-        """Enrich OpenAPI specification with x-f5xc-constraints
+        """Enrich OpenAPI specification with x-f5xc-constraints.
 
         Args:
             spec: OpenAPI specification dictionary
@@ -350,8 +350,8 @@ class ConstraintEnricher:
         )
         return spec
 
-    def _enrich_schema(self, schema_name: str, schema: dict):
-        """Enrich a single schema definition"""
+    def _enrich_schema(self, schema_name: str, schema: dict) -> None:
+        """Enrich a single schema definition."""
         if "properties" not in schema:
             return
 
@@ -359,7 +359,7 @@ class ConstraintEnricher:
             self._enrich_property(prop_name, prop_schema)
 
     def _extract_discovery_constraints(self, schema: dict) -> dict | None:
-        """Extract constraints from x-ves-validation-rules
+        """Extract constraints from x-ves-validation-rules.
 
         Args:
             schema: Property schema with potential x-ves-validation-rules
@@ -477,8 +477,8 @@ class ConstraintEnricher:
 
         return result
 
-    def _enrich_property(self, field_name: str, schema: dict):
-        """Enrich a single property with constraints
+    def _enrich_property(self, field_name: str, schema: dict) -> None:
+        """Enrich a single property with constraints.
 
         Args:
             field_name: Name of the property
@@ -557,7 +557,7 @@ class ConstraintEnricher:
         schema: dict,
         pattern_match: dict | None,
     ) -> dict | None:
-        """Extract string constraints and build x-f5xc-constraints structure"""
+        """Extract string constraints and build x-f5xc-constraints structure."""
         string_constraints = StringConstraintExtractor.extract(field_name, schema, pattern_match)
         if not string_constraints:
             return None
@@ -591,7 +591,7 @@ class ConstraintEnricher:
         schema: dict,
         pattern_match: dict | None,
     ) -> dict | None:
-        """Extract array constraints and build x-f5xc-constraints structure"""
+        """Extract array constraints and build x-f5xc-constraints structure."""
         array_constraints = ArrayConstraintExtractor.extract(field_name, schema, pattern_match)
         if not array_constraints:
             return None
@@ -625,7 +625,7 @@ class ConstraintEnricher:
         schema: dict,
         pattern_match: dict | None,
     ) -> dict | None:
-        """Extract numeric constraints and build x-f5xc-constraints structure"""
+        """Extract numeric constraints and build x-f5xc-constraints structure."""
         numeric_constraints = NumericConstraintExtractor.extract(field_name, schema, pattern_match)
         if not numeric_constraints:
             return None
@@ -654,12 +654,12 @@ class ConstraintEnricher:
         return result
 
     def _extract_object_constraints(self, field_name: str, schema: dict) -> dict | None:
-        """Extract object constraints and build x-f5xc-constraints structure"""
+        """Extract object constraints and build x-f5xc-constraints structure."""
         object_constraints = ObjectConstraintExtractor.extract(field_name, schema)
         if not object_constraints:
             return None
 
-        result = {
+        return {
             "type": "object",
             "category": "general",
             "object": object_constraints,
@@ -670,14 +670,13 @@ class ConstraintEnricher:
             },
         }
 
-        return result
 
     def _merge_discovery_constraints(
         self,
         schema: dict,
         discovery_data: dict | None,
     ) -> dict | None:
-        """Merge constraints from discovery data
+        """Merge constraints from discovery data.
 
         Args:
             schema: Property schema
@@ -723,7 +722,7 @@ class ConstraintEnricher:
         return None
 
     def _map_string_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to string constraints"""
+        """Map x-ves-validation-rules to string constraints."""
         mapping = self.config.get("discovery_mapping", {}).get("string_rules", [])
         constraints = {}
 
@@ -741,7 +740,7 @@ class ConstraintEnricher:
         return constraints
 
     def _map_array_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to array constraints"""
+        """Map x-ves-validation-rules to array constraints."""
         mapping = self.config.get("discovery_mapping", {}).get("array_rules", [])
         constraints = {}
 
@@ -759,7 +758,7 @@ class ConstraintEnricher:
         return constraints
 
     def _map_numeric_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to numeric constraints"""
+        """Map x-ves-validation-rules to numeric constraints."""
         mapping = self.config.get("discovery_mapping", {}).get("number_rules", [])
         constraints = {}
 
@@ -782,7 +781,7 @@ class ConstraintEnricher:
         return constraints
 
     def get_stats(self) -> dict:
-        """Get enrichment statistics
+        """Get enrichment statistics.
 
         Returns:
             Statistics dictionary

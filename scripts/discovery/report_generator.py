@@ -20,11 +20,7 @@ from .schema_inferrer import InferredSchema
 
 # Add utils to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "utils"))
-from extension_constants import (
-    X_F5XC_API_URL,
-    X_F5XC_DISCOVERED_AT,
-    X_F5XC_RESPONSE_TIME_MS,
-)
+from extension_constants import X_F5XC_API_URL, X_F5XC_DISCOVERED_AT, X_F5XC_RESPONSE_TIME_MS
 from path_config import PathConfig
 from report_base import BaseReporter
 from server_variables_markdown import ServerVariablesMarkdownHelper

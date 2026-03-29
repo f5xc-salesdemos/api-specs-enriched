@@ -7,11 +7,7 @@ import time
 
 import pytest
 
-from scripts.discovery.rate_limiter import (
-    RateLimitConfig,
-    RateLimiter,
-    RateLimiterStats,
-)
+from scripts.discovery.rate_limiter import RateLimitConfig, RateLimiter, RateLimiterStats
 
 
 class TestRateLimitConfig:

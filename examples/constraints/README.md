@@ -1,6 +1,6 @@
 # F5 XC API Constraint Validation Examples
 
-**Purpose**: Demonstrate constraint validation using curl and the live F5 XC API.
+**Purpose**: Demonstrate constraint validation using cURL and the live F5 XC API.
 
 These scripts validate the constraints documented in `x-f5xc-constraints` extensions against the actual API behavior.
 
@@ -37,21 +37,25 @@ export F5XC_NAMESPACE="test"  # Use a test namespace!
 **Tests**: Resource name constraints (x-f5xc-constraints for `metadata.name`)
 
 **Constraint**:
+
 - Pattern: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`
 - Length: 1-63 characters
 - Format: dns-label (RFC 1123)
 
 **Usage**:
+
 ```bash
 chmod +x validate_dns_label.sh
 ./validate_dns_label.sh
 ```
 
 **Test Cases**:
+
 - ✅ Valid: `my-service`, `api-gateway`, `web`
 - ❌ Invalid: `My-Service` (uppercase), `-my-service` (hyphen at start), `my_service` (underscore)
 
 **Expected Behavior**:
+
 - Valid names: HTTP 200 (created) or 409 (already exists)
 - Invalid names: HTTP 400 (bad request) with validation error message
 
@@ -62,21 +66,25 @@ chmod +x validate_dns_label.sh
 **Tests**: Port number constraints (x-f5xc-constraints for `spec.port`)
 
 **Constraint**:
+
 - Type: number (integer)
 - Minimum: 1
 - Maximum: 65535
 
 **Usage**:
+
 ```bash
 chmod +x validate_port_number.sh
 ./validate_port_number.sh
 ```
 
 **Test Cases**:
+
 - ✅ Valid: `80`, `443`, `8080`, `1`, `65535`
 - ❌ Invalid: `0`, `-1`, `65536`, `100000`
 
 **Expected Behavior**:
+
 - Valid ports: HTTP 200 (created) or 409 (already exists)
 - Invalid ports: HTTP 400 with validation error
 
@@ -87,21 +95,25 @@ chmod +x validate_port_number.sh
 **Tests**: Array constraints (x-f5xc-constraints for arrays)
 
 **Constraint**:
+
 - Type: array
 - minItems: 1
 - maxItems: 50
 
 **Usage**:
+
 ```bash
 chmod +x validate_array_size.sh
 ./validate_array_size.sh
 ```
 
 **Test Cases**:
+
 - ✅ Valid: 1 item, 5 items, 50 items
 - ❌ Invalid: 0 items (empty array)
 
 **Expected Behavior**:
+
 - Valid sizes: HTTP 200 (created)
 - Invalid sizes: HTTP 400 with validation error
 
@@ -112,6 +124,7 @@ chmod +x validate_array_size.sh
 ### Success Indicators
 
 ✅ **Name format accepted** (HTTP 200/409)
+
 - HTTP 200: Resource created successfully
 - HTTP 409: Resource already exists (name format valid)
 - The constraint allows this value
@@ -119,12 +132,14 @@ chmod +x validate_array_size.sh
 ### Failure Indicators
 
 ❌ **Name format rejected** (HTTP 400)
+
 - HTTP 400: Bad request - constraint violation
 - The API validation matches the documented constraint
 
 ### Warnings
 
 ⚠️ **Unexpected behavior**
+
 - Expected valid but got HTTP 400: Constraint may be incorrect or incomplete
 - Expected invalid but got HTTP 200/409: Constraint may be too permissive
 
@@ -135,7 +150,7 @@ chmod +x validate_array_size.sh
 These scripts help verify:
 
 1. **Constraint Accuracy**: Do documented constraints match API behavior?
-2. **Pattern Correctness**: Does the regex pattern accurately describe valid values?
+2. **Pattern Correctness**: Does the regular expression pattern accurately describe valid values?
 3. **Confidence Scores**: Are high-confidence (deterministic) constraints reliable?
 4. **Discovery Integration**: Does discovery data improve constraint accuracy?
 
@@ -164,16 +179,19 @@ done
 ## Interpreting Results
 
 ### High Match Rate (>95%)
+
 - Constraints are highly accurate
 - Safe for AI generation with `deterministic: true`
 - Recommend using for CLI validation
 
 ### Medium Match Rate (80-95%)
+
 - Constraints are mostly accurate
 - Use for advisory hints, not strict enforcement
 - May need refinement from discovery data
 
 ### Low Match Rate (<80%)
+
 - Constraints may be incorrect or incomplete
 - Do not use for automated generation
 - Report issue for investigation
@@ -187,9 +205,10 @@ If you find constraint mismatches:
 1. **Note the field path**: e.g., `metadata.name`, `spec.port`
 2. **Document the test case**: What value was tested?
 3. **Include API response**: What did the API return?
-4. **Report at**: https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+4. **Report at**: [GitHub Issues](https://github.com/f5xc-salesdemos/api-specs-enriched/issues)
 
 **Issue Template**:
+
 ```markdown
 **Constraint Mismatch**
 
@@ -255,7 +274,7 @@ done
 ## Resources
 
 - **Constraint Metadata Documentation**: [docs/CONSTRAINT_METADATA.md](../../docs/CONSTRAINT_METADATA.md)
-- **F5 XC API Documentation**: https://docs.cloud.f5.com/docs/api
+- **F5 XC API Documentation**: [F5 XC API Documentation](https://docs.cloud.f5.com/docs/api)
 - **OpenAPI Specifications**: [docs/specifications/api/](../../docs/specifications/api/)
 
 ---

@@ -30,11 +30,11 @@ NC='\033[0m' # No Color
 
 # Detect Python interpreter
 if [ -d ".venv" ]; then
-    PYTHON=".venv/bin/python"
-elif command -v python3 &> /dev/null; then
-    PYTHON="python3"
+  PYTHON=".venv/bin/python"
+elif command -v python3 &>/dev/null; then
+  PYTHON="python3"
 else
-    PYTHON="python"
+  PYTHON="python"
 fi
 
 # =============================================================================
@@ -44,8 +44,8 @@ echo -e "${YELLOW}[1/2] Running F5 XC API enrichment pipeline...${NC}"
 echo -e "${YELLOW}Executing: $PYTHON -m scripts.pipeline${NC}"
 
 if ! $PYTHON -m scripts.pipeline; then
-    echo -e "${RED}Pipeline failed! Please fix errors before committing.${NC}"
-    exit 1
+  echo -e "${RED}Pipeline failed! Please fix errors before committing.${NC}"
+  exit 1
 fi
 
 # Stage any changes to enriched specs (output is directly in docs/)
@@ -53,12 +53,12 @@ fi
 ENRICHED_CHANGES=$(git diff --name-only -- 'docs/specifications/api/*.json' 2>/dev/null | wc -l | tr -d ' ')
 
 if [ "$ENRICHED_CHANGES" -gt 0 ]; then
-    echo -e "${YELLOW}Staging $ENRICHED_CHANGES updated enriched spec files...${NC}"
-    # Use --ignore-errors to skip ignored files like openapi.json
-    git add --ignore-errors docs/specifications/api/*.json 2>/dev/null || true
-    echo -e "${GREEN}Enriched specs updated and staged.${NC}"
+  echo -e "${YELLOW}Staging $ENRICHED_CHANGES updated enriched spec files...${NC}"
+  # Use --ignore-errors to skip ignored files like openapi.json
+  git add --ignore-errors docs/specifications/api/*.json 2>/dev/null || true
+  echo -e "${GREEN}Enriched specs updated and staged.${NC}"
 else
-    echo -e "${GREEN}No enriched spec changes detected.${NC}"
+  echo -e "${GREEN}No enriched spec changes detected.${NC}"
 fi
 
 # =============================================================================
@@ -67,11 +67,11 @@ fi
 echo -e "${YELLOW}[2/2] Running Spectral linting on ALL generated specs...${NC}"
 
 # Check if Spectral is installed - REQUIRED, never skip
-if ! command -v spectral &> /dev/null; then
-    echo -e "${RED}ERROR: Spectral CLI is not installed!${NC}"
-    echo -e "${RED}Linting is REQUIRED and cannot be skipped.${NC}"
-    echo -e "${YELLOW}Install with: npm install -g @stoplight/spectral-cli${NC}"
-    exit 1
+if ! command -v spectral &>/dev/null; then
+  echo -e "${RED}ERROR: Spectral CLI is not installed!${NC}"
+  echo -e "${RED}Linting is REQUIRED and cannot be skipped.${NC}"
+  echo -e "${YELLOW}Install with: npm install -g @stoplight/spectral-cli${NC}"
+  exit 1
 fi
 
 echo -e "${YELLOW}Executing: $PYTHON scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning${NC}"
@@ -79,12 +79,12 @@ echo -e "${YELLOW}Note: Validating ALL 25 generated specs (including gitignored 
 
 # Run linting on ALL files in the directory - fail on errors AND warnings to ensure clean specs
 if $PYTHON scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning; then
-    echo -e "${GREEN}Spectral linting passed (all files validated).${NC}"
+  echo -e "${GREEN}Spectral linting passed (all files validated).${NC}"
 else
-    LINT_EXIT_CODE=$?
-    echo -e "${RED}Spectral linting failed with errors!${NC}"
-    echo -e "${RED}Fix linting errors before committing.${NC}"
-    exit $LINT_EXIT_CODE
+  LINT_EXIT_CODE=$?
+  echo -e "${RED}Spectral linting failed with errors!${NC}"
+  echo -e "${RED}Fix linting errors before committing.${NC}"
+  exit $LINT_EXIT_CODE
 fi
 
 echo -e "${GREEN}Pre-commit pipeline complete.${NC}"

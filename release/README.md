@@ -5,7 +5,7 @@ Enriched OpenAPI 3.0.3 specifications for F5 Distributed Cloud (XC) platform.
 ## Version Information
 
 | Field | Value |
-|-------|-------|
+| ------- | ------- |
 | **Version** | {VERSION} |
 | **Release Date** | {DATE} |
 | **OpenAPI Version** | 3.0.3 |
@@ -64,7 +64,7 @@ swagger-codegen generate \
 The `domains/` directory contains individual API specifications organized by functional area:
 
 | Domain | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `api_security.json` | API security policies and configurations |
 | `applications.json` | Application deployment and management |
 | `cdn.json` | Content delivery network configuration |

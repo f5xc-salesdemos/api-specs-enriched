@@ -361,7 +361,10 @@ class MinimumConfigurationEnricher:
         """
         # Infer resource type from schema name
         resource_name = (
-            schema_name.split("Create")[0].split("Update")[0].split("Get")[0].split("Delete")[0]
+            schema_name.split("Create", maxsplit=1)[0]
+            .split("Update", maxsplit=1)[0]
+            .split("Get", maxsplit=1)[0]
+            .split("Delete", maxsplit=1)[0]
         )
         resource_name = _CAMELCASE_TO_SNAKE_PATTERN.sub("_", resource_name).lower()
 
