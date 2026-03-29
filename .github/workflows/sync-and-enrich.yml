@@ -57,7 +57,7 @@ jobs:
         run: |
           # Force download on push/dispatch events, check-only on schedule
           if [ "${{ github.event_name }}" = "push" ] || \
-             [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "updated=true" >> "$GITHUB_OUTPUT"
             echo "Push/dispatch event - forcing download"
           else
@@ -148,14 +148,16 @@ jobs:
       - name: Compute pipeline code fingerprint
         id: pipeline-fingerprint
         run: |
-          HASH=$(cat \
-            scripts/pipeline.py \
-            scripts/merge_specs.py \
-            scripts/enrich.py \
-            scripts/normalize.py \
-            requirements.txt \
-            $(find scripts/utils scripts/discovery config -type f 2>/dev/null | sort) \
-            | sha256sum | cut -d' ' -f1)
+          HASH=$({
+            cat \
+              scripts/pipeline.py \
+              scripts/merge_specs.py \
+              scripts/enrich.py \
+              scripts/normalize.py \
+              requirements.txt
+            find scripts/utils scripts/discovery config -type f 2>/dev/null \
+              | sort | xargs cat
+          } | sha256sum | cut -d' ' -f1)
           echo "hash=$HASH" >> "$GITHUB_OUTPUT"
 
       - name: Restore enriched output cache
@@ -321,7 +323,7 @@ jobs:
           COMBINED_MSG="$COMMIT_MSG $MERGED_MSG"
 
           if [[ "$COMBINED_MSG" == *"[major]"* ]] || \
-             [[ "$COMBINED_MSG" == *"BREAKING CHANGE"* ]]; then
+            [[ "$COMBINED_MSG" == *"BREAKING CHANGE"* ]]; then
             NEW_VERSION="$((MAJOR + 1)).0.0"
             BUMP_TYPE="major"
           elif [ "$CHANGE_TYPE" = "source" ]; then
@@ -755,13 +757,13 @@ jobs:
         run: |
           # Check if any job failed or was cancelled
           if [ "${{ needs.check-updates.result }}" = "failure" ] || \
-             [ "${{ needs.sync-and-enrich.result }}" = "failure" ] || \
-             [ "${{ needs.deploy-docs.result }}" = "failure" ] || \
-             [ "${{ needs.notify-downstream.result }}" = "failure" ] || \
-             [ "${{ needs.check-updates.result }}" = "cancelled" ] || \
-             [ "${{ needs.sync-and-enrich.result }}" = "cancelled" ] || \
-             [ "${{ needs.deploy-docs.result }}" = "cancelled" ] || \
-             [ "${{ needs.notify-downstream.result }}" = "cancelled" ]; then
+            [ "${{ needs.sync-and-enrich.result }}" = "failure" ] || \
+            [ "${{ needs.deploy-docs.result }}" = "failure" ] || \
+            [ "${{ needs.notify-downstream.result }}" = "failure" ] || \
+            [ "${{ needs.check-updates.result }}" = "cancelled" ] || \
+            [ "${{ needs.sync-and-enrich.result }}" = "cancelled" ] || \
+            [ "${{ needs.deploy-docs.result }}" = "cancelled" ] || \
+            [ "${{ needs.notify-downstream.result }}" = "cancelled" ]; then
             echo "has_failure=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Workflow failure detected - will create issue"
           else

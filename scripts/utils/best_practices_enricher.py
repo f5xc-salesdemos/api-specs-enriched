@@ -189,7 +189,7 @@ class BestPracticesEnricher:
         Args:
             spec: OpenAPI specification dictionary
             domain: Domain name (e.g., "virtual"). If None, tries to extract
-                   from spec's x-f5xc-cli-domain extension.
+                from spec's x-f5xc-cli-domain extension.
 
         Returns:
             Specification with enriched x-f5xc-best-practices
