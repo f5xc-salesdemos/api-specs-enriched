@@ -47,9 +47,9 @@ class TestConfigurationLoading:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("""
 api:
-  timeout: 60
+    timeout: 60
 scope:
-  sample_size: 10
+    sample_size: 10
 new_key: new_value
 """)
 

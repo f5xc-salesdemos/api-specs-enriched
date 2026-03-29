@@ -25,7 +25,7 @@ Usage:
 
 Environment:
     GITHUB_TOKEN: Optional authentication token for higher rate limits
-                  (5000/hr vs 60/hr unauthenticated)
+                    (5000/hr vs 60/hr unauthenticated)
 """
 
 import argparse
@@ -406,17 +406,17 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Check for updates without downloading
-  python -m scripts.download --check-only
+    # Check for updates without downloading
+    python -m scripts.download --check-only
 
-  # Download latest release (uses cache)
-  python -m scripts.download
+    # Download latest release (uses cache)
+    python -m scripts.download
 
-  # Force download (bypass cache)
-  python -m scripts.download --force
+    # Force download (bypass cache)
+    python -m scripts.download --force
 
 Environment Variables:
-  GITHUB_TOKEN    Optional GitHub token for authentication (5000/hr vs 60/hr)
+    GITHUB_TOKEN    Optional GitHub token for authentication (5000/hr vs 60/hr)
         """,
     )
     parser.add_argument(

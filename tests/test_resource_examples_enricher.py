@@ -217,11 +217,11 @@ class TestExampleValidator:
         validator = ExampleValidator(sample_schemas)
         yaml_content = """
 metadata:
-  name: my-lb
-  namespace: default
+    name: my-lb
+    namespace: default
 spec:
-  domains:
-    - example.com
+    domains:
+        - example.com
 """
         is_valid, errors = validator.validate_example(yaml_content, "http_loadbalancer")
         # Should be valid (or skip validation if jsonschema not available)
@@ -232,8 +232,8 @@ spec:
         validator = ExampleValidator(sample_schemas)
         yaml_content = """
 invalid: yaml:
-  - missing proper structure
-  this is not valid: [
+    - missing proper structure
+    this is not valid: [
 """
         is_valid, errors = validator.validate_example(yaml_content, "http_loadbalancer")
         assert is_valid is False

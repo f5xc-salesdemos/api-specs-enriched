@@ -405,62 +405,62 @@ STRICT RULES - Violations cause INSTANT REJECTION:
 
 1. BANNED TERMS BY CATEGORY (all fail implicit context test):
 
-  REDUNDANT (context implies these - zero semantic value):
-  ✗ "API", "REST API", "endpoint", "specifications", "spec"
-  Why: Repository name includes "api" - readers already know this is API documentation
+    REDUNDANT (context implies these - zero semantic value):
+    ✗ "API", "REST API", "endpoint", "specifications", "spec"
+    Why: Repository name includes "api" - readers already know this is API documentation
 
-  BRAND NAMES (context implies these - zero semantic value):
-  ✗ "F5", "F5 XC", "XC", "Distributed Cloud", "Volterra"
-  Why: Repository name includes "f5xc" - readers already know this is F5 XC content
+    BRAND NAMES (context implies these - zero semantic value):
+    ✗ "F5", "F5 XC", "XC", "Distributed Cloud", "Volterra"
+    Why: Repository name includes "f5xc" - readers already know this is F5 XC content
 
-  FILLER WORDS (use simpler alternatives):
-  ✗ "utilize" → use "use"
-  ✗ "leverage" → use "use"
-  ✗ "facilitate" → use "enable"
-  ✗ "in order to" → use "to"
+    FILLER WORDS (use simpler alternatives):
+    ✗ "utilize" → use "use"
+    ✗ "leverage" → use "use"
+    ✗ "facilitate" → use "enable"
+    ✗ "in order to" → use "to"
 
-  VAGUE DESCRIPTORS (be specific or omit):
-  ✗ "various", "multiple", "several", "etc.", "and more", "diverse"
+    VAGUE DESCRIPTORS (be specific or omit):
+    ✗ "various", "multiple", "several", "etc.", "and more", "diverse"
 
-  MARKETING HYPE (state facts, not opinions):
-  ✗ "seamless", "robust", "powerful", "cutting-edge", "innovative"
-  ✗ "enterprise-grade", "world-class", "best-in-class", "superior"
+    MARKETING HYPE (state facts, not opinions):
+    ✗ "seamless", "robust", "powerful", "cutting-edge", "innovative"
+    ✗ "enterprise-grade", "world-class", "best-in-class", "superior"
 
-  SELF-REFERENCE (domain name in description is redundant):
-  ✗ "{domain_variants}" (the domain name itself)
+    SELF-REFERENCE (domain name in description is redundant):
+    ✗ "{domain_variants}" (the domain name itself)
 
 2. ACTIVE VOICE REQUIRED (passive voice = instant rejection):
-  ✗ "Data is returned" → ✓ "Returns data"
-  ✗ "Connections are managed" → ✓ "Manages connections"
-  ✗ "Security is handled" → ✓ "Handles security"
+    ✗ "Data is returned" → ✓ "Returns data"
+    ✗ "Connections are managed" → ✓ "Manages connections"
+    ✗ "Security is handled" → ✓ "Handles security"
 
 3. NOUN-FIRST, VALUE-ADD DESCRIPTIONS (CRITICAL - DRY COMPLIANCE):
-  Since this is a CRUD API, users already know they can configure/manage/deploy.
-  DO NOT waste characters on implied operations. Instead, describe:
-  - WHAT resources/concepts exist in this domain
-  - WHAT technical capabilities are available
-  - WHAT specific features differentiate this domain
+    Since this is a CRUD API, users already know they can configure/manage/deploy.
+    DO NOT waste characters on implied operations. Instead, describe:
+    - WHAT resources/concepts exist in this domain
+    - WHAT technical capabilities are available
+    - WHAT specific features differentiate this domain
 
-  ✗ BANNED STARTERS (redundant in API context):
+    ✗ BANNED STARTERS (redundant in API context):
     "Configure...", "Manage...", "Create...", "Deploy...", "Monitor...",
     "Access...", "Define...", "Set up...", "Enable...", "Control...", "Handle..."
 
-  ✗ ALSO BANNED: "This", "The", "A", "An", "Provides", "Enables", "Offers"
+    ✗ ALSO BANNED: "This", "The", "A", "An", "Provides", "Enables", "Offers"
 
-  ✓ GOOD PATTERNS (noun-first, information-dense):
+    ✓ GOOD PATTERNS (noun-first, information-dense):
     "HTTP, TCP, UDP load balancing with origin pool health checks."
     "Authoritative zones, record types, and DNS-based failover."
     "Request inspection, attack signatures, and bot mitigation."
 
-  The first word should be a NOUN or NOUN-PHRASE describing domain concepts.
+    The first word should be a NOUN or NOUN-PHRASE describing domain concepts.
 
 4. PROGRESSIVE INFORMATION (no repetition across tiers):
-  - SHORT: Primary capability only (the core "what")
-  - MEDIUM: Add secondary features + benefit (the "what else" + "why")
-  - LONG: Add mechanics, options, usage context (the "how" + "when")
+    - SHORT: Primary capability only (the core "what")
+    - MEDIUM: Add secondary features + benefit (the "what else" + "why")
+    - LONG: Add mechanics, options, usage context (the "how" + "when")
 
-  CRITICAL: If a concept appears in SHORT, it MUST NOT appear in MEDIUM or LONG.
-  Each tier reveals NEW information only.
+    CRITICAL: If a concept appears in SHORT, it MUST NOT appear in MEDIUM or LONG.
+    Each tier reveals NEW information only.
 
 ═══════════════════════════════════════════════════════════════════════════════
 COMPRESSION TECHNIQUES - Apply these to stay under limits:
@@ -472,39 +472,39 @@ COMPRESSION TECHNIQUES - Apply these to stay under limits:
 
 NEGATIVE EXAMPLES (from actual failures - DO NOT repeat these patterns):
 ❌ "Configure content delivery and caching policies for global distribution" (71 chars)
-  → Noun-first rewrite: "Content delivery and edge caching." (35 chars) ✓
+    → Noun-first rewrite: "Content delivery and edge caching." (35 chars) ✓
 
 ❌ "Manage zones, records, and load balancing for domain resolution" (63 chars)
-  → Noun-first rewrite: "DNS zones, record types, and load balancing." (45 chars) ✓
+    → Noun-first rewrite: "DNS zones, record types, and load balancing." (45 chars) ✓
 
 ═══════════════════════════════════════════════════════════════════════════════
 CHARACTER LIMITS - WRITE TO FIT, NEVER TRUNCATE:
 
 ⚠️ CRITICAL: Write descriptions that NATURALLY fit within limits.
-  NEVER write long text and truncate it. No "..." endings. No partial sentences.
-  If your draft is too long, REWRITE it shorter - do not cut it off.
+    NEVER write long text and truncate it. No "..." endings. No partial sentences.
+    If your draft is too long, REWRITE it shorter - do not cut it off.
 
 SHORT (TARGET: 35-50 chars, HARD MAX: {MAX_SHORT}):
-  • Format: [Noun/Concept phrase ending with period]
-  • Start with WHAT exists, not what users DO
-  • Remove ALL unnecessary words
-  • If over 50 chars, REMOVE WORDS (don't truncate!)
-  • Examples:
+    • Format: [Noun/Concept phrase ending with period]
+    • Start with WHAT exists, not what users DO
+    • Remove ALL unnecessary words
+    • If over 50 chars, REMOVE WORDS (don't truncate!)
+    • Examples:
     ✓ "HTTP load balancers and traffic distribution." (46 chars)
     ✓ "WAF rules, rate limits, and bot protection." (44 chars)
     ✓ "Edge nodes, clusters, and cloud sites." (39 chars)
     ✗ TOO LONG (71 chars): "Configure content delivery and caching..."
 
 MEDIUM (TARGET: 100-130 chars, HARD MAX: {MAX_MEDIUM}):
-  • Two short noun-first sentences
-  • If over 130 chars, REWRITE with fewer words (don't truncate!)
-  • Example (82 chars): "Routing rules, health checks, and failover. Traffic distribution controls."
-  • AVOID long phrases like "with support for BIND and AXFR transfer protocols"
+    • Two short noun-first sentences
+    • If over 130 chars, REWRITE with fewer words (don't truncate!)
+    • Example (82 chars): "Routing rules, health checks, and failover. Traffic distribution controls."
+    • AVOID long phrases like "with support for BIND and AXFR transfer protocols"
 
 LONG (TARGET: 350-450 chars, HARD MAX: {MAX_LONG}):
-  • 3-4 sentences, stay under 450 to be safe
-  • If over 450 chars, SIMPLIFY sentences (don't truncate!)
-  • Remove verbose qualifiers ("authoritative", "global", "comprehensive")
+    • 3-4 sentences, stay under 450 to be safe
+    • If over 450 chars, SIMPLIFY sentences (don't truncate!)
+    • Remove verbose qualifiers ("authoritative", "global", "comprehensive")
 
 ═══════════════════════════════════════════════════════════════════════════════
 SUCCESSFUL EXAMPLE - Follow this structure and style:
@@ -517,7 +517,7 @@ Respond with JSON only: {{"short": "...", "medium": "...", "long": "..."}}
 BEFORE RESPONDING - MANDATORY VERIFICATION CHECKLIST:
 
 ⚠️ NEVER TRUNCATE - If any tier exceeds its target, REWRITE IT SHORTER.
-  Truncated text with "..." is REJECTED. Incomplete sentences are REJECTED.
+    Truncated text with "..." is REJECTED. Incomplete sentences are REJECTED.
 
 CHARACTER LIMITS:
 □ SHORT ≤50 chars (if over, REWRITE - never cut off!)
@@ -544,10 +544,10 @@ COMPLETE THOUGHT REQUIREMENT (CRITICAL - instant rejection for violations):
 □ NEVER end a sentence with: and, or, with, for, to, the, a, an
 □ If your draft exceeds the limit, REWRITE it shorter as a complete thought
 □ Examples:
-  ✓ "Load balancers and health checks." (complete thought)
-  ✗ "Load balancers and" (cut-off mid-phrase)
-  ✗ "Load balancers with" (incomplete thought)
-  ✗ "Load balancers" (missing period)
+    ✓ "Load balancers and health checks." (complete thought)
+    ✗ "Load balancers and" (cut-off mid-phrase)
+    ✗ "Load balancers with" (incomplete thought)
+    ✗ "Load balancers" (missing period)
 
 Do not use any tools. Generate based on context provided."""
 
@@ -1896,25 +1896,25 @@ Mental test: "Does this word add semantic value beyond what context implies?"
 FIX INSTRUCTIONS:
 
 1. For DOMAIN NAME violations:
-  - Replace "{domain.replace("_", " ")}" with one of: {synonyms_str}
-  - The description DESCRIBES the domain, it should NOT MENTION it
+    - Replace "{domain.replace("_", " ")}" with one of: {synonyms_str}
+    - The description DESCRIBES the domain, it should NOT MENTION it
 
 2. For CHARACTER LIMIT violations:
-  - SHORT must be ≤{MAX_SHORT} chars (aim for 35-50)
-  - MEDIUM must be ≤{MAX_MEDIUM} chars (aim for 100-130)
-  - LONG must be ≤{MAX_LONG} chars (aim for 350-450)
-  - Remove words/phrases, don't truncate with "..."
+    - SHORT must be ≤{MAX_SHORT} chars (aim for 35-50)
+    - MEDIUM must be ≤{MAX_MEDIUM} chars (aim for 100-130)
+    - LONG must be ≤{MAX_LONG} chars (aim for 350-450)
+    - Remove words/phrases, don't truncate with "..."
 
 3. For REPETITION/OVERLAP violations:
-  - Each tier must use DIFFERENT vocabulary
-  - Replace overlapping words with synonyms
-  - Progress: WHAT (short) → HOW+SCOPE (medium) → WHERE+WHEN+METRICS (long)
+    - Each tier must use DIFFERENT vocabulary
+    - Replace overlapping words with synonyms
+    - Progress: WHAT (short) → HOW+SCOPE (medium) → WHERE+WHEN+METRICS (long)
 
 4. For STYLE violations (DRY-COMPLIANT):
-  - Start EVERY tier with NOUN/CONCEPT (not action verbs)
-  - BANNED: Configure, Create, Manage, Define, Deploy, Monitor, Access
-  - Also banned: This, The, A, An, Provides, Enables
-  - Example: "HTTP load balancing..." NOT "Configure load balancing..."
+    - Start EVERY tier with NOUN/CONCEPT (not action verbs)
+    - BANNED: Configure, Create, Manage, Define, Deploy, Monitor, Access
+    - Also banned: This, The, A, An, Provides, Enables
+    - Example: "HTTP load balancing..." NOT "Configure load balancing..."
 
 ═══════════════════════════════════════════════════════════════════════════════
 OUTPUT:

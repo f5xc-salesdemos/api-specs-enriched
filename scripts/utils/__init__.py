@@ -38,10 +38,10 @@ from .uniqueness_enricher import UniquenessEnricher
 from .validation_enricher import ValidationEnricher
 from .validation_exporter import ValidationExporter
 from .version_calculator import (
-                       calculate_next_version,
-                       get_version,
-                       get_version_from_tags,
-                       is_valid_semver,
+    calculate_next_version,
+    get_version,
+    get_version_from_tags,
+    is_valid_semver,
 )
 
 __all__ = [

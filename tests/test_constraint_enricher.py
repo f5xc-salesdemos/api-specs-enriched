@@ -40,7 +40,7 @@ from scripts.utils.constraint_enricher import (
 def test_config():
     """Load test constraint patterns configuration"""
     config_path = Path(__file__).parent.parent / "config" / "constraint_patterns.yaml"
-    with open(config_path) as f:
+    with config_path.open() as f:
         return yaml.safe_load(f)
 
 

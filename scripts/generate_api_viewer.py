@@ -4,9 +4,9 @@
 """Generate Scalar API viewer pages and Starlight MDX wrappers.
 
 Reads docs/specifications/api/index.json and generates:
-  - docs/specifications/api/viewer/{domain}.html  (standalone Scalar viewers)
-  - docs/api-reference/{domain}.mdx               (Starlight iframe wrappers)
-  - docs/api-reference/index.mdx                  (catalog landing page)
+    - docs/specifications/api/viewer/{domain}.html  (standalone Scalar viewers)
+    - docs/api-reference/{domain}.mdx               (Starlight iframe wrappers)
+    - docs/api-reference/index.mdx                  (catalog landing page)
 
 Usage:
     python -m scripts.generate_api_viewer
@@ -34,25 +34,25 @@ def generate_viewer_html(domain: str, title: str) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title} - API Reference</title>
-  <style>
-    body {{ margin: 0; padding: 0; }}
-  </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} - API Reference</title>
+    <style>
+        body {{ margin: 0; padding: 0; }}
+    </style>
 </head>
 <body>
-  <div id="app"></div>
-  <script src="{SCALAR_CDN_URL}"></script>
-  <script>
-    Scalar.createApiReference('#app', {{
-      url: '../{domain}.json',
-      theme: 'kepler',
-      darkMode: true,
-      defaultOpenAllTags: false,
-      hideDownloadButton: false,
-    }});
-  </script>
+    <div id="app"></div>
+    <script src="{SCALAR_CDN_URL}"></script>
+    <script>
+        Scalar.createApiReference('#app', {{
+            url: '../{domain}.json',
+            theme: 'kepler',
+            darkMode: true,
+            defaultOpenAllTags: false,
+            hideDownloadButton: false,
+        }});
+    </script>
 </body>
 </html>
 """
@@ -73,9 +73,9 @@ import {{ LinkCard }} from '@astrojs/starlight/components';
 import ScalarViewer from '@components/ScalarApiViewerWrapper.astro';
 
 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-  <LinkCard title="Back to API Catalog" href="/api-reference/" />
-  <LinkCard title="Full Screen" href="{viewer_path}" />
-  <LinkCard title="Download Spec" href="{spec_path}" />
+    <LinkCard title="Back to API Catalog" href="/api-reference/" />
+    <LinkCard title="Full Screen" href="{viewer_path}" />
+    <LinkCard title="Download Spec" href="{spec_path}" />
 </div>
 
 <ScalarViewer specUrl="{spec_path}" title="{title}" />
@@ -144,7 +144,7 @@ title: API Reference
 description: Interactive API documentation for F5 Distributed Cloud services
 tableOfContents: false
 sidebar:
-  order: 0
+    order: 0
 ---
 
 import {{ CardGrid, LinkCard }} from '@astrojs/starlight/components';

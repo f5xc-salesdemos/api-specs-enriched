@@ -37,9 +37,9 @@ class TestConfigurationLoading:
         config_file = tmp_path / "discovery.yaml"
         config_file.write_text("""
 discovery:
-  api_url: "https://test.example.com"
-  rate_limit:
-    requests_per_second: 10
+    api_url: "https://test.example.com"
+    rate_limit:
+        requests_per_second: 10
 """)
 
         result = load_config(config_file)
@@ -944,19 +944,19 @@ class TestConfigurationLoadingFromYaml:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("""
 discovery:
-  api_url: "https://test.example.com"
-  rate_limit:
-    requests_per_second: 20
-  exploration:
-    namespaces:
-      - custom
-      - testing
-    methods:
-      - GET
-      - POST
-  output:
-    base_dir: "custom/path"
-    format: "yaml"
+    api_url: "https://test.example.com"
+    rate_limit:
+        requests_per_second: 20
+    exploration:
+        namespaces:
+            - custom
+            - testing
+        methods:
+            - GET
+            - POST
+    output:
+        base_dir: "custom/path"
+        format: "yaml"
 """)
 
         config = load_config(config_file)
@@ -974,9 +974,9 @@ discovery:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("""
 discovery:
-  api_url: "https://nested.example.com"
-  rate_limit:
-    requests_per_second: 15
+    api_url: "https://nested.example.com"
+    rate_limit:
+        requests_per_second: 15
 """)
 
         config = load_config(config_file)
