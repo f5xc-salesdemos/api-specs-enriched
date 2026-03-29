@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Repository-specific pre-commit hooks for f5xc-api-enriched
+# Repository-specific pre-commit hooks for api-specs-enriched
 # Called by the universal .pre-commit-config.yaml local-hooks entry
 set -euo pipefail
 

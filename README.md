@@ -1,4 +1,4 @@
-# f5xc-api-enriched
+# api-specs-enriched
 
 Automated OpenAPI enrichment pipeline for F5 Distributed Cloud API specifications, enhancing developer experience with comprehensive descriptions, metadata, and standardized extensions.
 
@@ -93,7 +93,7 @@ make push-discovery        # Commit discovery data for CI/CD
 
 ### GitHub Release Integration
 
-API specifications are sourced from **[robinmordasiewicz/f5xc-api-fixed](https://github.com/robinmordasiewicz/f5xc-api-fixed)** via GitHub Releases.
+API specifications are sourced from **[f5xc-salesdemos/api-specs](https://github.com/f5xc-salesdemos/api-specs)** via GitHub Releases.
 
 **Benefits**:
 - Pre-validated specs (268 domain specs, 5.7 MB compressed)
@@ -109,7 +109,7 @@ export GITHUB_TOKEN="ghp_your_personal_access_token"
 
 **Release Format**:
 - Versioning: `vYYYY.MM.DD-N` (date-based with sequence)
-- Asset: `f5xc-api-fixed-v{version}.zip`
+- Asset: `api-specs-v{version}.zip`
 - Contents: `domains/*.json` (268 domain specifications)
 
 **CI/CD**: GitHub Actions automatically uses `secrets.GITHUB_TOKEN` for authentication.
@@ -268,7 +268,7 @@ Access rich resource metadata from the specification index:
 
 ```javascript
 // JavaScript/TypeScript example
-const index = await fetch("https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/index.json");
+const index = await fetch("https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/index.json");
 const data = await index.json();
 
 const resource = data.primary_resources.find(r => r.name === "http_loadbalancer");
@@ -281,7 +281,7 @@ console.log(resource.dependencies);      // {required: ["origin_pool"], optional
 # Python example
 import requests
 
-response = requests.get("https://robinmordasiewicz.github.io/f5xc-api-enriched/specifications/index.json")
+response = requests.get("https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/index.json")
 data = response.json()
 
 resource = next(r for r in data["primary_resources"] if r["name"] == "http_loadbalancer")
@@ -315,7 +315,7 @@ const longDesc = property.description;  // "Origin pool defines a collection of 
 
 ### Published Documentation
 
-- **API Specs Index**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/>
+- **API Specs Index**: <https://f5xc-salesdemos.github.io/api-specs-enriched/>
 
 ### Developer Documentation
 
@@ -440,5 +440,5 @@ MIT License - Copyright (c) 2026 Robin Mordasiewicz
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/robinmordasiewicz/f5xc-api-enriched/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/robinmordasiewicz/f5xc-api-enriched/discussions)
+- **Issues**: [GitHub Issues](https://github.com/f5xc-salesdemos/api-specs-enriched/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/f5xc-salesdemos/api-specs-enriched/discussions)
