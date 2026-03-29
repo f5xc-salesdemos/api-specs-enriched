@@ -8,8 +8,8 @@ and industry-standard terminology (XCKS/XCCS) for Kubernetes offerings.
 Fully automated - no manual intervention required.
 
 Branding Strategy:
-  - XCKS (XC Kubernetes Service) = AppStack/VoltStack (comparable to AWS EKS, Azure AKS, GCP GKE)
-  - XCCS (XC Container Services) = Virtual Kubernetes (comparable to AWS ECS, Azure Container Services)
+    - XCKS (XC Kubernetes Service) = AppStack/VoltStack (comparable to AWS EKS, Azure AKS, GCP GKE)
+    - XCCS (XC Container Services) = Virtual Kubernetes (comparable to AWS ECS, Azure Container Services)
 
 Version: v3.0.0 - Uses x-f5xc-* namespace constants
 """

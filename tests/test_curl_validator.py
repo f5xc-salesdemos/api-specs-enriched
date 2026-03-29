@@ -364,7 +364,7 @@ class TestCurlExampleValidatorInit:
         config_path.write_text(
             """
 validation:
-  test_prefix: "my-custom-prefix"
+    test_prefix: "my-custom-prefix"
 """,
         )
         validator = CurlExampleValidator(
@@ -425,7 +425,7 @@ class TestTestNameGeneration:
         config_path.write_text(
             """
 validation:
-  test_prefix: "my-prefix"
+    test_prefix: "my-prefix"
 """,
         )
         validator = CurlExampleValidator(
@@ -473,9 +473,9 @@ class TestApiPathConstruction:
         config_path.write_text(
             """
 api_paths:
-  custom_resource:
-    collection: "/api/custom/namespaces/{namespace}/resources"
-    resource: "/api/custom/namespaces/{namespace}/resources/{name}"
+    custom_resource:
+        collection: "/api/custom/namespaces/{namespace}/resources"
+        resource: "/api/custom/namespaces/{namespace}/resources/{name}"
 """,
         )
         validator = CurlExampleValidator(
@@ -556,14 +556,14 @@ class TestLoadMinimumConfigs:
         (config_dir / "minimum_configs.yaml").write_text(
             """
 resources:
-  http_loadbalancer:
-    description: "HTTP Load Balancer"
-    example_json: |
-      {"metadata": {"name": "example"}, "spec": {}}
-  origin_pool:
-    description: "Origin Pool"
-    example_json: |
-      {"metadata": {"name": "example"}, "spec": {"port": 443}}
+    http_loadbalancer:
+        description: "HTTP Load Balancer"
+        example_json: |
+            {"metadata": {"name": "example"}, "spec": {}}
+    origin_pool:
+        description: "Origin Pool"
+        example_json: |
+            {"metadata": {"name": "example"}, "spec": {"port": 443}}
 """,
         )
 
@@ -827,7 +827,7 @@ class TestResourceFiltering:
         config_path.write_text(
             """
 validation:
-  resources: ["http_loadbalancer"]
+    resources: ["http_loadbalancer"]
 """,
         )
         validator = CurlExampleValidator(
@@ -879,11 +879,11 @@ class TestExpectedStatusCodes:
         config_path.write_text(
             """
 expected_status:
-  create: [201]
-  read: [200, 304]
-  update: [200, 204]
-  delete: [200, 202]
-  verify_delete: [404, 410]
+    create: [201]
+    read: [200, 304]
+    update: [200, 204]
+    delete: [200, 202]
+    verify_delete: [404, 410]
 """,
         )
         validator = CurlExampleValidator(
@@ -1530,7 +1530,7 @@ class TestSkipOperations:
         config_path.write_text(
             """
 validation:
-  skip_operations: ["create"]
+    skip_operations: ["create"]
 """,
         )
         validator = CurlExampleValidator(
@@ -1561,7 +1561,7 @@ validation:
         config_path.write_text(
             """
 validation:
-  skip_operations: ["update"]
+    skip_operations: ["update"]
 """,
         )
         validator = CurlExampleValidator(
@@ -1773,7 +1773,7 @@ class TestEdgeCases:
         config_path.write_text(
             """
 validation:
-  timeout: 60
+    timeout: 60
 """,
         )
         validator = CurlExampleValidator(
@@ -1849,9 +1849,9 @@ class TestConfigMerge:
 custom_setting: "my-custom-value"
 # Nested validation config with test_prefix
 validation:
-  test_prefix: "custom-prefix"
-  skip_operations:
-    - verify_delete
+    test_prefix: "custom-prefix"
+    skip_operations:
+        - verify_delete
 """,
         )
         validator = CurlExampleValidator(
@@ -1892,9 +1892,9 @@ class TestLoadMinimumConfigsFile:
         config_file.write_text(
             """
 resources:
-  http_loadbalancer:
-    example_json: '{"metadata": {"name": "test"}}'
-    description: "Test LB"
+    http_loadbalancer:
+        example_json: '{"metadata": {"name": "test"}}'
+        description: "Test LB"
 """,
         )
 

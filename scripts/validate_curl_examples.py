@@ -107,22 +107,22 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Environment Variables:
-  F5XC_API_URL         API base URL (required for non-dry-run)
-  F5XC_API_TOKEN       API authentication token (required for non-dry-run)
-  F5XC_TEST_NAMESPACE  Override test namespace (default: "default")
+    F5XC_API_URL         API base URL (required for non-dry-run)
+    F5XC_API_TOKEN       API authentication token (required for non-dry-run)
+    F5XC_TEST_NAMESPACE  Override test namespace (default: "default")
 
 Examples:
-  # Full CRUD validation
-  %(prog)s
+    # Full CRUD validation
+    %(prog)s
 
-  # Dry-run mode
-  %(prog)s --dry-run
+    # Dry-run mode
+    %(prog)s --dry-run
 
-  # Test specific resource
-  %(prog)s --resource http_loadbalancer
+    # Test specific resource
+    %(prog)s --resource http_loadbalancer
 
-  # Cleanup orphaned test resources
-  %(prog)s --cleanup-only
+    # Cleanup orphaned test resources
+    %(prog)s --cleanup-only
         """,
     )
     parser.add_argument(

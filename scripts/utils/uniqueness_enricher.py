@@ -115,11 +115,11 @@ class UniquenessEnricher:
 
         1. Read namespace scope from spec.info["x-f5xc-namespace-scope"]
         2. For each schema in components.schemas:
-          - Skip if already has x-f5xc-uniqueness (idempotent)
-          - Convert schema name to resource type (HTTPLoadBalancer → http_loadbalancer)
-          - Check resource_overrides, else use namespace_scope_mapping
-          - Build uniqueness extension with scope, within, fields, metadata
-          - Add to schema
+            - Skip if already has x-f5xc-uniqueness (idempotent)
+            - Convert schema name to resource type (HTTPLoadBalancer → http_loadbalancer)
+            - Check resource_overrides, else use namespace_scope_mapping
+            - Build uniqueness extension with scope, within, fields, metadata
+            - Add to schema
 
         Args:
             spec: OpenAPI specification dictionary

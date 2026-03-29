@@ -20,6 +20,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import ClassVar
 
 import yaml
 
@@ -57,7 +58,7 @@ class PatternMatcher:
                 compiled_regex = re.compile(pattern, re.IGNORECASE)
                 compiled.append((compiled_regex, pattern_dict))
             except re.error as e:
-                logger.warning(f"Invalid regex pattern '{pattern}': {e}")
+                logger.warning("Invalid regex pattern '%s': %s", pattern, e)
         return compiled
 
     def match_string_pattern(self, field_name: str) -> dict | None:
@@ -92,7 +93,7 @@ class StringConstraintExtractor:
     """Extract string-specific constraints."""
 
     @staticmethod
-    def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
         """Extract string constraints from schema and pattern.
 
         Args:
@@ -129,7 +130,7 @@ class ArrayConstraintExtractor:
     """Extract array-specific constraints."""
 
     @staticmethod
-    def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
         """Extract array constraints from schema and pattern.
 
         Args:
@@ -164,7 +165,7 @@ class NumericConstraintExtractor:
     """Extract numeric-specific constraints."""
 
     @staticmethod
-    def extract(field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
         """Extract numeric constraints from schema and pattern.
 
         Args:
@@ -203,11 +204,11 @@ class ObjectConstraintExtractor:
     """Extract object-specific constraints."""
 
     @staticmethod
-    def extract(field_name: str, schema: dict) -> dict:
+    def extract(_field_name: str, schema: dict) -> dict:
         """Extract object constraints from schema.
 
         Args:
-            field_name: Name of the field
+            _field_name: Name of the field
             schema: OpenAPI schema for the field
 
         Returns:
@@ -229,7 +230,7 @@ class ObjectConstraintExtractor:
 class ConstraintReconciler:
     """Reconcile constraints from multiple sources with priority."""
 
-    PRIORITY_ORDER = ["existing", "discovery", "inferred"]
+    PRIORITY_ORDER: ClassVar[list[str]] = ["existing", "discovery", "inferred"]
 
     @staticmethod
     def reconcile(
@@ -323,10 +324,10 @@ class ConstraintEnricher:
     def _load_config(self) -> dict:
         """Load constraint patterns configuration."""
         try:
-            with open(self.config_path) as f:
+            with Path(self.config_path).open() as f:
                 return yaml.safe_load(f)
-        except Exception as e:
-            logger.exception(f"Failed to load config from {self.config_path}: {e}")
+        except Exception:
+            logger.exception("Failed to load config from %s", self.config_path)
             raise
 
     def enrich_spec(self, spec: dict) -> dict:
@@ -346,11 +347,12 @@ class ConstraintEnricher:
                 self._enrich_schema(schema_name, schema)
 
         logger.info(
-            f"Constraint enrichment complete. Added {self.stats['constraints_added']} constraints",
+            "Constraint enrichment complete. Added %d constraints",
+            self.stats["constraints_added"],
         )
         return spec
 
-    def _enrich_schema(self, schema_name: str, schema: dict) -> None:
+    def _enrich_schema(self, _schema_name: str, schema: dict) -> None:
         """Enrich a single schema definition."""
         if "properties" not in schema:
             return
@@ -815,7 +817,7 @@ if __name__ == "__main__":
     # Load a test spec
     test_spec_path = Path("specs/enriched/dns.json")
     if test_spec_path.exists():
-        with open(test_spec_path) as f:
+        with test_spec_path.open() as f:
             spec = json.load(f)
 
         # Run enricher
@@ -828,7 +830,7 @@ if __name__ == "__main__":
 
         # Save enriched spec
         output_path = Path("specs/enriched/dns_with_constraints.json")
-        with open(output_path, "w") as f:
+        with output_path.open("w") as f:
             json.dump(enriched_spec, f, indent=2)
         print(f"Enriched spec saved to {output_path}")
     else:
