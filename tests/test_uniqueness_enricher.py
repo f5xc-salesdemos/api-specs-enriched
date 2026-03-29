@@ -21,9 +21,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.utils.uniqueness_enricher import (
-    UniquenessEnricher,
-)
+from scripts.utils.uniqueness_enricher import UniquenessEnricher
 
 # =============================================================================
 # Test Fixtures
@@ -301,7 +299,7 @@ class TestEdgeCases:
         spec = {
             "info": {"title": "Test", "x-f5xc-namespace-scope": "any"},
         }
-        result = enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec)
         assert enricher.stats.schemas_enriched == 0
 
     def test_schema_without_components(self, enricher):
@@ -309,7 +307,7 @@ class TestEdgeCases:
         spec = {
             "info": {"title": "Test", "x-f5xc-namespace-scope": "any"},
         }
-        result = enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec)
         assert enricher.stats.schemas_enriched == 0
 
 

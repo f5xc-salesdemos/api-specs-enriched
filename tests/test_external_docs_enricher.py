@@ -9,10 +9,7 @@ providing links to F5's official documentation.
 import pytest
 
 from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
-from scripts.utils.external_docs_enricher import (
-    ExternalDocsEnricher,
-    ExternalDocsStats,
-)
+from scripts.utils.external_docs_enricher import ExternalDocsEnricher, ExternalDocsStats
 
 
 class TestExternalDocsStats:

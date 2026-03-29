@@ -12,11 +12,7 @@ Tests the new operation-level enrichment functionality added in Issue #314:
 
 import pytest
 
-from scripts.utils.discovery_enricher import (
-    DiscoveryData,
-    DiscoveryEnricher,
-    EnrichmentStats,
-)
+from scripts.utils.discovery_enricher import DiscoveryData, DiscoveryEnricher, EnrichmentStats
 from scripts.utils.extension_constants import (
     X_F5XC_DISCOVERED_ERROR_CATALOG,
     X_F5XC_DISCOVERED_RATE_LIMITS,

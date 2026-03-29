@@ -123,7 +123,7 @@ def generate_catalog_mdx(
             if spec.get("x-f5xc-is-preview"):
                 badge = " (Preview)"
 
-            description_line = short_desc if short_desc else title
+            description_line = short_desc or title
             stats_line = f"{path_count} paths, {schema_count} schemas"
             if complexity:
                 stats_line += f", {complexity}"

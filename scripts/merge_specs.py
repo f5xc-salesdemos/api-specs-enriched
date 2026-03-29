@@ -21,9 +21,7 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeEl
 from rich.table import Table
 
 from scripts.utils.description_enricher import DescriptionEnricher
-from scripts.utils.domain_categorizer import (
-    categorize_spec as categorize_spec_util,
-)
+from scripts.utils.domain_categorizer import categorize_spec as categorize_spec_util
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,

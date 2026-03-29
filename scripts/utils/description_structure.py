@@ -281,7 +281,7 @@ class DescriptionStructureTransformer:
         else:
             result = description
 
-        return result.strip(), rules if rules else None
+        return result.strip(), rules or None
 
     def _extract_required_marker(
         self,

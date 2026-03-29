@@ -9,10 +9,7 @@ indicating which namespaces each resource type can be created in.
 import pytest
 
 from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_NAMESPACE_SCOPE
-from scripts.utils.namespace_scope_enricher import (
-    NamespaceScopeEnricher,
-    NamespaceScopeStats,
-)
+from scripts.utils.namespace_scope_enricher import NamespaceScopeEnricher, NamespaceScopeStats
 
 
 class TestNamespaceScopeStats:

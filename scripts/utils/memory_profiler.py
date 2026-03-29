@@ -139,7 +139,7 @@ class MemoryProfiler:
                 "generation_1": counts[1] if len(counts) > 1 else 0,
                 "generation_2": counts[2] if len(counts) > 2 else 0,
             },
-            "detailed_stats": stats if stats else [],
+            "detailed_stats": stats or [],
         }
 
     def save_report(self, output_path: Path) -> None:

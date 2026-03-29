@@ -518,7 +518,7 @@ class TestConstraintEnricher:
             },
         }
 
-        enriched = enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec)
         stats = enricher.get_stats()
 
         assert stats["properties_analyzed"] == 4
@@ -549,7 +549,7 @@ class TestEdgeCases:
             "openapi": "3.0.0",
             "info": {"title": "Test", "version": "1.0.0"},
         }
-        result = enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec)
         stats = enricher.get_stats()
         assert stats["properties_analyzed"] == 0
 
@@ -564,7 +564,7 @@ class TestEdgeCases:
                 },
             },
         }
-        result = enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec)
         stats = enricher.get_stats()
         assert stats["properties_analyzed"] == 0
 
@@ -598,7 +598,7 @@ class TestPatternCoverage:
     """Test coverage of various patterns"""
 
     @pytest.mark.parametrize(
-        "field_name,expected_category",
+        ("field_name", "expected_category"),
         [
             ("username", "identity"),
             ("email", "communication"),

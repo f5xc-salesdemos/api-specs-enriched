@@ -10,11 +10,7 @@ import re
 
 import pytest
 
-from scripts.utils.domain_categorizer import (
-    DomainCategorizer,
-    categorize_spec,
-    get_domain_patterns,
-)
+from scripts.utils.domain_categorizer import DomainCategorizer, categorize_spec, get_domain_patterns
 
 
 class TestDomainCategorizerSingleton:

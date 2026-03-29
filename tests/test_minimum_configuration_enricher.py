@@ -8,10 +8,7 @@ for AI-assisted resource creation.
 
 import pytest
 
-from scripts.utils.extension_constants import (
-    X_F5XC_CLI_DOMAIN,
-    X_F5XC_MINIMUM_CONFIGURATION,
-)
+from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_MINIMUM_CONFIGURATION
 from scripts.utils.minimum_configuration_enricher import (
     MinimumConfigurationEnricher,
     MinimumConfigurationStats,

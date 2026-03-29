@@ -718,7 +718,7 @@ def parse_opencode_output(output: str, verbose: bool = False) -> dict[str, str] 
                     )
             return None
 
-        return descriptions if descriptions else None
+        return descriptions or None
 
     except json.JSONDecodeError as e:
         print(f"Error parsing OpenCode output as JSON: {e}")

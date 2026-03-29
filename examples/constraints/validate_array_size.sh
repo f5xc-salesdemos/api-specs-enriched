@@ -31,37 +31,37 @@ echo ""
 
 # Function to generate origin servers array
 generate_origins() {
-    local count=$1
-    local origins="[]"
+  local count=$1
+  local origins="[]"
 
-    if [ "$count" -gt 0 ]; then
-        origins="["
-        for i in $(seq 1 $count); do
-            if [ $i -gt 1 ]; then
-                origins="${origins},"
-            fi
-            origins="${origins}{\"public_name\":{\"dns_name\":\"origin${i}.example.com\"}}"
-        done
-        origins="${origins}]"
-    fi
+  if [ "$count" -gt 0 ]; then
+    origins="["
+    for i in $(seq 1 "$count"); do
+      if [ "$i" -gt 1 ]; then
+        origins="${origins},"
+      fi
+      origins="${origins}{\"public_name\":{\"dns_name\":\"origin${i}.example.com\"}}"
+    done
+    origins="${origins}]"
+  fi
 
-    echo "$origins"
+  echo "$origins"
 }
 
 # Function to test array size
 test_array_size() {
-    local size=$1
-    local expected=$2  # "valid" or "invalid"
-    local test_name="test-array-${size}-$$"
+  local size=$1
+  local expected=$2 # "valid" or "invalid"
+  local test_name="test-array-${size}-$$"
 
-    echo "Testing array with ${size} items (expecting: ${expected})"
+  echo "Testing array with ${size} items (expecting: ${expected})"
 
-    origins=$(generate_origins $size)
+  origins=$(generate_origins "$size")
 
-    response=$(curl -s -w "\n%{http_code}" -X POST "${API_BASE}/origin_pools" \
-        -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
-        -H "Content-Type: application/json" \
-        -d "{
+  response=$(curl -s -w "\n%{http_code}" -X POST "${API_BASE}/origin_pools" \
+    -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "{
             \"metadata\": {
                 \"name\": \"${test_name}\",
                 \"namespace\": \"${NAMESPACE}\"
@@ -73,48 +73,48 @@ test_array_size() {
             }
         }" 2>&1)
 
-    http_code=$(echo "$response" | tail -n1)
-    body=$(echo "$response" | head -n-1)
+  http_code=$(echo "$response" | tail -n1)
+  body=$(echo "$response" | head -n-1)
 
-    if [ "$http_code" = "200" ] || [ "$http_code" = "409" ]; then
-        echo "  ✅ Array size accepted by API (HTTP ${http_code})"
-        if [ "$expected" = "invalid" ]; then
-            echo "  ⚠️  WARNING: Expected rejection but API accepted ${size} items!"
-        fi
-
-        # Clean up
-        if [ "$http_code" = "200" ]; then
-            curl -s -X DELETE "${API_BASE}/origin_pools/${test_name}" \
-                -H "Authorization: APIToken ${F5XC_API_TOKEN}" > /dev/null
-            echo "  🧹 Cleaned up test resource"
-        fi
-    elif [ "$http_code" = "400" ]; then
-        echo "  ❌ Array size rejected by API (HTTP 400)"
-        echo "  Error: $(echo "$body" | jq -r '.message // .error // "Unknown error"' 2>/dev/null || echo "$body")"
-        if [ "$expected" = "valid" ]; then
-            echo "  ⚠️  WARNING: Expected acceptance but API rejected ${size} items!"
-        fi
-    else
-        echo "  ⚠️  Unexpected HTTP ${http_code}"
-        echo "  Response: $(echo "$body" | head -c 200)"
+  if [ "$http_code" = "200" ] || [ "$http_code" = "409" ]; then
+    echo "  ✅ Array size accepted by API (HTTP ${http_code})"
+    if [ "$expected" = "invalid" ]; then
+      echo "  ⚠️  WARNING: Expected rejection but API accepted ${size} items!"
     fi
 
-    echo ""
+    # Clean up
+    if [ "$http_code" = "200" ]; then
+      curl -s -X DELETE "${API_BASE}/origin_pools/${test_name}" \
+        -H "Authorization: APIToken ${F5XC_API_TOKEN}" >/dev/null
+      echo "  🧹 Cleaned up test resource"
+    fi
+  elif [ "$http_code" = "400" ]; then
+    echo "  ❌ Array size rejected by API (HTTP 400)"
+    echo "  Error: $(echo "$body" | jq -r '.message // .error // "Unknown error"' 2>/dev/null || echo "$body")"
+    if [ "$expected" = "valid" ]; then
+      echo "  ⚠️  WARNING: Expected acceptance but API rejected ${size} items!"
+    fi
+  else
+    echo "  ⚠️  Unexpected HTTP ${http_code}"
+    echo "  Response: $(echo "$body" | head -c 200)"
+  fi
+
+  echo ""
 }
 
 # Test Cases
 
 echo "1. Valid Array Sizes (should be accepted)"
 echo "------------------------------------------"
-test_array_size 1 "valid"     # Minimum
-test_array_size 2 "valid"     # Typical
-test_array_size 5 "valid"     # Multiple origins
-test_array_size 10 "valid"    # Larger pool
-test_array_size 50 "valid"    # Maximum
+test_array_size 1 "valid"  # Minimum
+test_array_size 2 "valid"  # Typical
+test_array_size 5 "valid"  # Multiple origins
+test_array_size 10 "valid" # Larger pool
+test_array_size 50 "valid" # Maximum
 
 echo "2. Invalid Array Sizes - Below minimum (should be rejected)"
 echo "-----------------------------------------------------------"
-test_array_size 0 "invalid"   # Empty array
+test_array_size 0 "invalid" # Empty array
 
 echo "3. Invalid Array Sizes - Above maximum (should be rejected)"
 echo "-----------------------------------------------------------"

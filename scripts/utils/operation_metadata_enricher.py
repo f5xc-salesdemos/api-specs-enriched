@@ -261,7 +261,7 @@ class OperationMetadataEnricher:
                 "prerequisites": prerequisites,
                 "postconditions": postconditions,
             },
-            "side_effects": side_effects if side_effects else {},
+            "side_effects": side_effects or {},
             "danger_level": danger_level,
             "confirmation_required": danger_level == "high",
             "common_errors": common_errors,
@@ -503,7 +503,7 @@ class OperationMetadataEnricher:
             impact["resource_usage"] = "high"
 
         # Check for list operations
-        elif method == "GET" and "{" not in path.split("/")[-1]:
+        elif method == "GET" and "{" not in path.rsplit("/", maxsplit=1)[-1]:
             impact["latency"] = "moderate"
             impact["resource_usage"] = "moderate"
 
