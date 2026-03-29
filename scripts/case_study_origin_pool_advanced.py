@@ -5,7 +5,7 @@
 Tests all 15 UI configuration options for origin_pool to document:
 1. Constrained values (enum options, OneOf choices)
 2. Server-applied defaults (values applied when fields omitted)
-3. UI defaults vs Server defaults (pre-selected UI values vs API behavior)
+3. UI defaults vs Server defaults (preselected UI values vs API behavior)
 
 Usage:
     # Set credentials (staging environment)
@@ -1133,7 +1133,7 @@ def generate_markdown_report(report: CaseStudyReport, output_path: Path) -> None
         "This case study tests all 15 UI configuration options for origin_pool to discover:",
         "- Constrained values (enum options, OneOf choices)",
         "- Server-applied defaults (values applied when fields omitted)",
-        "- UI defaults vs Server defaults (pre-selected UI values vs API behavior)",
+        "- UI defaults vs Server defaults (preselected UI values vs API behavior)",
         "",
         "## Test Results by Group",
         "",
@@ -1199,7 +1199,7 @@ def generate_markdown_report(report: CaseStudyReport, output_path: Path) -> None
                 "",
                 "## UI vs Server Defaults",
                 "",
-                "⚠️ **Important**: UI pre-selected values may differ from server defaults!",
+                "⚠️ **Important**: UI preselected values may differ from server defaults!",
                 "",
                 "| Field | UI Default | Server Default | Match |",
                 "|-------|------------|----------------|-------|",
