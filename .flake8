@@ -1,0 +1,28 @@
+[flake8]
+# Match ruff's line-length setting from pyproject.toml
+max-line-length = 100
+# Match ruff's exclude patterns
+exclude =
+    .git,
+    .venv,
+    __pycache__,
+    *.egg-info,
+    build,
+    dist,
+    specs/original
+# Ignore rules already handled by ruff or conflicting with it
+extend-ignore =
+    # Whitespace before ':' — conflicts with black/ruff formatting
+    E203,
+    # Line too long — handled by ruff formatter at 100 chars
+    E501,
+    # Module level import not at top — handled by isort/ruff
+    E402,
+    # Import shadowed by loop variable — handled by ruff F-rules
+    F402
+# Per-file ignores
+per-file-ignores =
+    # Tests can have longer lines and non-top imports
+    tests/*:E402
+    # __init__.py re-exports
+    */__init__.py:F401

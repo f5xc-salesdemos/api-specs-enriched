@@ -233,7 +233,6 @@ class UniquenessEnricher:
         # Remove duplicate underscores
         return re.sub("_+", "_", resource_type)
 
-
     def _derive_uniqueness_from_namespace_scope(self, namespace_scope: str) -> dict:
         """Map namespace scope to uniqueness constraints.
 
