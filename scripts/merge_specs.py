@@ -99,11 +99,27 @@ def load_spec(spec_path: Path) -> dict[str, Any]:
 
 
 def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
-    """Save an OpenAPI specification to JSON file."""
+    """Save an OpenAPI specification to JSON file.
+
+    Writes JSON with the specified indent, then runs biome format
+    if available to ensure consistent formatting.
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:
         json.dump(spec, f, indent=indent, ensure_ascii=False)
         f.write("\n")
+
+    # Apply biome formatting if available (ensures consistent JSON style)
+    import subprocess  # noqa: PLC0415
+
+    try:
+        subprocess.run(
+            ["biome", "format", "--write", str(output_path)],
+            capture_output=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        pass  # biome not installed, skip formatting
 
 
 def categorize_spec(filename: str) -> str:
