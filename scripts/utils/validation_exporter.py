@@ -125,7 +125,7 @@ class ValidationExporter:
             "version": "2.1.0",  # Bumped for unified defaults structure
             "description": self.config.get("description", "F5 XC API Validation Specification"),
             "generated_at": datetime.now(tz=timezone.utc).isoformat(),
-            "source": "f5xc-api-enriched",
+            "source": "api-specs-enriched",
         }
 
         # Build sections based on export configuration

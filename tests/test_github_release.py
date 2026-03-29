@@ -91,7 +91,7 @@ class TestSaveReleaseMetadata:
 
         save_release_metadata(
             release_data,
-            "f5xc-api-fixed-v2026.01.22-2.zip",
+            "api-specs-v2026.01.22-2.zip",
             5971024,
             version_file,
         )
@@ -102,7 +102,7 @@ class TestSaveReleaseMetadata:
         assert metadata["version"] == "2026.01.22-2"
         assert metadata["tag_name"] == "v2026.01.22-2"
         assert metadata["published_at"] == "2026-01-26T10:30:00Z"
-        assert metadata["asset_name"] == "f5xc-api-fixed-v2026.01.22-2.zip"
+        assert metadata["asset_name"] == "api-specs-v2026.01.22-2.zip"
         assert metadata["asset_size"] == 5971024
         assert "downloaded_at" in metadata
 
@@ -114,14 +114,14 @@ class TestFindReleaseAsset:
         """Test finding asset that matches pattern."""
         release_data = {
             "assets": [
-                {"name": "f5xc-api-fixed-v2026.01.22-2.zip", "size": 5971024},
+                {"name": "api-specs-v2026.01.22-2.zip", "size": 5971024},
                 {"name": "checksums.txt", "size": 256},
             ],
         }
 
-        asset = find_release_asset(release_data, "f5xc-api-fixed-v*.zip")
+        asset = find_release_asset(release_data, "api-specs-v*.zip")
         assert asset is not None
-        assert asset["name"] == "f5xc-api-fixed-v2026.01.22-2.zip"
+        assert asset["name"] == "api-specs-v2026.01.22-2.zip"
 
     def test_no_matching_asset(self):
         """Test when no asset matches pattern."""

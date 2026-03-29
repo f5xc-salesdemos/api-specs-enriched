@@ -3,12 +3,12 @@
 
 """Download and extract F5 XC API specifications from GitHub Releases.
 
-This script downloads pre-validated API specifications from the f5xc-api-fixed
+This script downloads pre-validated API specifications from the api-specs
 repository's GitHub releases. It uses release version-based caching to avoid
 unnecessary downloads.
 
 Architecture:
-    Source: GitHub Releases (robinmordasiewicz/f5xc-api-fixed)
+    Source: GitHub Releases (f5xc-salesdemos/api-specs)
     Format: ZIP archive with domains/*.json files
     Caching: .github_release version tracking (replaces ETag)
     Extraction: Secure ZIP processing with validation
@@ -58,10 +58,10 @@ DEFAULT_CONFIG = {
     "source": {
         "type": "github_release",
         "repository": {
-            "owner": "robinmordasiewicz",
-            "name": "f5xc-api-fixed",
+            "owner": "f5xc-salesdemos",
+            "name": "api-specs",
         },
-        "asset_pattern": "f5xc-api-fixed-v*.zip",
+        "asset_pattern": "api-specs-v*.zip",
     },
     "paths": {
         "original": "specs/original",

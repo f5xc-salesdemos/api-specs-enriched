@@ -386,7 +386,7 @@ Schemas: {schemas_str or "(none)"}
 ═══════════════════════════════════════════════════════════════════════════════
 IMPLICIT CONTEXT PRINCIPLE - Why These Rules Exist:
 
-This repository is `f5xc-api-enriched` - enriched F5 XC API specifications.
+This repository is `api-specs-enriched` - enriched F5 XC API specifications.
 From repository context alone, readers already know:
 • This is F5 XC content → "F5", "F5 XC", "XC", "Volterra" add zero information
 • This is API documentation → "API", "endpoint", "specification" add zero information
@@ -1885,7 +1885,7 @@ Instead, use these synonyms: {synonyms_str}
 ═══════════════════════════════════════════════════════════════════════════════
 IMPLICIT CONTEXT PRINCIPLE - Remember why terms are banned:
 
-Repository context (`f5xc-api-enriched`) already tells readers:
+Repository context (`api-specs-enriched`) already tells readers:
 • This is F5 XC → "F5", "XC", "Volterra" are redundant
 • This is API documentation → "API", "endpoint" are redundant
 • Every resource is an API → stating the obvious wastes characters
