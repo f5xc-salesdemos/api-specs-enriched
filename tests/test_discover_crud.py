@@ -73,3 +73,74 @@ async def test_fetch_namespaces_failure_returns_empty():
 
     result = await fetch_namespaces(mock_client, "https://example.f5xc.com")
     assert result == []
+
+
+import json
+import tempfile
+from pathlib import Path
+from scripts.discover import run_discovery, get_default_config
+import scripts.discover as discover_module
+
+
+@pytest.mark.asyncio
+async def test_run_discovery_expands_crud_endpoints(monkeypatch):
+    """run_discovery with dry_run=True returns a session without errors after CRUD expansion."""
+    config = get_default_config()
+    config["api_url"] = "https://test.example.com"
+    config["auth_token"] = "test-token"
+
+    monkeypatch.setattr(
+        discover_module,
+        "extract_endpoints_from_specs",
+        lambda specs_dir: [{"method": "GET", "path": "/api/config/namespaces/{namespace}/http_loadbalancers"}],
+    )
+
+    session = await run_discovery(config, dry_run=True)
+
+    assert session is not None
+    assert len(session.errors) == 0
+
+
+@pytest.mark.asyncio
+async def test_run_discovery_auto_discovers_namespaces(monkeypatch):
+    """run_discovery (non-dry-run, empty endpoints) calls fetch_namespaces and populates session.namespaces."""
+    config = get_default_config()
+    config["api_url"] = "https://test.example.com"
+    config["auth_token"] = "test-token"
+
+    monkeypatch.setattr(
+        discover_module,
+        "extract_endpoints_from_specs",
+        lambda specs_dir: [],
+    )
+
+    async def fake_fetch_namespaces(client, api_url):
+        return ["auto-ns-1", "auto-ns-2"]
+
+    monkeypatch.setattr(discover_module, "fetch_namespaces", fake_fetch_namespaces)
+
+    # dry_run=False so the httpx block (and fetch_namespaces) is reached;
+    # empty endpoint list means the discovery loop never actually makes HTTP calls.
+    session = await run_discovery(config, dry_run=False)
+
+    assert "auto-ns-1" in session.namespaces
+    assert "auto-ns-2" in session.namespaces
+
+
+@pytest.mark.asyncio
+async def test_run_discovery_dry_run_returns_session_without_error(monkeypatch):
+    """run_discovery with dry_run=True returns a non-None session with no errors."""
+    config = get_default_config()
+    config["api_url"] = "https://test.example.com"
+    config["auth_token"] = "test-token"
+
+    monkeypatch.setattr(
+        discover_module,
+        "extract_endpoints_from_specs",
+        lambda specs_dir: [{"method": "GET", "path": "/api/config/namespaces/{namespace}/virtual_sites"}],
+    )
+
+    session = await run_discovery(config, dry_run=True)
+
+    assert session is not None
+    assert len(session.errors) == 0
