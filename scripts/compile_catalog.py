@@ -31,6 +31,35 @@ F5XC_DEFAULTS = {
     "namespace": {"source": "F5XC_NAMESPACE"}
 }
 
+def merge_spec_files(dir_path: Path) -> dict[str, Any]:
+    """Read all OpenAPI JSON files in a directory and merge their paths.
+
+    Skips files without a 'paths' key (non-spec files like index.json).
+    When the same path appears in multiple files, their methods are merged.
+    """
+    merged_paths: dict[str, Any] = {}
+
+    for spec_file in sorted(dir_path.glob("*.json")):
+        try:
+            with spec_file.open() as f:
+                spec = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        paths = spec.get("paths")
+        if not paths or not isinstance(paths, dict):
+            continue
+
+        for path, path_item in paths.items():
+            if not isinstance(path_item, dict):
+                continue
+            if path not in merged_paths:
+                merged_paths[path] = {}
+            merged_paths[path].update(path_item)
+
+    return {"openapi": "3.0.3", "paths": merged_paths}
+
+
 _DANGER_MAP: dict[str, str] = {
     "GET": "low",
     "OPTIONS": "low",
@@ -204,16 +233,28 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Compile F5XC OpenAPI spec to xcsh catalog JSON")
-    parser.add_argument("--input", type=Path, default=DEFAULT_INPUT, help="OpenAPI spec input file")
+    parser.add_argument("--input", type=Path, default=None, help="Single OpenAPI spec input file")
+    parser.add_argument("--input-dir", type=Path, default=None, help="Directory of OpenAPI spec files to merge")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output api-catalog.json path")
     args = parser.parse_args()
 
-    if not args.input.exists():
-        print(f"Error: input file not found: {args.input}", file=sys.stderr)
-        return 1
-
-    with args.input.open() as f:
-        openapi = json.load(f)
+    if args.input_dir:
+        if not args.input_dir.is_dir():
+            print(f"Error: input directory not found: {args.input_dir}", file=sys.stderr)
+            return 1
+        openapi = merge_spec_files(args.input_dir)
+    elif args.input:
+        if not args.input.exists():
+            print(f"Error: input file not found: {args.input}", file=sys.stderr)
+            return 1
+        with args.input.open() as f:
+            openapi = json.load(f)
+    else:
+        if not DEFAULT_INPUT.exists():
+            print(f"Error: default input not found: {DEFAULT_INPUT}", file=sys.stderr)
+            return 1
+        with DEFAULT_INPUT.open() as f:
+            openapi = json.load(f)
 
     catalog = compile_catalog(openapi)
 

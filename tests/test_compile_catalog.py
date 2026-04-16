@@ -134,9 +134,11 @@ def test_compile_catalog_deterministic():
 
 
 import json
+import sys
 import tempfile
 from pathlib import Path
 from scripts.compile_catalog import main
+from scripts.compile_catalog import merge_spec_files
 
 
 def test_main_cli_writes_output_file():
@@ -213,3 +215,75 @@ def test_compile_catalog_handles_extension_fields():
     cat = catalog["categories"][0]
     assert len(cat["operations"]) >= 1
     assert cat["operations"][0]["name"] == "list_widgets"
+
+
+def test_merge_spec_files_combines_paths_from_multiple_files():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec1 = {"openapi": "3.0.3", "paths": {"/api/widgets": {"get": {"responses": {}}}}}
+        spec2 = {"openapi": "3.0.3", "paths": {"/api/gadgets": {"post": {"responses": {}}}}}
+        Path(tmpdir, "widgets.json").write_text(json.dumps(spec1))
+        Path(tmpdir, "gadgets.json").write_text(json.dumps(spec2))
+        merged = merge_spec_files(Path(tmpdir))
+        assert "/api/widgets" in merged["paths"]
+        assert "/api/gadgets" in merged["paths"]
+        assert len(merged["paths"]) == 2
+
+
+def test_merge_spec_files_skips_non_spec_files():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec = {"openapi": "3.0.3", "paths": {"/api/items": {"get": {"responses": {}}}}}
+        non_spec = {"metadata": {"version": "1.0"}}
+        Path(tmpdir, "items.json").write_text(json.dumps(spec))
+        Path(tmpdir, "index.json").write_text(json.dumps(non_spec))
+        Path(tmpdir, "config.json").write_text(json.dumps(non_spec))
+        merged = merge_spec_files(Path(tmpdir))
+        assert "/api/items" in merged["paths"]
+        assert len(merged["paths"]) == 1
+
+
+def test_merge_spec_files_handles_duplicate_paths():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec1 = {"openapi": "3.0.3", "paths": {"/api/items": {"get": {"operationId": "list"}}}}
+        spec2 = {"openapi": "3.0.3", "paths": {"/api/items": {"post": {"operationId": "create"}}}}
+        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1))
+        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2))
+        merged = merge_spec_files(Path(tmpdir))
+        assert "get" in merged["paths"]["/api/items"]
+        assert "post" in merged["paths"]["/api/items"]
+
+
+def test_compile_catalog_from_enriched_specs():
+    import pytest
+    enriched_dir = Path("docs/specifications/api")
+    if not enriched_dir.exists():
+        pytest.skip("Enriched specs not available")
+    merged = merge_spec_files(enriched_dir)
+    catalog = compile_catalog(merged)
+    assert catalog["service"] == "f5xc"
+    total_ops = sum(len(c["operations"]) for c in catalog["categories"])
+    assert total_ops > 100, f"Expected >100 operations, got {total_ops}"
+    assert len(catalog["categories"]) > 10
+
+
+def test_main_cli_with_input_dir_flag():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        specs_dir = Path(tmpdir) / "specs"
+        specs_dir.mkdir()
+        output_path = Path(tmpdir) / "catalog.json"
+        spec = {"openapi": "3.0.3", "paths": {
+            "/api/config/namespaces/{namespace}/widgets": {"get": {"responses": {}}},
+            "/api/config/namespaces/{namespace}/gadgets": {"delete": {"responses": {}}},
+        }}
+        (specs_dir / "test.json").write_text(json.dumps(spec))
+        original_argv = sys.argv
+        sys.argv = ["compile_catalog", "--input-dir", str(specs_dir), "--output", str(output_path)]
+        try:
+            exit_code = main()
+        finally:
+            sys.argv = original_argv
+        assert exit_code == 0
+        assert output_path.exists()
+        catalog = json.loads(output_path.read_text())
+        assert catalog["service"] == "f5xc"
+        total_ops = sum(len(c["operations"]) for c in catalog["categories"])
+        assert total_ops >= 2
