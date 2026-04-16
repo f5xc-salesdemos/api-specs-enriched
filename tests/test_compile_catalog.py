@@ -131,3 +131,85 @@ def test_compile_catalog_deterministic():
     result1 = compile_catalog(openapi)
     result2 = compile_catalog(openapi)
     assert result1 == result2
+
+
+import json
+import tempfile
+from pathlib import Path
+from scripts.compile_catalog import main
+
+
+def test_main_cli_writes_output_file():
+    """main() reads input OpenAPI spec and writes valid api-catalog.json."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        input_path = Path(tmpdir) / "input.json"
+        output_path = Path(tmpdir) / "output" / "api-catalog.json"
+        spec = {
+            "openapi": "3.0.3",
+            "paths": {
+                "/api/config/namespaces/{namespace}/widgets": {
+                    "get": {"operationId": "list_widgets", "responses": {"200": {}}}
+                }
+            },
+        }
+        input_path.write_text(json.dumps(spec))
+
+        import sys
+        original_argv = sys.argv
+        sys.argv = ["compile_catalog", "--input", str(input_path), "--output", str(output_path)]
+        try:
+            exit_code = main()
+        finally:
+            sys.argv = original_argv
+
+        assert exit_code == 0
+        assert output_path.exists()
+        catalog = json.loads(output_path.read_text())
+        assert catalog["service"] == "f5xc"
+        assert len(catalog["categories"]) >= 1
+
+
+def test_compile_catalog_against_real_spec():
+    """compile_catalog() processes the real specs/discovered/openapi.json without error."""
+    import pytest
+    spec_path = Path("specs/discovered/openapi.json")
+    if not spec_path.exists():
+        pytest.skip("Real spec not available")
+    with spec_path.open() as f:
+        openapi = json.load(f)
+    catalog = compile_catalog(openapi)
+    assert catalog["service"] == "f5xc"
+    assert catalog["auth"]["type"] == "api_token"
+    assert len(catalog["categories"]) > 0
+    for cat in catalog["categories"]:
+        assert "name" in cat
+        assert "displayName" in cat
+        for op in cat["operations"]:
+            assert "name" in op
+            assert "method" in op
+            assert "path" in op
+            assert "dangerLevel" in op
+            assert "parameters" in op
+
+
+def test_compile_catalog_handles_extension_fields():
+    """compile_catalog() ignores OpenAPI extension fields (x-*) without crashing."""
+    openapi = {
+        "openapi": "3.0.3",
+        "paths": {
+            "/api/config/namespaces/{namespace}/widgets": {
+                "get": {
+                    "operationId": "list_widgets",
+                    "responses": {"200": {}},
+                    "x-response-time-ms": 159.81,
+                },
+                "x-displayname": "Widget Management",
+                "x-ves-proto-service": "ves.io.schema.widget.API",
+            }
+        },
+    }
+    catalog = compile_catalog(openapi)
+    assert len(catalog["categories"]) >= 1
+    cat = catalog["categories"][0]
+    assert len(cat["operations"]) >= 1
+    assert cat["operations"][0]["name"] == "list_widgets"
