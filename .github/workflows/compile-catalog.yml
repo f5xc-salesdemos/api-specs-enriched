@@ -1,0 +1,50 @@
+name: Compile API Catalog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'specs/discovered/openapi.json'
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile catalog
+        run: python -m scripts.compile_catalog
+
+      - name: Verify output
+        run: |
+          python3 -c "
+          import json
+          c = json.load(open('release/api-catalog.json'))
+          ops = sum(len(cat['operations']) for cat in c['categories'])
+          print(f'Compiled {ops} operations across {len(c["categories"])} categories')
+          assert c['service'] == 'f5xc', 'Wrong service name'
+          assert c['auth']['type'] == 'api_token', 'Wrong auth type'
+          "
+
+      - name: Create release artifact
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: catalog-${{ github.run_number }}
+          name: F5XC API Catalog ${{ github.run_number }}
+          files: release/api-catalog.json
+          generate_release_notes: false
+          body: |
+            Auto-generated F5XC API catalog from discovered OpenAPI spec.
+            Commit: ${{ github.sha }}
