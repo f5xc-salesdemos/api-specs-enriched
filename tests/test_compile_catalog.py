@@ -265,6 +265,54 @@ def test_compile_catalog_from_enriched_specs():
     assert len(catalog["categories"]) > 10
 
 
+def test_compile_catalog_deduplicates_operation_names_globally():
+    # /api/.../sites  -> category "sites",       op "create_site"
+    # /api/.../foos   -> category "foos",         op "create_foo"  (singular strips 's')
+    # Two different categories that happen to produce identical op names after singularisation
+    # We use "widgets" vs "widget_things" — both produce "create_widget" when singularised.
+    # Actually the cleaner way: use paths that map to different categories but the same final
+    # op name.  "namespaces/{ns}/things" -> category "things", op "create_thing"
+    # and "namespaces/{ns}/other_things" -> category "other-things", op "create_other_thing"
+    # — those differ.  Instead, use explicitly colliding resource roots:
+    # paths under different prefixes that both collapse to the same category resource name.
+    # Easiest: put the same resource name under two different top-level API paths so they land
+    # in different categories but produce the same op name.
+    openapi = {
+        "openapi": "3.0.3",
+        "paths": {
+            # category: "sites", op: "create_site"
+            "/api/config/namespaces/{namespace}/sites": {"post": {"responses": {}}},
+            # category: "sites" (same) but a different prefix segment outside namespace scope
+            # To force two DIFFERENT categories with identical op names, use a path segment
+            # that is not filtered by the prefix rules and lands in a different category.
+            # The simplest approach: one path has extra sub-resource that changes category
+            # but the resource stem is the same word.
+            # "/api/ml/namespaces/{namespace}/sites" -> category "sites", op "create_site"
+            # Both land in category "sites" so the per-category dedup catches them.
+            # Use a path where the resource segment differs only by a trailing 's' quirk:
+            # "managed_sites" singularizes to "managed_site"; category "managed-sites"
+            # vs plain "sites" -> "create_site". These differ.
+            # REAL collision scenario: two paths where extract_category_name gives different
+            # strings but generate_operation_name gives the same string.
+            # "http_loadbalancers" -> category "http-loadbalancers", op "create_http_loadbalancer"
+            # "http_loadbalancer"  -> category "http-loadbalancer",  op "create_http_loadbalancer"
+            "/api/config/namespaces/{namespace}/http_loadbalancers": {"post": {"responses": {}}},
+            "/api/config/namespaces/{namespace}/http_loadbalancer": {"post": {"responses": {}}},
+        }
+    }
+    catalog = compile_catalog(openapi)
+    all_op_names = [op["name"] for cat in catalog["categories"] for op in cat["operations"]]
+    assert len(all_op_names) == len(set(all_op_names)), f"Duplicate names found: {all_op_names}"
+
+
+def test_extract_parameters_normalizes_dotted_params():
+    path = "/api/config/namespaces/{metadata.namespace}/http_loadbalancers"
+    params = extract_parameters(path, {})
+    ns_param = next(p for p in params if p["name"] == "namespace")
+    assert ns_param["default"] == "$F5XC_NAMESPACE"
+    assert ns_param["in"] == "path"
+
+
 def test_main_cli_with_input_dir_flag():
     with tempfile.TemporaryDirectory() as tmpdir:
         specs_dir = Path(tmpdir) / "specs"

@@ -141,7 +141,9 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
     params: list[dict[str, Any]] = []
 
     for match in re.finditer(r"\{([^}]+)\}", path):
-        name = match.group(1)
+        raw_name = match.group(1)
+        # Normalize dotted params: metadata.namespace -> namespace
+        name = raw_name.split(".")[-1] if "." in raw_name else raw_name
         param: dict[str, Any] = {
             "name": name,
             "in": "path",
@@ -219,6 +221,17 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
                 "displayName": display_name,
                 "operations": operations,
             })
+
+    # Deduplicate operation names globally across all categories.
+    # When a collision occurs, suffix the second occurrence with the category name.
+    global_seen: dict[str, str] = {}  # op_name -> first_category
+    for cat in categories:
+        for op in cat["operations"]:
+            if op["name"] in global_seen:
+                # Suffix with category name to disambiguate
+                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
+            else:
+                global_seen[op["name"]] = cat["name"]
 
     return {
         "service": "f5xc",
