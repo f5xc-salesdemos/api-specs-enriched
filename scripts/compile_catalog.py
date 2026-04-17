@@ -101,7 +101,7 @@ def extract_category_name(path: str) -> str:
             skip_next = False
             continue
         resource_segments.append(seg)
-    resource = resource_segments[0] if resource_segments else filtered[-1] if filtered else "unknown"
+    resource = "-".join(resource_segments) if resource_segments else (filtered[-1] if filtered else "unknown")
     return resource.replace("_", "-")
 
 
@@ -234,9 +234,15 @@ def group_paths_by_resource(paths: dict[str, Any]) -> dict[str, list[tuple[str, 
     return groups
 
 
+def normalize_path_placeholders(path: str) -> str:
+    """Normalize dotted path placeholders: {metadata.namespace} -> {namespace}."""
+    return re.sub(r"\{[^}]*\.([^}]+)\}", r"{\1}", path)
+
+
 def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     """Transform an OpenAPI 3.0 spec dict into xcsh api-catalog.json format."""
     paths = openapi.get("paths", {})
+    components = openapi.get("components")
     groups = group_paths_by_resource(paths)
 
     categories = []
@@ -249,11 +255,12 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
             if op_name in seen_op_names:
                 continue
             seen_op_names.add(op_name)
+            normalized_path = normalize_path_placeholders(path)
             op: dict[str, Any] = {
                 "name": op_name,
                 "description": operation.get("summary") or operation.get("description") or f"{method} {path}",
                 "method": method,
-                "path": path,
+                "path": normalized_path,
                 "dangerLevel": assign_danger_level(method),
                 "parameters": extract_parameters(path, operation),
             }
@@ -264,8 +271,14 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
                 .get("schema")
             )
             if body_schema:
+                # Resolve $ref in bodySchema using components.schemas
+                if "$ref" in body_schema and components:
+                    ref_key = body_schema["$ref"].split("/")[-1]
+                    resolved = components.get("schemas", {}).get(ref_key, {})
+                    if resolved:
+                        body_schema = resolved
                 op["bodySchema"] = body_schema
-            response_schema = extract_response_schema(operation, openapi.get("components"))
+            response_schema = extract_response_schema(operation, components)
             if response_schema:
                 op["responseSchema"] = response_schema
             operations.append(op)

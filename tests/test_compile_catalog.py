@@ -477,3 +477,71 @@ def test_merge_spec_files_includes_components():
         merged = merge_spec_files(Path(tmpdir))
         assert "TypeA" in merged["components"]["schemas"]
         assert "TypeB" in merged["components"]["schemas"]
+
+
+# ── Bug 1: deep path hierarchy ──────────────────────────────────────────────
+
+def test_extract_category_name_deep_path():
+    path = "/api/shape/dip/namespaces/system/app_provision"
+    name = extract_category_name(path)
+    assert "shape" in name
+    assert "app-provision" in name
+
+
+def test_extract_category_name_preserves_simple_paths():
+    """Simple namespace paths still work the same."""
+    path = "/api/config/namespaces/{namespace}/http_loadbalancers"
+    assert extract_category_name(path) == "http-loadbalancers"
+
+
+# ── Bug 2: dotted placeholders normalized in path ───────────────────────────
+
+def test_compile_catalog_normalizes_dotted_placeholders_in_path():
+    openapi = {
+        "openapi": "3.0.3",
+        "paths": {
+            "/api/config/namespaces/{metadata.namespace}/http_loadbalancers": {
+                "get": {"responses": {}},
+            },
+        },
+    }
+    catalog = compile_catalog(openapi)
+    op = catalog["categories"][0]["operations"][0]
+    assert "{metadata.namespace}" not in op["path"]
+    assert "{namespace}" in op["path"]
+
+
+# ── Bug 3: bodySchema $ref resolved ─────────────────────────────────────────
+
+def test_compile_catalog_resolves_body_schema_ref():
+    openapi = {
+        "openapi": "3.0.3",
+        "paths": {
+            "/api/items": {
+                "post": {
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/CreateItem"},
+                            },
+                        },
+                    },
+                    "responses": {},
+                },
+            },
+        },
+        "components": {
+            "schemas": {
+                "CreateItem": {
+                    "type": "object",
+                    "properties": {"name": {"type": "string"}},
+                    "required": ["name"],
+                },
+            },
+        },
+    }
+    catalog = compile_catalog(openapi)
+    op = catalog["categories"][0]["operations"][0]
+    assert op.get("bodySchema") is not None
+    assert "$ref" not in op["bodySchema"]
+    assert op["bodySchema"]["type"] == "object"
