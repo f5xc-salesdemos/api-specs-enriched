@@ -496,7 +496,7 @@ class TestPathsEnrichment:
         enricher: DiscoveryEnricher,
     ):
         """Test _enrich_paths handles missing discovered operations gracefully."""
-        spec = {
+        spec: dict[str, Any] = {
             "paths": {
                 "/api/unknown": {
                     "get": {
