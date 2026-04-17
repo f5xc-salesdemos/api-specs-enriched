@@ -48,9 +48,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
+import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -226,9 +228,6 @@ def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
         f.write("\n")
 
     # Apply biome formatting if available (ensures consistent JSON style)
-    import contextlib  # noqa: PLC0415
-    import subprocess  # noqa: PLC0415
-
     with contextlib.suppress(FileNotFoundError):
         subprocess.run(
             ["biome", "format", "--write", str(output_path)],
@@ -632,13 +631,15 @@ def _remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]
         for method in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]:
             if method in path_item:
                 operation = path_item[method]
-                if operation == {} or (
+                is_empty_dict = operation == {}
+                has_no_critical_fields = (
                     isinstance(operation, dict)
                     and not operation.get("operationId")
                     and not operation.get("responses")
                     and not operation.get("summary")
                     and not operation.get("description")
-                ):
+                )
+                if is_empty_dict or has_no_critical_fields:
                     methods_to_remove.append(method)
 
         for method in methods_to_remove:

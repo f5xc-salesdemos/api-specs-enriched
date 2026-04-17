@@ -40,7 +40,7 @@ def load_spec(spec_path: Path) -> dict:
         return {}
 
     with spec_path.open() as f:
-        if spec_path.suffix == ".yaml" or spec_path.suffix == ".yml":
+        if spec_path.suffix in (".yaml", ".yml"):
             return yaml.safe_load(f) or {}
         return json.load(f)
 

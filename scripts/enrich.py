@@ -83,9 +83,8 @@ DEFAULT_CONFIG = {
     },
 }
 
-# Global discovery enricher instance (loaded once, reused)
-_discovery_enricher: DiscoveryEnricher | None = None
-_discovery_config: dict | None = None
+# Cache for discovery enricher singleton (loaded once, reused)
+_DISCOVERY_CACHE: dict[str, Any] = {"enricher": None, "config": None}
 
 
 @dataclass
@@ -150,15 +149,13 @@ def load_discovery_enricher(config: dict) -> DiscoveryEnricher | None:
     Returns:
         Initialized DiscoveryEnricher or None if disabled/unavailable
     """
-    global _discovery_enricher, _discovery_config
-
     discovery_config = config.get("discovery_enrichment", {})
     if not discovery_config.get("enabled", False):
         return None
 
     # Return cached enricher if config hasn't changed
-    if _discovery_enricher is not None and _discovery_config == discovery_config:
-        return _discovery_enricher
+    if _DISCOVERY_CACHE["enricher"] is not None and _DISCOVERY_CACHE["config"] == discovery_config:
+        return _DISCOVERY_CACHE["enricher"]
 
     discovered_dir = Path(
         discovery_config.get("discovered_specs_dir", "specs/discovered"),
@@ -183,8 +180,8 @@ def load_discovery_enricher(config: dict) -> DiscoveryEnricher | None:
     try:
         enricher.load_discovery_data(discovered_dir)
         console.print(f"[green]Loaded discovery data from {discovered_dir}[/green]")
-        _discovery_enricher = enricher
-        _discovery_config = discovery_config
+        _DISCOVERY_CACHE["enricher"] = enricher
+        _DISCOVERY_CACHE["config"] = discovery_config
         return enricher
     except Exception as e:
         console.print(f"[red]Failed to load discovery data: {e}[/red]")

@@ -260,8 +260,8 @@ class DescriptionEnricher:
         return self.stats.to_dict()
 
 
-# Module-level singleton for convenience
-_enricher: DescriptionEnricher | None = None
+# Module-level singleton cache for convenience
+_ENRICHER_CACHE: dict[str, DescriptionEnricher | None] = {"instance": None}
 
 
 def get_description_enricher() -> DescriptionEnricher:
@@ -270,10 +270,11 @@ def get_description_enricher() -> DescriptionEnricher:
     Returns:
         Shared DescriptionEnricher instance
     """
-    global _enricher  # noqa: PLW0603
-    if _enricher is None:
-        _enricher = DescriptionEnricher()
-    return _enricher
+    instance = _ENRICHER_CACHE["instance"]
+    if instance is None:
+        instance = DescriptionEnricher()
+        _ENRICHER_CACHE["instance"] = instance
+    return instance
 
 
 def get_domain_descriptions(domain: str) -> dict[str, str] | None:

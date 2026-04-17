@@ -756,13 +756,14 @@ class PropertyDescriptionShortEnricher:
         return self.get_override(schema_name, prop_name) is not None
 
 
-# Module-level singleton for convenient access
-_enricher_instance: PropertyDescriptionShortEnricher | None = None
+# Module-level singleton cache for convenient access
+_ENRICHER_CACHE: dict[str, PropertyDescriptionShortEnricher | None] = {"instance": None}
 
 
 def get_property_description_short_enricher() -> PropertyDescriptionShortEnricher:
     """Get or create the singleton enricher instance."""
-    global _enricher_instance  # noqa: PLW0603
-    if _enricher_instance is None:
-        _enricher_instance = PropertyDescriptionShortEnricher()
-    return _enricher_instance
+    instance = _ENRICHER_CACHE["instance"]
+    if instance is None:
+        instance = PropertyDescriptionShortEnricher()
+        _ENRICHER_CACHE["instance"] = instance
+    return instance

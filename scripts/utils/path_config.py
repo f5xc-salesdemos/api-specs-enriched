@@ -110,7 +110,7 @@ class PathConfig:
         return self.reports_dir / self._get_path("reports", "discovery_report")
 
     @property
-    def discovery_json(self) -> Path:
+    def _discovery_json(self) -> Path:
         """Path to discovery session JSON."""
         return self.reports_dir / self._get_path("reports", "discovery_json")
 
@@ -140,7 +140,7 @@ class PathConfig:
         return self.reports_dir / self._get_path("reports", "validation_report")
 
     @property
-    def validation_report_json(self) -> Path:
+    def _validation_report_json(self) -> Path:
         """Path to validation report (JSON)."""
         return self.reports_dir / self._get_path("reports", "validation_report_json")
 
@@ -156,12 +156,12 @@ class PathConfig:
         return Path(self._get_path("specs", "discovered_dir"))
 
     @property
-    def discovered_openapi(self) -> Path:
+    def _discovered_openapi(self) -> Path:
         """Path to discovered OpenAPI spec."""
         return Path(self._get_path("specs", "discovered_openapi"))
 
     @property
-    def discovered_session(self) -> Path:
+    def _discovered_session(self) -> Path:
         """Path to discovery session metadata."""
         return Path(self._get_path("specs", "discovered_session"))
 
@@ -203,12 +203,12 @@ class PathConfig:
         return Path(self._get_path("config", "discovery"))
 
     @property
-    def spectral_config(self) -> Path:
+    def _spectral_config(self) -> Path:
         """Path to Spectral linting configuration."""
         return Path(self._get_path("config", "spectral"))
 
     @property
-    def server_variables_config(self) -> Path:
+    def _server_variables_config(self) -> Path:
         """Path to server variables configuration."""
         return Path(self._get_path("config", "server_variables"))
 
