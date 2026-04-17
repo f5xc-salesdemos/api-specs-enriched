@@ -166,6 +166,37 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
     return params
 
 
+def extract_response_schema(operation: dict[str, Any]) -> dict[str, Any] | None:
+    """Extract and simplify response schema from an OpenAPI operation.
+
+    Checks 200 then 201 response codes. Returns simplified schema with only
+    type, properties (name -> {type}), and required fields. Returns None if
+    no response schema is defined.
+    """
+    for code in ("200", "201"):
+        schema = (
+            operation.get("responses", {})
+            .get(code, {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema")
+        )
+        if schema and isinstance(schema, dict):
+            simplified: dict[str, Any] = {}
+            if "type" in schema:
+                simplified["type"] = schema["type"]
+            if "properties" in schema and isinstance(schema["properties"], dict):
+                simplified["properties"] = {}
+                for prop_name, prop_schema in schema["properties"].items():
+                    if isinstance(prop_schema, dict) and "type" in prop_schema:
+                        simplified["properties"][prop_name] = {"type": prop_schema["type"]}
+            if "required" in schema and isinstance(schema["required"], list):
+                simplified["required"] = schema["required"]
+            if simplified:
+                return simplified
+    return None
+
+
 def group_paths_by_resource(paths: dict[str, Any]) -> dict[str, list[tuple[str, str, dict]]]:
     """Group (path, method, operation) tuples by category name."""
     groups: dict[str, list[tuple[str, str, dict]]] = {}
@@ -212,6 +243,9 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
             )
             if body_schema:
                 op["bodySchema"] = body_schema
+            response_schema = extract_response_schema(operation)
+            if response_schema:
+                op["responseSchema"] = response_schema
             operations.append(op)
 
         if operations:

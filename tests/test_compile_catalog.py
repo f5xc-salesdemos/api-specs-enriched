@@ -4,6 +4,7 @@ from scripts.compile_catalog import (
     extract_category_name,
     generate_operation_name,
     extract_parameters,
+    extract_response_schema,
     compile_catalog,
     group_paths_by_resource,
 )
@@ -335,3 +336,92 @@ def test_main_cli_with_input_dir_flag():
         assert catalog["service"] == "f5xc"
         total_ops = sum(len(c["operations"]) for c in catalog["categories"])
         assert total_ops >= 2
+
+
+def test_extract_response_schema_from_200():
+    operation = {
+        "responses": {
+            "200": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "items": {"type": "array", "items": {"type": "string"}},
+                                "errors": {"type": "array", "items": {"type": "string"}},
+                            },
+                            "required": ["items"],
+                        }
+                    }
+                }
+            }
+        }
+    }
+    schema = extract_response_schema(operation)
+    assert schema is not None
+    assert schema["type"] == "object"
+    assert "items" in schema["properties"]
+    assert schema["properties"]["items"]["type"] == "array"
+    assert schema["required"] == ["items"]
+
+
+def test_extract_response_schema_from_201_for_post():
+    operation = {
+        "responses": {
+            "201": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "metadata": {"type": "object"},
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    }
+    schema = extract_response_schema(operation)
+    assert schema is not None
+    assert schema["type"] == "object"
+
+
+def test_extract_response_schema_simplifies_nested_refs():
+    """$ref and description fields are stripped; only type/properties/required kept."""
+    operation = {
+        "responses": {
+            "200": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "description": "A list response",
+                            "properties": {
+                                "items": {
+                                    "type": "array",
+                                    "description": "The items",
+                                    "items": {"$ref": "#/components/schemas/Item"},
+                                },
+                                "count": {"type": "integer", "description": "Total count"},
+                            },
+                            "required": ["items"],
+                            "additionalProperties": True,
+                        }
+                    }
+                }
+            }
+        }
+    }
+    schema = extract_response_schema(operation)
+    assert schema is not None
+    assert "description" not in schema
+    assert "additionalProperties" not in schema
+    assert schema["properties"]["items"]["type"] == "array"
+    assert schema["properties"]["count"]["type"] == "integer"
+
+
+def test_extract_response_schema_returns_none_when_missing():
+    operation = {"responses": {"404": {"description": "Not found"}}}
+    schema = extract_response_schema(operation)
+    assert schema is None
