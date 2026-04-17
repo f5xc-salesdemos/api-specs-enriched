@@ -1280,6 +1280,9 @@ def merge_specs_by_domain(
         # Reset stats for next domain to avoid double-counting
         conflicts_with_enricher.reset_stats()
 
+        # Final cleanup: strip any $ref siblings introduced by enrichers
+        merged_spec, _ = _remove_ref_siblings(merged_spec)
+
         merged[domain] = merged_spec
         stats["domains"] += 1
 
