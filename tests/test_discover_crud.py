@@ -1,6 +1,17 @@
 # tests/test_discover_crud.py
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from scripts.discover import generate_crud_variants, is_list_endpoint, is_item_endpoint
+
+import scripts.discover as discover_module
+from scripts.discover import (
+    fetch_namespaces,
+    generate_crud_variants,
+    get_default_config,
+    is_item_endpoint,
+    is_list_endpoint,
+    run_discovery,
+)
 
 
 def test_is_list_endpoint_true():
@@ -48,16 +59,12 @@ def test_generate_crud_variants_skips_already_item_path():
     assert not any("{name}/{" in p for p in paths)
 
 
-from unittest.mock import AsyncMock, MagicMock
-from scripts.discover import fetch_namespaces
-
-
 @pytest.mark.asyncio
 async def test_fetch_namespaces_success():
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {
-        "items": [{"name": "default"}, {"name": "production"}, {"name": "staging"}]
+        "items": [{"name": "default"}, {"name": "production"}, {"name": "staging"}],
     }
     mock_client = AsyncMock()
     mock_client.get.return_value = mock_response
@@ -73,13 +80,6 @@ async def test_fetch_namespaces_failure_returns_empty():
 
     result = await fetch_namespaces(mock_client, "https://example.f5xc.com")
     assert result == []
-
-
-import json
-import tempfile
-from pathlib import Path
-from scripts.discover import run_discovery, get_default_config
-import scripts.discover as discover_module
 
 
 @pytest.mark.asyncio

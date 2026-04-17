@@ -1,12 +1,19 @@
 # tests/test_compile_catalog.py
+import json
+import sys
+import tempfile
+from pathlib import Path
+
 from scripts.compile_catalog import (
     assign_danger_level,
+    compile_catalog,
     extract_category_name,
-    generate_operation_name,
     extract_parameters,
     extract_response_schema,
-    compile_catalog,
+    generate_operation_name,
     group_paths_by_resource,
+    main,
+    merge_spec_files,
 )
 
 
@@ -86,12 +93,12 @@ def test_compile_catalog_structure():
         "openapi": "3.0.3",
         "paths": {
             "/api/config/namespaces/{namespace}/http_loadbalancers": {
-                "get": {"operationId": "list_lbs", "responses": {}}
+                "get": {"operationId": "list_lbs", "responses": {}},
             },
             "/api/config/namespaces/{namespace}/http_loadbalancers/{name}": {
-                "delete": {"operationId": "delete_lb", "responses": {}}
+                "delete": {"operationId": "delete_lb", "responses": {}},
             },
-        }
+        },
     }
     catalog = compile_catalog(openapi)
     assert catalog["service"] == "f5xc"
@@ -108,9 +115,9 @@ def test_compile_catalog_operation_fields():
         "openapi": "3.0.3",
         "paths": {
             "/api/config/namespaces/{namespace}/http_loadbalancers/{name}": {
-                "delete": {"operationId": "delete_lb", "responses": {}}
+                "delete": {"operationId": "delete_lb", "responses": {}},
             },
-        }
+        },
     }
     catalog = compile_catalog(openapi)
     cat = catalog["categories"][0]
@@ -127,19 +134,11 @@ def test_compile_catalog_deterministic():
         "paths": {
             "/api/config/namespaces/{namespace}/http_loadbalancers": {"get": {"responses": {}}},
             "/api/config/namespaces/{namespace}/origin_pools": {"get": {"responses": {}}},
-        }
+        },
     }
     result1 = compile_catalog(openapi)
     result2 = compile_catalog(openapi)
     assert result1 == result2
-
-
-import json
-import sys
-import tempfile
-from pathlib import Path
-from scripts.compile_catalog import main
-from scripts.compile_catalog import merge_spec_files
 
 
 def test_main_cli_writes_output_file():
@@ -151,8 +150,8 @@ def test_main_cli_writes_output_file():
             "openapi": "3.0.3",
             "paths": {
                 "/api/config/namespaces/{namespace}/widgets": {
-                    "get": {"operationId": "list_widgets", "responses": {"200": {}}}
-                }
+                    "get": {"operationId": "list_widgets", "responses": {"200": {}}},
+                },
             },
         }
         input_path.write_text(json.dumps(spec))
@@ -208,7 +207,7 @@ def test_compile_catalog_handles_extension_fields():
                 },
                 "x-displayname": "Widget Management",
                 "x-ves-proto-service": "ves.io.schema.widget.API",
-            }
+            },
         },
     }
     catalog = compile_catalog(openapi)
@@ -299,7 +298,7 @@ def test_compile_catalog_deduplicates_operation_names_globally():
             # "http_loadbalancer"  -> category "http-loadbalancer",  op "create_http_loadbalancer"
             "/api/config/namespaces/{namespace}/http_loadbalancers": {"post": {"responses": {}}},
             "/api/config/namespaces/{namespace}/http_loadbalancer": {"post": {"responses": {}}},
-        }
+        },
     }
     catalog = compile_catalog(openapi)
     all_op_names = [op["name"] for cat in catalog["categories"] for op in cat["operations"]]
@@ -351,11 +350,11 @@ def test_extract_response_schema_from_200():
                                 "errors": {"type": "array", "items": {"type": "string"}},
                             },
                             "required": ["items"],
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                    },
+                },
+            },
+        },
     }
     schema = extract_response_schema(operation)
     assert schema is not None
@@ -376,11 +375,11 @@ def test_extract_response_schema_from_201_for_post():
                             "properties": {
                                 "metadata": {"type": "object"},
                             },
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                    },
+                },
+            },
+        },
     }
     schema = extract_response_schema(operation)
     assert schema is not None
@@ -407,11 +406,11 @@ def test_extract_response_schema_simplifies_nested_refs():
                             },
                             "required": ["items"],
                             "additionalProperties": True,
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                    },
+                },
+            },
+        },
     }
     schema = extract_response_schema(operation)
     assert schema is not None
@@ -438,19 +437,19 @@ def test_extract_response_schema_resolves_ref():
                     "errors": {"type": "array"},
                 },
                 "required": ["items"],
-            }
-        }
+            },
+        },
     }
     operation = {
         "responses": {
             "200": {
                 "content": {
                     "application/json": {
-                        "schema": {"$ref": "#/components/schemas/ListResponse"}
-                    }
-                }
-            }
-        }
+                        "schema": {"$ref": "#/components/schemas/ListResponse"},
+                    },
+                },
+            },
+        },
     }
     schema = extract_response_schema(operation, components)
     assert schema is not None
