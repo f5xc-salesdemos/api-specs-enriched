@@ -32,12 +32,9 @@ F5XC_DEFAULTS = {
 }
 
 def merge_spec_files(dir_path: Path) -> dict[str, Any]:
-    """Read all OpenAPI JSON files in a directory and merge their paths.
-
-    Skips files without a 'paths' key (non-spec files like index.json).
-    When the same path appears in multiple files, their methods are merged.
-    """
+    """Read all OpenAPI JSON files in a directory and merge their paths and components."""
     merged_paths: dict[str, Any] = {}
+    merged_schemas: dict[str, Any] = {}
 
     for spec_file in sorted(dir_path.glob("*.json")):
         try:
@@ -57,7 +54,15 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
                 merged_paths[path] = {}
             merged_paths[path].update(path_item)
 
-    return {"openapi": "3.0.3", "paths": merged_paths}
+        # Merge components.schemas
+        schemas = spec.get("components", {}).get("schemas", {})
+        merged_schemas.update(schemas)
+
+    return {
+        "openapi": "3.0.3",
+        "paths": merged_paths,
+        "components": {"schemas": merged_schemas},
+    }
 
 
 _DANGER_MAP: dict[str, str] = {
@@ -166,12 +171,12 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
     return params
 
 
-def extract_response_schema(operation: dict[str, Any]) -> dict[str, Any] | None:
+def extract_response_schema(operation: dict[str, Any], components: dict[str, Any] | None = None) -> dict[str, Any] | None:
     """Extract and simplify response schema from an OpenAPI operation.
 
-    Checks 200 then 201 response codes. Returns simplified schema with only
-    type, properties (name -> {type}), and required fields. Returns None if
-    no response schema is defined.
+    Checks 200 then 201 response codes. Resolves $ref references using
+    components.schemas if provided. Returns simplified {type, properties, required}
+    format. Returns None if no usable response schema is found.
     """
     for code in ("200", "201"):
         schema = (
@@ -181,19 +186,34 @@ def extract_response_schema(operation: dict[str, Any]) -> dict[str, Any] | None:
             .get("application/json", {})
             .get("schema")
         )
-        if schema and isinstance(schema, dict):
-            simplified: dict[str, Any] = {}
-            if "type" in schema:
-                simplified["type"] = schema["type"]
-            if "properties" in schema and isinstance(schema["properties"], dict):
-                simplified["properties"] = {}
-                for prop_name, prop_schema in schema["properties"].items():
-                    if isinstance(prop_schema, dict) and "type" in prop_schema:
+        if not schema or not isinstance(schema, dict):
+            continue
+
+        # Resolve $ref if present
+        if "$ref" in schema and components:
+            ref_key = schema["$ref"].split("/")[-1]
+            schema = components.get("schemas", {}).get(ref_key, {})
+
+        if not schema:
+            continue
+
+        simplified: dict[str, Any] = {}
+        if "type" in schema:
+            simplified["type"] = schema["type"]
+        if "properties" in schema and isinstance(schema["properties"], dict):
+            simplified["properties"] = {}
+            for prop_name, prop_schema in schema["properties"].items():
+                if isinstance(prop_schema, dict):
+                    # Resolve nested $ref for property type
+                    if "$ref" in prop_schema and components:
+                        ref_key = prop_schema["$ref"].split("/")[-1]
+                        prop_schema = components.get("schemas", {}).get(ref_key, {})
+                    if "type" in prop_schema:
                         simplified["properties"][prop_name] = {"type": prop_schema["type"]}
-            if "required" in schema and isinstance(schema["required"], list):
-                simplified["required"] = schema["required"]
-            if simplified:
-                return simplified
+        if "required" in schema and isinstance(schema["required"], list):
+            simplified["required"] = schema["required"]
+        if simplified:
+            return simplified
     return None
 
 
@@ -243,7 +263,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
             )
             if body_schema:
                 op["bodySchema"] = body_schema
-            response_schema = extract_response_schema(operation)
+            response_schema = extract_response_schema(operation, openapi.get("components"))
             if response_schema:
                 op["responseSchema"] = response_schema
             operations.append(op)

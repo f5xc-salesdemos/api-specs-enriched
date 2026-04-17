@@ -425,3 +425,56 @@ def test_extract_response_schema_returns_none_when_missing():
     operation = {"responses": {"404": {"description": "Not found"}}}
     schema = extract_response_schema(operation)
     assert schema is None
+
+
+def test_extract_response_schema_resolves_ref():
+    """$ref in response schema is resolved via components."""
+    components = {
+        "schemas": {
+            "ListResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {"type": "array"},
+                    "errors": {"type": "array"},
+                },
+                "required": ["items"],
+            }
+        }
+    }
+    operation = {
+        "responses": {
+            "200": {
+                "content": {
+                    "application/json": {
+                        "schema": {"$ref": "#/components/schemas/ListResponse"}
+                    }
+                }
+            }
+        }
+    }
+    schema = extract_response_schema(operation, components)
+    assert schema is not None
+    assert schema["type"] == "object"
+    assert "items" in schema["properties"]
+    assert schema["required"] == ["items"]
+
+
+def test_merge_spec_files_includes_components():
+    """merge_spec_files merges components.schemas from all spec files."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec1 = {
+            "openapi": "3.0.3",
+            "paths": {"/api/a": {"get": {"responses": {}}}},
+            "components": {"schemas": {"TypeA": {"type": "object"}}},
+        }
+        spec2 = {
+            "openapi": "3.0.3",
+            "paths": {"/api/b": {"get": {"responses": {}}}},
+            "components": {"schemas": {"TypeB": {"type": "string"}}},
+        }
+        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1))
+        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2))
+
+        merged = merge_spec_files(Path(tmpdir))
+        assert "TypeA" in merged["components"]["schemas"]
+        assert "TypeB" in merged["components"]["schemas"]
