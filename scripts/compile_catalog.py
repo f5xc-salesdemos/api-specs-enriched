@@ -28,7 +28,7 @@ F5XC_AUTH = {
 }
 
 F5XC_DEFAULTS = {
-    "namespace": {"source": "F5XC_NAMESPACE"}
+    "namespace": {"source": "F5XC_NAMESPACE"},
 }
 
 def merge_spec_files(dir_path: Path) -> dict[str, Any]:
@@ -127,18 +127,17 @@ def generate_operation_name(method: str, path: str) -> str:
     method = method.upper()
     if method == "GET" and not is_item:
         return f"list_{resource_snake}"
-    elif method == "GET" and is_item:
+    if method == "GET" and is_item:
         return f"get_{singular}"
-    elif method == "POST":
+    if method == "POST":
         return f"create_{singular}"
-    elif method == "PUT":
+    if method == "PUT":
         return f"replace_{singular}"
-    elif method == "PATCH":
+    if method == "PATCH":
         return f"update_{singular}"
-    elif method == "DELETE":
+    if method == "DELETE":
         return f"delete_{singular}"
-    else:
-        return f"{method.lower()}_{singular}"
+    return f"{method.lower()}_{singular}"
 
 
 def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, Any]]:
@@ -159,14 +158,16 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
             param["default"] = "$F5XC_NAMESPACE"
         params.append(param)
 
-    for op_param in operation.get("parameters", []):
-        if op_param.get("in") == "query":
-            params.append({
-                "name": op_param["name"],
-                "in": "query",
-                "required": op_param.get("required", False),
-                "type": op_param.get("schema", {}).get("type", "string"),
-            })
+    params.extend(
+        {
+            "name": op_param["name"],
+            "in": "query",
+            "required": op_param.get("required", False),
+            "type": op_param.get("schema", {}).get("type", "string"),
+        }
+        for op_param in operation.get("parameters", [])
+        if op_param.get("in") == "query"
+    )
 
     return params
 
@@ -205,11 +206,12 @@ def extract_response_schema(operation: dict[str, Any], components: dict[str, Any
             for prop_name, prop_schema in schema["properties"].items():
                 if isinstance(prop_schema, dict):
                     # Resolve nested $ref for property type
+                    resolved_prop = prop_schema
                     if "$ref" in prop_schema and components:
                         ref_key = prop_schema["$ref"].split("/")[-1]
-                        prop_schema = components.get("schemas", {}).get(ref_key, {})
-                    if "type" in prop_schema:
-                        simplified["properties"][prop_name] = {"type": prop_schema["type"]}
+                        resolved_prop = components.get("schemas", {}).get(ref_key, {})
+                    if "type" in resolved_prop:
+                        simplified["properties"][prop_name] = {"type": resolved_prop["type"]}
         if "required" in schema and isinstance(schema["required"], list):
             simplified["required"] = schema["required"]
         if simplified:
@@ -299,6 +301,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> int:
+    """CLI entry point: compile OpenAPI spec(s) into xcsh api-catalog.json."""
     parser = argparse.ArgumentParser(description="Compile F5XC OpenAPI spec to xcsh catalog JSON")
     parser.add_argument("--input", type=Path, default=None, help="Single OpenAPI spec input file")
     parser.add_argument("--input-dir", type=Path, default=None, help="Directory of OpenAPI spec files to merge")
