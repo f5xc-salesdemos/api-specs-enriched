@@ -31,6 +31,7 @@ F5XC_DEFAULTS = {
     "namespace": {"source": "F5XC_NAMESPACE"},
 }
 
+
 def merge_spec_files(dir_path: Path) -> dict[str, Any]:
     """Read all OpenAPI JSON files in a directory and merge their paths and components."""
     merged_paths: dict[str, Any] = {}
@@ -101,7 +102,11 @@ def extract_category_name(path: str) -> str:
             skip_next = False
             continue
         resource_segments.append(seg)
-    resource = "-".join(resource_segments) if resource_segments else (filtered[-1] if filtered else "unknown")
+    resource = (
+        "-".join(resource_segments)
+        if resource_segments
+        else (filtered[-1] if filtered else "unknown")
+    )
     return resource.replace("_", "-")
 
 
@@ -172,7 +177,10 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
     return params
 
 
-def extract_response_schema(operation: dict[str, Any], components: dict[str, Any] | None = None) -> dict[str, Any] | None:
+def extract_response_schema(
+    operation: dict[str, Any],
+    components: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
     """Extract and simplify response schema from an OpenAPI operation.
 
     Checks 200 then 201 response codes. Resolves $ref references using
@@ -258,7 +266,9 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
             normalized_path = normalize_path_placeholders(path)
             op: dict[str, Any] = {
                 "name": op_name,
-                "description": operation.get("summary") or operation.get("description") or f"{method} {path}",
+                "description": operation.get("summary")
+                or operation.get("description")
+                or f"{method} {path}",
                 "method": method,
                 "path": normalized_path,
                 "dangerLevel": assign_danger_level(method),
@@ -285,11 +295,13 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
         if operations:
             display_name = category_name.replace("-", " ").title()
-            categories.append({
-                "name": category_name,
-                "displayName": display_name,
-                "operations": operations,
-            })
+            categories.append(
+                {
+                    "name": category_name,
+                    "displayName": display_name,
+                    "operations": operations,
+                },
+            )
 
     # Deduplicate operation names globally across all categories.
     # When a collision occurs, suffix the second occurrence with the category name.
@@ -317,8 +329,18 @@ def main() -> int:
     """CLI entry point: compile OpenAPI spec(s) into xcsh api-catalog.json."""
     parser = argparse.ArgumentParser(description="Compile F5XC OpenAPI spec to xcsh catalog JSON")
     parser.add_argument("--input", type=Path, default=None, help="Single OpenAPI spec input file")
-    parser.add_argument("--input-dir", type=Path, default=None, help="Directory of OpenAPI spec files to merge")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output api-catalog.json path")
+    parser.add_argument(
+        "--input-dir",
+        type=Path,
+        default=None,
+        help="Directory of OpenAPI spec files to merge",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_OUTPUT,
+        help="Output api-catalog.json path",
+    )
     args = parser.parse_args()
 
     if args.input_dir:
@@ -347,7 +369,9 @@ def main() -> int:
         f.write("\n")
 
     total_ops = sum(len(c["operations"]) for c in catalog["categories"])
-    print(f"Compiled {total_ops} operations across {len(catalog['categories'])} categories -> {args.output}")
+    print(
+        f"Compiled {total_ops} operations across {len(catalog['categories'])} categories -> {args.output}",
+    )
     return 0
 
 

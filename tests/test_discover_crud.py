@@ -92,7 +92,9 @@ async def test_run_discovery_expands_crud_endpoints(monkeypatch):
     monkeypatch.setattr(
         discover_module,
         "extract_endpoints_from_specs",
-        lambda specs_dir: [{"method": "GET", "path": "/api/config/namespaces/{namespace}/http_loadbalancers"}],
+        lambda specs_dir: [
+            {"method": "GET", "path": "/api/config/namespaces/{namespace}/http_loadbalancers"},
+        ],
     )
 
     session = await run_discovery(config, dry_run=True)
@@ -137,7 +139,9 @@ async def test_run_discovery_dry_run_returns_session_without_error(monkeypatch):
     monkeypatch.setattr(
         discover_module,
         "extract_endpoints_from_specs",
-        lambda specs_dir: [{"method": "GET", "path": "/api/config/namespaces/{namespace}/virtual_sites"}],
+        lambda specs_dir: [
+            {"method": "GET", "path": "/api/config/namespaces/{namespace}/virtual_sites"},
+        ],
     )
 
     session = await run_discovery(config, dry_run=True)

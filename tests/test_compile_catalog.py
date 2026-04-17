@@ -20,62 +20,111 @@ from scripts.compile_catalog import (
 def test_assign_danger_level_get():
     assert assign_danger_level("GET") == "low"
 
+
 def test_assign_danger_level_options():
     assert assign_danger_level("OPTIONS") == "low"
+
 
 def test_assign_danger_level_post():
     assert assign_danger_level("POST") == "medium"
 
+
 def test_assign_danger_level_put():
     assert assign_danger_level("PUT") == "medium"
+
 
 def test_assign_danger_level_patch():
     assert assign_danger_level("PATCH") == "medium"
 
+
 def test_assign_danger_level_delete():
     assert assign_danger_level("DELETE") == "high"
+
 
 def test_extract_category_name_namespace_path():
     path = "/api/config/namespaces/{namespace}/http_loadbalancers"
     assert extract_category_name(path) == "http-loadbalancers"
 
+
 def test_extract_category_name_web_path():
     path = "/api/web/namespaces"
     assert extract_category_name(path) == "namespaces"
+
 
 def test_extract_category_name_item_path():
     path = "/api/config/namespaces/{namespace}/http_loadbalancers/{name}"
     assert extract_category_name(path) == "http-loadbalancers"
 
+
 def test_generate_operation_name_list():
-    assert generate_operation_name("GET", "/api/config/namespaces/{namespace}/http_loadbalancers") == "list_http_loadbalancers"
+    assert (
+        generate_operation_name("GET", "/api/config/namespaces/{namespace}/http_loadbalancers")
+        == "list_http_loadbalancers"
+    )
+
 
 def test_generate_operation_name_get_item():
-    assert generate_operation_name("GET", "/api/config/namespaces/{namespace}/http_loadbalancers/{name}") == "get_http_loadbalancer"
+    assert (
+        generate_operation_name(
+            "GET",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}",
+        )
+        == "get_http_loadbalancer"
+    )
+
 
 def test_generate_operation_name_post():
-    assert generate_operation_name("POST", "/api/config/namespaces/{namespace}/http_loadbalancers") == "create_http_loadbalancer"
+    assert (
+        generate_operation_name("POST", "/api/config/namespaces/{namespace}/http_loadbalancers")
+        == "create_http_loadbalancer"
+    )
+
 
 def test_generate_operation_name_put():
-    assert generate_operation_name("PUT", "/api/config/namespaces/{namespace}/http_loadbalancers/{name}") == "replace_http_loadbalancer"
+    assert (
+        generate_operation_name(
+            "PUT",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}",
+        )
+        == "replace_http_loadbalancer"
+    )
+
 
 def test_generate_operation_name_patch():
-    assert generate_operation_name("PATCH", "/api/config/namespaces/{namespace}/http_loadbalancers/{name}") == "update_http_loadbalancer"
+    assert (
+        generate_operation_name(
+            "PATCH",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}",
+        )
+        == "update_http_loadbalancer"
+    )
+
 
 def test_generate_operation_name_delete():
-    assert generate_operation_name("DELETE", "/api/config/namespaces/{namespace}/http_loadbalancers/{name}") == "delete_http_loadbalancer"
+    assert (
+        generate_operation_name(
+            "DELETE",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}",
+        )
+        == "delete_http_loadbalancer"
+    )
+
 
 def test_extract_parameters_path_params():
     path = "/api/config/namespaces/{namespace}/http_loadbalancers/{name}"
     params = extract_parameters(path, {})
-    assert any(p["name"] == "namespace" and p["in"] == "path" and p["required"] is True for p in params)
+    assert any(
+        p["name"] == "namespace" and p["in"] == "path" and p["required"] is True for p in params
+    )
     assert any(p["name"] == "name" and p["in"] == "path" and p["required"] is True for p in params)
+
 
 def test_extract_parameters_namespace_gets_default():
     path = "/api/config/namespaces/{namespace}/http_loadbalancers"
     params = extract_parameters(path, {})
     ns_param = next(p for p in params if p["name"] == "namespace")
     assert ns_param["default"] == "$F5XC_NAMESPACE"
+
 
 def test_group_paths_by_resource():
     paths = {
@@ -87,6 +136,7 @@ def test_group_paths_by_resource():
     assert "http-loadbalancers" in groups
     assert "origin-pools" in groups
     assert len(groups["http-loadbalancers"]) == 2
+
 
 def test_compile_catalog_structure():
     openapi = {
@@ -110,6 +160,7 @@ def test_compile_catalog_structure():
     assert "list_http_loadbalancers" in op_names
     assert "delete_http_loadbalancer" in op_names
 
+
 def test_compile_catalog_operation_fields():
     openapi = {
         "openapi": "3.0.3",
@@ -127,6 +178,7 @@ def test_compile_catalog_operation_fields():
     assert op["path"] == "/api/config/namespaces/{namespace}/http_loadbalancers/{name}"
     assert any(p["name"] == "namespace" for p in op["parameters"])
     assert any(p["name"] == "name" for p in op["parameters"])
+
 
 def test_compile_catalog_deterministic():
     openapi = {
@@ -157,6 +209,7 @@ def test_main_cli_writes_output_file():
         input_path.write_text(json.dumps(spec))
 
         import sys
+
         original_argv = sys.argv
         sys.argv = ["compile_catalog", "--input", str(input_path), "--output", str(output_path)]
         try:
@@ -174,6 +227,7 @@ def test_main_cli_writes_output_file():
 def test_compile_catalog_against_real_spec():
     """compile_catalog() processes the real specs/discovered/openapi.json without error."""
     import pytest
+
     spec_path = Path("specs/discovered/openapi.json")
     if not spec_path.exists():
         pytest.skip("Real spec not available")
@@ -254,6 +308,7 @@ def test_merge_spec_files_handles_duplicate_paths():
 
 def test_compile_catalog_from_enriched_specs():
     import pytest
+
     enriched_dir = Path("docs/specifications/api")
     if not enriched_dir.exists():
         pytest.skip("Enriched specs not available")
@@ -318,10 +373,13 @@ def test_main_cli_with_input_dir_flag():
         specs_dir = Path(tmpdir) / "specs"
         specs_dir.mkdir()
         output_path = Path(tmpdir) / "catalog.json"
-        spec = {"openapi": "3.0.3", "paths": {
-            "/api/config/namespaces/{namespace}/widgets": {"get": {"responses": {}}},
-            "/api/config/namespaces/{namespace}/gadgets": {"delete": {"responses": {}}},
-        }}
+        spec = {
+            "openapi": "3.0.3",
+            "paths": {
+                "/api/config/namespaces/{namespace}/widgets": {"get": {"responses": {}}},
+                "/api/config/namespaces/{namespace}/gadgets": {"delete": {"responses": {}}},
+            },
+        }
         (specs_dir / "test.json").write_text(json.dumps(spec))
         original_argv = sys.argv
         sys.argv = ["compile_catalog", "--input-dir", str(specs_dir), "--output", str(output_path)]
@@ -481,6 +539,7 @@ def test_merge_spec_files_includes_components():
 
 # ── Bug 1: deep path hierarchy ──────────────────────────────────────────────
 
+
 def test_extract_category_name_deep_path():
     path = "/api/shape/dip/namespaces/system/app_provision"
     name = extract_category_name(path)
@@ -495,6 +554,7 @@ def test_extract_category_name_preserves_simple_paths():
 
 
 # ── Bug 2: dotted placeholders normalized in path ───────────────────────────
+
 
 def test_compile_catalog_normalizes_dotted_placeholders_in_path():
     openapi = {
@@ -512,6 +572,7 @@ def test_compile_catalog_normalizes_dotted_placeholders_in_path():
 
 
 # ── Bug 3: bodySchema $ref resolved ─────────────────────────────────────────
+
 
 def test_compile_catalog_resolves_body_schema_ref():
     openapi = {
