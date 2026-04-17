@@ -190,28 +190,66 @@ def generate_crud_variants(path: str) -> list[dict[str, Any]]:
     """Generate CRUD endpoint variants from a list or item path.
 
     For list paths (ending in resource collection):
-      POST   /path           — create
-      GET    /path/{name}    — get by name
-      PUT    /path/{name}    — replace
-      DELETE /path/{name}    — delete
+        POST   /path           — create
+        GET    /path/{name}    — get by name
+        PUT    /path/{name}    — replace
+        DELETE /path/{name}    — delete
 
     For item paths (ending in {name}):
-      PUT    /path           — replace
-      PATCH  /path           — partial update
-      DELETE /path           — delete
+        PUT    /path           — replace
+        PATCH  /path           — partial update
+        DELETE /path           — delete
     """
     variants: list[dict[str, Any]] = []
 
     if is_list_endpoint(path):
         item_path = path + "/{name}"
-        variants.append({"method": "POST", "path": path, "operation_id": "", "parameters": [], "responses": {}})
-        variants.append({"method": "GET", "path": item_path, "operation_id": "", "parameters": [], "responses": {}})
-        variants.append({"method": "PUT", "path": item_path, "operation_id": "", "parameters": [], "responses": {}})
-        variants.append({"method": "DELETE", "path": item_path, "operation_id": "", "parameters": [], "responses": {}})
+        variants.append(
+            {"method": "POST", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {
+                "method": "GET",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+        variants.append(
+            {
+                "method": "PUT",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+        variants.append(
+            {
+                "method": "DELETE",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
     else:
-        variants.append({"method": "PUT", "path": path, "operation_id": "", "parameters": [], "responses": {}})
-        variants.append({"method": "PATCH", "path": path, "operation_id": "", "parameters": [], "responses": {}})
-        variants.append({"method": "DELETE", "path": path, "operation_id": "", "parameters": [], "responses": {}})
+        variants.append(
+            {"method": "PUT", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {"method": "PATCH", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {
+                "method": "DELETE",
+                "path": path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
 
     return variants
 
@@ -467,10 +505,14 @@ async def fetch_namespaces(client: httpx.AsyncClient, base_url: str) -> list[str
             items = data.get("items", [])
             names = [item.get("name") for item in items if item.get("name")]
             if names:
-                console.print(f"[green]Auto-discovered {len(names)} namespaces: {', '.join(names[:5])}{'...' if len(names) > 5 else ''}[/green]")
+                console.print(
+                    f"[green]Auto-discovered {len(names)} namespaces: {', '.join(names[:5])}{'...' if len(names) > 5 else ''}[/green]"
+                )
                 return names
     except Exception as e:
-        console.print(f"[yellow]Namespace auto-discovery failed: {e} — using config defaults[/yellow]")
+        console.print(
+            f"[yellow]Namespace auto-discovery failed: {e} — using config defaults[/yellow]"
+        )
     return []
 
 

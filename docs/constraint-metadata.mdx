@@ -53,13 +53,13 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ```json
 {
   "x-f5xc-constraints": {
-    "type": "string|array|number|object",
+    "constraintType": "string|array|number|object",
     "deterministic": true,
     "category": "length|size|range|pattern|character|format",
 
-    "string": { /* String-specific constraints */ },
-    "array": { /* Array-specific constraints */ },
-    "number": { /* Numeric-specific constraints */ },
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
 
     "metadata": {
       "source": "discovery|inferred|explicit",
@@ -75,12 +75,10 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `type` | string | Data type (string, array, number, object) |
+| `constraintType` | string | Data type (string, array, number, object) |
 | `deterministic` | boolean | High-confidence flag (confidence >= 0.9) for AI generation |
 | `category` | string | Constraint category for grouping and reporting |
-| `string` | object | String-specific constraints (only when type=string) |
-| `array` | object | Array-specific constraints (only when type=array) |
-| `number` | object | Numeric constraints (only when type=number) |
+| *(constraint keys)* | various | Type-specific constraint keys flattened at top level (e.g., `minLength`, `maxItems`, `minimum`) |
 | `metadata` | object | Source tracking, confidence, validation timestamp |
 
 ---
@@ -91,28 +89,26 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 ```json
 {
-  "type": "string",
+  "constraintType": "string",
   "category": "naming",
-  "string": {
-    "minLength": 1,
-    "maxLength": 63,
-    "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-    "characterSet": {
-      "allowed": "[a-z0-9-]",
-      "restricted": "[^a-z0-9-]",
-      "required": "[a-z0-9]",
-      "description": "Lowercase alphanumeric with hyphens, not at start/end"
-    },
-    "format": "dns-label",
-    "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
-    "byteLength": {
-      "min": 1,
-      "max": 63
-    },
-    "validation": {
-      "rfc": "RFC 1123",
-      "standard": "Kubernetes resource naming"
-    }
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
   },
   "metadata": {
     "source": "inferred",
@@ -147,13 +143,11 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 ```json
 {
-  "type": "array",
+  "constraintType": "array",
   "category": "collection",
-  "array": {
-    "minItems": 1,
-    "maxItems": 50,
-    "uniqueItems": true
-  },
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
   "metadata": {
     "source": "inferred",
     "confidence": 0.90
@@ -166,15 +160,13 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 ```json
 {
-  "type": "number",
+  "constraintType": "number",
   "category": "range",
-  "number": {
-    "minimum": 1,
-    "maximum": 65535,
-    "multipleOf": 1,
-    "exclusiveMinimum": false,
-    "exclusiveMaximum": false
-  },
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
   "metadata": {
     "source": "inferred",
     "confidence": 0.99
@@ -252,13 +244,11 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 **Constraint**:
 ```json
 {
-  "type": "string",
-  "string": {
-    "minLength": 1,
-    "maxLength": 63,
-    "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-    "format": "dns-label"
-  },
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
   "deterministic": true
 }
 ```
@@ -281,11 +271,9 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 **Constraint**:
 ```json
 {
-  "type": "number",
-  "number": {
-    "minimum": 1,
-    "maximum": 65535
-  },
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
   "deterministic": true
 }
 ```
@@ -307,12 +295,10 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 **Constraint**:
 ```json
 {
-  "type": "array",
-  "array": {
-    "minItems": 1,
-    "maxItems": 50,
-    "uniqueItems": true
-  },
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
   "deterministic": true
 }
 ```
@@ -410,9 +396,8 @@ def generate_resource_name(schema_property):
         return prompt_user("Enter resource name: ")
 
     # Generate automatically
-    string_constraints = constraints.get("string", {})
-    pattern = string_constraints.get("pattern")
-    max_len = string_constraints.get("maxLength", 63)
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
 
     # Generate valid name matching pattern
     return generate_dns_label(max_length=max_len)
@@ -426,20 +411,18 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    string_c = constraints.get("string", {})
+    # Check length (constraint keys are at top level)
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
-    # Check length
-    if "minLength" in string_c and len(user_value) < string_c["minLength"]:
-        return False, f"{field_name} must be at least {string_c['minLength']} characters"
-
-    if "maxLength" in string_c and len(user_value) > string_c["maxLength"]:
-        return False, f"{field_name} must be at most {string_c['maxLength']} characters"
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
 
     # Check pattern
-    if "pattern" in string_c:
+    if "pattern" in constraints:
         import re
-        if not re.match(string_c["pattern"], user_value):
-            char_set = string_c.get("characterSet", {})
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
             desc = char_set.get("description", "valid format")
             return False, f"{field_name} must match {desc}"
 
@@ -457,16 +440,15 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    if stringConstraints, ok := constraints["string"].(map[string]interface{}); ok {
-        // Add validation functions
-        if minLen, ok := stringConstraints["minLength"].(float64); ok {
-            s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(stringConstraints["maxLength"].(float64)))
-        }
+    // Constraint keys are at top level (no nested "string" wrapper)
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
 
-        if pattern, ok := stringConstraints["pattern"].(string); ok {
-            s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
-                stringConstraints["characterSet"].(map[string]interface{})["description"].(string))
-        }
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
     }
 
     return s
@@ -484,7 +466,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
     const items: CompletionItem[] = [];
 
     // Add format-specific completions
-    if (constraints.string?.format === 'dns-label') {
+    if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
             detail: 'Example DNS label',

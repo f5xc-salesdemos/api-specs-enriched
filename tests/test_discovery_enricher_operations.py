@@ -10,6 +10,8 @@ Tests the new operation-level enrichment functionality added in Issue #314:
 
 # Tests intentionally access private methods to verify internal behavior
 
+from typing import Any
+
 import pytest
 
 from scripts.utils.discovery_enricher import DiscoveryData, DiscoveryEnricher, EnrichmentStats
@@ -86,7 +88,7 @@ class TestResponseTimeEnrichment:
 
     def test_response_time_with_discovery_data(self, enricher: DiscoveryEnricher):
         """Test response time enrichment when discovery data is available."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {"x-response-time-ms": 150.5}
         enricher.discovery_data = DiscoveryData(discovered_at="2025-01-01T00:00:00Z")
 
@@ -106,7 +108,7 @@ class TestResponseTimeEnrichment:
 
     def test_response_time_fallback_to_estimates(self, enricher: DiscoveryEnricher):
         """Test response time falls back to latency estimates when no discovery data."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_response_time(
             operation,
             None,
@@ -124,8 +126,8 @@ class TestResponseTimeEnrichment:
 
     def test_response_time_method_based_estimates(self, enricher: DiscoveryEnricher):
         """Test latency estimates vary by HTTP method."""
-        get_op = {}
-        post_op = {}
+        get_op: dict[str, Any] = {}
+        post_op: dict[str, Any] = {}
 
         enricher._enrich_operation_with_response_time(get_op, None, "GET", "/api/test")
         enricher._enrich_operation_with_response_time(
@@ -144,7 +146,7 @@ class TestResponseTimeEnrichment:
         """Test response time enrichment when disabled."""
         base_config["discovery_enrichment"]["performance"]["add_percentiles"] = False
         enricher = DiscoveryEnricher(base_config)
-        operation = {}
+        operation: dict[str, Any] = {}
 
         enricher._enrich_operation_with_response_time(
             operation,
@@ -157,7 +159,7 @@ class TestResponseTimeEnrichment:
 
     def test_response_time_stats_tracking(self, enricher: DiscoveryEnricher):
         """Test that response time enrichment updates stats."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_response_time(
             operation,
             {"x-response-time-ms": 100},
@@ -173,7 +175,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_from_discovery_data(self, enricher: DiscoveryEnricher):
         """Test rate limit enrichment with discovery data."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "x-rate-limit": {
                 "requests_per_minute": 1000,
@@ -194,7 +196,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_low_confidence_filtered(self, enricher: DiscoveryEnricher):
         """Test rate limits below confidence threshold are not added."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "x-rate-limit": {
                 "requests_per_minute": 1000,
@@ -208,7 +210,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_from_response_header(self, enricher: DiscoveryEnricher):
         """Test rate limits extracted from response headers."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {"x-ratelimit-limit": 500}
 
         enricher._enrich_operation_with_rate_limits(operation, discovered_op)
@@ -220,7 +222,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_no_discovery_data(self, enricher: DiscoveryEnricher):
         """Test rate limits not added when no discovery data."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_rate_limits(operation, None)
 
         assert X_F5XC_DISCOVERED_RATE_LIMITS not in operation
@@ -229,7 +231,7 @@ class TestRateLimitEnrichment:
         """Test rate limit enrichment when disabled."""
         base_config["discovery_enrichment"]["rate_limits"]["enabled"] = False
         enricher = DiscoveryEnricher(base_config)
-        operation = {}
+        operation: dict[str, Any] = {}
 
         enricher._enrich_operation_with_rate_limits(
             operation,
@@ -240,7 +242,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_stats_tracking(self, enricher: DiscoveryEnricher):
         """Test that rate limit enrichment updates stats."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_rate_limits(
             operation,
             {"x-rate-limit": {"requests_per_minute": 1000, "confidence": 0.9}},
@@ -254,7 +256,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_from_discovered_errors(self, enricher: DiscoveryEnricher):
         """Test error catalog populated from discovered errors."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "x-discovered-errors": [
                 {
@@ -283,7 +285,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_from_responses(self, enricher: DiscoveryEnricher):
         """Test error catalog extracted from response definitions."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "responses": {
                 "200": {"description": "Success"},
@@ -303,7 +305,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_frequency_filtering(self, enricher: DiscoveryEnricher):
         """Test errors below min_frequency are filtered."""
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "x-discovered-errors": [
                 {"status_code": 400, "frequency": 0.1},
@@ -321,7 +323,7 @@ class TestErrorCatalogEnrichment:
         """Test error catalog respects max_errors_per_operation."""
         base_config["discovery_enrichment"]["errors"]["max_errors_per_operation"] = 2
         enricher = DiscoveryEnricher(base_config)
-        operation = {}
+        operation: dict[str, Any] = {}
         discovered_op = {
             "x-discovered-errors": [
                 {"status_code": 400, "frequency": 0.1},
@@ -338,7 +340,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_no_discovery_data(self, enricher: DiscoveryEnricher):
         """Test error catalog not added when no discovery data."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_error_catalog(operation, None)
 
         assert X_F5XC_DISCOVERED_ERROR_CATALOG not in operation
@@ -347,7 +349,7 @@ class TestErrorCatalogEnrichment:
         """Test error catalog enrichment when disabled."""
         base_config["discovery_enrichment"]["errors"]["enabled"] = False
         enricher = DiscoveryEnricher(base_config)
-        operation = {}
+        operation: dict[str, Any] = {}
 
         enricher._enrich_operation_with_error_catalog(
             operation,
@@ -358,7 +360,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_stats_tracking(self, enricher: DiscoveryEnricher):
         """Test that error catalog enrichment updates stats."""
-        operation = {}
+        operation: dict[str, Any] = {}
         enricher._enrich_operation_with_error_catalog(
             operation,
             {"x-discovered-errors": [{"status_code": 400, "frequency": 0.1}]},

@@ -110,16 +110,15 @@ def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
         f.write("\n")
 
     # Apply biome formatting if available (ensures consistent JSON style)
+    import contextlib  # noqa: PLC0415
     import subprocess  # noqa: PLC0415
 
-    try:
+    with contextlib.suppress(FileNotFoundError):
         subprocess.run(
             ["biome", "format", "--write", str(output_path)],
             capture_output=True,
             check=False,
         )
-    except FileNotFoundError:
-        pass  # biome not installed, skip formatting
 
 
 def categorize_spec(filename: str) -> str:

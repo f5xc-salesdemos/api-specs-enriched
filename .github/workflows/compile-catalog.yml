@@ -28,23 +28,24 @@ jobs:
 
       - name: Verify output
         run: |
-          python3 -c "
+          python3 -c '
           import json
-          c = json.load(open('release/api-catalog.json'))
-          ops = sum(len(cat['operations']) for cat in c['categories'])
-          print(f'Compiled {ops} operations across {len(c["categories"])} categories')
-          assert c['service'] == 'f5xc', 'Wrong service name'
-          assert c['auth']['type'] == 'api_token', 'Wrong auth type'
-          "
+          c = json.load(open("release/api-catalog.json"))
+          ops = sum(len(cat["operations"]) for cat in c["categories"])
+          n = len(c["categories"])
+          print(f"Compiled {ops} operations across {n} categories")
+          assert c["service"] == "f5xc", "Wrong service name"
+          assert c["auth"]["type"] == "api_token", "Wrong auth type"
+          '
 
       - name: Create release artifact
-        uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
-        with:
-          tag_name: catalog-${{ github.run_number }}
-          name: F5XC API Catalog ${{ github.run_number }}
-          files: release/api-catalog.json
-          generate_release_notes: false
-          body: |
-            Auto-generated F5XC API catalog from discovered OpenAPI spec.
-            Commit: ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: catalog-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          gh release create "$TAG" \
+            release/api-catalog.json \
+            --title "F5XC API Catalog ${{ github.run_number }}" \
+            --notes "Auto-generated F5XC API catalog from discovered OpenAPI spec.
+          Commit: ${{ github.sha }}"

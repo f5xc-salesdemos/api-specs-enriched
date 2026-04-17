@@ -20,7 +20,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import yaml
 
@@ -93,7 +93,7 @@ class StringConstraintExtractor:
     """Extract string-specific constraints."""
 
     @staticmethod
-    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict | None:
         """Extract string constraints from schema and pattern.
 
         Args:
@@ -102,9 +102,9 @@ class StringConstraintExtractor:
             pattern_match: Matched pattern dictionary or None
 
         Returns:
-            String constraint dictionary
+            String constraint dictionary or None
         """
-        constraints = {}
+        constraints: dict[str, Any] = {}
 
         # Extract from existing schema
         if "minLength" in schema:
@@ -130,7 +130,7 @@ class ArrayConstraintExtractor:
     """Extract array-specific constraints."""
 
     @staticmethod
-    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict | None:
         """Extract array constraints from schema and pattern.
 
         Args:
@@ -139,9 +139,9 @@ class ArrayConstraintExtractor:
             pattern_match: Matched pattern dictionary or None
 
         Returns:
-            Array constraint dictionary
+            Array constraint dictionary or None
         """
-        constraints = {}
+        constraints: dict[str, Any] = {}
 
         # Extract from existing schema
         if "minItems" in schema:
@@ -165,7 +165,7 @@ class NumericConstraintExtractor:
     """Extract numeric-specific constraints."""
 
     @staticmethod
-    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict:
+    def extract(_field_name: str, schema: dict, pattern_match: dict | None) -> dict | None:
         """Extract numeric constraints from schema and pattern.
 
         Args:
@@ -174,9 +174,9 @@ class NumericConstraintExtractor:
             pattern_match: Matched pattern dictionary or None
 
         Returns:
-            Numeric constraint dictionary
+            Numeric constraint dictionary or None
         """
-        constraints = {}
+        constraints: dict[str, Any] = {}
 
         # Extract from existing schema
         if "minimum" in schema:
@@ -204,7 +204,7 @@ class ObjectConstraintExtractor:
     """Extract object-specific constraints."""
 
     @staticmethod
-    def extract(_field_name: str, schema: dict) -> dict:
+    def extract(_field_name: str, schema: dict) -> dict | None:
         """Extract object constraints from schema.
 
         Args:
@@ -212,9 +212,9 @@ class ObjectConstraintExtractor:
             schema: OpenAPI schema for the field
 
         Returns:
-            Object constraint dictionary
+            Object constraint dictionary or None
         """
-        constraints = {}
+        constraints: dict[str, Any] = {}
 
         # Extract from existing schema
         if "minProperties" in schema:
@@ -308,7 +308,7 @@ class ConstraintEnricher:
         self.pattern_matcher = PatternMatcher(self.config)
 
         # Statistics
-        self.stats = {
+        self.stats: dict[str, Any] = {
             "properties_analyzed": 0,
             "constraints_added": 0,
             "constraints_skipped_existing": 0,
@@ -456,18 +456,13 @@ class ConstraintEnricher:
         if not constraints:
             return None
 
-        # Build x-f5xc-constraints structure
-        result = {
-            "type": field_type,
+        # Build x-f5xc-constraints structure (flat object)
+        constraint_type = "number" if field_type in ("integer", "number") else field_type
+        result: dict[str, Any] = {
+            "constraintType": constraint_type,
             "category": "discovery",
+            **constraints,
         }
-
-        if field_type == "string":
-            result["string"] = constraints
-        elif field_type == "array":
-            result["array"] = constraints
-        elif field_type in ("integer", "number"):
-            result["number"] = constraints
 
         # Add metadata
         result["metadata"] = {
@@ -564,21 +559,22 @@ class ConstraintEnricher:
         if not string_constraints:
             return None
 
-        result = {
-            "type": "string",
+        result: dict[str, Any] = {
+            "constraintType": "string",
             "category": pattern_match.get("metadata", {}).get("category", "general")
             if pattern_match
             else "general",
-            "string": string_constraints,
+            **string_constraints,
         }
 
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
-            result["metadata"] = pattern_match["metadata"].copy()
-            result["metadata"]["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata: dict[str, Any] = pattern_match["metadata"].copy()
+            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
-            confidence = result["metadata"].get("confidence", 0)
+            confidence = metadata.get("confidence", 0)
             threshold = (
                 self.config.get("metadata", {}).get("confidence_thresholds", {}).get("high", 0.9)
             )
@@ -598,21 +594,22 @@ class ConstraintEnricher:
         if not array_constraints:
             return None
 
-        result = {
-            "type": "array",
+        result: dict[str, Any] = {
+            "constraintType": "array",
             "category": pattern_match.get("metadata", {}).get("category", "general")
             if pattern_match
             else "general",
-            "array": array_constraints,
+            **array_constraints,
         }
 
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
-            result["metadata"] = pattern_match["metadata"].copy()
-            result["metadata"]["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata: dict[str, Any] = pattern_match["metadata"].copy()
+            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
-            confidence = result["metadata"].get("confidence", 0)
+            confidence = metadata.get("confidence", 0)
             threshold = (
                 self.config.get("metadata", {}).get("confidence_thresholds", {}).get("high", 0.9)
             )
@@ -632,21 +629,22 @@ class ConstraintEnricher:
         if not numeric_constraints:
             return None
 
-        result = {
-            "type": "number",
+        result: dict[str, Any] = {
+            "constraintType": "number",
             "category": pattern_match.get("metadata", {}).get("category", "general")
             if pattern_match
             else "general",
-            "number": numeric_constraints,
+            **numeric_constraints,
         }
 
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
-            result["metadata"] = pattern_match["metadata"].copy()
-            result["metadata"]["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata: dict[str, Any] = pattern_match["metadata"].copy()
+            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
-            confidence = result["metadata"].get("confidence", 0)
+            confidence = metadata.get("confidence", 0)
             threshold = (
                 self.config.get("metadata", {}).get("confidence_thresholds", {}).get("high", 0.9)
             )
@@ -662,9 +660,9 @@ class ConstraintEnricher:
             return None
 
         return {
-            "type": "object",
+            "constraintType": "object",
             "category": "general",
-            "object": object_constraints,
+            **object_constraints,
             "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
@@ -708,10 +706,11 @@ class ConstraintEnricher:
             constraints = self._map_numeric_discovery_rules(ves_rules)
 
         if constraints:
+            constraint_type = "number" if field_type in ("integer", "number") else field_type
             return {
-                "type": field_type,
+                "constraintType": constraint_type,
                 "category": "discovery",
-                field_type: constraints,
+                **constraints,
                 "metadata": {
                     "source": "discovery",
                     "confidence": 0.99,
@@ -781,7 +780,7 @@ class ConstraintEnricher:
 
         return constraints
 
-    def get_stats(self) -> dict:
+    def get_stats(self) -> dict[str, Any]:
         """Get enrichment statistics.
 
         Returns:
@@ -790,18 +789,16 @@ class ConstraintEnricher:
         stats = self.stats.copy()
 
         # Calculate average confidence
-        scores: list[float] = stats["confidence_scores"]
+        scores = list(stats["confidence_scores"])
         if scores:
             stats["average_confidence"] = sum(scores) / len(scores)
         else:
             stats["average_confidence"] = 0.0
 
         # Calculate coverage percentage
-        analyzed: int = stats["properties_analyzed"]
+        analyzed = int(stats["properties_analyzed"])
         if analyzed > 0:
-            stats["coverage_percentage"] = (
-                int(stats["constraints_added"]) / analyzed * 100
-            )
+            stats["coverage_percentage"] = int(stats["constraints_added"]) / analyzed * 100
         else:
             stats["coverage_percentage"] = 0.0
 
@@ -811,7 +808,6 @@ class ConstraintEnricher:
 if __name__ == "__main__":
     # Test the enricher
     import json
-    from pathlib import Path
 
     # Load a test spec
     test_spec_path = Path("specs/enriched/dns.json")

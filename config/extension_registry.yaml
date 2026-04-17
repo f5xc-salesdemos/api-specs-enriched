@@ -292,38 +292,40 @@ property_level:
     type: object
     purpose: Comprehensive constraint metadata for deterministic AI generation and validation
     consumers: [terraform, cli, mcp, ide, ai-assistants]
+    note: "Flat object structure (no nested type wrappers) to avoid Spectral array-items violations"
     properties:
-      type: "Field type (string, array, number, object)"
+      constraintType: "Field type (string, array, number, object)"
       deterministic: "Boolean flag for high-confidence constraints (>= 0.9)"
       category: "Constraint category (length, size, range, pattern, character, format)"
-      string:
-        minLength: "Minimum string length"
-        maxLength: "Maximum string length"
-        pattern: "Regular expression pattern"
-        characterSet:
-          allowed: "Character set allowed (regex)"
-          restricted: "Character set restricted (regex)"
-          required: "Character set required (regex)"
-          description: "Natural language description of character set"
-        format: "String format (dns-label, fqdn, email, url, uuid, date-time, etc.)"
-        formatDescription: "Format-specific validation rules and standards"
-        byteLength:
-          min: "Minimum byte length"
-          max: "Maximum byte length"
-        validation:
-          rfc: "RFC standard reference"
-          standard: "Industry standard reference (ISO 8601, E.164, PEM)"
-          customRule: "Additional validation logic description"
-      array:
-        minItems: "Minimum array items"
-        maxItems: "Maximum array items"
-        uniqueItems: "Boolean requiring unique items"
-      number:
-        minimum: "Minimum numeric value"
-        maximum: "Maximum numeric value"
-        multipleOf: "Value must be multiple of this number"
-        exclusiveMinimum: "Exclusive minimum boundary"
-        exclusiveMaximum: "Exclusive maximum boundary"
+      # String constraint keys (when constraintType=string)
+      minLength: "Minimum string length"
+      maxLength: "Maximum string length"
+      pattern: "Regular expression pattern"
+      characterSet:
+        allowed: "Character set allowed (regex)"
+        restricted: "Character set restricted (regex)"
+        required: "Character set required (regex)"
+        description: "Natural language description of character set"
+      format: "String format (dns-label, fqdn, email, url, uuid, date-time, etc.)"
+      formatDescription: "Format-specific validation rules and standards"
+      byteLength:
+        min: "Minimum byte length"
+        max: "Maximum byte length"
+      validation:
+        rfc: "RFC standard reference"
+        standard: "Industry standard reference (ISO 8601, E.164, PEM)"
+        customRule: "Additional validation logic description"
+      # Array constraint keys (when constraintType=array)
+      minItems: "Minimum array items"
+      maxItems: "Maximum array items"
+      uniqueItems: "Boolean requiring unique items"
+      # Numeric constraint keys (when constraintType=number)
+      minimum: "Minimum numeric value"
+      maximum: "Maximum numeric value"
+      multipleOf: "Value must be multiple of this number"
+      exclusiveMinimum: "Exclusive minimum boundary"
+      exclusiveMaximum: "Exclusive maximum boundary"
+      # Metadata
       metadata:
         source: "Constraint source (discovery, inferred, explicit)"
         confidence: "Confidence score 0.0-1.0"
@@ -333,23 +335,22 @@ property_level:
     source: "Pattern matching, discovery data, and x-ves-validation-rules mapping"
     reconciliation: "EXISTING > DISCOVERY > INFERRED priority"
     example:
-      type: "string"
+      constraintType: "string"
       deterministic: true
       category: "naming"
-      string:
-        minLength: 1
-        maxLength: 63
-        pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
-        characterSet:
-          allowed: "[a-z0-9-]"
-          restricted: "[^a-z0-9-]"
-          required: "[a-z0-9]"
-          description: "Lowercase alphanumeric with hyphens, not at start/end"
-        format: "dns-label"
-        formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
-        validation:
-          rfc: "RFC 1123"
-          standard: "Kubernetes resource naming"
+      minLength: 1
+      maxLength: 63
+      pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      characterSet:
+        allowed: "[a-z0-9-]"
+        restricted: "[^a-z0-9-]"
+        required: "[a-z0-9]"
+        description: "Lowercase alphanumeric with hyphens, not at start/end"
+      format: "dns-label"
+      formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
+      validation:
+        rfc: "RFC 1123"
+        standard: "Kubernetes resource naming"
       metadata:
         source: "inferred"
         confidence: 0.95

@@ -306,17 +306,17 @@ class TestConstraintReconciler:
     def test_existing_takes_priority(self):
         """Test that existing constraints are preserved"""
         existing = {
-            "type": "string",
-            "string": {"minLength": 10},
+            "constraintType": "string",
+            "minLength": 10,
             "metadata": {"source": "existing", "confidence": 1.0},
         }
         discovery = {
-            "type": "string",
-            "string": {"minLength": 5},
+            "constraintType": "string",
+            "minLength": 5,
         }
         inferred = {
-            "type": "string",
-            "string": {"minLength": 1},
+            "constraintType": "string",
+            "minLength": 1,
         }
 
         result = ConstraintReconciler.reconcile(existing, discovery, inferred)
@@ -325,12 +325,12 @@ class TestConstraintReconciler:
     def test_discovery_overrides_inferred(self):
         """Test that discovery data overrides inferred"""
         discovery = {
-            "type": "string",
-            "string": {"minLength": 5},
+            "constraintType": "string",
+            "minLength": 5,
         }
         inferred = {
-            "type": "string",
-            "string": {"minLength": 1},
+            "constraintType": "string",
+            "minLength": 1,
             "metadata": {"source": "inferred", "confidence": 0.85},
         }
 
@@ -342,8 +342,8 @@ class TestConstraintReconciler:
     def test_inferred_only(self):
         """Test reconciliation with only inferred data"""
         inferred = {
-            "type": "string",
-            "string": {"minLength": 1},
+            "constraintType": "string",
+            "minLength": 1,
             "metadata": {"source": "inferred", "confidence": 0.85},
         }
 
@@ -355,8 +355,8 @@ class TestConstraintReconciler:
     def test_deterministic_flag_high_confidence(self):
         """Test deterministic flag for high confidence"""
         inferred = {
-            "type": "string",
-            "string": {"minLength": 1},
+            "constraintType": "string",
+            "minLength": 1,
             "metadata": {"source": "inferred", "confidence": 0.95},
         }
 
@@ -367,8 +367,8 @@ class TestConstraintReconciler:
     def test_deterministic_flag_low_confidence(self):
         """Test no deterministic flag for low confidence"""
         inferred = {
-            "type": "string",
-            "string": {"minLength": 1},
+            "constraintType": "string",
+            "minLength": 1,
             "metadata": {"source": "inferred", "confidence": 0.75},
         }
 
@@ -412,10 +412,9 @@ class TestConstraintEnricher:
 
         assert "x-f5xc-constraints" in name_property
         constraints = name_property["x-f5xc-constraints"]
-        assert constraints["type"] == "string"
-        assert "string" in constraints
-        assert constraints["string"]["minLength"] == 1
-        assert constraints["string"]["maxLength"] == 63
+        assert constraints["constraintType"] == "string"
+        assert constraints["minLength"] == 1
+        assert constraints["maxLength"] == 63
 
     def test_enrich_array_property(self, enricher):
         """Test enriching an array property"""
@@ -439,10 +438,9 @@ class TestConstraintEnricher:
 
         assert "x-f5xc-constraints" in origins_property
         constraints = origins_property["x-f5xc-constraints"]
-        assert constraints["type"] == "array"
-        assert "array" in constraints
-        assert constraints["array"]["minItems"] == 1
-        assert constraints["array"]["maxItems"] == 50
+        assert constraints["constraintType"] == "array"
+        assert constraints["minItems"] == 1
+        assert constraints["maxItems"] == 50
 
     def test_enrich_number_property(self, enricher):
         """Test enriching a numeric property"""
@@ -466,10 +464,9 @@ class TestConstraintEnricher:
 
         assert "x-f5xc-constraints" in port_property
         constraints = port_property["x-f5xc-constraints"]
-        assert constraints["type"] == "number"
-        assert "number" in constraints
-        assert constraints["number"]["minimum"] == 1
-        assert constraints["number"]["maximum"] == 65535
+        assert constraints["constraintType"] == "number"
+        assert constraints["minimum"] == 1
+        assert constraints["maximum"] == 65535
 
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
@@ -482,8 +479,8 @@ class TestConstraintEnricher:
                             "name": {
                                 "type": "string",
                                 "x-f5xc-constraints": {
-                                    "type": "string",
-                                    "string": {"minLength": 100},  # Different value
+                                    "constraintType": "string",
+                                    "minLength": 100,  # Different value
                                     "metadata": {"source": "existing", "confidence": 1.0},
                                 },
                             },
@@ -497,7 +494,7 @@ class TestConstraintEnricher:
         name_property = enriched["components"]["schemas"]["TestSchema"]["properties"]["name"]
 
         # Original constraint preserved
-        assert name_property["x-f5xc-constraints"]["string"]["minLength"] == 100
+        assert name_property["x-f5xc-constraints"]["minLength"] == 100
         assert name_property["x-f5xc-constraints"]["metadata"]["source"] == "existing"
 
     def test_statistics_collection(self, enricher):
