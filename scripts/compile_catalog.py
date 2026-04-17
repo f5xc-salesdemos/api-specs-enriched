@@ -130,18 +130,17 @@ def generate_operation_name(method: str, path: str) -> str:
     is_item = last_segment.startswith("{") and last_segment.endswith("}")
 
     method = method.upper()
-    if method == "GET" and not is_item:
-        return f"list_{resource_snake}"
-    if method == "GET" and is_item:
-        return f"get_{singular}"
-    if method == "POST":
-        return f"create_{singular}"
-    if method == "PUT":
-        return f"replace_{singular}"
-    if method == "PATCH":
-        return f"update_{singular}"
-    if method == "DELETE":
-        return f"delete_{singular}"
+    _method_prefix: dict[str, str] = {
+        "POST": "create",
+        "PUT": "replace",
+        "PATCH": "update",
+        "DELETE": "delete",
+    }
+    if method == "GET":
+        return f"list_{resource_snake}" if not is_item else f"get_{singular}"
+    prefix = _method_prefix.get(method)
+    if prefix:
+        return f"{prefix}_{singular}"
     return f"{method.lower()}_{singular}"
 
 
@@ -247,6 +246,82 @@ def normalize_path_placeholders(path: str) -> str:
     return re.sub(r"\{[^}]*\.([^}]+)\}", r"{\1}", path)
 
 
+def _resolve_body_schema(
+    operation: dict[str, Any],
+    components: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Extract and resolve the request body JSON schema from an OpenAPI operation."""
+    body_schema = (
+        operation.get("requestBody", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema")
+    )
+    if not body_schema:
+        return None
+    if "$ref" in body_schema and components:
+        ref_key = body_schema["$ref"].split("/")[-1]
+        resolved = components.get("schemas", {}).get(ref_key, {})
+        if resolved:
+            return resolved
+    return body_schema
+
+
+def _build_operation(
+    path: str,
+    method: str,
+    operation: dict[str, Any],
+    op_name: str,
+    components: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a single catalog operation entry from an OpenAPI path/method/operation."""
+    normalized_path = normalize_path_placeholders(path)
+    op: dict[str, Any] = {
+        "name": op_name,
+        "description": (
+            operation.get("summary") or operation.get("description") or f"{method} {path}"
+        ),
+        "method": method,
+        "path": normalized_path,
+        "dangerLevel": assign_danger_level(method),
+        "parameters": extract_parameters(path, operation),
+    }
+    body_schema = _resolve_body_schema(operation, components)
+    if body_schema:
+        op["bodySchema"] = body_schema
+    response_schema = extract_response_schema(operation, components)
+    if response_schema:
+        op["responseSchema"] = response_schema
+    return op
+
+
+def _build_category_operations(
+    entries: list[tuple[str, str, dict]],
+    components: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Build deduplicated operations list for a single category."""
+    operations = []
+    seen_op_names: set[str] = set()
+    for path, method, operation in sorted(entries, key=lambda e: (e[0], e[1])):
+        op_name = generate_operation_name(method, path)
+        if op_name in seen_op_names:
+            continue
+        seen_op_names.add(op_name)
+        operations.append(_build_operation(path, method, operation, op_name, components))
+    return operations
+
+
+def _deduplicate_global_op_names(categories: list[dict[str, Any]]) -> None:
+    """Suffix duplicate operation names across categories with the category name."""
+    global_seen: dict[str, str] = {}
+    for cat in categories:
+        for op in cat["operations"]:
+            if op["name"] in global_seen:
+                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
+            else:
+                global_seen[op["name"]] = cat["name"]
+
+
 def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     """Transform an OpenAPI 3.0 spec dict into xcsh api-catalog.json format."""
     paths = openapi.get("paths", {})
@@ -255,64 +330,17 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
     categories = []
     for category_name in sorted(groups.keys()):
-        entries = groups[category_name]
-        operations = []
-        seen_op_names: set[str] = set()
-        for path, method, operation in sorted(entries, key=lambda e: (e[0], e[1])):
-            op_name = generate_operation_name(method, path)
-            if op_name in seen_op_names:
-                continue
-            seen_op_names.add(op_name)
-            normalized_path = normalize_path_placeholders(path)
-            op: dict[str, Any] = {
-                "name": op_name,
-                "description": operation.get("summary")
-                or operation.get("description")
-                or f"{method} {path}",
-                "method": method,
-                "path": normalized_path,
-                "dangerLevel": assign_danger_level(method),
-                "parameters": extract_parameters(path, operation),
-            }
-            body_schema = (
-                operation.get("requestBody", {})
-                .get("content", {})
-                .get("application/json", {})
-                .get("schema")
-            )
-            if body_schema:
-                # Resolve $ref in bodySchema using components.schemas
-                if "$ref" in body_schema and components:
-                    ref_key = body_schema["$ref"].split("/")[-1]
-                    resolved = components.get("schemas", {}).get(ref_key, {})
-                    if resolved:
-                        body_schema = resolved
-                op["bodySchema"] = body_schema
-            response_schema = extract_response_schema(operation, components)
-            if response_schema:
-                op["responseSchema"] = response_schema
-            operations.append(op)
-
+        operations = _build_category_operations(groups[category_name], components)
         if operations:
-            display_name = category_name.replace("-", " ").title()
             categories.append(
                 {
                     "name": category_name,
-                    "displayName": display_name,
+                    "displayName": category_name.replace("-", " ").title(),
                     "operations": operations,
                 },
             )
 
-    # Deduplicate operation names globally across all categories.
-    # When a collision occurs, suffix the second occurrence with the category name.
-    global_seen: dict[str, str] = {}  # op_name -> first_category
-    for cat in categories:
-        for op in cat["operations"]:
-            if op["name"] in global_seen:
-                # Suffix with category name to disambiguate
-                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
-            else:
-                global_seen[op["name"]] = cat["name"]
+    _deduplicate_global_op_names(categories)
 
     return {
         "service": "f5xc",
@@ -352,26 +380,25 @@ def main() -> int:
         if not args.input.exists():
             print(f"Error: input file not found: {args.input}", file=sys.stderr)
             return 1
-        with args.input.open() as f:
+        with args.input.open(encoding="utf-8") as f:
             openapi = json.load(f)
     else:
         if not DEFAULT_INPUT.exists():
             print(f"Error: default input not found: {DEFAULT_INPUT}", file=sys.stderr)
             return 1
-        with DEFAULT_INPUT.open() as f:
+        with DEFAULT_INPUT.open(encoding="utf-8") as f:
             openapi = json.load(f)
 
     catalog = compile_catalog(openapi)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w") as f:
+    with args.output.open("w", encoding="utf-8") as f:
         json.dump(catalog, f, indent=2)
         f.write("\n")
 
     total_ops = sum(len(c["operations"]) for c in catalog["categories"])
-    print(
-        f"Compiled {total_ops} operations across {len(catalog['categories'])} categories -> {args.output}",
-    )
+    n_cats = len(catalog["categories"])
+    print(f"Compiled {total_ops} operations across {n_cats} categories -> {args.output}")
     return 0
 
 

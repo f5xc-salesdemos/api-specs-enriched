@@ -1,4 +1,6 @@
-# tests/test_compile_catalog.py
+"""Tests for scripts.compile_catalog — catalog compiler unit and integration tests."""
+
+# pylint: disable=missing-function-docstring
 import json
 import sys
 import tempfile
@@ -206,9 +208,7 @@ def test_main_cli_writes_output_file():
                 },
             },
         }
-        input_path.write_text(json.dumps(spec))
-
-        import sys
+        input_path.write_text(json.dumps(spec), encoding="utf-8")
 
         original_argv = sys.argv
         sys.argv = ["compile_catalog", "--input", str(input_path), "--output", str(output_path)]
@@ -231,7 +231,7 @@ def test_compile_catalog_against_real_spec():
     spec_path = Path("specs/discovered/openapi.json")
     if not spec_path.exists():
         pytest.skip("Real spec not available")
-    with spec_path.open() as f:
+    with spec_path.open(encoding="utf-8") as f:
         openapi = json.load(f)
     catalog = compile_catalog(openapi)
     assert catalog["service"] == "f5xc"
@@ -275,8 +275,8 @@ def test_merge_spec_files_combines_paths_from_multiple_files():
     with tempfile.TemporaryDirectory() as tmpdir:
         spec1 = {"openapi": "3.0.3", "paths": {"/api/widgets": {"get": {"responses": {}}}}}
         spec2 = {"openapi": "3.0.3", "paths": {"/api/gadgets": {"post": {"responses": {}}}}}
-        Path(tmpdir, "widgets.json").write_text(json.dumps(spec1))
-        Path(tmpdir, "gadgets.json").write_text(json.dumps(spec2))
+        Path(tmpdir, "widgets.json").write_text(json.dumps(spec1), encoding="utf-8")
+        Path(tmpdir, "gadgets.json").write_text(json.dumps(spec2), encoding="utf-8")
         merged = merge_spec_files(Path(tmpdir))
         assert "/api/widgets" in merged["paths"]
         assert "/api/gadgets" in merged["paths"]
@@ -287,9 +287,9 @@ def test_merge_spec_files_skips_non_spec_files():
     with tempfile.TemporaryDirectory() as tmpdir:
         spec = {"openapi": "3.0.3", "paths": {"/api/items": {"get": {"responses": {}}}}}
         non_spec = {"metadata": {"version": "1.0"}}
-        Path(tmpdir, "items.json").write_text(json.dumps(spec))
-        Path(tmpdir, "index.json").write_text(json.dumps(non_spec))
-        Path(tmpdir, "config.json").write_text(json.dumps(non_spec))
+        Path(tmpdir, "items.json").write_text(json.dumps(spec), encoding="utf-8")
+        Path(tmpdir, "index.json").write_text(json.dumps(non_spec), encoding="utf-8")
+        Path(tmpdir, "config.json").write_text(json.dumps(non_spec), encoding="utf-8")
         merged = merge_spec_files(Path(tmpdir))
         assert "/api/items" in merged["paths"]
         assert len(merged["paths"]) == 1
@@ -299,8 +299,8 @@ def test_merge_spec_files_handles_duplicate_paths():
     with tempfile.TemporaryDirectory() as tmpdir:
         spec1 = {"openapi": "3.0.3", "paths": {"/api/items": {"get": {"operationId": "list"}}}}
         spec2 = {"openapi": "3.0.3", "paths": {"/api/items": {"post": {"operationId": "create"}}}}
-        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1))
-        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2))
+        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1), encoding="utf-8")
+        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2), encoding="utf-8")
         merged = merge_spec_files(Path(tmpdir))
         assert "get" in merged["paths"]["/api/items"]
         assert "post" in merged["paths"]["/api/items"]
@@ -380,7 +380,7 @@ def test_main_cli_with_input_dir_flag():
                 "/api/config/namespaces/{namespace}/gadgets": {"delete": {"responses": {}}},
             },
         }
-        (specs_dir / "test.json").write_text(json.dumps(spec))
+        (specs_dir / "test.json").write_text(json.dumps(spec), encoding="utf-8")
         original_argv = sys.argv
         sys.argv = ["compile_catalog", "--input-dir", str(specs_dir), "--output", str(output_path)]
         try:
@@ -529,8 +529,8 @@ def test_merge_spec_files_includes_components():
             "paths": {"/api/b": {"get": {"responses": {}}}},
             "components": {"schemas": {"TypeB": {"type": "string"}}},
         }
-        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1))
-        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2))
+        Path(tmpdir, "spec1.json").write_text(json.dumps(spec1), encoding="utf-8")
+        Path(tmpdir, "spec2.json").write_text(json.dumps(spec2), encoding="utf-8")
 
         merged = merge_spec_files(Path(tmpdir))
         assert "TypeA" in merged["components"]["schemas"]
