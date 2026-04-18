@@ -68,7 +68,7 @@ def get_default_config() -> dict:
         },
         "exploration": {
             "namespaces": ["system", "shared"],
-            "methods": ["GET", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "timeout_seconds": 30,
             "max_endpoints_per_run": 500,
         },
@@ -170,6 +170,88 @@ def resolve_path_params(path: str, namespace: str = "system") -> str:
     resolved = _PATH_PARAM_PATTERN.sub("sample", resolved)
 
     return resolved
+
+
+def is_list_endpoint(path: str) -> bool:
+    """Return True if path ends with a collection (no trailing {name})."""
+    segments = path.rstrip("/").split("/")
+    last = segments[-1] if segments else ""
+    return not (last.startswith("{") and last.endswith("}"))
+
+
+def is_item_endpoint(path: str) -> bool:
+    """Return True if path ends with a named item placeholder."""
+    segments = path.rstrip("/").split("/")
+    last = segments[-1] if segments else ""
+    return last.startswith("{") and last.endswith("}")
+
+
+def generate_crud_variants(path: str) -> list[dict[str, Any]]:
+    """Generate CRUD endpoint variants from a list or item path.
+
+    For list paths (ending in resource collection):
+        POST   /path           — create
+        GET    /path/{name}    — get by name
+        PUT    /path/{name}    — replace
+        DELETE /path/{name}    — delete
+
+    For item paths (ending in {name}):
+        PUT    /path           — replace
+        PATCH  /path           — partial update
+        DELETE /path           — delete
+    """
+    variants: list[dict[str, Any]] = []
+
+    if is_list_endpoint(path):
+        item_path = path + "/{name}"
+        variants.append(
+            {"method": "POST", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {
+                "method": "GET",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+        variants.append(
+            {
+                "method": "PUT",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+        variants.append(
+            {
+                "method": "DELETE",
+                "path": item_path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+    else:
+        variants.append(
+            {"method": "PUT", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {"method": "PATCH", "path": path, "operation_id": "", "parameters": [], "responses": {}}
+        )
+        variants.append(
+            {
+                "method": "DELETE",
+                "path": path,
+                "operation_id": "",
+                "parameters": [],
+                "responses": {},
+            }
+        )
+
+    return variants
 
 
 async def discover_endpoint(
@@ -414,6 +496,26 @@ def _merge_schemas(
     return base
 
 
+async def fetch_namespaces(client: httpx.AsyncClient, base_url: str) -> list[str]:
+    """Fetch available namespaces from the F5XC API."""
+    try:
+        response = await client.get(f"{base_url.rstrip('/')}/api/web/namespaces", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            items = data.get("items", [])
+            names = [item.get("name") for item in items if item.get("name")]
+            if names:
+                console.print(
+                    f"[green]Auto-discovered {len(names)} namespaces: {', '.join(names[:5])}{'...' if len(names) > 5 else ''}[/green]"
+                )
+                return names
+    except Exception as e:
+        console.print(
+            f"[yellow]Namespace auto-discovery failed: {e} — using config defaults[/yellow]"
+        )
+    return []
+
+
 async def run_discovery(
     config: dict,
     namespace: str | None = None,
@@ -456,6 +558,19 @@ async def run_discovery(
     # Get endpoints to discover
     specs_dir = Path("docs/specifications/api")
     endpoints = extract_endpoints_from_specs(specs_dir)
+
+    # Expand GET list endpoints into full CRUD variants
+    crud_additions: list[dict[str, Any]] = []
+    existing_keys = {(e["method"], e["path"]) for e in endpoints}
+    for ep in list(endpoints):
+        if ep["method"] == "GET":
+            for variant in generate_crud_variants(ep["path"]):
+                key = (variant["method"], variant["path"])
+                if key not in existing_keys:
+                    crud_additions.append(variant)
+                    existing_keys.add(key)
+    endpoints = endpoints + crud_additions
+    console.print(f"[blue]After CRUD expansion: {len(endpoints)} endpoints[/blue]")
 
     # Filter if needed
     exploration = config.get("exploration", {})
@@ -506,6 +621,12 @@ async def run_discovery(
             verify=True,
             follow_redirects=True,
         ) as client:
+            # Auto-discover namespaces if not specified
+            if not namespace:
+                auto_namespaces = await fetch_namespaces(client, session.api_url)
+                if auto_namespaces:
+                    session.namespaces = auto_namespaces
+
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),

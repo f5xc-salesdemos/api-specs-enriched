@@ -10,6 +10,7 @@ Analyzes live API responses to infer:
 """
 
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -273,8 +274,6 @@ class SchemaInferrer:
         # Merge format (most common)
         formats = [s.format for s in schemas if s.format]
         if formats:
-            from collections import Counter
-
             merged.format = Counter(formats).most_common(1)[0][0]
 
         # Merge object properties

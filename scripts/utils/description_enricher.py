@@ -4,12 +4,12 @@
 
 Applies enriched domain descriptions from config/domain_descriptions.yaml
 to OpenAPI specification info section:
-- info.summary: Medium tier description (max 150 chars) for CLI banners
+- info.x-f5xc-summary: Medium tier description (max 150 chars) for CLI banners
 - info.description: Long tier description (max 500 chars) for documentation
 
 Description Tiers:
 - short: max 60 chars - CLI help columns, badges, index entries
-- medium: max 150 chars - CLI banners, tooltips, info.summary field
+- medium: max 150 chars - CLI banners, tooltips, info.x-f5xc-summary field
 - long: max 500 chars - Full documentation, AI context, info.description field
 
 Usage:
@@ -50,7 +50,7 @@ class DescriptionEnricher:
     """Enrich OpenAPI specifications with domain descriptions.
 
     Loads enriched descriptions from config/domain_descriptions.yaml and applies:
-    - 'medium' description to info.summary (for CLI banners)
+    - 'medium' description to info.x-f5xc-summary (for CLI banners)
     - 'long' description to info.description (for documentation)
 
     Attributes:
@@ -129,7 +129,7 @@ class DescriptionEnricher:
         """Enrich OpenAPI specification with domain description and summary.
 
         Applies descriptions from configuration to the spec's info section:
-        - 'medium' tier → info.summary (for CLI banners, max 150 chars)
+        - 'medium' tier → info.x-f5xc-summary (for CLI banners, max 150 chars)
         - 'long' tier → info.description (for documentation, max 500 chars)
         - Also adds x-f5xc-description-long extension for schema-level access
 
@@ -141,7 +141,7 @@ class DescriptionEnricher:
                 from spec's x-f5xc-cli-domain extension.
 
         Returns:
-            Specification with enriched info.description and info.summary
+            Specification with enriched info.description and info.x-f5xc-summary
         """
         self.stats.specs_processed += 1
 
@@ -178,9 +178,9 @@ class DescriptionEnricher:
         # Also add x-f5xc-description-long for schema-level access
         spec["info"][X_F5XC_DESCRIPTION_LONG] = long_description
 
-        # Apply medium description to info.summary (OpenAPI 3.0 standard field)
+        # Apply medium description as x-f5xc-summary (OAS 3.0 info object has no summary field)
         if medium_description:
-            spec["info"]["summary"] = medium_description
+            spec["info"]["x-f5xc-summary"] = medium_description
 
         self.stats.descriptions_applied += 1
 
@@ -260,8 +260,8 @@ class DescriptionEnricher:
         return self.stats.to_dict()
 
 
-# Module-level singleton for convenience
-_enricher: DescriptionEnricher | None = None
+# Module-level singleton cache for convenience
+_ENRICHER_CACHE: dict[str, DescriptionEnricher | None] = {"instance": None}
 
 
 def get_description_enricher() -> DescriptionEnricher:
@@ -270,10 +270,11 @@ def get_description_enricher() -> DescriptionEnricher:
     Returns:
         Shared DescriptionEnricher instance
     """
-    global _enricher  # noqa: PLW0603
-    if _enricher is None:
-        _enricher = DescriptionEnricher()
-    return _enricher
+    instance = _ENRICHER_CACHE["instance"]
+    if instance is None:
+        instance = DescriptionEnricher()
+        _ENRICHER_CACHE["instance"] = instance
+    return instance
 
 
 def get_domain_descriptions(domain: str) -> dict[str, str] | None:

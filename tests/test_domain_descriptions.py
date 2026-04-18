@@ -136,7 +136,7 @@ class TestSelfReferencing:
         tier: str,
     ) -> None:
         """Descriptions must not contain full domain name (self-referencing)."""
-        violations = []
+        violations: list[str] = []
         for domain, descs in domain_descriptions.items():
             desc = descs.get(tier, "").lower()
             if not desc:
@@ -259,7 +259,7 @@ class TestBannedTerms:
     @pytest.mark.parametrize("tier", ["short", "medium", "long"])
     def test_no_banned_terms(self, domain_descriptions: dict, tier: str) -> None:
         """Descriptions must not contain banned terms."""
-        violations = []
+        violations: list[str] = []
         for domain, descs in domain_descriptions.items():
             desc = descs.get(tier, "").lower()
             violations.extend(

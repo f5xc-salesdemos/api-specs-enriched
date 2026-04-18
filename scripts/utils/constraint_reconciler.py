@@ -139,7 +139,7 @@ class ConstraintReconciler:
         confidence = prop.get("x-discovered-confidence", 1.0)
 
         # Skip if below confidence thresholds
-        if sample_size > 0 and sample_size < self.min_sample_size:
+        if 0 < sample_size < self.min_sample_size:
             self.stats.skipped += 1
             return
         if confidence < self.confidence_threshold:

@@ -7,6 +7,7 @@ for downstream tooling (e.g., xcsh CLI).
 """
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -144,7 +145,7 @@ class TestReadOnlyEnricherEnrich:
 
     def test_enrich_empty_spec(self, enricher: ReadOnlyEnricher) -> None:
         """Verify enricher handles empty spec."""
-        spec = {}
+        spec: dict[str, Any] = {}
         result = enricher.enrich_spec(spec)
         assert result == {}
 

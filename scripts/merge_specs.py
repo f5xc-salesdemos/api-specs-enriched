@@ -8,7 +8,9 @@ Fully automated - no manual intervention required.
 """
 
 import argparse
+import contextlib
 import json
+import subprocess
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -110,16 +112,12 @@ def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
         f.write("\n")
 
     # Apply biome formatting if available (ensures consistent JSON style)
-    import subprocess  # noqa: PLC0415
-
-    try:
+    with contextlib.suppress(FileNotFoundError):
         subprocess.run(
             ["biome", "format", "--write", str(output_path)],
             capture_output=True,
             check=False,
         )
-    except FileNotFoundError:
-        pass  # biome not installed, skip formatting
 
 
 def categorize_spec(filename: str) -> str:

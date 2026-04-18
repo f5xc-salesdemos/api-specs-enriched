@@ -22,6 +22,14 @@ from typing import Any
 
 import yaml
 
+try:
+    import jsonschema
+
+    _JSONSCHEMA_AVAILABLE = True
+except ImportError:
+    jsonschema = None
+    _JSONSCHEMA_AVAILABLE = False
+
 from .extension_constants import X_F5XC_EXAMPLES
 
 
@@ -127,12 +135,7 @@ class ExampleValidator:
 
     def _check_jsonschema(self) -> bool:
         """Check if jsonschema library is available."""
-        try:
-            import jsonschema  # noqa: F401, PLC0415
-
-            return True
-        except ImportError:
-            return False
+        return _JSONSCHEMA_AVAILABLE
 
     def validate_example(
         self,
@@ -177,8 +180,6 @@ class ExampleValidator:
         spec_data = example_data.get("spec", example_data)
 
         try:
-            import jsonschema  # noqa: PLC0415
-
             # Build a resolver for $ref handling
             schema_store = {f"#/components/schemas/{name}": s for name, s in self.schemas.items()}
             resolver = jsonschema.RefResolver.from_schema(

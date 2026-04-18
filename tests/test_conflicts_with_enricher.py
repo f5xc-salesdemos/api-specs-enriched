@@ -175,6 +175,56 @@ def spec_with_json_string_oneof():
     }
 
 
+@pytest.fixture
+def spec_with_ref_property():
+    """Create a spec where a OneOf variant has $ref (should be skipped)."""
+    return {
+        "components": {
+            "schemas": {
+                "feedbackSchema": {
+                    "type": "object",
+                    "x-ves-oneof-field-feedback_choice": [
+                        "positive_feedback",
+                        "negative_feedback",
+                    ],
+                    "properties": {
+                        "positive_feedback": {"type": "object"},
+                        "negative_feedback": {
+                            "$ref": "#/components/schemas/NegativeFeedbackType",
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+
+@pytest.fixture
+def spec_with_all_ref_properties():
+    """Create a spec where all OneOf variants have $ref (all should be skipped)."""
+    return {
+        "components": {
+            "schemas": {
+                "allRefSchema": {
+                    "type": "object",
+                    "x-ves-oneof-field-choice": [
+                        "option_a",
+                        "option_b",
+                    ],
+                    "properties": {
+                        "option_a": {
+                            "$ref": "#/components/schemas/TypeA",
+                        },
+                        "option_b": {
+                            "$ref": "#/components/schemas/TypeB",
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+
 class TestConflictsWithEnricherBasics:
     """Test basic enricher functionality."""
 
@@ -336,6 +386,41 @@ class TestEdgeCases:
 
         stats = enricher.get_stats()
         assert stats["existing_preserved"] == 1
+
+    def test_ref_property_skipped(self, enricher, spec_with_ref_property):
+        """Test that properties with $ref are skipped to avoid no-$ref-siblings."""
+        result = enricher.enrich_spec(spec_with_ref_property)
+
+        schema = result["components"]["schemas"]["feedbackSchema"]
+        props = schema["properties"]
+
+        # positive_feedback (no $ref) should get conflicts-with
+        assert X_F5XC_CONFLICTS_WITH in props["positive_feedback"]
+        assert props["positive_feedback"][X_F5XC_CONFLICTS_WITH] == ["negative_feedback"]
+
+        # negative_feedback (has $ref) should NOT get conflicts-with
+        assert X_F5XC_CONFLICTS_WITH not in props["negative_feedback"]
+        # $ref should be preserved unchanged
+        assert props["negative_feedback"]["$ref"] == "#/components/schemas/NegativeFeedbackType"
+
+        stats = enricher.get_stats()
+        assert stats["ref_skipped"] == 1
+        assert stats["properties_enriched"] == 1
+
+    def test_all_ref_properties_skipped(self, enricher, spec_with_all_ref_properties):
+        """Test that when all variants have $ref, none get conflicts-with."""
+        result = enricher.enrich_spec(spec_with_all_ref_properties)
+
+        schema = result["components"]["schemas"]["allRefSchema"]
+        props = schema["properties"]
+
+        # Neither property should have conflicts-with added
+        assert X_F5XC_CONFLICTS_WITH not in props["option_a"]
+        assert X_F5XC_CONFLICTS_WITH not in props["option_b"]
+
+        stats = enricher.get_stats()
+        assert stats["ref_skipped"] == 2
+        assert stats["properties_enriched"] == 0
 
     def test_missing_properties_handled(self, enricher, spec_without_properties):
         """Test handling of schema with OneOf but no properties."""

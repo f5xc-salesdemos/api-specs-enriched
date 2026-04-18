@@ -32,6 +32,7 @@ class ConflictsWithEnrichmentStats:
     conflicts_added: int = 0
     properties_enriched: int = 0
     existing_preserved: int = 0
+    ref_skipped: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -43,6 +44,7 @@ class ConflictsWithEnrichmentStats:
             "conflicts_added": self.conflicts_added,
             "properties_enriched": self.properties_enriched,
             "existing_preserved": self.existing_preserved,
+            "ref_skipped": self.ref_skipped,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -236,6 +238,20 @@ class ConflictsWithEnricher:
 
             prop_schema = properties[variant]
             if not isinstance(prop_schema, dict):
+                continue
+
+            # Skip properties that have $ref to avoid Spectral no-$ref-siblings
+            # violation. In OpenAPI 3.0, $ref must not appear alongside other
+            # properties. The conflicts-with metadata is informational and can
+            # safely be omitted for $ref properties.
+            if "$ref" in prop_schema:
+                logger.debug(
+                    "Schema %s: skipping variant %s (has $ref) for group %s",
+                    schema_name,
+                    variant,
+                    group_name,
+                )
+                self.stats.ref_skipped += 1
                 continue
 
             # Calculate other variants (all variants except this one)

@@ -16,35 +16,33 @@ rules:
   # These are common in auto-generated API specs
 
   # Allow missing operation descriptions (many F5 APIs don't have them)
-  operation-description: false
-
-  # Note: operation-summary rule does not exist in spectral:oas - removed
+  operation-description: off
 
   # Allow missing parameter descriptions
-  oas3-parameter-description: false
+  oas3-parameter-description: off
 
   # Don't require examples for everything
-  oas3-valid-schema-example: false
+  oas3-valid-schema-example: off
 
   # F5 XC API specs have schema properties named "examples" that Spectral
   # incorrectly validates as OpenAPI Example objects. These are schema
   # definitions, not media type examples. Disable to avoid false positives.
-  oas3-valid-media-example: false
-  oas3-examples-value-or-externalValue: false
+  oas3-valid-media-example: off
+  oas3-examples-value-or-externalValue: off
 
   # Allow missing tags on operations (F5 specs don't always tag)
-  operation-tag-defined: false
+  operation-tag-defined: off
 
   # Info section rules - keep but as warnings
   info-contact: warn
   info-description: warn
-  info-license: false
+  info-license: off
 
   # Path rules
-  # path-params: false - F5 XC API uses Kubernetes-style dotted parameter names
+  # F5 XC API uses Kubernetes-style dotted parameter names
   # (metadata.namespace, metadata.name) which Spectral doesn't handle correctly.
   # This is intentional upstream API design, not a spec error.
-  path-params: false
+  path-params: off
   path-declarations-must-exist: error
   path-keys-no-trailing-slash: warn
   path-not-include-query: error
@@ -58,12 +56,12 @@ rules:
   # F5 source specs contain ves.io.schema.rules.* properties (protobuf validation extensions)
   # These are inherited in enriched specs and not OAS3-compliant, but are pre-existing from source
   # Our enrichers only add OAS3-compliant properties (descriptions, examples, x-ves-*, constraints)
-  oas3-unused-component: false  # Allow unused components (may be referenced externally)
-  oas3-schema: false  # Pre-existing ves.io.schema.rules.* properties from F5 source specs
+  oas3-unused-component: off
+  oas3-schema: off
 
   # Security rules
   oas3-api-servers: warn
-  oas3-operation-security-defined: false  # F5 uses custom auth
+  oas3-operation-security-defined: off
 
   # Response rules
   operation-success-response: warn
@@ -73,21 +71,17 @@ rules:
   # $ref-siblings are now removed during normalization to ensure compliance
   no-$ref-siblings: error
 
-  # Custom rule to detect placeholder descriptions
-  # This catches generic descriptions like "Can be used for messages where no values are needed"
-  placeholder-check: warn
+  # placeholder-check removed: requires custom function definition not bundled with spectral:oas
 
 overrides:
   - files:
       - "**/*.json"
     rules:
-      # Be lenient with auto-generated specs
-      operation-description: false
-      oas3-parameter-description: false
-      # F5 source specs contain ves.io.schema.rules.* properties (protobuf validation extensions)
-      # These are pre-existing in source specs, not added by our enrichers.
-      # Our enrichment only adds OAS3-compliant fields (descriptions, examples, x-ves-*, constraints)
-      oas3-schema: false
+      operation-description: off
+      oas3-parameter-description: off
+      oas3-schema: off
+      oas3-valid-schema-example: off
+      path-params: off
 
 # Functions for custom rules (if needed in future)
 # functionsDir: ./spectral-functions

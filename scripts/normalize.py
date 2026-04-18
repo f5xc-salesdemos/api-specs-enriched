@@ -305,13 +305,15 @@ def remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
             if method in path_item:
                 operation = path_item[method]
                 # Check if operation is empty or has empty critical fields
-                if operation == {} or (
+                is_empty_dict = operation == {}
+                has_no_critical_fields = (
                     isinstance(operation, dict)
                     and not operation.get("operationId")
                     and not operation.get("responses")
                     and not operation.get("summary")
                     and not operation.get("description")
-                ):
+                )
+                if is_empty_dict or has_no_critical_fields:
                     methods_to_remove.append(method)
 
         for method in methods_to_remove:

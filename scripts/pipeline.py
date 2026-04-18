@@ -48,9 +48,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
+import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -226,16 +228,12 @@ def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
         f.write("\n")
 
     # Apply biome formatting if available (ensures consistent JSON style)
-    import subprocess  # noqa: PLC0415
-
-    try:
+    with contextlib.suppress(FileNotFoundError):
         subprocess.run(
             ["biome", "format", "--write", str(output_path)],
             capture_output=True,
             check=False,
         )
-    except FileNotFoundError:
-        pass  # biome not installed, skip formatting
 
 
 # =============================================================================
@@ -633,13 +631,15 @@ def _remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]
         for method in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]:
             if method in path_item:
                 operation = path_item[method]
-                if operation == {} or (
+                is_empty_dict = operation == {}
+                has_no_critical_fields = (
                     isinstance(operation, dict)
                     and not operation.get("operationId")
                     and not operation.get("responses")
                     and not operation.get("summary")
                     and not operation.get("description")
-                ):
+                )
+                if is_empty_dict or has_no_critical_fields:
                     methods_to_remove.append(method)
 
         for method in methods_to_remove:
@@ -1144,7 +1144,7 @@ def merge_specs_by_domain(
             version=version,
         )
 
-        # Apply medium tier to info.summary
+        # Apply medium tier to info.x-f5xc-summary
         merged_spec = description_enricher.enrich_spec(merged_spec, domain=domain)
 
         all_tags = []
@@ -1281,6 +1281,9 @@ def merge_specs_by_domain(
         # Reset stats for next domain to avoid double-counting
         conflicts_with_enricher.reset_stats()
 
+        # Final cleanup: strip any $ref siblings introduced by enrichers
+        merged_spec, _ = _remove_ref_siblings(merged_spec)
+
         merged[domain] = merged_spec
         stats["domains"] += 1
 
@@ -1303,7 +1306,7 @@ def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) ->
         version=version,
     )
 
-    # Apply medium tier to info.summary for root spec
+    # Apply medium tier to info.x-f5xc-summary for root spec
     master = enricher.enrich_spec(master, domain="root")
 
     all_tags = []
@@ -1685,7 +1688,14 @@ def run_pipeline(
             # Export validation specification for downstream consumers
             try:
                 validation_exporter = ValidationExporter()
-                validation_exporter.export(output_dir / "validation.json")
+                validation_path = output_dir / "validation.json"
+                validation_exporter.export(validation_path)
+                with contextlib.suppress(FileNotFoundError):
+                    subprocess.run(
+                        ["biome", "format", "--write", str(validation_path)],
+                        capture_output=True,
+                        check=False,
+                    )
                 validation_stats = validation_exporter.get_stats()
                 console.print(
                     f"[green]Exported validation.json: "

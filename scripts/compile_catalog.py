@@ -1,0 +1,406 @@
+#!/usr/bin/env python3
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+
+"""Catalog Compiler — transforms F5XC OpenAPI specs into xcsh api-catalog.json format.
+
+Usage:
+    python -m scripts.compile_catalog                         # Uses specs/discovered/openapi.json
+    python -m scripts.compile_catalog --input path/to/spec.json
+    python -m scripts.compile_catalog --output release/api-catalog.json
+"""
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+DEFAULT_INPUT = Path("specs/discovered/openapi.json")
+DEFAULT_OUTPUT = Path("release/api-catalog.json")
+
+F5XC_AUTH = {
+    "type": "api_token",
+    "headerName": "Authorization",
+    "headerTemplate": "APIToken {token}",
+    "tokenSource": "F5XC_API_TOKEN",
+    "baseUrlSource": "F5XC_API_URL",
+}
+
+F5XC_DEFAULTS = {
+    "namespace": {"source": "F5XC_NAMESPACE"},
+}
+
+
+def merge_spec_files(dir_path: Path) -> dict[str, Any]:
+    """Read all OpenAPI JSON files in a directory and merge their paths and components."""
+    merged_paths: dict[str, Any] = {}
+    merged_schemas: dict[str, Any] = {}
+
+    for spec_file in sorted(dir_path.glob("*.json")):
+        try:
+            with spec_file.open() as f:
+                spec = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        paths = spec.get("paths")
+        if not paths or not isinstance(paths, dict):
+            continue
+
+        for path, path_item in paths.items():
+            if not isinstance(path_item, dict):
+                continue
+            if path not in merged_paths:
+                merged_paths[path] = {}
+            merged_paths[path].update(path_item)
+
+        # Merge components.schemas
+        schemas = spec.get("components", {}).get("schemas", {})
+        merged_schemas.update(schemas)
+
+    return {
+        "openapi": "3.0.3",
+        "paths": merged_paths,
+        "components": {"schemas": merged_schemas},
+    }
+
+
+_DANGER_MAP: dict[str, str] = {
+    "GET": "low",
+    "OPTIONS": "low",
+    "POST": "medium",
+    "PUT": "medium",
+    "PATCH": "medium",
+    "DELETE": "high",
+}
+
+
+def assign_danger_level(method: str) -> str:
+    """Map HTTP method to danger level."""
+    return _DANGER_MAP.get(method.upper(), "medium")
+
+
+def extract_category_name(path: str) -> str:
+    """Derive kebab-case category name from an API path.
+
+    Examples:
+        /api/config/namespaces/{namespace}/http_loadbalancers       -> http-loadbalancers
+        /api/config/namespaces/{namespace}/http_loadbalancers/{name} -> http-loadbalancers
+        /api/web/namespaces                                          -> namespaces
+    """
+    segments = [s for s in path.split("/") if s and not s.startswith("{")]
+    prefix = {"api", "config", "web", "ml", "data"}
+    filtered = [s for s in segments if s not in prefix]
+    resource_segments = []
+    skip_next = False
+    for seg in filtered:
+        if seg == "namespaces":
+            skip_next = True
+            continue
+        if skip_next:
+            skip_next = False
+            continue
+        resource_segments.append(seg)
+    resource = (
+        "-".join(resource_segments)
+        if resource_segments
+        else (filtered[-1] if filtered else "unknown")
+    )
+    return resource.replace("_", "-")
+
+
+def generate_operation_name(method: str, path: str) -> str:
+    """Generate a snake_case operation name from HTTP method and path.
+
+    Rules:
+        GET  /resources        -> list_resources
+        GET  /resources/{name} -> get_resource   (singular)
+        POST /resources        -> create_resource (singular)
+        PUT  /resources/{name} -> replace_resource (singular)
+        PATCH /resources/{name}-> update_resource (singular)
+        DELETE /resources/{name}-> delete_resource (singular)
+    """
+    category = extract_category_name(path)
+    resource_snake = category.replace("-", "_")
+    singular = resource_snake.rstrip("s") if resource_snake.endswith("s") else resource_snake
+
+    segments = path.rstrip("/").split("/")
+    last_segment = segments[-1] if segments else ""
+    is_item = last_segment.startswith("{") and last_segment.endswith("}")
+
+    method = method.upper()
+    _method_prefix: dict[str, str] = {
+        "POST": "create",
+        "PUT": "replace",
+        "PATCH": "update",
+        "DELETE": "delete",
+    }
+    if method == "GET":
+        return f"list_{resource_snake}" if not is_item else f"get_{singular}"
+    prefix = _method_prefix.get(method)
+    if prefix:
+        return f"{prefix}_{singular}"
+    return f"{method.lower()}_{singular}"
+
+
+def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, Any]]:
+    """Extract parameters from path template and OpenAPI operation definition."""
+    params: list[dict[str, Any]] = []
+
+    for match in re.finditer(r"\{([^}]+)\}", path):
+        raw_name = match.group(1)
+        # Normalize dotted params: metadata.namespace -> namespace
+        name = raw_name.split(".")[-1] if "." in raw_name else raw_name
+        param: dict[str, Any] = {
+            "name": name,
+            "in": "path",
+            "required": True,
+            "type": "string",
+        }
+        if name == "namespace":
+            param["default"] = "$F5XC_NAMESPACE"
+        params.append(param)
+
+    params.extend(
+        {
+            "name": op_param["name"],
+            "in": "query",
+            "required": op_param.get("required", False),
+            "type": op_param.get("schema", {}).get("type", "string"),
+        }
+        for op_param in operation.get("parameters", [])
+        if op_param.get("in") == "query"
+    )
+
+    return params
+
+
+def extract_response_schema(
+    operation: dict[str, Any],
+    components: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    """Extract and simplify response schema from an OpenAPI operation.
+
+    Checks 200 then 201 response codes. Resolves $ref references using
+    components.schemas if provided. Returns simplified {type, properties, required}
+    format. Returns None if no usable response schema is found.
+    """
+    for code in ("200", "201"):
+        schema = (
+            operation.get("responses", {})
+            .get(code, {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema")
+        )
+        if not schema or not isinstance(schema, dict):
+            continue
+
+        # Resolve $ref if present
+        if "$ref" in schema and components:
+            ref_key = schema["$ref"].split("/")[-1]
+            schema = components.get("schemas", {}).get(ref_key, {})
+
+        if not schema:
+            continue
+
+        simplified: dict[str, Any] = {}
+        if "type" in schema:
+            simplified["type"] = schema["type"]
+        if "properties" in schema and isinstance(schema["properties"], dict):
+            simplified["properties"] = {}
+            for prop_name, prop_schema in schema["properties"].items():
+                if isinstance(prop_schema, dict):
+                    # Resolve nested $ref for property type
+                    resolved_prop = prop_schema
+                    if "$ref" in prop_schema and components:
+                        ref_key = prop_schema["$ref"].split("/")[-1]
+                        resolved_prop = components.get("schemas", {}).get(ref_key, {})
+                    if "type" in resolved_prop:
+                        simplified["properties"][prop_name] = {"type": resolved_prop["type"]}
+        if "required" in schema and isinstance(schema["required"], list):
+            simplified["required"] = schema["required"]
+        if simplified:
+            return simplified
+    return None
+
+
+def group_paths_by_resource(paths: dict[str, Any]) -> dict[str, list[tuple[str, str, dict]]]:
+    """Group (path, method, operation) tuples by category name."""
+    groups: dict[str, list[tuple[str, str, dict]]] = {}
+    for path, path_item in sorted(paths.items()):
+        if not isinstance(path_item, dict):
+            continue
+        category = extract_category_name(path)
+        if category not in groups:
+            groups[category] = []
+        for method, operation in path_item.items():
+            if method.lower() in ("get", "post", "put", "patch", "delete", "options"):
+                groups[category].append((path, method.upper(), operation or {}))
+    return groups
+
+
+def normalize_path_placeholders(path: str) -> str:
+    """Normalize dotted path placeholders: {metadata.namespace} -> {namespace}."""
+    return re.sub(r"\{[^}]*\.([^}]+)\}", r"{\1}", path)
+
+
+def _resolve_body_schema(
+    operation: dict[str, Any],
+    components: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Extract and resolve the request body JSON schema from an OpenAPI operation."""
+    body_schema = (
+        operation.get("requestBody", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema")
+    )
+    if not body_schema:
+        return None
+    if "$ref" in body_schema and components:
+        ref_key = body_schema["$ref"].split("/")[-1]
+        resolved = components.get("schemas", {}).get(ref_key, {})
+        if resolved:
+            return resolved
+    return body_schema
+
+
+def _build_operation(
+    path: str,
+    method: str,
+    operation: dict[str, Any],
+    op_name: str,
+    components: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a single catalog operation entry from an OpenAPI path/method/operation."""
+    normalized_path = normalize_path_placeholders(path)
+    op: dict[str, Any] = {
+        "name": op_name,
+        "description": (
+            operation.get("summary") or operation.get("description") or f"{method} {path}"
+        ),
+        "method": method,
+        "path": normalized_path,
+        "dangerLevel": assign_danger_level(method),
+        "parameters": extract_parameters(path, operation),
+    }
+    body_schema = _resolve_body_schema(operation, components)
+    if body_schema:
+        op["bodySchema"] = body_schema
+    response_schema = extract_response_schema(operation, components)
+    if response_schema:
+        op["responseSchema"] = response_schema
+    return op
+
+
+def _build_category_operations(
+    entries: list[tuple[str, str, dict]],
+    components: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Build deduplicated operations list for a single category."""
+    operations = []
+    seen_op_names: set[str] = set()
+    for path, method, operation in sorted(entries, key=lambda e: (e[0], e[1])):
+        op_name = generate_operation_name(method, path)
+        if op_name in seen_op_names:
+            continue
+        seen_op_names.add(op_name)
+        operations.append(_build_operation(path, method, operation, op_name, components))
+    return operations
+
+
+def _deduplicate_global_op_names(categories: list[dict[str, Any]]) -> None:
+    """Suffix duplicate operation names across categories with the category name."""
+    global_seen: dict[str, str] = {}
+    for cat in categories:
+        for op in cat["operations"]:
+            if op["name"] in global_seen:
+                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
+            else:
+                global_seen[op["name"]] = cat["name"]
+
+
+def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
+    """Transform an OpenAPI 3.0 spec dict into xcsh api-catalog.json format."""
+    paths = openapi.get("paths", {})
+    components = openapi.get("components")
+    groups = group_paths_by_resource(paths)
+
+    categories = []
+    for category_name in sorted(groups.keys()):
+        operations = _build_category_operations(groups[category_name], components)
+        if operations:
+            categories.append(
+                {
+                    "name": category_name,
+                    "displayName": category_name.replace("-", " ").title(),
+                    "operations": operations,
+                },
+            )
+
+    _deduplicate_global_op_names(categories)
+
+    return {
+        "service": "f5xc",
+        "displayName": "F5 Distributed Cloud",
+        "version": "1.0.0",
+        "specSource": "f5xc-salesdemos/api-specs-enriched",
+        "auth": F5XC_AUTH,
+        "defaults": F5XC_DEFAULTS,
+        "categories": categories,
+    }
+
+
+def main() -> int:
+    """CLI entry point: compile OpenAPI spec(s) into xcsh api-catalog.json."""
+    parser = argparse.ArgumentParser(description="Compile F5XC OpenAPI spec to xcsh catalog JSON")
+    parser.add_argument("--input", type=Path, default=None, help="Single OpenAPI spec input file")
+    parser.add_argument(
+        "--input-dir",
+        type=Path,
+        default=None,
+        help="Directory of OpenAPI spec files to merge",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_OUTPUT,
+        help="Output api-catalog.json path",
+    )
+    args = parser.parse_args()
+
+    if args.input_dir:
+        if not args.input_dir.is_dir():
+            print(f"Error: input directory not found: {args.input_dir}", file=sys.stderr)
+            return 1
+        openapi = merge_spec_files(args.input_dir)
+    elif args.input:
+        if not args.input.exists():
+            print(f"Error: input file not found: {args.input}", file=sys.stderr)
+            return 1
+        with args.input.open(encoding="utf-8") as f:
+            openapi = json.load(f)
+    else:
+        if not DEFAULT_INPUT.exists():
+            print(f"Error: default input not found: {DEFAULT_INPUT}", file=sys.stderr)
+            return 1
+        with DEFAULT_INPUT.open(encoding="utf-8") as f:
+            openapi = json.load(f)
+
+    catalog = compile_catalog(openapi)
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with args.output.open("w", encoding="utf-8") as f:
+        json.dump(catalog, f, indent=2)
+        f.write("\n")
+
+    total_ops = sum(len(c["operations"]) for c in catalog["categories"])
+    n_cats = len(catalog["categories"])
+    print(f"Compiled {total_ops} operations across {n_cats} categories -> {args.output}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
