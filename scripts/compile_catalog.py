@@ -16,6 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from scripts.utils.version_calculator import get_version_from_tags
+
 DEFAULT_INPUT = Path("specs/discovered/openapi.json")
 DEFAULT_OUTPUT = Path("release/api-catalog.json")
 
@@ -342,10 +344,13 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
     _deduplicate_global_op_names(categories)
 
+    tag_version = get_version_from_tags()
+    version = tag_version if tag_version != "0.0.0" else "1.0.0"
+
     return {
         "service": "f5xc",
         "displayName": "F5 Distributed Cloud",
-        "version": "1.0.0",
+        "version": version,
         "specSource": "f5xc-salesdemos/api-specs-enriched",
         "auth": F5XC_AUTH,
         "defaults": F5XC_DEFAULTS,

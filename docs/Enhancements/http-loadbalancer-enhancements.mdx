@@ -46,9 +46,8 @@ One of the following load balancer types must be specified:
 
 **API Schema Reference**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
 
-### Example Configuration
+### Minimum Viable Configuration
 
-**Minimal JSON configuration**:
 ```json
 {
   "metadata": {
@@ -67,7 +66,69 @@ One of the following load balancer types must be specified:
 }
 ```
 
-**Server-applied defaults**: When omitted, the server applies defaults including `https_auto_cert.port=443`, `https_auto_cert.http_redirect=false`, `https_auto_cert.add_hsts=false`, `https_auto_cert.tls_config.default_security={}`, and multiple security feature defaults (see configuration file for complete list).
+## Server-Applied Defaults
+
+Fields marked with `x-f5xc-server-default: true` have their `default` value applied by the F5 XC API server when omitted from requests. HTTP load balancer has a large number of server-applied defaults because most security features and protocol options default to a disabled or safe state.
+
+### HTTPS Auto-Cert Defaults
+
+When `https_auto_cert` is specified, the server applies these defaults for omitted fields:
+
+| Field | Default Value | Type | Description |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS listening port |
+| `http_redirect` | `false` | boolean | HTTP to HTTPS redirect |
+| `add_hsts` | `false` | boolean | HTTP Strict Transport Security header |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ with strong ciphers |
+| `no_mtls` | `{}` | object | Mutual TLS disabled |
+| `default_header` | `{}` | object | Default server name header handling |
+| `enable_path_normalize` | `{}` | object | Path normalization enabled |
+| `default_loadbalancer` | `{}` | object | Default load balancer settings |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | Legacy header transformation |
+| `connection_idle_timeout` | `120000` | integer | Connection idle timeout in milliseconds (2 minutes) |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 and HTTP/2 enabled |
+| `coalescing_options.default_coalescing` | `{}` | object | Default HTTP/2 connection coalescing |
+
+### Security Feature Defaults
+
+All security features default to disabled when omitted:
+
+| Field | Default Value | Description |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | Web Application Firewall disabled |
+| `disable_bot_defense` | `{}` | Bot defense disabled |
+| `disable_rate_limit` | `{}` | Rate limiting disabled |
+| `disable_api_discovery` | `{}` | API discovery disabled |
+| `disable_api_testing` | `{}` | API testing disabled |
+| `disable_api_definition` | `{}` | API definition disabled |
+| `disable_malware_protection` | `{}` | Malware protection disabled |
+| `disable_client_side_defense` | `{}` | Client-side defense disabled |
+| `disable_ip_reputation` | `{}` | IP reputation disabled |
+| `disable_threat_mesh` | `{}` | Threat mesh disabled |
+| `disable_malicious_user_detection` | `{}` | Malicious user detection disabled |
+
+### DDoS and Access Control Defaults
+
+| Field | Default Value | Description |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | Block DDoS traffic (default mitigation action) |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | Use default RPS threshold |
+| `l7_ddos_protection.clientside_action_none` | `{}` | No client-side DDoS validation |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | No DDoS policy reference |
+| `no_challenge` | `{}` | No client challenge |
+| `user_id_client_ip` | `{}` | Identify users by client IP |
+| `disable_trust_client_ip_headers` | `{}` | Do not trust client IP headers |
+
+### Other Server-Applied Defaults
+
+| Field | Default Value | Type | Description |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | Advertise on public default VIP |
+| `round_robin` | `{}` | object | Round-robin load balancing algorithm |
+| `add_location` | `true` | boolean | Add location header to responses |
+| `system_default_timeouts` | `{}` | object | Use system default timeouts |
+| `service_policies_from_namespace` | `{}` | object | Inherit service policies from namespace |
+| `default_sensitive_data_policy` | `{}` | object | Use default sensitive data policy |
 
 ## Mutually Exclusive Field Groups
 
@@ -131,7 +192,7 @@ Fields marked with `x-f5xc-conflicts-with` indicate OneOf patterns. Only one fie
 | `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | Client-side DDoS validation action |
 | `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS policy reference or none |
 
-### Other Settings Groups (5 groups)
+### Other Settings Groups (6 groups)
 
 | Group Name | Fields | Description |
 |-----------|--------|-------------|
@@ -215,6 +276,48 @@ Fields marked with `x-f5xc-constraints` include validation constraints discovere
 | `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | Client challenge type |
 | `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Load balancer advertising |
 
+## Guided Workflow Integration
+
+The enrichment pipeline adds `x-f5xc-guided-workflows` metadata at the spec level. These workflows provide step-by-step deployment guidance consumed by AI assistants and CLI tools.
+
+### Deploy HTTP Load Balancer
+
+A 5-step workflow for creating a fully configured HTTP load balancer with backend origin pool (defined in `config/guided_workflows.yaml`):
+
+| Step | Action | Resource | Required Fields | Optional |
+|------|--------|----------|-----------------|----------|
+| 1 | Create Origin Pool | `origin_pool` | `name`, `origin_servers`, `port` | No |
+| 2 | Configure Health Check | `healthcheck` | `name`, `http_health_check` | Yes |
+| 3 | Attach Health Check | - | - | Yes |
+| 4 | Create HTTP Load Balancer | `http_loadbalancer` | `name`, `domains`, `http.port` | No |
+| 5 | Verify Deployment | - | - | No |
+
+**Prerequisites**: Valid namespace in target tenant, backend application reachable via IP or DNS, SSL certificate (optional for HTTPS).
+
+### Deploy HTTPS Load Balancer with TLS
+
+A 7-step workflow for creating HTTPS load balancer with SSL/TLS termination:
+
+| Step | Action | Resource | Required Fields | Optional |
+|------|--------|----------|-----------------|----------|
+| 1 | Upload SSL Certificate | `certificate` | `name`, `certificate_chain`, `private_key` | No |
+| 2 | Create Origin Pool | `origin_pool` | `name`, `origin_servers` | No |
+| 3 | Configure Health Check | `healthcheck` | - | Yes |
+| 4 | Configure WAF Policy | `app_firewall` | - | Yes |
+| 5 | Create HTTPS Load Balancer | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | No |
+| 6 | Attach WAF Policy | - | - | Yes |
+| 7 | Verify HTTPS Deployment | - | - | No |
+
+**Prerequisites**: Valid namespace in target tenant, SSL certificate and private key, backend application reachable.
+
+### Workflow Consumption
+
+Downstream tools use these workflows to guide users through multi-step deployments:
+
+- **xcsh CLI**: Presents workflows as interactive guided commands (e.g., `xcsh deploy http-lb`)
+- **VS Code extension**: Shows workflow steps in a sidebar panel with progress tracking
+- **AI assistants**: Follow workflow steps sequentially, creating each resource and validating dependencies
+
 ## OpenAPI Extensions Reference
 
 These vendor extensions are added to the standard OpenAPI schema to convey F5 XC-specific metadata.
@@ -261,6 +364,19 @@ viewshttp_loadbalancerCreateSpecType:
       ...
     example_curl: |
       ...
+```
+
+### x-f5xc-server-default
+
+**Type**: `boolean`
+
+When `true`, indicates the accompanying `default` value is enforced by the F5 XC API server. Fields with this extension can be safely omitted from API requests -- the server applies the default automatically.
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
 ```
 
 ### x-f5xc-conflicts-with
@@ -371,8 +487,9 @@ metadata.uid:
 
 | File | Purpose |
 |------|---------|
-| `config/minimum_configs.yaml` | Source of minimum configuration metadata (lines 16-297) |
+| `config/minimum_configs.yaml` | Source of minimum configuration metadata |
 | `config/constraint_patterns.yaml` | Constraint pattern definitions |
+| `config/guided_workflows.yaml` | Guided workflow step definitions |
 | `config/domain_descriptions.yaml` | Domain-level description metadata |
 
 ### Schemas Enriched
@@ -392,4 +509,5 @@ metadata.uid:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0.46 | 2026-04-18 | Added server-applied defaults, guided workflow integration, and expanded minimum config section |
 | 2.0.45 | 2026-01-20 | Initial http_loadbalancer enrichments documentation |
