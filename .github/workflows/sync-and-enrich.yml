@@ -212,6 +212,10 @@ jobs:
         if: steps.check-discovery.outputs.has_full_discovery == 'true' && steps.enriched-cache.outputs.cache-hit != 'true'
         run: python -m scripts.analyze_constraints
 
+      - name: Compile API catalog
+        if: steps.enriched-cache.outputs.cache-hit != 'true'
+        run: python -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
+
       - name: Save enriched output cache
         if: steps.enriched-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
@@ -675,7 +679,8 @@ jobs:
             --notes-file CHANGELOG.md \
             "${zip_name}" \
             docs/specifications/api/openapi.json \
-            docs/specifications/api/index.json
+            docs/specifications/api/index.json \
+            release/api-catalog.json
 
           echo "::notice::Created release: v$VERSION"
 
@@ -708,21 +713,56 @@ jobs:
 
   # ==========================================================================
   # NOTIFY DOWNSTREAM REPOSITORIES
+  # Reads config/downstream_repos.yaml and dispatches to enabled repos only.
   # ==========================================================================
-  notify-downstream:
-    name: Notify Downstream Repositories
+  build-downstream-matrix:
+    name: Build Downstream Matrix
     needs: [sync-and-enrich]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.result }}
+      has_targets: ${{ steps.matrix.outputs.has_targets }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Build matrix from config
+        id: matrix
+        run: |
+          # Parse downstream_repos.yaml and filter to enabled repos
+          MATRIX=$(python3 -c "
+          import json, yaml, sys
+          with open('config/downstream_repos.yaml') as f:
+              cfg = yaml.safe_load(f)
+          repos = cfg.get('downstream_repositories', [])
+          enabled = [
+              {'owner': r['owner'], 'repo': r['repo'], 'event_type': r['event_type']}
+              for r in repos if r.get('enabled', False)
+          ]
+          print(json.dumps({'downstream': enabled}))
+          ")
+          echo "result=${MATRIX}" >> "$GITHUB_OUTPUT"
+          # Check if there are any targets
+          COUNT=$(echo "${MATRIX}" | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d['downstream']))")
+          if [ "${COUNT}" -gt 0 ]; then
+            echo "has_targets=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Found ${COUNT} enabled downstream repo(s)"
+          else
+            echo "has_targets=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No enabled downstream repos found - skipping dispatch"
+          fi
+
+  notify-downstream:
+    name: Notify Downstream Repositories
+    needs: [sync-and-enrich, build-downstream-matrix]
+    if: needs.build-downstream-matrix.outputs.has_targets == 'true'
+    runs-on: ubuntu-latest
     strategy:
-      matrix:
-        downstream:
-          - owner: f5xc-salesdemos
-            repo: xcsh
-            event_type: enriched-specs-updated
-          - owner: f5xc-salesdemos
-            repo: vscode-f5xc-tools
-            event_type: enriched-specs-updated
+      matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
       fail-fast: false
     steps:
       - name: Dispatch to ${{ matrix.downstream.repo }}
@@ -738,10 +778,14 @@ jobs:
           client-payload: '{"version":"${{ needs.sync-and-enrich.outputs.version }}","release_tag":"v${{ needs.sync-and-enrich.outputs.version }}","release_url":"https://github.com/${{ github.repository }}/releases/tag/v${{ needs.sync-and-enrich.outputs.version }}","timestamp":"${{ github.event.repository.updated_at }}","trigger_source":"${{ github.repository }}","run_id":"${{ github.run_id }}"}'
 
       - name: Log dispatch result
+        env:
+          DS_OWNER: ${{ matrix.downstream.owner }}
+          DS_REPO: ${{ matrix.downstream.repo }}
+          DS_EVENT: ${{ matrix.downstream.event_type }}
+          DS_VERSION: ${{ needs.sync-and-enrich.outputs.version }}
         run: |
-          REPO="${{ matrix.downstream.owner }}/${{ matrix.downstream.repo }}"
-          echo "::notice::Dispatched '${{ matrix.downstream.event_type }}' to ${REPO}"
-          echo "Version: ${{ needs.sync-and-enrich.outputs.version }}"
+          echo "::notice::Dispatched '${DS_EVENT}' to ${DS_OWNER}/${DS_REPO}"
+          echo "Version: ${DS_VERSION}"
 
   # ==========================================================================
   # WORKFLOW MONITORING - Create issues for failures
@@ -749,7 +793,7 @@ jobs:
   monitor-failures:
     name: Monitor Workflow Failures
     runs-on: ubuntu-latest
-    needs: [check-updates, sync-and-enrich, deploy-docs, notify-downstream]
+    needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
     steps:
       - name: Check for failures
@@ -759,10 +803,12 @@ jobs:
           if [ "${{ needs.check-updates.result }}" = "failure" ] || \
             [ "${{ needs.sync-and-enrich.result }}" = "failure" ] || \
             [ "${{ needs.deploy-docs.result }}" = "failure" ] || \
+            [ "${{ needs.build-downstream-matrix.result }}" = "failure" ] || \
             [ "${{ needs.notify-downstream.result }}" = "failure" ] || \
             [ "${{ needs.check-updates.result }}" = "cancelled" ] || \
             [ "${{ needs.sync-and-enrich.result }}" = "cancelled" ] || \
             [ "${{ needs.deploy-docs.result }}" = "cancelled" ] || \
+            [ "${{ needs.build-downstream-matrix.result }}" = "cancelled" ] || \
             [ "${{ needs.notify-downstream.result }}" = "cancelled" ]; then
             echo "has_failure=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Workflow failure detected - will create issue"
@@ -805,6 +851,7 @@ jobs:
           JOB_CHECK_UPDATES: ${{ needs.check-updates.result }}
           JOB_SYNC_ENRICH: ${{ needs.sync-and-enrich.result }}
           JOB_DEPLOY: ${{ needs.deploy-docs.result }}
+          JOB_BUILD_MATRIX: ${{ needs.build-downstream-matrix.result }}
           JOB_NOTIFY_DOWNSTREAM: ${{ needs.notify-downstream.result }}
         run: |
           python scripts/monitor_workflow.py \
