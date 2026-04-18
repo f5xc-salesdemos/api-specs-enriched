@@ -13,6 +13,7 @@
       "url": "https://www.f5.com/company/policies/eula"
     },
     "x-f5xc-description-long": "Behavioral fingerprinting identifies automated clients through request patterns, mouse movements, and JavaScript execution. Threat categories classify attacks by type including credential stuffing, scraping, and denial-of-service. Defense instances apply per-namespace policies with configurable sensitivity thresholds and challenge actions. Provisioning handles integration credentials for third-party threat intelligence feeds.",
+    "x-f5xc-summary": "Threat classification with behavioral analysis and signature matching. Automated blocking for malicious traffic patterns.",
     "x-f5xc-cli-domain": "bot_and_threat_defense",
     "x-f5xc-best-practices": {
       "common_errors": [
@@ -63,8 +64,7 @@
         "Batch related operations when possible",
         "Cache read-only responses appropriately"
       ]
-    },
-    "x-f5xc-summary": "Threat classification with behavioral analysis and signature matching. Automated blocking for malicious traffic patterns."
+    }
   },
   "servers": [
     {
@@ -4501,14 +4501,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730098+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -4523,7 +4517,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828332+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4533,7 +4533,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.172934+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226549+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4546,14 +4546,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730140+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -4561,7 +4555,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828351+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4571,7 +4571,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.172980+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226565+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -4610,15 +4610,19 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1024,
+              "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$",
+              "format": "ip",
+              "formatDescription": "IPv4 dotted-decimal notation (e.g., 192.168.1.1)",
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730222+00:00"
+                "validatedAt": "2026-04-18T00:48:02.828389+00:00"
               },
-              "deterministic": true,
-              "constraintType": "string",
-              "format": "ip"
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -4835,16 +4839,16 @@
               "ves.io.schema.rules.repeated.unique": "true"
             },
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "uniqueItems": true,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730338+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 1,
-              "uniqueItems": true
+                "validatedAt": "2026-04-18T00:48:02.828442+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -4872,15 +4876,17 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "hostname",
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730418+00:00"
-              },
-              "constraintType": "string",
-              "format": "hostname"
+                "validatedAt": "2026-04-18T00:48:02.828480+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -4913,17 +4919,17 @@
               "ves.io.schema.rules.repeated.unique": "true"
             },
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730477+00:00"
-              },
-              "constraintType": "array",
-              "maxItems": 3,
-              "minItems": 1,
-              "uniqueItems": true
+                "validatedAt": "2026-04-18T00:48:02.828511+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -4970,15 +4976,17 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "hostname",
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730553+00:00"
-              },
-              "constraintType": "string",
-              "format": "hostname"
+                "validatedAt": "2026-04-18T00:48:02.828547+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5004,15 +5012,19 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1024,
+              "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$",
+              "format": "ip",
+              "formatDescription": "IPv4 dotted-decimal notation (e.g., 192.168.1.1)",
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.730623+00:00"
+                "validatedAt": "2026-04-18T00:48:02.828582+00:00"
               },
-              "deterministic": true,
-              "constraintType": "string",
-              "format": "ip"
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5070,16 +5082,16 @@
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
             "x-f5xc-description-short": "Items represents the collection in response.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-29T10:24:29.730672+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 0,
-              "maxItems": 256,
-              "uniqueItems": false
+                "validatedAt": "2026-04-18T00:48:02.828604+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5129,17 +5141,17 @@
             "minLength": 0,
             "maxLength": 0,
             "x-f5xc-constraints": {
-              "category": "content",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.8,
-                "validatedAt": "2026-03-29T10:24:29.730734+00:00"
-              },
               "constraintType": "string",
+              "category": "content",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-04-18T00:48:02.828632+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5150,7 +5162,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173259+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226711+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -5198,14 +5210,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730770+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -5220,7 +5226,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828650+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5230,7 +5242,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173328+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226754+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5242,14 +5254,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730801+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -5257,7 +5263,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828665+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5267,7 +5279,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173356+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226769+00:00"
           },
           "owner_view": {
             "$ref": "#/components/schemas/schemaViewRefType"
@@ -5285,15 +5297,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.730843+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828683+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5304,7 +5316,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173402+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226795+00:00"
           },
           "uid": {
             "type": "string",
@@ -5317,15 +5329,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.730873+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828697+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5337,7 +5349,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173432+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226811+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of bot_defense_app_infrastructure is returned in 'List'.",
@@ -5472,15 +5484,15 @@
             "minLength": 0,
             "maxLength": 14,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.730915+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828717+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5491,7 +5503,7 @@
             "readOnly": true,
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173526+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226860+00:00"
           },
           "name": {
             "type": "string",
@@ -5505,14 +5517,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730962+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -5527,7 +5533,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828733+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5537,7 +5549,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173554+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226875+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5551,14 +5563,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.730997+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -5566,7 +5572,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828749+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5576,7 +5588,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173582+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226891+00:00"
           },
           "tenant": {
             "type": "string",
@@ -5590,15 +5602,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731039+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828767+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5610,7 +5622,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173610+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226906+00:00"
           },
           "uid": {
             "type": "string",
@@ -5624,15 +5636,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731070+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828782+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5645,7 +5657,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173639+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226922+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -5672,15 +5684,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731114+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828802+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5696,16 +5708,16 @@
             "minLength": 0,
             "maxLength": 15,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "byte",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731157+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "byte"
+                "validatedAt": "2026-04-18T00:48:02.828819+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5715,7 +5727,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173679+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226943+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -5783,15 +5795,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731200+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.828840+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5829,14 +5841,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731232+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -5851,7 +5857,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828856+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5861,7 +5873,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173743+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.226977+00:00"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -5965,17 +5977,22 @@
             "x-f5xc-description-short": "Human readable description for the object.",
             "minLength": 0,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1200,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.731339+00:00"
+                "validatedAt": "2026-04-18T00:48:02.828906+00:00"
               },
-              "deterministic": true,
-              "constraintType": "string",
               "byteLength": {
                 "max": 1200
-              }
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5985,7 +6002,7 @@
             },
             "x-original-maxLength": 1200,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173806+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227010+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6036,14 +6053,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731376+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6058,7 +6069,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828924+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -6068,7 +6085,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173856+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227036+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6082,14 +6099,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731408+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6097,7 +6108,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828938+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6107,7 +6124,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173883+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227052+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
@@ -6173,17 +6190,22 @@
             "x-f5xc-description-short": "Human readable description for the object.",
             "minLength": 0,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1200,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.731500+00:00"
+                "validatedAt": "2026-04-18T00:48:02.828982+00:00"
               },
-              "deterministic": true,
-              "constraintType": "string",
               "byteLength": {
                 "max": 1200
-              }
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6193,7 +6215,7 @@
             },
             "x-original-maxLength": 1200,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173925+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227074+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6246,14 +6268,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731535+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6268,7 +6284,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.828999+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -6278,7 +6300,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.173986+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227101+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6292,14 +6314,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731567+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6307,7 +6323,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.829013+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6317,7 +6339,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174015+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227116+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
@@ -6383,17 +6405,22 @@
             "x-f5xc-description-short": "Human readable description for the object.",
             "minLength": 0,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "discovery",
+              "minLength": 0,
+              "maxLength": 1200,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:24:29.731659+00:00"
+                "validatedAt": "2026-04-18T00:48:02.829056+00:00"
               },
-              "deterministic": true,
-              "constraintType": "string",
               "byteLength": {
                 "max": 1200
-              }
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6403,7 +6430,7 @@
             },
             "x-original-maxLength": 1200,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174056+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227138+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6454,14 +6481,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731695+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6476,7 +6497,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.829072+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -6486,7 +6513,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174105+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227164+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6500,14 +6527,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.731725+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -6515,7 +6536,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.829086+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6525,7 +6552,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174133+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227179+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
@@ -6558,15 +6585,15 @@
             "minimum": 0,
             "maximum": 2147483647,
             "x-f5xc-constraints": {
+              "constraintType": "number",
               "category": "general",
+              "minimum": 0,
+              "maximum": 2147483647,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731753+00:00"
-              },
-              "constraintType": "number",
-              "minimum": 0,
-              "maximum": 2147483647
+                "validatedAt": "2026-04-18T00:48:02.829099+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6587,15 +6614,15 @@
             "minLength": 0,
             "maxLength": 43,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731796+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829118+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6605,7 +6632,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174172+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227201+00:00"
           },
           "status": {
             "type": "string",
@@ -6618,15 +6645,15 @@
             "minLength": 0,
             "maxLength": 17,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731837+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829136+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6636,7 +6663,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174200+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227216+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -6668,16 +6695,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731889+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:48:02.829159+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6698,15 +6725,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731935+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829179+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6727,15 +6754,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.731993+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829199+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6756,16 +6783,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732043+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:48:02.829220+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6823,16 +6850,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732110+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:48:02.829249+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6855,15 +6882,15 @@
             "minimum": 0,
             "maximum": 2147483647,
             "x-f5xc-constraints": {
+              "constraintType": "number",
               "category": "general",
+              "minimum": 0,
+              "maximum": 2147483647,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732136+00:00"
-              },
-              "constraintType": "number",
-              "minimum": 0,
-              "maximum": 2147483647
+                "validatedAt": "2026-04-18T00:48:02.829260+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6888,15 +6915,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732177+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829285+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6907,7 +6934,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174327+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227295+00:00"
           },
           "uid": {
             "type": "string",
@@ -6921,15 +6948,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732208+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829300+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6941,7 +6968,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174356+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227311+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -6986,15 +7013,15 @@
             "minLength": 0,
             "maxLength": 14,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732245+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829318+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7004,7 +7031,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174386+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227328+00:00"
           },
           "name": {
             "type": "string",
@@ -7018,14 +7045,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.732277+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7040,7 +7061,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.829333+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7050,7 +7077,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174413+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227343+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7064,14 +7091,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:24:29.732309+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7079,7 +7100,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:48:02.829349+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7089,7 +7116,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174441+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227358+00:00"
           },
           "uid": {
             "type": "string",
@@ -7101,15 +7128,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:24:29.732339+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:48:02.829362+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7121,7 +7148,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:37.174470+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:18.227374+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -7349,16 +7376,16 @@
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
             "x-f5xc-description-short": "Items represents the collection in response.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-29T10:38:36.133694+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 0,
-              "maxItems": 256,
-              "uniqueItems": false
+                "validatedAt": "2026-04-18T00:54:08.287534+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7408,17 +7435,17 @@
             "minLength": 0,
             "maxLength": 0,
             "x-f5xc-constraints": {
-              "category": "content",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.8,
-                "validatedAt": "2026-03-29T10:38:36.133751+00:00"
-              },
               "constraintType": "string",
+              "category": "content",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-04-18T00:54:08.287560+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7429,7 +7456,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:55.361259+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:26.886270+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -7477,14 +7504,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:38:36.133785+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7499,7 +7520,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:08.287575+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7509,7 +7536,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:55.361327+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:26.886307+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7521,14 +7548,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:38:36.133815+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7536,7 +7557,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:08.287591+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7546,7 +7573,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:55.361354+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:26.886322+00:00"
           },
           "owner_view": {
             "$ref": "#/components/schemas/schemaViewRefType"
@@ -7564,15 +7591,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:38:36.133855+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:08.287608+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7583,7 +7610,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:55.361401+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:26.886348+00:00"
           },
           "uid": {
             "type": "string",
@@ -7596,15 +7623,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:38:36.133884+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:08.287622+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7616,7 +7643,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:55.361430+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:26.886363+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of shape_bot_defense_instance is returned in 'List'.",
@@ -7661,21 +7688,21 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
-              "category": "network",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:09.832342+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "network",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$",
               "format": "fqdn",
               "validation": {
                 "rfc": "RFC 1123"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:48.620312+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7693,16 +7720,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.832429+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:54:48.620334+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7723,15 +7750,15 @@
             "minLength": 0,
             "maxLength": 43,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.832490+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620352+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7741,7 +7768,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.145982+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201631+00:00"
           },
           "service_name": {
             "type": "string",
@@ -7753,15 +7780,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.832541+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620402+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7788,15 +7815,15 @@
             "minLength": 0,
             "maxLength": 17,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.832588+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620428+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7806,7 +7833,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146021+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201651+00:00"
           },
           "type": {
             "type": "string",
@@ -7826,15 +7853,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.832626+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620448+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7875,15 +7902,15 @@
             "minLength": 0,
             "maxLength": 14,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833119+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620676+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7894,7 +7921,7 @@
             "readOnly": true,
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146387+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201846+00:00"
           },
           "name": {
             "type": "string",
@@ -7908,14 +7935,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:09.833153+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7930,7 +7951,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:48.620694+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7940,7 +7967,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146416+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201862+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7954,14 +7981,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:09.833184+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -7969,7 +7990,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:48.620710+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7979,7 +8006,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146444+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201877+00:00"
           },
           "tenant": {
             "type": "string",
@@ -7993,15 +8020,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833224+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620728+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8013,7 +8040,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146472+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201892+00:00"
           },
           "uid": {
             "type": "string",
@@ -8027,15 +8054,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833255+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620742+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8048,7 +8075,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146503+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.201908+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -8081,16 +8108,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833469+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:54:48.620840+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8112,15 +8139,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833517+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620861+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8142,15 +8169,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833561+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620881+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8173,15 +8200,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833605+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620901+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8202,15 +8229,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833634+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620914+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8222,7 +8249,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.146703+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202014+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -8233,15 +8260,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.833674+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.620933+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8385,16 +8412,16 @@
             "x-f5xc-description-short": "APIKey needs a reference to an existing TPM category object TPM category is used for grouping customer owned APIKeys and manage them as one entity...",
             "x-f5xc-description-medium": "APIKey needs a reference to an existing TPM category object TPM category is used for grouping customer owned APIKeys and manage them as one entity Required: YES.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "maxItems": 1,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:40:09.834355+00:00"
-              },
-              "constraintType": "array",
-              "maxItems": 1,
-              "minItems": 1
+                "validatedAt": "2026-04-18T00:54:48.621237+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -8518,7 +8545,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147246+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202300+00:00"
           },
           "system_metadata": {
             "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
@@ -8601,16 +8628,16 @@
             "x-f5xc-description-short": "APIKey needs a reference to an existing TPM category object TPM category is used for grouping customer owned APIKeys and manage them as one entity...",
             "x-f5xc-description-medium": "APIKey needs a reference to an existing TPM category object TPM category is used for grouping customer owned APIKeys and manage them as one entity Required: YES.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "maxItems": 1,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:40:09.834473+00:00"
-              },
-              "constraintType": "array",
-              "maxItems": 1,
-              "minItems": 1
+                "validatedAt": "2026-04-18T00:54:48.621300+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -8663,15 +8690,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834520+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.621321+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8691,16 +8718,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834570+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:54:48.621343+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8754,16 +8781,16 @@
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
             "x-f5xc-description-short": "Items represents the collection in response.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-29T10:40:09.834619+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 0,
-              "maxItems": 256,
-              "uniqueItems": false
+                "validatedAt": "2026-04-18T00:54:48.621364+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8813,17 +8840,17 @@
             "minLength": 0,
             "maxLength": 0,
             "x-f5xc-constraints": {
-              "category": "content",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.8,
-                "validatedAt": "2026-03-29T10:40:09.834677+00:00"
-              },
               "constraintType": "string",
+              "category": "content",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-04-18T00:54:48.621390+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8834,7 +8861,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147371+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202366+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -8881,14 +8908,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:09.834712+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -8903,7 +8924,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:48.621406+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8913,7 +8940,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147439+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202401+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8925,14 +8952,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:09.834743+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -8940,7 +8961,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:48.621420+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8950,7 +8977,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147468+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202416+00:00"
           },
           "owner_view": {
             "$ref": "#/components/schemas/schemaViewRefType"
@@ -8984,15 +9011,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834796+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.621444+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9003,7 +9030,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147523+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202446+00:00"
           },
           "uid": {
             "type": "string",
@@ -9015,15 +9042,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834827+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.621456+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9035,7 +9062,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.147552+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.202462+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of tpm_api_key is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -9136,15 +9163,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834878+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:48.621478+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9164,16 +9191,16 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
+              "format": "date-time",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:09.834929+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024,
-              "format": "date-time"
+                "validatedAt": "2026-04-18T00:54:48.621500+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9345,16 +9372,16 @@
               "ves.io.schema.rules.repeated.min_items": "1"
             },
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "maxItems": 1,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:40:14.322479+00:00"
-              },
-              "constraintType": "array",
-              "maxItems": 1,
-              "minItems": 1
+                "validatedAt": "2026-04-18T00:54:50.568480+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -9461,7 +9488,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226362+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.239963+00:00"
           },
           "system_metadata": {
             "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
@@ -9531,15 +9558,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.322588+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568529+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9559,15 +9586,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.322635+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568550+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9587,15 +9614,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.322680+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568570+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9615,15 +9642,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.322725+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568589+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9673,16 +9700,16 @@
               "ves.io.schema.rules.repeated.min_items": "1"
             },
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "discovery",
+              "minItems": 1,
+              "maxItems": 1,
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-03-29T10:40:14.322801+00:00"
-              },
-              "constraintType": "array",
-              "maxItems": 1,
-              "minItems": 1
+                "validatedAt": "2026-04-18T00:54:50.568624+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -9743,16 +9770,16 @@
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
             "x-f5xc-description-short": "Items represents the collection in response.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-29T10:40:14.322850+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 0,
-              "maxItems": 256,
-              "uniqueItems": false
+                "validatedAt": "2026-04-18T00:54:50.568647+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9802,17 +9829,17 @@
             "minLength": 0,
             "maxLength": 0,
             "x-f5xc-constraints": {
-              "category": "content",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.8,
-                "validatedAt": "2026-03-29T10:40:14.322909+00:00"
-              },
               "constraintType": "string",
+              "category": "content",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-04-18T00:54:50.568672+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9823,7 +9850,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226497+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.240033+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -9870,14 +9897,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:14.322957+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -9892,7 +9913,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:50.568689+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9902,7 +9929,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226564+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.240070+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9914,14 +9941,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:14.322990+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -9929,7 +9950,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:50.568705+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9939,7 +9966,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226592+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.240085+00:00"
           },
           "owner_view": {
             "$ref": "#/components/schemas/schemaViewRefType"
@@ -9973,15 +10000,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.323046+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568728+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9992,7 +10019,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226648+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.240114+00:00"
           },
           "uid": {
             "type": "string",
@@ -10004,15 +10031,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:14.323076+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:50.568742+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10024,7 +10051,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.226677+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.240130+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of tpm_category is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -10329,7 +10356,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262127+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257359+00:00"
           },
           "system_metadata": {
             "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
@@ -10396,15 +10423,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:16.459338+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:51.494363+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10425,15 +10452,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:16.459385+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:51.494384+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10487,16 +10514,16 @@
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
             "x-f5xc-description-short": "Items represents the collection in response.",
             "x-f5xc-constraints": {
+              "constraintType": "array",
               "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-03-29T10:40:16.459432+00:00"
-              },
-              "constraintType": "array",
-              "minItems": 0,
-              "maxItems": 256,
-              "uniqueItems": false
+                "validatedAt": "2026-04-18T00:54:51.494406+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10546,17 +10573,17 @@
             "minLength": 0,
             "maxLength": 0,
             "x-f5xc-constraints": {
-              "category": "content",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.8,
-                "validatedAt": "2026-03-29T10:40:16.459488+00:00"
-              },
               "constraintType": "string",
+              "category": "content",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-04-18T00:54:51.494432+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10567,7 +10594,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262225+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257410+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -10614,14 +10641,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:16.459522+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -10636,7 +10657,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:51.494448+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10646,7 +10673,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262293+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257446+00:00"
           },
           "namespace": {
             "type": "string",
@@ -10658,14 +10685,8 @@
             "minLength": 0,
             "maxLength": 6,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:16.459552+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -10673,7 +10694,13 @@
                 "allowed": "[a-z0-9-]",
                 "description": "Kubernetes namespace format"
               },
-              "format": "dns-label"
+              "format": "dns-label",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:51.494463+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10683,7 +10710,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262321+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257462+00:00"
           },
           "owner_view": {
             "$ref": "#/components/schemas/schemaViewRefType"
@@ -10717,15 +10744,15 @@
             "minLength": 0,
             "maxLength": 18,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:16.459605+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:51.494485+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10736,7 +10763,7 @@
             "x-field-mutability": "read-only",
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262377+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257492+00:00"
           },
           "uid": {
             "type": "string",
@@ -10748,15 +10775,15 @@
             "minLength": 0,
             "maxLength": 36,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:16.459633+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:51.494498+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10768,7 +10795,7 @@
             "x-original-maxLength": 1024,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.262406+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.257508+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of tpm_manager is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -10875,14 +10902,8 @@
             "minLength": 0,
             "maxLength": 16,
             "x-f5xc-constraints": {
-              "category": "naming",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.95,
-                "validatedAt": "2026-03-29T10:40:21.819272+00:00"
-              },
-              "deterministic": true,
               "constraintType": "string",
+              "category": "naming",
               "minLength": 0,
               "maxLength": 1024,
               "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -10897,7 +10918,13 @@
               "validation": {
                 "rfc": "RFC 1123",
                 "standard": "Kubernetes resource naming"
-              }
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.95,
+                "validatedAt": "2026-04-18T00:54:53.823672+00:00"
+              },
+              "deterministic": true
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -10907,7 +10934,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.311521+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.281579+00:00"
           },
           "serial": {
             "type": "string",
@@ -10926,15 +10953,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819327+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823696+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -10960,15 +10987,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819371+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823714+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -10994,15 +11021,15 @@
             "minLength": 0,
             "maxLength": 1,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819414+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823734+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -11012,7 +11039,7 @@
             },
             "x-original-maxLength": 1024,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-03-29T10:43:58.311571+00:00"
+            "x-reconciled-at": "2026-04-18T00:56:28.281606+00:00"
           }
         },
         "x-f5xc-description-short": "DeviceInfo defines device parameters like Serial-Number to include in the TPM provisioning data.",
@@ -11051,18 +11078,18 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
-              "category": "security",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819467+00:00"
-              },
               "constraintType": "string",
+              "category": "security",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "allowed": "[a-zA-Z0-9_-]",
                 "description": "Alphanumeric with underscores and hyphens"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-04-18T00:54:53.823759+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11155,15 +11182,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819523+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823783+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -11190,18 +11217,18 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
-              "category": "security",
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819573+00:00"
-              },
               "constraintType": "string",
+              "category": "security",
               "minLength": 0,
               "maxLength": 1024,
               "characterSet": {
                 "allowed": "[a-zA-Z0-9_-]",
                 "description": "Alphanumeric with underscores and hyphens"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-04-18T00:54:53.823806+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11229,15 +11256,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819606+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823821+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -11267,15 +11294,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819651+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823841+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -11302,15 +11329,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819700+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823863+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -11348,15 +11375,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819751+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823886+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -11376,15 +11403,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819799+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823908+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -11404,15 +11431,15 @@
             "minLength": 0,
             "maxLength": 1024,
             "x-f5xc-constraints": {
+              "constraintType": "string",
               "category": "general",
+              "minLength": 0,
+              "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-03-29T10:40:21.819836+00:00"
-              },
-              "constraintType": "string",
-              "minLength": 0,
-              "maxLength": 1024
+                "validatedAt": "2026-04-18T00:54:53.823925+00:00"
+              }
             },
             "x-f5xc-required-for": {
               "minimum_config": false,

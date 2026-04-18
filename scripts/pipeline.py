@@ -1688,7 +1688,14 @@ def run_pipeline(
             # Export validation specification for downstream consumers
             try:
                 validation_exporter = ValidationExporter()
-                validation_exporter.export(output_dir / "validation.json")
+                validation_path = output_dir / "validation.json"
+                validation_exporter.export(validation_path)
+                with contextlib.suppress(FileNotFoundError):
+                    subprocess.run(
+                        ["biome", "format", "--write", str(validation_path)],
+                        capture_output=True,
+                        check=False,
+                    )
                 validation_stats = validation_exporter.get_stats()
                 console.print(
                     f"[green]Exported validation.json: "
