@@ -25,6 +25,8 @@ class LintIssue:
     message: str
     path: list[str]
     severity: int  # 0=error, 1=warn, 2=info, 3=hint
+    range_start: dict | None = None
+    range_end: dict | None = None
 
     @property
     def severity_name(self) -> str:
