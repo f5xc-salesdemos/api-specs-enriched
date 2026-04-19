@@ -22,6 +22,8 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.json_writer import write_json_file
+
 
 @dataclass
 class ExporterStats:
@@ -106,12 +108,11 @@ class ValidationExporter:
         # Build the exported validation spec
         validation_spec = self._build_validation_spec()
 
-        # Write to file if path provided
+        # Write to file if path provided — delegate to write_json_file so
+        # the resulting docs/specifications/api/validation.json matches
+        # Super-Linter's BIOME_FORMAT expectations.
         if output_path:
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            with output_path.open("w") as f:
-                json.dump(validation_spec, f, indent=2, ensure_ascii=False)
-                f.write("\n")
+            write_json_file(validation_spec, output_path, indent=2, ensure_ascii=False)
 
         return validation_spec
 

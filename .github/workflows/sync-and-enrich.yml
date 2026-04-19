@@ -29,6 +29,10 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.13'
+  # Pinned Biome version — also used as a cache-key suffix so that a
+  # Biome upgrade busts the enriched-output cache (and forces the
+  # generator to re-emit JSON formatted by the new Biome release).
+  BIOME_VERSION: '2.4.12'
 
 jobs:
   check-updates:
@@ -166,7 +170,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}
+          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ env.BIOME_VERSION }}
 
       - name: Install Java (for LanguageTool)
         if: steps.enriched-cache.outputs.cache-hit != 'true'
@@ -180,7 +184,7 @@ jobs:
           node-version: '22'
 
       - name: Install Spectral CLI and Biome
-        run: npm install -g @stoplight/spectral-cli @biomejs/biome
+        run: npm install -g @stoplight/spectral-cli "@biomejs/biome@${BIOME_VERSION}"
 
       - name: Check for Discovery Data
         id: check-discovery
@@ -221,7 +225,7 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}
+          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ env.BIOME_VERSION }}
 
       - name: Generate API viewer pages
         run: python -m scripts.generate_api_viewer
@@ -542,7 +546,15 @@ jobs:
           git add -f CHANGELOG.md .github_release docs/specifications/api/ docs/api-reference/
 
           if ! git diff --staged --quiet; then
-            git commit -m "chore: release v${VERSION} (${BUMP_TYPE}) [skip ci]"
+            # No [skip ci]: Super-Linter is a required check on main and
+            # is only triggered by pull_request events that do NOT carry a
+            # [skip ci] marker. The push trigger's paths: filter above
+            # (scripts/**, config/**, requirements.txt, this workflow file,
+            # docs/**/*.html) already excludes every path the release
+            # commit touches — CHANGELOG.md, .github_release, the
+            # docs/specifications/api/** and docs/api-reference/** trees —
+            # so the merge commit will NOT re-trigger this workflow.
+            git commit -m "chore: release v${VERSION} (${BUMP_TYPE})"
 
             # Push release branch
             git push origin "$BRANCH"
