@@ -25,6 +25,16 @@ if TYPE_CHECKING:
 
 _SKIP_BIOME_ENV = "API_SPECS_SKIP_BIOME"
 
+# Paths that Super-Linter scans with BIOME_FORMAT / CHECKOV on the release PR.
+# Only writes landing inside one of these prefixes are required to match what
+# Biome would produce. Writes to other destinations (reports, /tmp, ad-hoc
+# ``--output-dir`` / ``--output`` CLI targets) are left untouched so callers
+# without Biome on PATH still work.
+_PUBLISHING_PATH_MARKERS: tuple[str, ...] = (
+    "/docs/specifications/api/",
+    "/docs/api-reference/",
+)
+
 
 class BiomeNotFoundError(RuntimeError):
     """Raised when biome is not on PATH while writing generator output."""
@@ -54,7 +64,26 @@ def _is_maxsize_only(result: subprocess.CompletedProcess[str]) -> bool:
     return size_warning and no_files_processed and no_other_diff
 
 
+def _is_publishing_path(output_path: Path) -> bool:
+    """True iff the output lands in a Super-Linter-scanned docs path.
+
+    Super-Linter's BIOME_FORMAT and CHECKOV sub-checks run on JSON
+    under ``docs/specifications/api/`` and ``docs/api-reference/``.
+    Only those destinations are required to be Biome-compliant at
+    write time; ad-hoc CLI outputs (``--output /tmp/...`` on
+    ``validation_exporter``, ``--output-dir`` on enrich/normalize)
+    must still succeed in environments that do not carry Biome.
+    """
+    resolved = output_path.resolve().as_posix()
+    return any(marker in resolved for marker in _PUBLISHING_PATH_MARKERS)
+
+
 def _format_with_biome(output_path: Path) -> None:
+    if not _is_publishing_path(output_path):
+        # Writes outside the release-committed docs tree do not need
+        # Biome formatting and must not fail when Biome is missing.
+        return
+
     if os.environ.get(_SKIP_BIOME_ENV):
         # Opt-out for tests / local dev envs that don't carry Biome.
         # Not intended for CI — the workflow installs a pinned Biome.
@@ -113,13 +142,16 @@ def write_json_file(
 ) -> None:
     """Serialise `data` to `output_path` and Biome-format the result.
 
-    Use for every generator output that lands in a path scanned by
-    Super-Linter (today: `docs/specifications/api/**`,
-    `docs/api-reference/**`). Files outside that scope (reports, cache,
-    release artifacts) can use `json.dump` directly.
+    Biome formatting is applied only when the resolved path lands
+    inside the Super-Linter-scanned docs tree
+    (``docs/specifications/api/**`` or ``docs/api-reference/**``).
+    Writes to other destinations — reports, cache, release artifacts,
+    ad-hoc ``--output`` / ``--output-dir`` CLI targets — are serialised
+    plainly, so callers without Biome on PATH still work.
 
     Raises:
-        BiomeNotFoundError: biome is not on PATH and the skip-env is unset.
+        BiomeNotFoundError: biome is not on PATH and the skip-env is
+            unset, and the output path is in the publishing tree.
         BiomeFormatError: biome format returned a non-zero exit code.
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)

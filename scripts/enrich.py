@@ -203,9 +203,14 @@ def save_spec(
 ) -> None:
     """Save an OpenAPI specification to JSON file.
 
-    Delegates to `write_json_file`, which applies Biome formatting so
-    the output satisfies Super-Linter's BIOME_FORMAT check at commit time.
+    Runs ``SchemaFixer.inject_max_items`` as the last step before
+    serialization so Checkov CKV_OPENAPI_21 passes on the committed
+    JSON without the synthetic bound leaking into ``x-f5xc-constraints``
+    (ConstraintEnricher has already run at this point). Delegates to
+    ``write_json_file``, which applies Biome formatting so the output
+    satisfies Super-Linter's BIOME_FORMAT check at commit time.
     """
+    spec = SchemaFixer().inject_max_items(spec)
     write_json_file(
         spec,
         output_path,
