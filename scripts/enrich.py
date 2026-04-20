@@ -44,6 +44,7 @@ from scripts.utils import (
     TagGenerator,
     UniquenessEnricher,
 )
+from scripts.utils.json_writer import write_json_file
 
 console = Console()
 
@@ -200,11 +201,23 @@ def save_spec(
     indent: int = 2,
     sort_keys: bool = False,
 ) -> None:
-    """Save an OpenAPI specification to JSON file."""
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w") as f:
-        json.dump(spec, f, indent=indent, sort_keys=sort_keys, ensure_ascii=False)
-        f.write("\n")
+    """Save an OpenAPI specification to JSON file.
+
+    Runs ``SchemaFixer.inject_max_items`` as the last step before
+    serialization so Checkov CKV_OPENAPI_21 passes on the committed
+    JSON without the synthetic bound leaking into ``x-f5xc-constraints``
+    (ConstraintEnricher has already run at this point). Delegates to
+    ``write_json_file``, which applies Biome formatting so the output
+    satisfies Super-Linter's BIOME_FORMAT check at commit time.
+    """
+    spec = SchemaFixer().inject_max_items(spec)
+    write_json_file(
+        spec,
+        output_path,
+        indent=indent,
+        sort_keys=sort_keys,
+        ensure_ascii=False,
+    )
 
 
 def validate_spec(spec: dict[str, Any]) -> tuple[bool, str | None]:

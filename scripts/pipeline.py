@@ -48,11 +48,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import contextlib
 import json
 import os
 import re
-import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -123,6 +121,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_REQUIRES_TIER,
     X_F5XC_USE_CASES,
 )
+from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.server_variables import ServerVariableHelper
 
@@ -219,21 +218,15 @@ def load_spec(spec_path: Path) -> dict[str, Any]:
 def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
     """Save an OpenAPI specification to JSON file.
 
-    Writes JSON with the specified indent, then runs biome format
-    if available to ensure consistent formatting.
+    Runs ``SchemaFixer.inject_max_items`` as the last step before
+    serialization so Checkov CKV_OPENAPI_21 passes on the committed
+    JSON without the synthetic bound leaking into ``x-f5xc-constraints``
+    (ConstraintEnricher has already run at this point). Delegates to
+    ``write_json_file``, which applies Biome formatting so the output
+    satisfies Super-Linter's BIOME_FORMAT check at commit time.
     """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w") as f:
-        json.dump(spec, f, indent=indent, ensure_ascii=False)
-        f.write("\n")
-
-    # Apply biome formatting if available (ensures consistent JSON style)
-    with contextlib.suppress(FileNotFoundError):
-        subprocess.run(
-            ["biome", "format", "--write", str(output_path)],
-            capture_output=True,
-            check=False,
-        )
+    spec = SchemaFixer().inject_max_items(spec)
+    write_json_file(spec, output_path, indent=indent, ensure_ascii=False)
 
 
 # =============================================================================
@@ -1685,17 +1678,13 @@ def run_pipeline(
             index = create_spec_index(domain_specs, version)
             save_spec(index, output_dir / "index.json", indent=indent)
 
-            # Export validation specification for downstream consumers
+            # Export validation specification for downstream consumers.
+            # ValidationExporter.export() now delegates to write_json_file,
+            # which applies Biome formatting at the source.
             try:
                 validation_exporter = ValidationExporter()
                 validation_path = output_dir / "validation.json"
                 validation_exporter.export(validation_path)
-                with contextlib.suppress(FileNotFoundError):
-                    subprocess.run(
-                        ["biome", "format", "--write", str(validation_path)],
-                        capture_output=True,
-                        check=False,
-                    )
                 validation_stats = validation_exporter.get_stats()
                 console.print(
                     f"[green]Exported validation.json: "

@@ -8,9 +8,7 @@ Fully automated - no manual intervention required.
 """
 
 import argparse
-import contextlib
 import json
-import subprocess
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -49,6 +47,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_UPSTREAM_TIMESTAMP,
     X_F5XC_USE_CASES,
 )
+from scripts.utils.json_writer import write_json_file
 from scripts.utils.server_variables import ServerVariableHelper
 from scripts.utils.version_calculator import get_version_from_tags
 
@@ -103,21 +102,10 @@ def load_spec(spec_path: Path) -> dict[str, Any]:
 def save_spec(spec: dict[str, Any], output_path: Path, indent: int = 2) -> None:
     """Save an OpenAPI specification to JSON file.
 
-    Writes JSON with the specified indent, then runs biome format
-    if available to ensure consistent formatting.
+    Delegates to `write_json_file`, which applies Biome formatting so
+    the output satisfies Super-Linter's BIOME_FORMAT check at commit time.
     """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w") as f:
-        json.dump(spec, f, indent=indent, ensure_ascii=False)
-        f.write("\n")
-
-    # Apply biome formatting if available (ensures consistent JSON style)
-    with contextlib.suppress(FileNotFoundError):
-        subprocess.run(
-            ["biome", "format", "--write", str(output_path)],
-            capture_output=True,
-            check=False,
-        )
+    write_json_file(spec, output_path, indent=indent, ensure_ascii=False)
 
 
 def categorize_spec(filename: str) -> str:
@@ -537,9 +525,7 @@ def create_spec_index(
 
         index["specifications"].append(spec_entry)
 
-    with output_path.open("w") as f:
-        json.dump(index, f, indent=2)
-        f.write("\n")
+    write_json_file(index, output_path, indent=2)
 
     console.print(f"[green]Created spec index at {output_path}[/green]")
 
