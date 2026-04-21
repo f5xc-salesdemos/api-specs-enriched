@@ -1137,8 +1137,11 @@ class TestConstraintEnricherSchemaFixerIsolation:
         spec = constraint_enricher.enrich_spec(spec)
         spec = SchemaFixer().inject_max_items(spec)
 
-        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]
-        unknown = spec["components"]["schemas"]["Resource"]["properties"]["unknown_list"]
+        # mypy: ConstraintEnricher.enrich_spec returns bare `dict`, which
+        # poisons the deep-key chain below under Super-Linter's default
+        # (no-config) mypy run. Narrow the two leaves we need.
+        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]  # type: ignore[index]
+        unknown = spec["components"]["schemas"]["Resource"]["properties"]["unknown_list"]  # type: ignore[index]
 
         # tags received a pattern-inferred constraint (100) and the
         # Checkov-compliance schema bound (65535). They must be
@@ -1179,7 +1182,7 @@ class TestConstraintEnricherSchemaFixerIsolation:
         spec = SchemaFixer().inject_max_items(spec)
         spec = constraint_enricher.enrich_spec(spec)
 
-        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]
+        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]  # type: ignore[index]
         # EXISTING priority wins over INFERRED in ConstraintReconciler, so
         # the 65535 now shadows the pattern-inferred 100. Assert the
         # poisoned state to document the failure mode.
