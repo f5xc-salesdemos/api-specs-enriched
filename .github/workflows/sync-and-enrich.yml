@@ -29,10 +29,12 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.13'
-  # Pinned Biome version — also used as a cache-key suffix so that a
-  # Biome upgrade busts the enriched-output cache (and forces the
-  # generator to re-emit JSON formatted by the new Biome release).
-  BIOME_VERSION: '2.4.12'
+  # Biome is installed via biomejs/setup-biome@version:latest, mirroring
+  # docs-control's super-linter.yml (docs-control#385). The version
+  # resolved at install time is captured into steps.biome.outputs.version
+  # and used as a cache-key suffix so that a Biome upgrade busts the
+  # enriched-output cache and forces the generator to re-emit JSON
+  # formatted by the new Biome release.
 
 jobs:
   check-updates:
@@ -164,13 +166,25 @@ jobs:
           } | sha256sum | cut -d' ' -f1)
           echo "hash=$HASH" >> "$GITHUB_OUTPUT"
 
+      - name: Setup Biome
+        uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51  # v2.7.1 — matches docs-control super-linter.yml
+        with:
+          version: latest
+
+      - name: Capture Biome version
+        id: biome
+        run: |
+          version=$(biome --version | awk '{print $2}')
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Biome ${version} installed (matches docs-control's setup-biome pin)"
+
       - name: Restore enriched output cache
         if: github.event_name != 'workflow_dispatch'
         id: enriched-cache
         uses: actions/cache/restore@v5
         with:
           path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ env.BIOME_VERSION }}
+          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Install Java (for LanguageTool)
         if: steps.enriched-cache.outputs.cache-hit != 'true'
@@ -183,8 +197,8 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install Spectral CLI and Biome
-        run: npm install -g @stoplight/spectral-cli "@biomejs/biome@${BIOME_VERSION}"
+      - name: Install Spectral CLI
+        run: npm install -g @stoplight/spectral-cli
 
       - name: Check for Discovery Data
         id: check-discovery
@@ -225,7 +239,7 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ env.BIOME_VERSION }}
+          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Generate API viewer pages
         run: python -m scripts.generate_api_viewer
