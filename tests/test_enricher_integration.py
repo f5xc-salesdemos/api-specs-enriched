@@ -251,16 +251,41 @@ class TestAllExplicitResources:
     # Test data format: resource_type, expected_short_description, api_path_pattern
     # NOTE: EXPLICIT_RESOURCES_FULL_PIPELINE includes xfail for namespace due to path extraction limitation
     # EXPLICIT_RESOURCES_PRESERVATION tests don't need xfail since they don't use path extraction
+    # Mirrors config/operation_descriptions.yaml:resources (55 entries).
+    # `namespace` is marked xfail because _extract_resource_type skips
+    # "namespaces" as a structural path segment — legitimate limitation,
+    # not a test bug. All other 54 resources extract cleanly from a
+    # /api/config/namespaces/{namespace}/<resource>s path.
     EXPLICIT_RESOURCES_FULL_PIPELINE: ClassVar[list] = [
         (
-            "http_loadbalancer",
-            "HTTP/HTTPS load balancer with origin pools and routing rules",
-            "/api/config/namespaces/{namespace}/http_loadbalancers",
+            "alert_policy",
+            "Alert policy for monitoring notifications",
+            "/api/config/namespaces/{namespace}/alert_policy",
         ),
         (
-            "origin_pool",
-            "Backend server pool for load balancing and failover",
-            "/api/config/namespaces/{namespace}/origin_pools",
+            "alert_receiver",
+            "Alert receiver for notification delivery",
+            "/api/config/namespaces/{namespace}/alert_receivers",
+        ),
+        (
+            "api_credential",
+            "API credential for programmatic access",
+            "/api/config/namespaces/{namespace}/api_credentials",
+        ),
+        (
+            "api_definition",
+            "API definition for endpoint documentation",
+            "/api/config/namespaces/{namespace}/api_definitions",
+        ),
+        (
+            "api_discovery",
+            "API discovery for automatic endpoint detection",
+            "/api/config/namespaces/{namespace}/api_discovery",
+        ),
+        (
+            "api_endpoint",
+            "API endpoint configuration for traffic management",
+            "/api/config/namespaces/{namespace}/api_endpoints",
         ),
         (
             "app_firewall",
@@ -268,9 +293,94 @@ class TestAllExplicitResources:
             "/api/config/namespaces/{namespace}/app_firewalls",
         ),
         (
-            "virtual_host",
-            "DNS name mapping to routes and load balancers",
-            "/api/config/namespaces/{namespace}/virtual_hosts",
+            "aws_vpc_site",
+            "AWS VPC site for cloud deployment",
+            "/api/config/namespaces/{namespace}/aws_vpc_sites",
+        ),
+        (
+            "azure_vnet_site",
+            "Azure VNet site for cloud deployment",
+            "/api/config/namespaces/{namespace}/azure_vnet_sites",
+        ),
+        (
+            "bot_defense",
+            "Bot detection and mitigation configuration",
+            "/api/config/namespaces/{namespace}/bot_defenses",
+        ),
+        (
+            "bot_defense_policy",
+            "Bot defense policy for automated threat protection",
+            "/api/config/namespaces/{namespace}/bot_defense_policy",
+        ),
+        (
+            "ca_certificate",
+            "Certificate authority certificate for trust chains",
+            "/api/config/namespaces/{namespace}/ca_certificates",
+        ),
+        (
+            "calls_by_response_code",
+            "API call statistics grouped by response code",
+            "/api/config/namespaces/{namespace}/calls_by_response_codes",
+        ),
+        (
+            "cdn_distribution",
+            "CDN distribution for content delivery",
+            "/api/config/namespaces/{namespace}/cdn_distributions",
+        ),
+        (
+            "cdn_origin",
+            "CDN origin server configuration",
+            "/api/config/namespaces/{namespace}/cdn_origins",
+        ),
+        (
+            "certificate",
+            "TLS/SSL certificate for secure connections",
+            "/api/config/namespaces/{namespace}/certificates",
+        ),
+        (
+            "cluster",
+            "Backend cluster for distributed service deployment",
+            "/api/config/namespaces/{namespace}/clusters",
+        ),
+        (
+            "dns_record",
+            "DNS record for name resolution",
+            "/api/config/namespaces/{namespace}/dns_records",
+        ),
+        (
+            "dns_zone",
+            "DNS zone for domain name management",
+            "/api/config/namespaces/{namespace}/dns_zones",
+        ),
+        (
+            "dos_automitigation_rule",
+            "Automated DDoS mitigation rule configuration",
+            "/api/config/namespaces/{namespace}/dos_automitigation_rules",
+        ),
+        (
+            "gcp_vpc_site",
+            "GCP VPC site for cloud deployment",
+            "/api/config/namespaces/{namespace}/gcp_vpc_sites",
+        ),
+        (
+            "geo_location_set",
+            "Geographic location set for geo-based routing",
+            "/api/config/namespaces/{namespace}/geo_location_sets",
+        ),
+        (
+            "get_dns_info",
+            "DNS resolution information retrieval",
+            "/api/config/namespaces/{namespace}/get_dns_infos",
+        ),
+        (
+            "get_security_config",
+            "Security configuration retrieval",
+            "/api/config/namespaces/{namespace}/get_security_configs",
+        ),
+        (
+            "global_log_receiver",
+            "Global log receiver for tenant-wide logging",
+            "/api/config/namespaces/{namespace}/global_log_receivers",
         ),
         (
             "healthcheck",
@@ -278,20 +388,25 @@ class TestAllExplicitResources:
             "/api/config/namespaces/{namespace}/healthchecks",
         ),
         (
-            "tcp_loadbalancer",
-            "Layer 4 TCP load balancer for non-HTTP traffic",
-            "/api/config/namespaces/{namespace}/tcp_loadbalancers",
+            "http_loadbalancer",
+            "HTTP/HTTPS load balancer with origin pools and routing rules",
+            "/api/config/namespaces/{namespace}/http_loadbalancers",
         ),
         (
-            "certificate",
-            "TLS/SSL certificate for secure connections",
-            "/api/config/namespaces/{namespace}/certificates",
+            "l7ddos_rps_threshold",
+            "Layer 7 DDoS requests-per-second threshold",
+            "/api/config/namespaces/{namespace}/l7ddos_rps_thresholds",
         ),
-        # NOTE: "namespace" resource has a path extraction limitation.
-        # All common API paths for namespace (/api/system/namespaces, /api/web/namespaces)
-        # contain only skip-list segments (api, system, web, namespaces, config).
-        # This is tracked as a separate issue from Issue #408.
-        # The test for namespace is marked as xfail because full pipeline test uses path extraction.
+        (
+            "log_receiver",
+            "Log receiver for centralized logging",
+            "/api/config/namespaces/{namespace}/log_receivers",
+        ),
+        (
+            "malicious_user",
+            "Malicious user detection and blocking configuration",
+            "/api/config/namespaces/{namespace}/malicious_users",
+        ),
         pytest.param(
             "namespace",
             "Logical resource grouping and multi-tenancy boundary",
@@ -302,23 +417,19 @@ class TestAllExplicitResources:
             ),
         ),
         (
-            "route",
-            "HTTP routing rule for path-based traffic distribution",
-            "/api/config/namespaces/{namespace}/routes",
+            "network_connector",
+            "Network connector for site connectivity",
+            "/api/config/namespaces/{namespace}/network_connectors",
         ),
         (
-            "waf_policy",
-            "WAF policy for application security",
-            "/api/config/namespaces/{namespace}/waf_policys",
+            "network_firewall",
+            "Network layer firewall for traffic filtering",
+            "/api/config/namespaces/{namespace}/network_firewalls",
         ),
-    ]
-
-    # Preservation tests don't use path extraction, so no xfail needed for namespace
-    EXPLICIT_RESOURCES_PRESERVATION: ClassVar[list] = [
         (
-            "http_loadbalancer",
-            "HTTP/HTTPS load balancer with origin pools and routing rules",
-            "/api/config/namespaces/{namespace}/http_loadbalancers",
+            "network_policy",
+            "Network access control policy",
+            "/api/config/namespaces/{namespace}/network_policy",
         ),
         (
             "origin_pool",
@@ -326,34 +437,24 @@ class TestAllExplicitResources:
             "/api/config/namespaces/{namespace}/origin_pools",
         ),
         (
-            "app_firewall",
-            "Web application firewall for threat protection",
-            "/api/config/namespaces/{namespace}/app_firewalls",
+            "primary_dns",
+            "Primary DNS zone configuration",
+            "/api/config/namespaces/{namespace}/primary_dnss",
         ),
         (
-            "virtual_host",
-            "DNS name mapping to routes and load balancers",
-            "/api/config/namespaces/{namespace}/virtual_hosts",
+            "proxy",
+            "Traffic proxy for request forwarding and transformation",
+            "/api/config/namespaces/{namespace}/proxy",
         ),
         (
-            "healthcheck",
-            "Endpoint health monitoring configuration",
-            "/api/config/namespaces/{namespace}/healthchecks",
+            "rate_limiter",
+            "Request rate limiting for traffic control",
+            "/api/config/namespaces/{namespace}/rate_limiters",
         ),
         (
-            "tcp_loadbalancer",
-            "Layer 4 TCP load balancer for non-HTTP traffic",
-            "/api/config/namespaces/{namespace}/tcp_loadbalancers",
-        ),
-        (
-            "certificate",
-            "TLS/SSL certificate for secure connections",
-            "/api/config/namespaces/{namespace}/certificates",
-        ),
-        (
-            "namespace",
-            "Logical resource grouping and multi-tenancy boundary",
-            "/api/system/namespaces",
+            "rate_limiter_policy",
+            "Rate limiting policy for request throttling",
+            "/api/config/namespaces/{namespace}/rate_limiter_policy",
         ),
         (
             "route",
@@ -361,9 +462,343 @@ class TestAllExplicitResources:
             "/api/config/namespaces/{namespace}/routes",
         ),
         (
+            "secondary_dns",
+            "Secondary DNS zone for redundancy",
+            "/api/config/namespaces/{namespace}/secondary_dnss",
+        ),
+        (
+            "service_credential",
+            "Service credential for API authentication",
+            "/api/config/namespaces/{namespace}/service_credentials",
+        ),
+        (
+            "service_policy",
+            "Traffic control policy with allow/deny rules",
+            "/api/config/namespaces/{namespace}/service_policy",
+        ),
+        (
+            "service_policy_rule",
+            "Individual rule within a service policy",
+            "/api/config/namespaces/{namespace}/service_policy_rules",
+        ),
+        (
+            "service_policy_set",
+            "Collection of service policies for grouped application",
+            "/api/config/namespaces/{namespace}/service_policy_sets",
+        ),
+        ("site", "F5 XC site for edge deployment", "/api/config/namespaces/{namespace}/sites"),
+        (
+            "tcp_loadbalancer",
+            "Layer 4 TCP load balancer for non-HTTP traffic",
+            "/api/config/namespaces/{namespace}/tcp_loadbalancers",
+        ),
+        (
+            "udp_loadbalancer",
+            "Layer 4 UDP load balancer for stateless protocols",
+            "/api/config/namespaces/{namespace}/udp_loadbalancers",
+        ),
+        ("user", "User account for console access", "/api/config/namespaces/{namespace}/users"),
+        (
+            "virtual_host",
+            "DNS name mapping to routes and load balancers",
+            "/api/config/namespaces/{namespace}/virtual_hosts",
+        ),
+        (
+            "virtual_k8s",
+            "Virtual Kubernetes cluster for workload deployment",
+            "/api/config/namespaces/{namespace}/virtual_k8ss",
+        ),
+        (
+            "virtual_network",
+            "Virtual network for workload connectivity",
+            "/api/config/namespaces/{namespace}/virtual_networks",
+        ),
+        (
+            "voltstack_site",
+            "Customer Edge site for on-premises deployment",
+            "/api/config/namespaces/{namespace}/voltstack_sites",
+        ),
+        (
             "waf_policy",
             "WAF policy for application security",
-            "/api/config/namespaces/{namespace}/waf_policys",
+            "/api/config/namespaces/{namespace}/waf_policy",
+        ),
+        (
+            "workload",
+            "Container workload deployment configuration",
+            "/api/config/namespaces/{namespace}/workloads",
+        ),
+    ]
+
+    # Preservation tests don't use path extraction — all 55 resources
+    # in config/operation_descriptions.yaml listed as plain tuples.
+    EXPLICIT_RESOURCES_PRESERVATION: ClassVar[list] = [
+        (
+            "alert_policy",
+            "Alert policy for monitoring notifications",
+            "/api/config/namespaces/{namespace}/alert_policy",
+        ),
+        (
+            "alert_receiver",
+            "Alert receiver for notification delivery",
+            "/api/config/namespaces/{namespace}/alert_receivers",
+        ),
+        (
+            "api_credential",
+            "API credential for programmatic access",
+            "/api/config/namespaces/{namespace}/api_credentials",
+        ),
+        (
+            "api_definition",
+            "API definition for endpoint documentation",
+            "/api/config/namespaces/{namespace}/api_definitions",
+        ),
+        (
+            "api_discovery",
+            "API discovery for automatic endpoint detection",
+            "/api/config/namespaces/{namespace}/api_discovery",
+        ),
+        (
+            "api_endpoint",
+            "API endpoint configuration for traffic management",
+            "/api/config/namespaces/{namespace}/api_endpoints",
+        ),
+        (
+            "app_firewall",
+            "Web application firewall for threat protection",
+            "/api/config/namespaces/{namespace}/app_firewalls",
+        ),
+        (
+            "aws_vpc_site",
+            "AWS VPC site for cloud deployment",
+            "/api/config/namespaces/{namespace}/aws_vpc_sites",
+        ),
+        (
+            "azure_vnet_site",
+            "Azure VNet site for cloud deployment",
+            "/api/config/namespaces/{namespace}/azure_vnet_sites",
+        ),
+        (
+            "bot_defense",
+            "Bot detection and mitigation configuration",
+            "/api/config/namespaces/{namespace}/bot_defenses",
+        ),
+        (
+            "bot_defense_policy",
+            "Bot defense policy for automated threat protection",
+            "/api/config/namespaces/{namespace}/bot_defense_policy",
+        ),
+        (
+            "ca_certificate",
+            "Certificate authority certificate for trust chains",
+            "/api/config/namespaces/{namespace}/ca_certificates",
+        ),
+        (
+            "calls_by_response_code",
+            "API call statistics grouped by response code",
+            "/api/config/namespaces/{namespace}/calls_by_response_codes",
+        ),
+        (
+            "cdn_distribution",
+            "CDN distribution for content delivery",
+            "/api/config/namespaces/{namespace}/cdn_distributions",
+        ),
+        (
+            "cdn_origin",
+            "CDN origin server configuration",
+            "/api/config/namespaces/{namespace}/cdn_origins",
+        ),
+        (
+            "certificate",
+            "TLS/SSL certificate for secure connections",
+            "/api/config/namespaces/{namespace}/certificates",
+        ),
+        (
+            "cluster",
+            "Backend cluster for distributed service deployment",
+            "/api/config/namespaces/{namespace}/clusters",
+        ),
+        (
+            "dns_record",
+            "DNS record for name resolution",
+            "/api/config/namespaces/{namespace}/dns_records",
+        ),
+        (
+            "dns_zone",
+            "DNS zone for domain name management",
+            "/api/config/namespaces/{namespace}/dns_zones",
+        ),
+        (
+            "dos_automitigation_rule",
+            "Automated DDoS mitigation rule configuration",
+            "/api/config/namespaces/{namespace}/dos_automitigation_rules",
+        ),
+        (
+            "gcp_vpc_site",
+            "GCP VPC site for cloud deployment",
+            "/api/config/namespaces/{namespace}/gcp_vpc_sites",
+        ),
+        (
+            "geo_location_set",
+            "Geographic location set for geo-based routing",
+            "/api/config/namespaces/{namespace}/geo_location_sets",
+        ),
+        (
+            "get_dns_info",
+            "DNS resolution information retrieval",
+            "/api/config/namespaces/{namespace}/get_dns_infos",
+        ),
+        (
+            "get_security_config",
+            "Security configuration retrieval",
+            "/api/config/namespaces/{namespace}/get_security_configs",
+        ),
+        (
+            "global_log_receiver",
+            "Global log receiver for tenant-wide logging",
+            "/api/config/namespaces/{namespace}/global_log_receivers",
+        ),
+        (
+            "healthcheck",
+            "Endpoint health monitoring configuration",
+            "/api/config/namespaces/{namespace}/healthchecks",
+        ),
+        (
+            "http_loadbalancer",
+            "HTTP/HTTPS load balancer with origin pools and routing rules",
+            "/api/config/namespaces/{namespace}/http_loadbalancers",
+        ),
+        (
+            "l7ddos_rps_threshold",
+            "Layer 7 DDoS requests-per-second threshold",
+            "/api/config/namespaces/{namespace}/l7ddos_rps_thresholds",
+        ),
+        (
+            "log_receiver",
+            "Log receiver for centralized logging",
+            "/api/config/namespaces/{namespace}/log_receivers",
+        ),
+        (
+            "malicious_user",
+            "Malicious user detection and blocking configuration",
+            "/api/config/namespaces/{namespace}/malicious_users",
+        ),
+        (
+            "namespace",
+            "Logical resource grouping and multi-tenancy boundary",
+            "/api/system/namespaces",
+        ),
+        (
+            "network_connector",
+            "Network connector for site connectivity",
+            "/api/config/namespaces/{namespace}/network_connectors",
+        ),
+        (
+            "network_firewall",
+            "Network layer firewall for traffic filtering",
+            "/api/config/namespaces/{namespace}/network_firewalls",
+        ),
+        (
+            "network_policy",
+            "Network access control policy",
+            "/api/config/namespaces/{namespace}/network_policy",
+        ),
+        (
+            "origin_pool",
+            "Backend server pool for load balancing and failover",
+            "/api/config/namespaces/{namespace}/origin_pools",
+        ),
+        (
+            "primary_dns",
+            "Primary DNS zone configuration",
+            "/api/config/namespaces/{namespace}/primary_dnss",
+        ),
+        (
+            "proxy",
+            "Traffic proxy for request forwarding and transformation",
+            "/api/config/namespaces/{namespace}/proxy",
+        ),
+        (
+            "rate_limiter",
+            "Request rate limiting for traffic control",
+            "/api/config/namespaces/{namespace}/rate_limiters",
+        ),
+        (
+            "rate_limiter_policy",
+            "Rate limiting policy for request throttling",
+            "/api/config/namespaces/{namespace}/rate_limiter_policy",
+        ),
+        (
+            "route",
+            "HTTP routing rule for path-based traffic distribution",
+            "/api/config/namespaces/{namespace}/routes",
+        ),
+        (
+            "secondary_dns",
+            "Secondary DNS zone for redundancy",
+            "/api/config/namespaces/{namespace}/secondary_dnss",
+        ),
+        (
+            "service_credential",
+            "Service credential for API authentication",
+            "/api/config/namespaces/{namespace}/service_credentials",
+        ),
+        (
+            "service_policy",
+            "Traffic control policy with allow/deny rules",
+            "/api/config/namespaces/{namespace}/service_policy",
+        ),
+        (
+            "service_policy_rule",
+            "Individual rule within a service policy",
+            "/api/config/namespaces/{namespace}/service_policy_rules",
+        ),
+        (
+            "service_policy_set",
+            "Collection of service policies for grouped application",
+            "/api/config/namespaces/{namespace}/service_policy_sets",
+        ),
+        ("site", "F5 XC site for edge deployment", "/api/config/namespaces/{namespace}/sites"),
+        (
+            "tcp_loadbalancer",
+            "Layer 4 TCP load balancer for non-HTTP traffic",
+            "/api/config/namespaces/{namespace}/tcp_loadbalancers",
+        ),
+        (
+            "udp_loadbalancer",
+            "Layer 4 UDP load balancer for stateless protocols",
+            "/api/config/namespaces/{namespace}/udp_loadbalancers",
+        ),
+        ("user", "User account for console access", "/api/config/namespaces/{namespace}/users"),
+        (
+            "virtual_host",
+            "DNS name mapping to routes and load balancers",
+            "/api/config/namespaces/{namespace}/virtual_hosts",
+        ),
+        (
+            "virtual_k8s",
+            "Virtual Kubernetes cluster for workload deployment",
+            "/api/config/namespaces/{namespace}/virtual_k8ss",
+        ),
+        (
+            "virtual_network",
+            "Virtual network for workload connectivity",
+            "/api/config/namespaces/{namespace}/virtual_networks",
+        ),
+        (
+            "voltstack_site",
+            "Customer Edge site for on-premises deployment",
+            "/api/config/namespaces/{namespace}/voltstack_sites",
+        ),
+        (
+            "waf_policy",
+            "WAF policy for application security",
+            "/api/config/namespaces/{namespace}/waf_policy",
+        ),
+        (
+            "workload",
+            "Container workload deployment configuration",
+            "/api/config/namespaces/{namespace}/workloads",
         ),
     ]
 
@@ -482,29 +917,22 @@ class TestAllExplicitResources:
             f"Expected '{expected_description}', got '{actual_purpose}'"
         )
 
-    @pytest.mark.xfail(
-        reason=(
-            "config/operation_descriptions.yaml has grown from 10 to 55 explicit resources; "
-            "EXPLICIT_RESOURCES_PRESERVATION fixture has not been expanded to cover the delta. "
-            "Coverage-expansion is a Phase-4 followup (see repo roadmap). The forcing-function "
-            "intent of this test is preserved via xfail — fixing the coverage gap will flip it green."
-        ),
-    )
     def test_all_explicit_resources_count(self, description_enricher):
-        """Verify test coverage matches config file resource count."""
+        """Verify test coverage matches config file resource count.
+
+        Forces the fixture list to stay in lockstep with
+        config/operation_descriptions.yaml. Adding a new resource to
+        the YAML without adding a test entry makes this test fail.
+        """
         if not description_enricher.enabled:
             pytest.skip("OperationDescriptionEnricher is disabled")
 
         configured_resources = list(description_enricher.resources.keys())
         tested_resources = [r[0] for r in self.EXPLICIT_RESOURCES_PRESERVATION]
 
-        # Direction-of-drift: tested resources must be a subset of configured
-        # (no ghost tests for removed resources) — this still holds.
         extra_tests = set(tested_resources) - set(configured_resources)
         assert not extra_tests, f"Resources in tests but not in config: {extra_tests}"
 
-        # Coverage-completeness: every configured resource must be tested.
-        # Currently 10/55 covered — see xfail reason.
         missing_tests = set(configured_resources) - set(tested_resources)
         assert not missing_tests, f"Resources in config but not in tests: {missing_tests}"
 
@@ -607,6 +1035,30 @@ class TestAllPatternMatchers:
             "multi_tenant",
             "Resource isolation and multi-tenancy boundary",
         ),
+        # Pattern 9: .*dns.*|.*zone.*
+        ("dns_pattern", "custom_dns", "DNS configuration for name resolution"),
+        # Pattern 10: .*site.*
+        ("site_pattern", "custom_site", "Edge site for distributed deployment"),
+        # Pattern 11: .*network.*
+        ("network_pattern", "custom_network", "Network configuration for connectivity"),
+        # Pattern 12: .*alert.*
+        ("alert_pattern", "custom_alert", "Alert configuration for monitoring"),
+        # Pattern 13: .*log.*
+        ("log_pattern", "custom_log", "Logging configuration for audit and analysis"),
+        # Pattern 14: .*credential.*|.*token.*
+        ("credential_pattern", "custom_credential", "Authentication credential for access control"),
+        # Pattern 15: .*user.*
+        ("user_pattern", "custom_user", "User account for access management"),
+        # Pattern 16: .*bot.*
+        ("bot_pattern", "custom_bot", "Bot detection and defense configuration"),
+        # Pattern 17: .*ddos.*|.*dos.*
+        ("ddos_pattern", "custom_ddos", "DDoS protection configuration"),
+        # Pattern 18: .*api.*endpoint.*
+        ("api_endpoint_pattern", "custom_api_endpoint", "API endpoint for traffic management"),
+        # Pattern 19: .*cdn.*
+        ("cdn_pattern", "custom_cdn", "CDN configuration for content delivery"),
+        # Pattern 20: .*k8s.*|.*kubernetes.*|.*workload.*
+        ("k8s_pattern", "custom_k8s", "Kubernetes workload configuration"),
     ]
 
     @pytest.mark.parametrize(
@@ -654,21 +1106,23 @@ class TestAllPatternMatchers:
             f"Pattern {pattern_name}: Expected '{expected_description}', got '{purpose}'"
         )
 
-    @pytest.mark.xfail(
-        reason=(
-            "config/operation_descriptions.yaml has grown from 8 to 20 patterns; "
-            "PATTERN_MATCHERS fixture has not been expanded. Coverage-expansion "
-            "is a Phase-4 followup (see repo roadmap)."
-        ),
-    )
     def test_all_patterns_count(self, description_enricher):
-        """Verify test coverage includes all pattern variations."""
+        """Verify test coverage tracks every pattern in config.
+
+        Locks fixture count to config count. Adding a pattern to
+        config/operation_descriptions.yaml without expanding
+        PATTERN_MATCHERS makes this test fail.
+        """
         if not description_enricher.enabled:
             pytest.skip("OperationDescriptionEnricher is disabled")
 
         configured_patterns = description_enricher.patterns
-        assert len(configured_patterns) == 8, (
-            f"Expected 8 patterns in config, found {len(configured_patterns)}"
+        tested_patterns = {p[0] for p in self.PATTERN_MATCHERS}
+
+        # Lower bound: at least one fixture entry per configured pattern.
+        assert len(configured_patterns) <= len(tested_patterns), (
+            f"Config has {len(configured_patterns)} patterns but fixture covers "
+            f"{len(tested_patterns)} — expand PATTERN_MATCHERS."
         )
 
 
