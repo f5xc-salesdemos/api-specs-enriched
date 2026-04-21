@@ -38,6 +38,24 @@ else
 fi
 
 # =============================================================================
+# STEP 0: Skip when no pipeline inputs are staged.
+# =============================================================================
+# The enrichment pipeline is ~13 min and deterministic in its inputs.
+# If nothing staged in this commit can affect the pipeline output
+# (scripts/**, config/**, specs/original/**, requirements*.txt,
+# pyproject.toml, sync-and-enrich.yml), the previous run's output is
+# still valid and re-running is pure waste. Override with
+# FORCE_PIPELINE=1 when you need a full regeneration anyway.
+if [ "${FORCE_PIPELINE:-0}" != "1" ]; then
+  STAGED_INPUTS=$(git diff --cached --name-only | grep -E '^(scripts/|config/|specs/original/|requirements(-dev)?\.txt$|pyproject\.toml$|\.github/workflows/sync-and-enrich\.yml$)' | head -1 || true)
+  if [ -z "$STAGED_INPUTS" ]; then
+    echo -e "${GREEN}No pipeline inputs staged — skipping enrichment + lint.${NC}"
+    echo -e "${GREEN}(Set FORCE_PIPELINE=1 to force a full run.)${NC}"
+    exit 0
+  fi
+fi
+
+# =============================================================================
 # STEP 1: Run Enrichment Pipeline
 # =============================================================================
 echo -e "${YELLOW}[1/2] Running F5 XC API enrichment pipeline...${NC}"
