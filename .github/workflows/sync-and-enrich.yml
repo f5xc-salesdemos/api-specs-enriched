@@ -586,25 +586,12 @@ jobs:
             # Enable auto-merge (squash) — merges when required checks pass
             gh pr merge "$BRANCH" --squash --auto --delete-branch
 
-            # Wait for PR to merge (poll up to 5 minutes)
-            for i in $(seq 1 30); do
-              STATE=$(gh pr view "$BRANCH" --json state --jq '.state')
-              if [ "$STATE" = "MERGED" ]; then
-                echo "PR merged successfully"
-                break
-              fi
-              if [ "$STATE" = "CLOSED" ]; then
-                echo "::error::PR was closed without merging"
-                exit 1
-              fi
-              echo "Waiting for PR merge... (attempt $i/30)"
-              sleep 10
-            done
-
-            if [ "$STATE" != "MERGED" ]; then
-              echo "::error::PR did not merge within timeout"
-              exit 1
-            fi
+            # Wait for PR to merge with exponential backoff (60 s warm-up + up
+            # to 15 min total). Replaces a prior hardcoded 30×10 s loop that
+            # timed out whenever Super-Linter ran longer than 5 min, leaving
+            # the release PR orphaned. Exits non-zero on CLOSED-without-merge
+            # or on timeout; emits diagnostic JSON to stderr on failure.
+            bash scripts/release/wait-for-merge.sh "$BRANCH"
 
             # Switch back to main and pull the merge commit
             git checkout main
