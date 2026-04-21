@@ -42,7 +42,7 @@
 #       ├── openapi.json    (master combined spec)
 #       └── index.json      (spec metadata)
 
-.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains validate-curl validate-curl-dry validate-curl-cleanup serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer
+.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains validate-curl validate-curl-dry validate-curl-cleanup serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer test
 
 # Virtual environment
 VENV := .venv
@@ -103,6 +103,10 @@ merge:
 # Generate Scalar API viewer pages and Starlight MDX wrappers
 api-viewer:
 	$(PYTHON) -m scripts.generate_api_viewer
+
+# Run the pytest suite (honours pyproject.toml addopts, including coverage)
+test: check-deps
+	$(PYTHON) -m pytest
 
 # Lint specifications with Spectral (requires: npm install -g @stoplight/spectral-cli)
 lint:
@@ -280,6 +284,7 @@ help:
 	@echo "  merge          Combine specs by domain"
 	@echo "  api-viewer     Generate Scalar API viewer pages"
 	@echo "  lint           Validate specs with Spectral OpenAPI linter"
+	@echo "  test           Run the pytest suite"
 	@echo "  validate       Test with live API (needs credentials)"
 	@echo "  validate-domains  Validate domain patterns against natural identifiers"
 	@echo ""

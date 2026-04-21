@@ -233,7 +233,9 @@ class TestDomainMapping:
         """Test domain mapping for app_firewall."""
         enricher = MinimumConfigurationEnricher()
         domain = enricher._get_domain_for_resource("app_firewall", "app_firewallCreateRequest")
-        assert domain == "waf"
+        # app_firewall was regrouped under the `virtual` domain alongside
+        # http_loadbalancer and waf — see config/domain_patterns.yaml.
+        assert domain == "virtual"
 
     def test_get_domain_explicit_config(self):
         """Test that explicit domain in config is used."""

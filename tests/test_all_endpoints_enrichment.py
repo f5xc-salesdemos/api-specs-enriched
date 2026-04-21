@@ -30,7 +30,14 @@ def discover_all_endpoints() -> list[tuple[str, str, str, dict]]:
     endpoints = []
 
     if not SPECS_DIR.exists():
-        pytest.skip(f"Specs directory not found: {SPECS_DIR}")
+        # discover_all_endpoints() is invoked at module import time on
+        # line 94 (ALL_ENDPOINTS = ...), so the skip needs
+        # allow_module_level=True — modern pytest rejects module-scope
+        # skips without it and aborts collection.
+        pytest.skip(
+            f"Specs directory not found: {SPECS_DIR}",
+            allow_module_level=True,
+        )
 
     for spec_file in sorted(SPECS_DIR.glob("*.json")):
         try:

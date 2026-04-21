@@ -393,7 +393,7 @@ class TestFilenameBasedDetection:
         ("filename", "expected_domain"),
         [
             ("ves.io.schema.views.http_loadbalancer.json", "virtual"),
-            ("ves.io.schema.app_firewall.json", "waf"),
+            ("ves.io.schema.app_firewall.json", "virtual"),
             ("ves.io.schema.dns_zone.json", "dns"),
             ("ves.io.schema.cdn_loadbalancer.json", "cdn"),
             ("ves.io.schema.aws_vpc_site.json", "sites"),
