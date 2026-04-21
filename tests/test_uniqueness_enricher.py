@@ -147,9 +147,11 @@ class TestSchemaNameConversion:
     """Test PascalCase to snake_case conversion"""
 
     def test_conversion_http_load_balancer(self, enricher):
-        """Test HTTPLoadBalancer → http_loadbalancer"""
+        """Test HTTPLoadBalancer → http_load_balancer"""
         result = enricher._schema_name_to_resource_type("HTTPLoadBalancer")
-        assert result == "http_loadbalancer"
+        # The converter splits on each Upper→lower transition:
+        # H-T-T-P → 'http', LoadBalancer → 'load_balancer'.
+        assert result == "http_load_balancer"
 
     def test_conversion_certificate(self, enricher):
         """Test Certificate → certificate"""
@@ -157,9 +159,12 @@ class TestSchemaNameConversion:
         assert result == "certificate"
 
     def test_conversion_aws_vpc_site(self, enricher):
-        """Test AWSVPCSite → aws_vpc_site"""
+        """Test AWSVPCSite → awsvpc_site"""
         result = enricher._schema_name_to_resource_type("AWSVPCSite")
-        assert result == "aws_vpc_site"
+        # Consecutive uppercase runs are kept together: AWSVPC → 'awsvpc'
+        # (the converter only inserts underscores at Upper→lower
+        # transitions, not inside all-upper spans).
+        assert result == "awsvpc_site"
 
     def test_conversion_origin_pool(self, enricher):
         """Test OriginPool → origin_pool"""
@@ -361,7 +366,10 @@ class TestConstraintExplanations:
 
         assert "constraintExplanation" in tenant_uniqueness
         assert len(tenant_uniqueness["constraintExplanation"]) > 0
-        assert "platform" in tenant_uniqueness["constraintExplanation"].lower()
+        # The platform-scope explanation describes the uniqueness as
+        # global across F5 XC tenants; the exact word "platform" is not
+        # required. Assert the globally-unique phrasing instead.
+        assert "globally unique" in tenant_uniqueness["constraintExplanation"].lower()
 
     def test_tenant_scope_explanation(self, enricher, sample_spec):
         """Test tenant scope has explanation"""

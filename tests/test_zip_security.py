@@ -8,6 +8,22 @@ import pytest
 
 from scripts.download import extract_zip, validate_zip_member_path, validate_zip_member_size
 
+_TEST_LIMITS: dict = {
+    "max_file_size": 10 * 1024 * 1024,
+    "max_compression_ratio": 100,
+}
+
+_TEST_CONFIG: dict = {
+    "extraction": {
+        "include_patterns": ["*.json"],
+        "exclude_patterns": [],
+        "max_file_size": 10 * 1024 * 1024,
+        "max_total_size": 500 * 1024 * 1024,
+        "max_compression_ratio": 100,
+        "max_file_count": 1000,
+    },
+}
+
 
 class TestPathTraversalProtection:
     """Test path traversal attack prevention."""
@@ -35,7 +51,7 @@ class TestPathTraversalProtection:
             zf.writestr("../../../etc/passwd", "malicious content")
 
         output = tmp_path / "output"
-        files = extract_zip(evil_zip, output)
+        files = extract_zip(evil_zip, output, _TEST_CONFIG)
 
         # Should extract nothing or skip the malicious entry
         assert len(files) == 0 or not (tmp_path / ".." / ".." / ".." / "etc" / "passwd").exists()
@@ -50,7 +66,7 @@ class TestZipBombProtection:
         info.file_size = 100 * 1024 * 1024  # 100 MB
         info.compress_size = 1024  # 1 KB compressed
 
-        is_valid, msg = validate_zip_member_size(info)
+        is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
         assert not is_valid
         assert "too large" in msg.lower()
 
@@ -60,7 +76,7 @@ class TestZipBombProtection:
         info.file_size = 5 * 1024 * 1024  # 5 MB uncompressed (under 10 MB limit)
         info.compress_size = 10 * 1024  # 10 KB compressed (500:1 ratio - suspicious!)
 
-        is_valid, msg = validate_zip_member_size(info)
+        is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
         assert not is_valid
         assert "compression ratio" in msg.lower()
 
@@ -70,7 +86,7 @@ class TestZipBombProtection:
         info.file_size = 100 * 1024  # 100 KB
         info.compress_size = 10 * 1024  # 10 KB (10:1 ratio)
 
-        is_valid, msg = validate_zip_member_size(info)
+        is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
         assert is_valid
 
 
@@ -87,7 +103,7 @@ class TestSafeExtractionIntegration:
             zf.writestr("subdir/api3.json", '{"test": "data3"}')  # Should flatten
 
         output = tmp_path / "output"
-        files = extract_zip(safe_zip, output)
+        files = extract_zip(safe_zip, output, _TEST_CONFIG)
 
         # Should extract all 3 JSON files
         assert len(files) == 3
@@ -110,7 +126,7 @@ class TestSafeExtractionIntegration:
             zf.writestr("api2.json", '{"test": "safe2"}')
 
         output = tmp_path / "output"
-        files = extract_zip(mixed_zip, output)
+        files = extract_zip(mixed_zip, output, _TEST_CONFIG)
 
         # Should only extract the 2 safe files
         assert len(files) == 2
