@@ -9,12 +9,15 @@ descriptions flow through the pipeline correctly.
 Issue: #408 - OperationMetadataEnricher overwrites DRY-compliant purpose descriptions
 """
 
+from pathlib import Path
 from typing import ClassVar
 
 import pytest
 
+from scripts.utils.constraint_enricher import ConstraintEnricher
 from scripts.utils.operation_description_enricher import OperationDescriptionEnricher
 from scripts.utils.operation_metadata_enricher import OperationMetadataEnricher
+from scripts.utils.schema_fixer import SchemaFixer
 
 
 def _get_resource_id(item):
@@ -1083,6 +1086,108 @@ class TestEdgeCases:
         # Comprehensive metadata should be added (overwrites entire object but preserves purpose)
         assert "danger_level" in metadata
         assert "required_fields" in metadata
+
+
+class TestConstraintEnricherSchemaFixerIsolation:
+    """End-to-end regression: inject_max_items must run AFTER ConstraintEnricher.
+
+    Codex P1 (HANDOFF.md §1.1) was the symmetric failure: running
+    ``SchemaFixer.inject_max_items`` BEFORE ``ConstraintEnricher``
+    caused the synthetic 65535 schema-level ``maxItems`` to leak into
+    ``x-f5xc-constraints.maxItems``, shadowing the pattern-inferred
+    bounds (100 for ``tags``, 50 for ``origins``, etc.). The
+    production ordering is locked in ``scripts/enrich.py::save_spec``
+    and ``scripts/pipeline.py::save_spec`` — this test exercises the
+    full sequence against real ``config/constraint_patterns.yaml``
+    and asserts the isolation invariant.
+    """
+
+    @pytest.fixture
+    def constraint_enricher(self) -> ConstraintEnricher:
+        config_path = Path(__file__).parent.parent / "config" / "constraint_patterns.yaml"
+        return ConstraintEnricher(config_path=config_path)
+
+    def test_tags_preserves_pattern_inferred_max_items(
+        self,
+        constraint_enricher: ConstraintEnricher,
+    ) -> None:
+        """A ``tags`` array gets x-f5xc-constraints.maxItems=100 (pattern-inferred)
+        and schema.maxItems=65535 (Checkov compliance), with no crossover.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "Resource": {
+                        "type": "object",
+                        "properties": {
+                            "tags": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
+                            "unknown_list": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        spec = constraint_enricher.enrich_spec(spec)
+        spec = SchemaFixer().inject_max_items(spec)
+
+        # mypy: ConstraintEnricher.enrich_spec returns bare `dict`, which
+        # poisons the deep-key chain below under Super-Linter's default
+        # (no-config) mypy run. Narrow the two leaves we need.
+        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]  # type: ignore[index]
+        unknown = spec["components"]["schemas"]["Resource"]["properties"]["unknown_list"]  # type: ignore[index]
+
+        # tags received a pattern-inferred constraint (100) and the
+        # Checkov-compliance schema bound (65535). They must be
+        # independent values — no leakage in either direction.
+        assert tags["maxItems"] == 65535
+        assert tags["x-f5xc-constraints"]["maxItems"] == 100
+
+        # unknown_list matches no constraint pattern, so no
+        # x-f5xc-constraints is added, but the schema bound is still
+        # stamped so Checkov CKV_OPENAPI_21 passes.
+        assert unknown["maxItems"] == 65535
+        assert "x-f5xc-constraints" not in unknown or (
+            "maxItems" not in unknown.get("x-f5xc-constraints", {})
+        )
+
+    def test_ordering_is_not_commutative(
+        self,
+        constraint_enricher: ConstraintEnricher,
+    ) -> None:
+        """Reverse ordering is the bug: running inject_max_items first
+        poisons x-f5xc-constraints with 65535. This documents the
+        failure mode so future refactors cannot regress silently.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "Resource": {
+                        "type": "object",
+                        "properties": {
+                            "tags": {"type": "array", "items": {"type": "string"}},
+                        },
+                    },
+                },
+            },
+        }
+
+        # WRONG order
+        spec = SchemaFixer().inject_max_items(spec)
+        spec = constraint_enricher.enrich_spec(spec)
+
+        tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]  # type: ignore[index]
+        # EXISTING priority wins over INFERRED in ConstraintReconciler, so
+        # the 65535 now shadows the pattern-inferred 100. Assert the
+        # poisoned state to document the failure mode.
+        assert tags["maxItems"] == 65535
+        assert tags["x-f5xc-constraints"]["maxItems"] == 65535
 
 
 if __name__ == "__main__":
