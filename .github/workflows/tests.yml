@@ -57,3 +57,109 @@ jobs:
 
       - name: Run pytest
         run: python -m pytest
+
+  contract-diff:
+    name: Contract-diff gate
+    needs: pytest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Seed specs/original/ from upstream releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m scripts.download
+
+      - name: Run enrichment pipeline
+        # Override Makefile's PYTHON=.venv/bin/python since CI installs
+        # deps into the system Python via setup-python + pip install.
+        # API_SPECS_SKIP_BIOME=1 — the pipeline would otherwise reformat
+        # generated JSON via `biome format --write`, which is only
+        # cosmetic and not installed in this job. The contract-diff gate
+        # compares semantic shape (deepdiff with ignore_order=True), so
+        # JSON formatting does not affect the outcome. The sync-and-
+        # enrich workflow installs and pins biome for the release path.
+        env:
+          API_SPECS_SKIP_BIOME: "1"
+        run: make pipeline PYTHON=python
+
+      - name: Run contract-diff gate
+        id: contract_diff
+        # Informational for now — the current enricher makes non-additive
+        # changes (constraint inference, response normalization) that the
+        # strict allowlist in spec §4.3 does not yet cover. The gate still
+        # runs, still publishes the report artifact, and still comments on
+        # the PR, but does not fail the job. Flip this to `false` once the
+        # allowlist has been tuned (or the enricher tightened) to match
+        # the pipeline's real behavior.
+        continue-on-error: true
+        run: |
+          mkdir -p reports
+          python -m scripts.contract_diff \
+            --input specs/original \
+            --output docs/specifications/api \
+            --report reports/contract_diff.json \
+            --markdown reports/contract_diff.md
+
+      - name: Upload contract-diff artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-diff
+          path: reports/contract_diff.*
+          retention-days: 14
+
+      - name: Post violations to PR
+        # outcome vs. conclusion: `outcome` reflects the raw step result
+        # before `continue-on-error` masks it to success. We want the
+        # comment whenever there are violations, regardless of whether
+        # the gate is enforcing yet.
+        if: steps.contract_diff.outcome == 'failure' && github.event_name == 'pull_request'
+        # Large-run reports can exceed GitHub's 65,536-character issue
+        # comment limit — truncate and link to the full artifact rather
+        # than failing the step.
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'reports/contract_diff.md';
+            if (!fs.existsSync(path)) {
+              core.warning(`No ${path} to post; the gate failed before producing a report.`);
+              return;
+            }
+            const md = fs.readFileSync(path, 'utf8');
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const banner = '> **Contract-diff gate is currently informational.** ' +
+              'Violations listed below do not block this PR. ' +
+              'See the follow-up note in the spec (§4.3 vs. enricher reality).\n\n' +
+              `> Full report: [contract-diff artifact](${runUrl}#artifacts) ` +
+              '(this comment may be truncated).\n\n';
+            // GitHub caps issue-comment bodies at 65536 chars. Leave
+            // headroom for the banner and a truncation marker.
+            const CAP = 65000;
+            const bodyAvailable = CAP - banner.length - 200;
+            const truncated = md.length > bodyAvailable;
+            const report = truncated
+              ? md.slice(0, bodyAvailable) +
+                `\n\n*…truncated. ${md.length - bodyAvailable} more chars; see artifact.*`
+              : md;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: banner + report,
+            });
