@@ -84,10 +84,13 @@ jobs:
         run: python -m scripts.download
 
       - name: Run enrichment pipeline
-        run: make pipeline
+        # Override Makefile's PYTHON=.venv/bin/python since CI installs
+        # deps into the system Python via setup-python + pip install.
+        run: make pipeline PYTHON=python
 
       - name: Run contract-diff gate
         run: |
+          mkdir -p reports
           python -m scripts.contract_diff \
             --input specs/original \
             --output docs/specifications/api \
@@ -108,7 +111,12 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const md = fs.readFileSync('reports/contract_diff.md', 'utf8');
+            const path = 'reports/contract_diff.md';
+            if (!fs.existsSync(path)) {
+              core.warning(`No ${path} to post; the gate likely failed before producing a report.`);
+              return;
+            }
+            const md = fs.readFileSync(path, 'utf8');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
