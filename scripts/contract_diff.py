@@ -90,29 +90,89 @@ def run_contract_diff(input_spec: dict, output_spec: dict) -> list[Violation]:
     return violations
 
 
-def run_directory_diff(input_dir: Path, output_dir: Path) -> list[Violation]:
-    """Run contract_diff per-file across two directories."""
-    violations: list[Violation] = []
-    for inp in sorted(input_dir.glob("*.json")):
-        out = output_dir / inp.name
-        if not out.exists():
-            violations.append(
-                Violation(
-                    change_type="file_removed",
-                    pointer=inp.name,
-                    before=True,
-                    after=False,
-                    rule_category="removal",
-                ),
-            )
+_MERGE_KEYS: tuple[str, ...] = ("paths", "definitions")
+_COMPONENT_MERGE_KEYS: tuple[str, ...] = (
+    "schemas",
+    "responses",
+    "parameters",
+    "examples",
+    "requestBodies",
+    "headers",
+    "securitySchemes",
+    "links",
+    "callbacks",
+)
+
+
+def _merge_specs(
+    specs: list[tuple[str, dict]],
+) -> dict[str, Any]:
+    """Union the path/definitions/components.* maps across many OpenAPI specs.
+
+    The enrichment pipeline merges ~520 per-resource upstream specs
+    into ~40 per-category enriched specs, so a 1:1 file comparison is
+    not meaningful. Instead, union every spec's ``paths``,
+    ``definitions``, and ``components.<bucket>`` maps into a single
+    aggregate dict on each side and diff those.
+
+    Args:
+        specs: list of ``(filename, parsed_json)`` tuples.
+
+    Returns:
+        A single dict with unioned top-level maps. Later entries
+        overwrite earlier ones on collision; for a contract diff we
+        care about presence and shape, and same-named schemas/paths
+        across inputs should have identical bodies by construction.
+    """
+    merged: dict[str, Any] = {}
+    merged_components: dict[str, Any] = {}
+    for _filename, spec in specs:
+        for key in _MERGE_KEYS:
+            if key in spec and isinstance(spec[key], dict):
+                merged.setdefault(key, {}).update(spec[key])
+        components = spec.get("components") or {}
+        if isinstance(components, dict):
+            for bucket in _COMPONENT_MERGE_KEYS:
+                if bucket in components and isinstance(components[bucket], dict):
+                    merged_components.setdefault(bucket, {}).update(components[bucket])
+    if merged_components:
+        merged["components"] = merged_components
+    return merged
+
+
+def _load_specs_from_dir(spec_dir: Path) -> list[tuple[str, dict]]:
+    """Load every ``*.json`` under ``spec_dir`` except ``manifest.json``.
+
+    ``index.json`` in the enriched output is also skipped — it is a
+    pipeline-emitted catalog of domains, not an OpenAPI spec.
+    """
+    loaded: list[tuple[str, dict]] = []
+    for path in sorted(spec_dir.glob("*.json")):
+        if path.name in {"manifest.json", "index.json"}:
             continue
-        violations.extend(
-            run_contract_diff(
-                json.loads(inp.read_text()),
-                json.loads(out.read_text()),
-            ),
-        )
-    return violations
+        try:
+            doc = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            continue
+        if isinstance(doc, dict):
+            loaded.append((path.name, doc))
+    return loaded
+
+
+def run_directory_diff(input_dir: Path, output_dir: Path) -> list[Violation]:
+    """Diff the merged contract between two directories of OpenAPI specs.
+
+    The pipeline fans in ~520 per-resource upstream specs and fans out
+    into ~40 per-category enriched specs, so a naive per-file diff
+    would report every input filename as ``file_removed``. Instead we
+    union every spec's paths and components on each side and compare
+    the two aggregates.
+    """
+    input_specs = _load_specs_from_dir(input_dir)
+    output_specs = _load_specs_from_dir(output_dir)
+    merged_input = _merge_specs(input_specs)
+    merged_output = _merge_specs(output_specs)
+    return run_contract_diff(merged_input, merged_output)
 
 
 def render_markdown_report(violations: list[Violation]) -> str:
