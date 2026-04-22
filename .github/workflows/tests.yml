@@ -86,6 +86,14 @@ jobs:
       - name: Run enrichment pipeline
         # Override Makefile's PYTHON=.venv/bin/python since CI installs
         # deps into the system Python via setup-python + pip install.
+        # API_SPECS_SKIP_BIOME=1 — the pipeline would otherwise reformat
+        # generated JSON via `biome format --write`, which is only
+        # cosmetic and not installed in this job. The contract-diff gate
+        # compares semantic shape (deepdiff with ignore_order=True), so
+        # JSON formatting does not affect the outcome. The sync-and-
+        # enrich workflow installs and pins biome for the release path.
+        env:
+          API_SPECS_SKIP_BIOME: "1"
         run: make pipeline PYTHON=python
 
       - name: Run contract-diff gate
