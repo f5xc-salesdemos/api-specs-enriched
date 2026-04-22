@@ -11,17 +11,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import random
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import httpx
 from deepdiff import DeepDiff
 
 from scripts.utils.additive_allowlist import is_additive_change
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
 _CONSTRAINT_KEYS = frozenset(
     {
@@ -130,6 +133,31 @@ def render_markdown_report(violations: list[Violation]) -> str:
     return "\n".join(lines)
 
 
+def live_sample(
+    spec: dict,
+    *,
+    n: int,
+    probe: Callable[[str, str], dict],
+    rng_seed: int | None = None,
+) -> list[dict]:
+    """Probe N random paths from the enriched spec against the live API.
+
+    ``probe(path, method)`` MUST return a dict including at least
+    ``status_code`` and ``ok``. Each returned entry includes the probed
+    ``path`` and ``method`` alongside the probe result.
+    """
+    rng = random.Random(rng_seed)
+    paths = list(spec.get("paths", {}).keys())
+    rng.shuffle(paths)
+    sampled = paths[: min(n, len(paths))]
+    results = []
+    for p in sampled:
+        ops = spec["paths"][p]
+        method = "GET" if "get" in ops else "OPTIONS"
+        results.append({"path": p, "method": method, **probe(p, method)})
+    return results
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """CLI entry point: diff two directories and emit JSON + Markdown reports."""
     parser = argparse.ArgumentParser()
@@ -147,6 +175,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument("--report", type=Path, default=Path("reports/contract_diff.json"))
     parser.add_argument("--markdown", type=Path, default=Path("reports/contract_diff.md"))
+    parser.add_argument(
+        "--live-sample",
+        type=int,
+        default=0,
+        help="Probe N random paths against the live F5XC API",
+    )
+    parser.add_argument(
+        "--live-fail-on-mismatch",
+        action="store_true",
+        help="Non-zero exit when any live probe fails (default: informational only)",
+    )
     args = parser.parse_args(argv)
 
     violations = run_directory_diff(args.input, args.output)
@@ -160,7 +199,53 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     args.markdown.write_text(render_markdown_report(violations))
-    return 1 if violations else 0
+    rc = 1 if violations else 0
+
+    if args.live_sample > 0:
+        api_url = os.environ.get("F5XC_API_URL")
+        api_token = os.environ.get("F5XC_API_TOKEN")
+        if not api_url or not api_token:
+            print(
+                "live-sample requested but F5XC_API_URL/TOKEN not set; skipping",
+                file=sys.stderr,
+            )
+        else:
+            client = httpx.Client(
+                base_url=api_url,
+                headers={"Authorization": f"Bearer {api_token}"},
+                timeout=30.0,
+            )
+            try:
+                # Pick a representative merged spec to sample; openapi.json aggregates all paths.
+                merged = args.output / "openapi.json"
+                if merged.exists():
+                    spec = json.loads(merged.read_text())
+
+                    def _probe(path: str, method: str) -> dict:
+                        try:
+                            r = client.request(method, path)
+                        except httpx.HTTPError as exc:
+                            return {"status_code": 0, "ok": False, "error": str(exc)}
+                        return {
+                            "status_code": r.status_code,
+                            "ok": 200 <= r.status_code < 300,
+                        }
+
+                    live_results = live_sample(
+                        spec,
+                        n=args.live_sample,
+                        probe=_probe,
+                        rng_seed=0,
+                    )
+                    (args.report.parent / "contract_diff_live.json").write_text(
+                        json.dumps(live_results, indent=2),
+                    )
+                    if args.live_fail_on_mismatch and any(not r.get("ok") for r in live_results):
+                        rc = max(1, rc)
+            finally:
+                client.close()
+
+    return rc
 
 
 if __name__ == "__main__":
