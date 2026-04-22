@@ -71,19 +71,27 @@ def _categorize(change_type: str, pointer: str) -> str:
 
 def run_contract_diff(input_spec: dict, output_spec: dict) -> list[Violation]:
     """Compare two spec dicts and return all non-additive changes as violations."""
-    diff = DeepDiff(input_spec, output_spec, ignore_order=True, view="tree")
+    diff = DeepDiff(
+        input_spec,
+        output_spec,
+        ignore_order=True,
+        view="tree",
+        threshold_to_diff_deeper=0.0,
+    )
     violations: list[Violation] = []
     for change_type, changes in diff.items():
         for change in changes:
             pointer = change.path()
-            if is_additive_change(change_type, pointer):
+            before = getattr(change, "t1", None)
+            after = getattr(change, "t2", None)
+            if is_additive_change(change_type, pointer, before, after):
                 continue
             violations.append(
                 Violation(
                     change_type=change_type,
                     pointer=pointer,
-                    before=getattr(change, "t1", None),
-                    after=getattr(change, "t2", None),
+                    before=before,
+                    after=after,
                     rule_category=_categorize(change_type, pointer),
                 ),
             )
@@ -220,6 +228,10 @@ def live_sample(
 
 def main(argv: Sequence[str] | None = None) -> int:
     """CLI entry point: diff two directories and emit JSON + Markdown reports."""
+    # The additive-allowlist classifier runs an inner DeepDiff per candidate
+    # dict-rewrite (Rule 3). On deeply-nested OpenAPI subtrees deepdiff's own
+    # recursion can exceed the 1000-frame default; bump the limit for the CLI.
+    sys.setrecursionlimit(max(sys.getrecursionlimit(), 20000))
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--input",
