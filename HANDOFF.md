@@ -1,210 +1,171 @@
 <!-- markdownlint-disable MD013 MD033 MD058 MD060 -->
 
-# HANDOFF — end of phased roadmap + followup round (2026-04-21)
+# HANDOFF — mid-reconciliation checkpoint (2026-04-22)
 
-> **Purpose:** clean resume state for the next session. The four-phase
-> roadmap that started with PR #149 landed in full, plus a four-PR
-> followup round resolving the QoL followups that accumulated during
-> it. Main is clean.
+> **Purpose:** clean resume state for the next session. The contract-diff
+> reconciliation work (Tasks 1-9) is half complete — Commits 1 and 2 landed,
+> Tasks 7-9 remain. This document describes exactly where to pick up.
 
 ## 0. Resume-here status
 
 | Stream | State | Reference |
 | --- | --- | --- |
-| PR #149 — self-heal stale `release/v*` branches | Merged `e07a4d9` | Closed #142 |
-| PR #156 — TDD backfill for `json_writer` + `schema_fixer` | Merged `c450951` | Closed #155 |
-| PR #158 — pytest CI gate + fix 16 latent drift failures | Merged `6a18f98` | Closed #157 |
-| PR #162 — exponential-backoff merge-poll script | Merged `2366495` | Closed #161 |
-| PR #165 — governance guard + first HANDOFF refresh | Merged `be3e0b5` | Closed #164 |
-| PR #168 — pre-commit idempotency skip | Merged `50c6d2a` | Closed #167 |
-| PR #171 — biome via `biomejs/setup-biome@latest` | Merged `4be419c` | Closed #154, #169 |
-| PR #174 — seed `specs/original/` in tests.yml CI | Merged `90a3026` | Closed #172 |
-| PR #176 — full fixture coverage (10→55 resources, 8→20 patterns) | Merged `1c95108` | Closed #175 |
+| PR #155 — Part A issue-sync automation (api-specs) | Merged | Closed #152 |
+| PR #184 — Part B contract-diff gate + extension catalog | Merged | Closed #183 |
+| Issue #190 — reconciliation work in progress | **OPEN** | feature/190-contract-diff-reconciliation |
 
-Main HEAD at session end: `1c95108`.
+### Current branch state
 
-Full-suite pytest posture: **1901 passed + 1 xfailed** (structural namespace path-extraction limit). Up from zero tests in CI at session start.
+- **Repo:** `/workspace/api-specs-enriched`
+- **Branch:** `feature/190-contract-diff-reconciliation` (pushed to origin)
+- **HEAD:** `3ef6a0b` — `feat(contract-diff): add four allowlist rules for legitimate enrichment`
+- **Base:** `cd88f97` (main, includes PR #184 squash merge)
+- **Plan completion:** 6 of 9 tasks done; Commits 1 and 2 landed; Tasks 7/8/9 pending
 
-## 1. What shipped (roadmap + followups, in merge order)
+### Reference documents
 
-### 1.1 Phase 0 — workflow self-heal (PR #149)
+- **Design spec:** `/workspace/docs/superpowers/specs/2026-04-22-contract-diff-reconciliation-design.md`
+- **Implementation plan:** `/workspace/docs/superpowers/plans/2026-04-22-contract-diff-reconciliation-plan.md`
+- **Prior phase spec+plan** (already shipped): `2026-04-21-api-specs-pipeline-hardening-*.md`
 
-Adds a pre-clean block to `.github/workflows/sync-and-enrich.yml:541-554`:
-detects and closes any stale open release PR (with `--delete-branch`)
-or force-deletes the stale branch before creating a fresh one. All `gh`
-calls are guarded with `|| true` so cleanup cannot fail the job. Uses
-`$GITHUB_RUN_ID` (not `${{ github.run_id }}`) in the shell body to
-stay on the safe side of workflow-injection patterns. Exercised in
-production this session — PR #150 (the previous stuck release PR) was
-auto-cleaned by a subsequent scheduled run.
+## 1. What's done (on this branch)
 
-### 1.2 Phase 1 — TDD backfill (PR #156)
+### 1.1 Commit 1 — `592ce3c`
+
+**`fix(enricher): stop emitting title rewrites and sentinel constraints`**
+
+Four enricher changes eliminate ~23,000 zero-info emissions:
+
+1. **Title preservation** — `"title"` removed from all five sites that control `target_fields`:
+   - `scripts/utils/acronyms.py:99` (default list)
+   - `scripts/utils/branding.py:270,370,589` (three defaults)
+   - `scripts/utils/grammar.py:231` (default list)
+   - `config/enrichment.yaml:184-189` (config-driven list — this was the dominant site)
+   - `scripts/pipeline.py:248` (in-code fallback)
+2. **`minLength: 0` suppression** — removed from `validation_enricher.py::_use_default_config()` + `config/validation_rules.yaml`.
+3. **`maxItems: 65535` suppression** — `DEFAULT_ARRAY_MAX_ITEMS` in `schema_fixer.py` changed from `65535` to `None`; `inject_max_items()` gained an early-return guard.
+4. **int32 default-range suppression** — paired `minimum: 0 / maximum: 2147483647` removed from the integer type-default in `validation_enricher.py` + `config/validation_rules.yaml`. Legitimate ranges (port 1-65535, VLAN 1-4094) unchanged.
 
 New tests:
 
-- `tests/utils/test_json_writer.py` — 23 tests on `_is_publishing_path`,
-  `_is_maxsize_only`, `_format_with_biome` gating/exception paths,
-  `write_json_file` end-to-end.
-- `tests/utils/test_schema_fixer.py` — 42 tests including the
-  `inject_max_items` isolation-from-`x-f5xc-constraints` invariant
-  (Codex P1 regression guard).
-- `tests/test_enricher_integration.py::TestConstraintEnricherSchemaFixerIsolation`
-  — 2 tests running the real `ConstraintEnricher` →
-  `SchemaFixer.inject_max_items` sequence against
-  `config/constraint_patterns.yaml`.
+- `tests/test_title_preservation.py` — 3 tests (one per enricher).
+- `tests/test_sentinel_suppression.py` — 5 tests (`minLength`, `maxItems` ×2, `int32 pair`, port-preservation).
 
-Coverage: 100 % lines on `json_writer.py`, 96 % on `schema_fixer.py`.
+Existing tests updated to match inverted behavior:
 
-### 1.3 Phase 2 — pytest CI gate + drift cleanup (PR #158)
+- `tests/test_validation_enricher.py` — `test_string_type_gets_defaults`, `test_integer_type_gets_no_default_range`, `test_email_field_comprehensive_enrichment`, `test_enrich_simple_spec`.
+- `tests/utils/test_schema_fixer.py` — 6 tests retrofitted to set explicit `default_max_items: 1024` instead of relying on the former 65535 sentinel.
+- `tests/test_enricher_integration.py` — 2 tests updated with a `bounded_fixer` fixture.
 
-Adds `Makefile:test` target and `.github/workflows/tests.yml` that
-runs pytest on every PR. The new gate surfaced 16 pre-existing
-drifts, all fixed in the same PR:
+### 1.2 Commit 2 — `3ef6a0b`
 
-- `test_zip_security.py` (6) — `extract_zip(..., config)` and
-  `validate_zip_member_size(..., limits)` signature drift.
-- `test_external_docs_enricher.py` + `test_minimum_configuration_enricher.py`
-  (2) — `app_firewall` regrouped under the `virtual` domain.
-- `test_uniqueness_enricher.py` (3) — snake_case drift
-  (`HTTPLoadBalancer` → `http_load_balancer`, `AWSVPCSite` →
-  `awsvpc_site`); "platform" scope wording switched to
-  "globally unique across all F5 XC tenants".
-- `test_enricher_integration.py` (5) — `waf_policy` wording; two
-  pattern-matcher entries graduated to explicit resources;
-  count-guards `test_all_*_count` originally marked xfail for the
-  config-growth delta (later expanded in PR #176).
-- `tests/test_all_endpoints_enrichment.py` — `allow_module_level=True`
-  on the module-scope `pytest.skip` so the module cleanly skips in
-  CI when `specs/original/` is absent (later seeded by PR #174).
+**`feat(contract-diff): add four allowlist rules for legitimate enrichment`**
 
-### 1.4 Phase 3 — exponential-backoff merge-poll (PR #162)
+`is_additive_change(change_type, pointer, before=None, after=None)` — backward-compatible signature extension — plus four new rules:
 
-Replaces the hardcoded `30×10 s = 300 s` inline poll (which timed out
-on every Super-Linter run > 5 min, orphaning release PRs) with:
+1. **Rule 1** — `_is_error_response_type_add`: allow `type: "string"` additions on 4XX/5XX response schemas.
+2. **Rule 2** — `_is_positive_int_maxlength_add`: allow `maxLength` additions where `after` is int > 0.
+3. **Rule 3** — `_is_additive_dict_rewrite`: recursively decompose `values_changed` on a dict; accept iff every inner change is individually additive. Depth-capped at 4 with a `RecursionError` fail-safe.
+4. **Rule 4** — `_is_known_format_add`: allow `format` keys with values in the standard OpenAPI set.
 
-- `scripts/release/wait-for-merge.sh` — 60 s warm-up + exponential
-  backoff up to 15 min total. Emits diagnostic JSON to stderr on
-  failure. Unit-tested via `tests/shell/test_wait_for_merge.py` (6
-  tests against a fake-`gh` PATH stub).
+Secondary fixes surfaced during real-data testing:
 
-Deferred guards (stale-tag-without-branch abort, concurrent-run tag
-race) never bitten in the wild — see §2.
+- **DeepDiff `threshold_to_diff_deeper=0.0`** on both outer and inner diff calls. Without it, DeepDiff's similarity heuristic collapses multi-key dict diffs into a single `values_changed` at root, which broke Rule 3.
+- **Recursion-limit bump** in `contract_diff.main()` via `sys.setrecursionlimit(max(..., 20000))` for deep OpenAPI schemas.
 
-### 1.5 Phase 4 — governance guard + first HANDOFF (PR #165)
+New tests:
 
-- `scripts/verify_governance.py` — pure-stdlib CLI. Reads
-  `.claude/governance.json`, runs `git diff --name-only <base>..<head>`,
-  exits 1 if any changed file is in `protected_files`.
-- `tests/test_verify_governance.py` — 8 tests on a throwaway repo.
-- `.github/workflows/tests.yml` — new `Verify no governed files
-  touched` step running only on `pull_request` events.
+- `tests/test_additive_allowlist.py` — 9 new tests (positive + negative for each rule).
 
-### 1.6 Followup — pre-commit idempotency (PR #168)
+### 1.3 Violation trajectory against real data
 
-Adds a STEP-0 input-fingerprint skip to
-`scripts/hooks/pre-commit-pipeline.sh`. When `git diff --cached
---name-only` returns no paths under `scripts/`, `config/`,
-`specs/original/`, `requirements*.txt`, `pyproject.toml`, or
-`sync-and-enrich.yml`, the hook exits 0 immediately — the previous
-run's enriched output is still valid. `FORCE_PIPELINE=1` overrides.
-Coverage: `tests/shell/test_pre_commit_pipeline.py` (6 tests). This
-ended the `core.hooksPath=/dev/null` workaround github-ops was
-applying on every commit — confirmed in PR #174's commit log
-("No pipeline inputs staged — skipping enrichment + lint.").
+| Stage | Real-data violations |
+| --- | --- |
+| PR #184 baseline (informational gate) | 50,231 |
+| After Commit 1 (enricher tightening) | 27,034 |
+| After Commit 2 (allowlist rules) | ~3,754 |
 
-### 1.7 Followup — biome alignment (PR #171)
+Remaining ~3,754 violations are genuine contract-drift (majority: `maxLength`-tightened values, real schema removals). These are the target of Task 8's drift-file seeding.
 
-Mirrors docs-control#385: swap the `npm install -g
-@biomejs/biome@${BIOME_VERSION}` pin for a `biomejs/setup-biome@SHA`
-step with `version: latest` (same action SHA docs-control uses).
-Drops `env.BIOME_VERSION`. The runtime-resolved version is captured
-into `steps.biome.outputs.version` and used as the enriched-output
-cache key suffix. The pipeline's Biome and docs-control's Super-Linter
-Biome now resolve to the same binary on every run.
+## 2. What's pending
 
-### 1.8 Followup — seed specs/original/ (PR #174)
+### 2.1 Task 7 — fingerprint + `known_drift` support
 
-Adds a `Seed specs/original/` step to `tests.yml` before pytest.
-Runs `python -m scripts.download` with ambient `GITHUB_TOKEN` for
-rate-limit headroom (api-specs is public). The 18 previously-skipped
-tests in `tests/test_all_endpoints_enrichment.py` now execute on
-every PR — counted and confirmed in CI logs (main baseline 1779 →
-post-#174 1797).
+**Files to create/modify:**
 
-### 1.9 Followup — fixture coverage expansion (PR #176)
+- Add `_fingerprint_violation(change_type, pointer, before, after) -> str` and `_normalize_pointer(pointer) -> str` helpers in `scripts/contract_diff.py`.
+- Add `load_known_drift(path) -> set[str]` helper.
+- Extend `run_contract_diff(input, output, known_drift=None)` and `run_directory_diff(input_dir, output_dir, known_drift=None)`.
+- Add `--known-drift PATH` CLI flag in `main()`, default `tests/fixtures/contract_diff_known_drift.json`.
+- New tests in `tests/test_contract_diff.py` (4 new) + new `tests/test_contract_diff_known_drift.py` (4 schema tests).
 
-`EXPLICIT_RESOURCES_FULL_PIPELINE`, `EXPLICIT_RESOURCES_PRESERVATION`,
-and `PATTERN_MATCHERS` in `tests/test_enricher_integration.py` now
-match the full `config/operation_descriptions.yaml`:
+Details: plan §7 (Task 7).
 
-- 10 → **55** explicit resources
-- 8 → **20** pattern matchers
+### 2.2 Task 8 — seed drift file + file tracking issues + Commit 3
 
-Both count-guard tests (`test_all_explicit_resources_count`,
-`test_all_patterns_count`) lost their xfail decorators — they now
-enforce bidirectional fixture↔config parity. Only `namespace`
-remains xfail (strict=True) because the enricher's
-`_extract_resource_type` legitimately skips `namespaces` as a
-structural path segment. Full-suite: 1797 → **1901** (+104).
+**Files to create/modify:**
 
-## 2. Still-open followups (intentional)
+- Create `scripts/contract_diff_seed_drift.py` (one-shot seed script).
+- Run it, produce `tests/fixtures/contract_diff_known_drift.json` with ~3,754 entries grouped into five categories (`maxLength-tightened`, `removal`, `ref-retarget`, `operationId-rename`, `misc`).
+- File four tracking issues in `f5xc-salesdemos/api-specs-enriched` via `f5xc-github-ops:github-ops`:
+  1. `fix(enricher): reconcile maxLength-tightened overrides with upstream`
+  2. `fix(enricher): investigate removals against upstream-preserved fields`
+  3. `fix(contract): $ref retargets detected — upstream schema renames`
+  4. `fix(contract): operationId renames and misc contract drift`
+- Search-replace `TBD-*` placeholders in the drift file with real `owner/repo#N` issue URLs.
+- End-to-end verification: local `python -m scripts.contract_diff` reports 0 violations.
+- Commit 3 — drift machinery.
 
-- **`docs-control#383`** — upstream biome-skew tracker. Our local
-  #154 is closed (PR #171 aligned us architecturally via
-  `biomejs/setup-biome@latest`). A comment has been posted on #383
-  asking docs-control maintainers to close it now that #385 landed.
-  Not blocking; cosmetic upstream cleanup.
+Details: plan §8 (Task 8).
 
-- **Phase-3 deferred guards.** `sync-and-enrich.yml`'s release step
-  still lacks:
-  - Stale-tag-without-branch abort (pre-check
-    `git ls-remote origin refs/tags/v${VERSION}` before pushing).
-  - Concurrent-run tag race guard. Workflow concurrency
-    `cancel-in-progress: true` mitigates but doesn't guard clock-skew
-    windows.
-  Neither has bitten us in the wild. Merge-poll timeout (the one that
-  did bite) is closed by PR #162. A future session can pick these up
-  as a narrow defensive PR.
+### 2.3 Task 9 — flip gate to enforcing (Commit 4)
 
-- **Codespell-governed path shapes.** PR #176 worked around codespell
-  flagging the naive `{name}-plus-s` plurals of `policy`, `proxy`, and
-  `discovery` as typos (codespell wants the true English plural
-  forms). Workaround: use singular path segments in the fixture
-  (`/alert_policy` instead of appending an `s`) — `_extract_resource_type`
-  returns non-`s`-ending parts as-is, so the singular paths still
-  extract correctly. `.codespellrc` is governed — a more idiomatic
-  `{name} → {name}ies` pluralization in our test paths would be an
-  upstream ask against docs-control.
+**Files to modify:**
 
-## 3. Ground rules that persist
+- `.github/workflows/tests.yml`:
+  - Remove `continue-on-error: true` from `Run contract-diff gate` step.
+  - Remove the informational banner text from the PR-comment step's script.
+  - Change the comment-step condition from `steps.contract_diff.outcome == 'failure'` to `failure()`.
+  - Keep `continue-on-error: true` on the comment step (GitHub's 64KB cap can still fire).
 
-- **Delegate all Git/GH ops** to `f5xc-github-ops:github-ops` via the
-  `f5xc-github-ops:workflow-lifecycle` skill. The main-session Bash
-  tool is blocked from `git commit`, `git push`, `gh pr create`,
-  `gh pr merge` by `.claude/hooks/enforce-git-delegation.sh`.
-- **Managed files listed in `.claude/governance.json`** (~40 paths)
-  cannot be edited locally — open an upstream issue/PR in
-  `f5xc-salesdemos/docs-control` instead.
-- **No `--no-verify`, no `--admin`, no `[skip ci]`, no force-push**
-  without explicit authorization.
-- **Pre-commit idempotency now works**: commits that don't touch
-  pipeline-input paths skip the 13-min enrichment. When editing
-  `scripts/`, `config/`, `specs/original/`, `requirements*.txt`,
-  `pyproject.toml`, or `sync-and-enrich.yml`, the full pipeline
-  still runs — budget ~15 min wall-clock.
-- **CI now runs pytest on every PR** (1901 tests + 1 xfailed) plus
-  the governance-drift guard. Super-Linter's Biome is aligned with
-  our pipeline's Biome via `biomejs/setup-biome@latest`.
+Details: plan §9 (Task 9).
 
-## 4. Useful links
+## 3. Quick resume commands
 
-- Closed this session: #142, #154, #155, #157, #161, #164, #167,
-  #169, #172, #175.
-- Still open: docs-control#383 (upstream cosmetic).
-- Roadmap file:
-  `/home/vscode/.claude/plans/you-need-to-do-glimmering-beaver.md`
-  (historical — the roadmap landed in full).
-- Workflow artefacts: `.github/workflows/sync-and-enrich.yml:541-554`
-  (pre-clean), `scripts/release/wait-for-merge.sh` (merge-poll),
-  `scripts/verify_governance.py` (governance guard),
-  `scripts/hooks/pre-commit-pipeline.sh` (idempotent hook).
+```bash
+cd /workspace/api-specs-enriched
+git fetch origin
+git status                                     # confirm clean tree
+git log --oneline main..HEAD                   # shows 592ce3c, 3ef6a0b
+pytest -o addopts= tests/                      # baseline green run
+python -m scripts.contract_diff \
+    --input specs/original \
+    --output docs/specifications/api \
+    --report reports/contract_diff.json \
+    --markdown reports/contract_diff.md
+jq 'length' reports/contract_diff.json         # expect ~3754
+```
+
+Then pick up with Task 7 per the implementation plan.
+
+## 4. Known environmental quirks (from this session)
+
+- **Pre-commit pipeline hook** (`scripts/hooks/pre-commit-pipeline.sh`) re-runs the full enrichment pipeline whenever anything under `scripts/`, `config/`, or `specs/original/` is staged. It takes ~13-24 minutes per commit. Set `API_SPECS_SKIP_BIOME=1` if Biome is not installed locally — the pipeline will still run, just skipping the cosmetic JSON formatter. Tasks 7-8 touch `scripts/contract_diff.py` so expect the slow pre-commit; Task 9 is workflow-only (`.github/workflows/`) so it short-circuits in ~9 seconds.
+- **`config/enrichment.yaml` and `config/validation_rules.yaml`** are the *actual* sources of enricher defaults; the Python `_use_default_config()` paths are only fallbacks. If fixing a sentinel emission, always check both.
+- **DeepDiff with real-data dicts** requires `threshold_to_diff_deeper=0.0` to decompose multi-key rewrites; without it, large dict diffs collapse into a single `values_changed`.
+- **Python recursion limit** must be bumped (~20000) before running `DeepDiff` on full OpenAPI schemas.
+- **F5XC credentials** for live verification are VPN-locked lab tokens; already set in the environment when needed.
+
+## 5. Session summary (context for resume)
+
+The contract-diff gate landed in PR #184 as informational (`continue-on-error: true`) because a first real-data run surfaced 50,231 violations. The user directed this follow-up work to drive the gate from informational back to enforcing with zero false positives.
+
+Strategy (three levers):
+
+1. **Enricher tightening** — stop emitting zero-information noise (title rewrites, JSON-Schema-default sentinels). Landed in Commit 1.
+2. **Allowlist extension** — four narrow rules covering legitimate enrichment (error-response typing, positive `maxLength` adds, recursive dict rewrites, known-format adds). Landed in Commit 2.
+3. **Known-drift tracker** — fingerprint-keyed JSON file that suppresses per-violation residuals pending per-case triage. Tasks 7-8 land this. Task 9 flips the gate.
+
+After the three levers land the real-data gate reports 0 violations and the `continue-on-error: true` is removed.
+
+Four tracking issues (per the plan) will own the residual ~3,754 fingerprints — each is a real gap between enricher behavior and spec §4.3, to be resolved continuously over time.
