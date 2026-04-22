@@ -10,9 +10,12 @@ allowlist defined in spec §4.3.
 from __future__ import annotations
 
 import argparse
+import gzip
+import hashlib
 import json
 import os
 import random
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,6 +28,76 @@ from scripts.utils.additive_allowlist import is_additive_change
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
+
+_ARRAY_INDEX_RE = re.compile(r"\[\d+\]")
+
+
+def _normalize_pointer(pointer: str) -> str:
+    """Collapse array indices in a DeepDiff pointer to ``[]``.
+
+    Reordering upstream does not force mass re-fingerprinting:
+    ``parameters[2]`` and ``parameters[3]`` both collapse to
+    ``parameters[]``.
+    """
+    return _ARRAY_INDEX_RE.sub("[]", pointer)
+
+
+def _fingerprint_violation(
+    change_type: str,
+    pointer: str,
+    before: object,
+    after: object,
+) -> str:
+    r"""Stable 40-hex SHA1 fingerprint of a violation.
+
+    Hashes ``(change_type, normalized_pointer, canonical-JSON before,
+    canonical-JSON after)`` separated by ASCII unit-separator ``\x1f``
+    bytes, matching the scheme used by
+    ``scripts/utils/discrepancy_fingerprint.py`` in api-specs.
+    """
+    parts = [
+        change_type,
+        _normalize_pointer(pointer),
+        json.dumps(before, sort_keys=True, separators=(",", ":"), default=str),
+        json.dumps(after, sort_keys=True, separators=(",", ":"), default=str),
+    ]
+    payload = "\x1f".join(parts).encode("utf-8")
+    return hashlib.sha1(payload, usedforsecurity=False).hexdigest()
+
+
+def load_known_drift(path: Path | str | None) -> set[str]:
+    """Load the fingerprint set from a known_drift JSON (or .json.gz) file.
+
+    Returns an empty set if ``path`` is None, the file is missing, or
+    the file is an empty JSON. Raises ``ValueError`` with a pointer to
+    the offending index if any entry is missing ``fingerprint`` or the
+    value is not a string — the drift file is hand-edited (spec §5.5),
+    so a clear error beats a bare ``KeyError``.
+    """
+    if path is None:
+        return set()
+    p = Path(path)
+    if not p.exists():
+        return set()
+    if p.suffix == ".gz":
+        with gzip.open(p, "rt", encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        data = json.loads(p.read_text())
+    out: set[str] = set()
+    for i, entry in enumerate(data.get("entries", [])):
+        fp = entry.get("fingerprint")
+        if not isinstance(fp, str):
+            # ValueError (not TypeError) is the contract: the drift file as a
+            # whole is malformed — missing key and wrong type are one class of
+            # hand-edit mistake from the operator's perspective.
+            raise ValueError(  # noqa: TRY004
+                f"{p}: entries[{i}] missing or non-string 'fingerprint'",
+            )
+        out.add(fp)
+    return out
+
 
 _CONSTRAINT_KEYS = frozenset(
     {
@@ -69,8 +142,21 @@ def _categorize(change_type: str, pointer: str) -> str:
     return "other"
 
 
-def run_contract_diff(input_spec: dict, output_spec: dict) -> list[Violation]:
-    """Compare two spec dicts and return all non-additive changes as violations."""
+def run_contract_diff(
+    input_spec: dict,
+    output_spec: dict,
+    known_drift: set[str] | None = None,
+) -> list[Violation]:
+    """Compare two spec dicts and return all non-additive changes as violations.
+
+    Args:
+        input_spec: the stage-1 (upstream) merged spec dict.
+        output_spec: the enriched merged spec dict.
+        known_drift: optional set of violation fingerprints to tolerate.
+            Any violation whose ``_fingerprint_violation`` hash is in this
+            set is suppressed (design spec 2026-04-22 §5).
+    """
+    known = known_drift or set()
     diff = DeepDiff(
         input_spec,
         output_spec,
@@ -85,6 +171,9 @@ def run_contract_diff(input_spec: dict, output_spec: dict) -> list[Violation]:
             before = getattr(change, "t1", None)
             after = getattr(change, "t2", None)
             if is_additive_change(change_type, pointer, before, after):
+                continue
+            fp = _fingerprint_violation(change_type, pointer, before, after)
+            if fp in known:
                 continue
             violations.append(
                 Violation(
@@ -167,7 +256,11 @@ def _load_specs_from_dir(spec_dir: Path) -> list[tuple[str, dict]]:
     return loaded
 
 
-def run_directory_diff(input_dir: Path, output_dir: Path) -> list[Violation]:
+def run_directory_diff(
+    input_dir: Path,
+    output_dir: Path,
+    known_drift: set[str] | None = None,
+) -> list[Violation]:
     """Diff the merged contract between two directories of OpenAPI specs.
 
     The pipeline fans in ~520 per-resource upstream specs and fans out
@@ -180,7 +273,7 @@ def run_directory_diff(input_dir: Path, output_dir: Path) -> list[Violation]:
     output_specs = _load_specs_from_dir(output_dir)
     merged_input = _merge_specs(input_specs)
     merged_output = _merge_specs(output_specs)
-    return run_contract_diff(merged_input, merged_output)
+    return run_contract_diff(merged_input, merged_output, known_drift=known_drift)
 
 
 def render_markdown_report(violations: list[Violation]) -> str:
@@ -258,9 +351,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="Non-zero exit when any live probe fails (default: informational only)",
     )
+    parser.add_argument(
+        "--known-drift",
+        type=Path,
+        default=Path("tests/fixtures/contract_diff_known_drift.json.gz"),
+        help="Path to known_drift JSON (fingerprints to tolerate). "
+        "Missing file = empty set (no tolerance).",
+    )
     args = parser.parse_args(argv)
 
-    violations = run_directory_diff(args.input, args.output)
+    known_drift = load_known_drift(args.known_drift)
+    violations = run_directory_diff(args.input, args.output, known_drift=known_drift)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
         json.dumps(
