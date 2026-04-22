@@ -100,13 +100,9 @@ class ValidationEnricher:
         """Use built-in default validation rules."""
         self.type_defaults = {
             "string": {
-                "minLength": 0,
                 "maxLength": 1024,
             },
-            "integer": {
-                "minimum": 0,
-                "maximum": 2147483647,  # int32 max
-            },
+            "integer": {},
         }
 
         self.validation_patterns = [

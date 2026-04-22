@@ -108,19 +108,33 @@ class TestNeedsTypeFix:
 
 
 class TestInjectMaxItems:
-    """inject_max_items stamps 65535 on unbounded arrays, never clobbers."""
+    """inject_max_items respects the configured bound, never clobbers.
 
-    def test_stamps_on_unbounded_array(self) -> None:
+    Default is ``None`` (disabled) per design spec 2026-04-22 section 3.3 —
+    stamping the legacy 65535 sentinel adds zero information. Tests that
+    need injection enabled pass an explicit positive bound via config.
+    """
+
+    def test_disabled_by_default_no_op(self) -> None:
+        """With DEFAULT_ARRAY_MAX_ITEMS = None, injection is a no-op."""
         spec = {"components": {"schemas": {"L": {"type": "array"}}}}
         result = SchemaFixer().inject_max_items(spec)
-        assert result["components"]["schemas"]["L"]["maxItems"] == 65535
+        assert "maxItems" not in result["components"]["schemas"]["L"]
 
-    def test_does_not_overwrite_existing_max_items(self) -> None:
+    def test_stamps_on_unbounded_array_when_configured(self, tmp_path: Path) -> None:
+        config = _write_config(tmp_path, {"default_max_items": 1024})
+        spec = {"components": {"schemas": {"L": {"type": "array"}}}}
+        result = SchemaFixer(config_path=config).inject_max_items(spec)
+        assert result["components"]["schemas"]["L"]["maxItems"] == 1024
+
+    def test_does_not_overwrite_existing_max_items(self, tmp_path: Path) -> None:
+        config = _write_config(tmp_path, {"default_max_items": 1024})
         spec = {"components": {"schemas": {"L": {"type": "array", "maxItems": 42}}}}
-        result = SchemaFixer().inject_max_items(spec)
+        result = SchemaFixer(config_path=config).inject_max_items(spec)
         assert result["components"]["schemas"]["L"]["maxItems"] == 42
 
-    def test_stats_count_injections(self) -> None:
+    def test_stats_count_injections(self, tmp_path: Path) -> None:
+        config = _write_config(tmp_path, {"default_max_items": 1024})
         spec = {
             "components": {
                 "schemas": {
@@ -131,22 +145,28 @@ class TestInjectMaxItems:
                 },
             },
         }
-        fixer = SchemaFixer()
+        fixer = SchemaFixer(config_path=config)
         fixer.inject_max_items(spec)
         assert fixer.get_stats()["max_items_added"] == 2
 
-    def test_does_not_touch_non_array_schemas(self) -> None:
+    def test_does_not_touch_non_array_schemas(self, tmp_path: Path) -> None:
+        config = _write_config(tmp_path, {"default_max_items": 1024})
         spec = {"components": {"schemas": {"S": {"type": "string"}}}}
-        result = SchemaFixer().inject_max_items(spec)
+        result = SchemaFixer(config_path=config).inject_max_items(spec)
         assert "maxItems" not in result["components"]["schemas"]["S"]
 
-    def test_isolation_invariant_does_not_leak_into_xf5xc_constraints(self) -> None:
+    def test_isolation_invariant_does_not_leak_into_xf5xc_constraints(
+        self,
+        tmp_path: Path,
+    ) -> None:
         """Codex P1 regression guard.
 
         When an array already has pattern-inferred ``x-f5xc-constraints.maxItems``,
         ``inject_max_items`` must stamp the schema-level bound on the array but
-        MUST NOT touch the ``x-f5xc-constraints`` subtree.
+        MUST NOT touch the ``x-f5xc-constraints`` subtree. Uses an explicit
+        config bound because the default injection is disabled.
         """
+        config = _write_config(tmp_path, {"default_max_items": 1024})
         spec = {
             "components": {
                 "schemas": {
@@ -157,9 +177,9 @@ class TestInjectMaxItems:
                 },
             },
         }
-        result = SchemaFixer().inject_max_items(spec)
+        result = SchemaFixer(config_path=config).inject_max_items(spec)
         tags = result["components"]["schemas"]["tags"]
-        assert tags["maxItems"] == 65535
+        assert tags["maxItems"] == 1024
         assert tags["x-f5xc-constraints"]["maxItems"] == 512
 
 
@@ -252,9 +272,10 @@ class TestGetStats:
         assert stats["fixes_applied"] == 1
         assert stats["max_items_added"] == 0
 
-    def test_stats_after_inject_max_items(self) -> None:
+    def test_stats_after_inject_max_items(self, tmp_path: Path) -> None:
+        config = _write_config(tmp_path, {"default_max_items": 1024})
         spec = {"components": {"schemas": {"L": {"type": "array"}}}}
-        fixer = SchemaFixer()
+        fixer = SchemaFixer(config_path=config)
         fixer.inject_max_items(spec)
         stats = fixer.get_stats()
         assert stats["max_items_added"] == 1

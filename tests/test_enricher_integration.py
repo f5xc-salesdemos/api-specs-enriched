@@ -1533,13 +1533,19 @@ class TestConstraintEnricherSchemaFixerIsolation:
 
     Codex P1 (HANDOFF.md §1.1) was the symmetric failure: running
     ``SchemaFixer.inject_max_items`` BEFORE ``ConstraintEnricher``
-    caused the synthetic 65535 schema-level ``maxItems`` to leak into
+    caused the synthetic schema-level ``maxItems`` to leak into
     ``x-f5xc-constraints.maxItems``, shadowing the pattern-inferred
     bounds (100 for ``tags``, 50 for ``origins``, etc.). The
     production ordering is locked in ``scripts/enrich.py::save_spec``
     and ``scripts/pipeline.py::save_spec`` — this test exercises the
     full sequence against real ``config/constraint_patterns.yaml``
     and asserts the isolation invariant.
+
+    NOTE: Default injection is disabled (design spec 2026-04-22 section
+    3.3) because stamping the legacy 65535 sentinel adds zero
+    information and trips the contract-diff gate. These tests use a
+    non-sentinel bound (1024) on a bespoke SchemaFixer to preserve the
+    original ordering-isolation semantics.
     """
 
     @pytest.fixture
@@ -1547,12 +1553,20 @@ class TestConstraintEnricherSchemaFixerIsolation:
         config_path = Path(__file__).parent.parent / "config" / "constraint_patterns.yaml"
         return ConstraintEnricher(config_path=config_path)
 
+    @pytest.fixture
+    def bounded_fixer(self) -> SchemaFixer:
+        """SchemaFixer configured with an explicit, non-sentinel bound."""
+        fixer = SchemaFixer()
+        fixer._default_max_items = 1024
+        return fixer
+
     def test_tags_preserves_pattern_inferred_max_items(
         self,
         constraint_enricher: ConstraintEnricher,
+        bounded_fixer: SchemaFixer,
     ) -> None:
         """A ``tags`` array gets x-f5xc-constraints.maxItems=100 (pattern-inferred)
-        and schema.maxItems=65535 (Checkov compliance), with no crossover.
+        and schema.maxItems=1024 (explicit Checkov-compliance bound), with no crossover.
         """
         spec = {
             "components": {
@@ -1575,7 +1589,7 @@ class TestConstraintEnricherSchemaFixerIsolation:
         }
 
         spec = constraint_enricher.enrich_spec(spec)
-        spec = SchemaFixer().inject_max_items(spec)
+        spec = bounded_fixer.inject_max_items(spec)
 
         # mypy: ConstraintEnricher.enrich_spec returns bare `dict`, which
         # poisons the deep-key chain below under Super-Linter's default
@@ -1584,15 +1598,15 @@ class TestConstraintEnricherSchemaFixerIsolation:
         unknown = spec["components"]["schemas"]["Resource"]["properties"]["unknown_list"]  # type: ignore[index]
 
         # tags received a pattern-inferred constraint (100) and the
-        # Checkov-compliance schema bound (65535). They must be
+        # explicit Checkov-compliance schema bound (1024). They must be
         # independent values — no leakage in either direction.
-        assert tags["maxItems"] == 65535
+        assert tags["maxItems"] == 1024
         assert tags["x-f5xc-constraints"]["maxItems"] == 100
 
         # unknown_list matches no constraint pattern, so no
         # x-f5xc-constraints is added, but the schema bound is still
-        # stamped so Checkov CKV_OPENAPI_21 passes.
-        assert unknown["maxItems"] == 65535
+        # stamped so Checkov CKV_OPENAPI_21 passes when enabled.
+        assert unknown["maxItems"] == 1024
         assert "x-f5xc-constraints" not in unknown or (
             "maxItems" not in unknown.get("x-f5xc-constraints", {})
         )
@@ -1600,10 +1614,11 @@ class TestConstraintEnricherSchemaFixerIsolation:
     def test_ordering_is_not_commutative(
         self,
         constraint_enricher: ConstraintEnricher,
+        bounded_fixer: SchemaFixer,
     ) -> None:
         """Reverse ordering is the bug: running inject_max_items first
-        poisons x-f5xc-constraints with 65535. This documents the
-        failure mode so future refactors cannot regress silently.
+        poisons x-f5xc-constraints with the schema bound. This documents
+        the failure mode so future refactors cannot regress silently.
         """
         spec = {
             "components": {
@@ -1619,15 +1634,15 @@ class TestConstraintEnricherSchemaFixerIsolation:
         }
 
         # WRONG order
-        spec = SchemaFixer().inject_max_items(spec)
+        spec = bounded_fixer.inject_max_items(spec)
         spec = constraint_enricher.enrich_spec(spec)
 
         tags = spec["components"]["schemas"]["Resource"]["properties"]["tags"]  # type: ignore[index]
         # EXISTING priority wins over INFERRED in ConstraintReconciler, so
-        # the 65535 now shadows the pattern-inferred 100. Assert the
+        # the 1024 now shadows the pattern-inferred 100. Assert the
         # poisoned state to document the failure mode.
-        assert tags["maxItems"] == 65535
-        assert tags["x-f5xc-constraints"]["maxItems"] == 65535
+        assert tags["maxItems"] == 1024
+        assert tags["x-f5xc-constraints"]["maxItems"] == 1024
 
 
 if __name__ == "__main__":

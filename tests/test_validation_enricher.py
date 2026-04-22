@@ -66,24 +66,30 @@ class TestTypeDefaults:
     """Test type-level default constraints."""
 
     def test_string_type_gets_defaults(self, enricher):
-        """Test that string type gets default min/maxLength."""
+        """Test that string type gets default maxLength only.
+
+        Sentinel-suppression: ``minLength: 0`` is the JSON Schema default
+        for strings and must NOT be emitted (zero-information noise).
+        """
         prop = {"type": "string"}
         enricher._apply_type_defaults(prop)
 
-        assert "minLength" in prop
+        assert "minLength" not in prop
         assert "maxLength" in prop
-        assert prop["minLength"] == 0
         assert prop["maxLength"] == 1024
 
-    def test_integer_type_gets_defaults(self, enricher):
-        """Test that integer type gets default min/max."""
+    def test_integer_type_gets_no_default_range(self, enricher):
+        """Integer type should NOT receive the int32 default range.
+
+        Per design spec 2026-04-22 sections 3.2-3.4, emitting the paired
+        ``minimum: 0 / maximum: 2147483647`` adds zero information versus
+        the JSON Schema default and is suppressed.
+        """
         prop = {"type": "integer"}
         enricher._apply_type_defaults(prop)
 
-        assert "minimum" in prop
-        assert "maximum" in prop
-        assert prop["minimum"] == 0
-        assert prop["maximum"] == 2147483647
+        assert "minimum" not in prop
+        assert "maximum" not in prop
 
     def test_existing_defaults_preserved(self, enricher):
         """Test that existing defaults are not overwritten."""
@@ -204,14 +210,17 @@ class TestPropertyEnrichment:
         assert "maximum" in prop
 
     def test_email_field_comprehensive_enrichment(self, enricher):
-        """Test comprehensive enrichment of email field."""
+        """Test comprehensive enrichment of email field.
+
+        Sentinel-suppression: ``minLength: 0`` is no longer emitted.
+        """
         prop = {"type": "string"}
         enricher._enrich_property(prop, "email")
 
-        # Should have format, pattern, and type defaults
+        # Should have format, pattern, and maxLength (minLength: 0 suppressed)
         assert "format" in prop
         assert "pattern" in prop
-        assert "minLength" in prop  # From string type defaults
+        assert "minLength" not in prop
         assert "maxLength" in prop
 
     def test_stats_tracked_on_enrichment(self, enricher):
@@ -243,8 +252,9 @@ class TestSpecEnrichment:
         assert port_prop["maximum"] == 65535
 
         # Check that string fields got type defaults
+        # Sentinel-suppression: ``minLength: 0`` is no longer emitted.
         email_prop = user_props["email"]
-        assert "minLength" in email_prop
+        assert "minLength" not in email_prop
         assert "maxLength" in email_prop
 
     def test_stats_updated_on_full_enrichment(self, enricher, simple_spec):

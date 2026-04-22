@@ -228,7 +228,7 @@ class GrammarImprover:
             Specification with improved grammar in target fields.
         """
         if target_fields is None:
-            target_fields = ["description", "summary", "title", "x-displayname"]
+            target_fields = ["description", "summary", "x-displayname"]
 
         return self._improve_recursive(spec, target_fields)
 

@@ -31,12 +31,11 @@ class SchemaFixer:
     bounds that downstream tooling relies on.
     """
 
-    # Default upper bound injected into array schemas that do not
-    # declare `maxItems` explicitly. 65535 is a generous-but-bounded
-    # ceiling: large enough for any real F5 XC config payload, small
-    # enough that Checkov CKV_OPENAPI_21 is satisfied. Upstream-set
-    # values are never overwritten.
-    DEFAULT_ARRAY_MAX_ITEMS: ClassVar[int] = 65535
+    # Set to None to disable maxItems stamping. A positive int enables
+    # the feature with that bound. 65535 was the legacy sentinel
+    # meaning "unlimited" - stamping it adds zero information and
+    # trips the contract-diff gate. See design spec 2026-04-22 section 3.3.
+    DEFAULT_ARRAY_MAX_ITEMS: ClassVar[int | None] = None
 
     # Mapping of format values to their corresponding type
     FORMAT_TYPE_MAPPING: ClassVar[dict[str, str]] = {
@@ -121,18 +120,23 @@ class SchemaFixer:
     def inject_max_items(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Inject a default ``maxItems`` into every array schema that lacks one.
 
-        Must run **after** ``ConstraintEnricher`` so the synthetic bound
-        does not leak into ``x-f5xc-constraints``.
+        Disabled by default (see ``DEFAULT_ARRAY_MAX_ITEMS``). When
+        ``_default_max_items`` is ``None``, this is a no-op. When set
+        to a positive int, stamps that value on unbounded array
+        schemas. Must run **after** ``ConstraintEnricher`` so the
+        synthetic bound does not leak into ``x-f5xc-constraints``.
 
         Args:
             spec: OpenAPI specification dictionary.
 
         Returns:
             Specification with ``maxItems`` stamped on every unbounded
-            array schema.
+            array schema, or unchanged if injection is disabled.
         """
         self._max_items_added = 0
         if not self._fix_missing_max_items:
+            return spec
+        if self._default_max_items is None:
             return spec
         return self._inject_max_items_recursive(spec)
 
