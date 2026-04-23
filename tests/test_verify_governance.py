@@ -30,6 +30,19 @@ def _run(cmd: list[str], cwd: Path) -> None:
     subprocess.run(cmd, cwd=cwd, check=True, capture_output=True)
 
 
+@pytest.fixture(autouse=True)
+def _clear_sync_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Isolate tests from CI's GITHUB_HEAD_REF.
+
+    `scripts.verify_governance.main` short-circuits when the env var
+    matches the sync-branch prefix. CI on the docs-control sync PR
+    sets GITHUB_HEAD_REF=governance/sync-managed-files, which would
+    make every `main()` test here return 0 regardless of the scenario
+    under test.
+    """
+    monkeypatch.delenv("GITHUB_HEAD_REF", raising=False)
+
+
 @pytest.fixture
 def repo(tmp_path: Path) -> Path:
     """A minimal git repo with one commit on main and a branch with two changes.
