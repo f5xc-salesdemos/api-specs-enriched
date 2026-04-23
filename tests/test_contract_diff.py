@@ -7,6 +7,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts.contract_diff import Violation, run_contract_diff
 
 FIXTURES = Path(__file__).parent / "fixtures" / "contract_diff"
@@ -155,3 +157,98 @@ def test_run_directory_diff_skips_manifest_and_index(tmp_path: Path) -> None:
     (output_dir / "a.json").write_text(json.dumps({"paths": {}, "components": {"schemas": {}}}))
     violations = run_directory_diff(input_dir, output_dir)
     assert violations == []
+
+
+def test_run_contract_diff_respects_known_drift():
+    """A violation whose fingerprint is in the known_drift set is suppressed."""
+    from scripts.contract_diff import (
+        _fingerprint_violation,
+        run_contract_diff,
+    )
+
+    input_spec = {
+        "components": {"schemas": {"Foo": {"type": "object"}}},
+    }
+    output_spec = {
+        "components": {
+            "schemas": {"Foo": {"type": "string"}}
+        },  # type change — normally a violation
+    }
+    # Compute the fingerprint we want to tolerate. DeepDiff classifies a
+    # string→string change at ['type'] as values_changed (not type_changes);
+    # the fingerprint must match the change_type actually emitted.
+    fp = _fingerprint_violation(
+        "values_changed",
+        "root['components']['schemas']['Foo']['type']",
+        "object",
+        "string",
+    )
+    violations = run_contract_diff(input_spec, output_spec, known_drift={fp})
+    assert violations == [], (
+        f"Expected the tolerated violation to be suppressed; got {violations!r}"
+    )
+
+
+def test_run_contract_diff_without_drift_flags_violation():
+    """Without known_drift, the same change fires."""
+    from scripts.contract_diff import run_contract_diff
+
+    input_spec = {"components": {"schemas": {"Foo": {"type": "object"}}}}
+    output_spec = {"components": {"schemas": {"Foo": {"type": "string"}}}}
+    violations = run_contract_diff(input_spec, output_spec)
+    assert len(violations) == 1
+
+
+def test_fingerprint_is_deterministic():
+    """Same inputs produce same fingerprint across calls."""
+    from scripts.contract_diff import _fingerprint_violation
+
+    fp1 = _fingerprint_violation(
+        "values_changed",
+        "root['a']['b']",
+        {"x": 1, "y": 2},
+        {"y": 2, "x": 1},  # same dict, different insertion order
+    )
+    fp2 = _fingerprint_violation(
+        "values_changed",
+        "root['a']['b']",
+        {"y": 2, "x": 1},
+        {"x": 1, "y": 2},
+    )
+    assert fp1 == fp2, "Fingerprint must be order-independent for dict values"
+
+
+def test_normalize_pointer_collapses_array_indices():
+    """`parameters[2]` and `parameters[3]` fingerprint identically."""
+    from scripts.contract_diff import _normalize_pointer
+
+    p1 = "root['paths']['/x']['get']['parameters'][2]['name']"
+    p2 = "root['paths']['/x']['get']['parameters'][3]['name']"
+    assert _normalize_pointer(p1) == _normalize_pointer(p2)
+    # Keep dict-key segments distinct.
+    p3 = "root['paths']['/x']['get']['parameters'][2]['in']"
+    assert _normalize_pointer(p1) != _normalize_pointer(p3)
+
+
+def test_load_known_drift_missing_file_returns_empty_set(tmp_path: Path):
+    """A missing drift file is not an error — absence means "no tolerance"."""
+    from scripts.contract_diff import load_known_drift
+
+    assert load_known_drift(tmp_path / "does-not-exist.json") == set()
+
+
+def test_load_known_drift_none_path_returns_empty_set():
+    """Passing None short-circuits to the empty set."""
+    from scripts.contract_diff import load_known_drift
+
+    assert load_known_drift(None) == set()
+
+
+def test_load_known_drift_malformed_entry_raises_value_error(tmp_path: Path):
+    """Entries missing 'fingerprint' should raise ValueError with context."""
+    from scripts.contract_diff import load_known_drift
+
+    drift = tmp_path / "bad.json"
+    drift.write_text(json.dumps({"version": 1, "entries": [{"foo": "bar"}]}))
+    with pytest.raises(ValueError, match=r"entries\[0\] missing or non-string 'fingerprint'"):
+        load_known_drift(drift)

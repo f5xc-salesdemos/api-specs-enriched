@@ -245,7 +245,11 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         - consistency_issues: number of consistency issues found
         - domains_normalized: number of domain names normalized (RFC 2606)
     """
-    target_fields = config.get("target_fields", ["description", "summary", "title"])
+    # `title` is INTENTIONALLY omitted from the default list. Title is a
+    # metadata field that downstream codegens and doc tools compare
+    # byte-for-byte against upstream; rewriting it breaks those tools.
+    # See design spec 2026-04-22 §3.1.
+    target_fields = config.get("target_fields", ["description", "summary"])
     grammar_config = config.get("grammar", {})
 
     # Initialize enrichment utilities

@@ -267,7 +267,7 @@ class BrandingTransformer:
             Specification with updated branding in target fields.
         """
         if target_fields is None:
-            target_fields = ["description", "summary", "title", "x-displayname"]
+            target_fields = ["description", "summary", "x-displayname"]
 
         return self._transform_recursive(spec, target_fields)
 
@@ -367,7 +367,7 @@ class BrandingValidator:
             List of found legacy terms with field paths.
         """
         if target_fields is None:
-            target_fields = ["description", "summary", "title", "x-displayname"]
+            target_fields = ["description", "summary", "x-displayname"]
 
         findings: list[dict[str, Any]] = []
         self._validate_recursive(spec, target_fields, "", findings)
@@ -586,7 +586,7 @@ class BrandingNormalizer:
             Specification with normalized terminology.
         """
         if target_fields is None:
-            target_fields = ["description", "summary", "title", "x-displayname"]
+            target_fields = ["description", "summary", "x-displayname"]
 
         self.stats.files_processed += 1
         result = self._normalize_recursive(spec, target_fields, "")

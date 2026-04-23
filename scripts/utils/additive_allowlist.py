@@ -2,15 +2,19 @@
 
 """Classifier for contract-diff: is a given change additive and therefore allowed?
 
-Encodes spec §4.3. Given a deepdiff ``change_type`` and ``pointer`` string
-(e.g. ``"root['paths']['/x']['get']['description']"``), ``is_additive_change``
-returns ``True`` if the change is on the additive allowlist (safe) and
-``False`` if it represents a contract-breaking modification.
+Encodes spec §4.3 plus the four extensions from 2026-04-22 §4. Given a deepdiff
+``change_type`` and ``pointer`` string (e.g.
+``"root['paths']['/x']['get']['description']"``) — and optionally the ``before``
+and ``after`` values — ``is_additive_change`` returns ``True`` if the change is
+on the additive allowlist (safe) and ``False`` if it represents a
+contract-breaking modification.
 """
 
 from __future__ import annotations
 
 import re
+
+from deepdiff import DeepDiff
 
 _FREE_TEXT_KEYS = frozenset(
     {
@@ -26,6 +30,33 @@ _ARRAY_ADDABLE_PARENTS = frozenset({"tags", "servers", "examples"})
 
 _SEGMENT_RE = re.compile(r"\['([^']+)'\]|\[(\d+)\]")
 _X_EXTENSION_RE = re.compile(r"\['x-[^']+'\]")
+
+_ERROR_RESPONSE_TYPE_RE = re.compile(
+    r"\['paths'\]\[[^\]]+\]\[[^\]]+\]\['responses'\]\['[45]\d\d'\]"
+    r"\['content'\]\['application/json'\]\['schema'\]\['type'\]$",
+)
+
+_OPENAPI_FORMATS = frozenset(
+    {
+        "uuid",
+        "uri",
+        "hostname",
+        "ipv4",
+        "ipv6",
+        "email",
+        "date",
+        "date-time",
+        "time",
+        "duration",
+        "byte",
+        "binary",
+        "password",
+        "int32",
+        "int64",
+        "float",
+        "double",
+    },
+)
 
 
 def _terminal_key(pointer: str) -> str:
@@ -54,20 +85,187 @@ def _under_x_extension(pointer: str) -> bool:
     return bool(_X_EXTENSION_RE.search(pointer))
 
 
-def is_additive_change(change_type: str, pointer: str) -> bool:
-    """Return ``True`` iff this change is on the additive allowlist (spec §4.3)."""
+def _is_dictionary_item_added_additive(
+    terminal: str,
+    pointer: str,
+    after: object,
+) -> bool:
+    """Dispatch table for ``dictionary_item_added`` changes."""
+    if terminal.startswith("x-"):
+        return True
+    if terminal in _FREE_TEXT_KEYS:
+        return True
+    if _is_error_response_type_add(pointer):
+        return True
+    if _is_positive_int_maxlength_add(terminal, after):
+        return True
+    if _is_known_format_add(terminal, after):
+        return True
+    if _is_property_add(pointer):
+        return True
+    return _is_additive_dict_add(pointer, after)
+
+
+def _is_values_changed_additive(
+    terminal: str,
+    pointer: str,
+    before: object,
+    after: object,
+) -> bool:
+    """Dispatch table for ``values_changed`` changes."""
+    if terminal in {"description", "summary", "example"}:
+        return True
+    if _under_x_extension(pointer):
+        return True
+    return _is_additive_dict_rewrite(pointer, before, after)
+
+
+def is_additive_change(
+    change_type: str,
+    pointer: str,
+    before: object = None,
+    after: object = None,
+) -> bool:
+    """Return True iff this change is on the additive allowlist.
+
+    Rules match spec 2026-04-21 §4.3 plus the four extensions from
+    2026-04-22 §4 (error-response type, positive maxLength, recursive
+    dict rewrites, known-format adds).
+    """
     terminal = _terminal_key(pointer)
     parent = _parent_key(pointer)
 
     if change_type == "dictionary_item_added":
-        if terminal.startswith("x-"):
-            return True
-        return terminal in _FREE_TEXT_KEYS
+        return _is_dictionary_item_added_additive(terminal, pointer, after)
+
+    if change_type == "values_changed":
+        return _is_values_changed_additive(terminal, pointer, before, after)
+
+    if change_type == "iterable_item_added":
+        return parent in _ARRAY_ADDABLE_PARENTS
+
+    return False
+
+
+def _is_error_response_type_add(pointer: str) -> bool:
+    """Rule 1 — `type: "string"` on 4XX/5XX response schemas (family 5)."""
+    return bool(_ERROR_RESPONSE_TYPE_RE.search(pointer))
+
+
+def _is_positive_int_maxlength_add(terminal: str, after: object) -> bool:
+    """Rule 2 — `maxLength` with positive int (family 6)."""
+    return (
+        terminal == "maxLength"
+        and isinstance(after, int)
+        and not isinstance(after, bool)
+        and after > 0
+    )
+
+
+def _is_known_format_add(terminal: str, after: object) -> bool:
+    """Rule 4 — known OpenAPI format additions (family 8)."""
+    return terminal == "format" and after in _OPENAPI_FORMATS
+
+
+def _is_property_add(pointer: str) -> bool:
+    """Rule 5 — additive new property on a schema's ``properties`` dict.
+
+    Matches any ``dictionary_item_added`` under ``...['properties']['<name>']``.
+    Adding a new property to a schema is additive by OpenAPI contract-
+    evolution semantics — the existing surface is unchanged.
+    """
+    return _parent_key(pointer) == "properties"
+
+
+def _is_additive_dict_add(pointer: str, after: object) -> bool:
+    """Rule 6 — dict-valued add that decomposes to all-additive inner adds.
+
+    The "dict value" case for ``dictionary_item_added``: mirrors Rule 3's
+    ``values_changed`` treatment. If adding a key whose value is itself a
+    dict, decompose each inner key as a nested ``dictionary_item_added``
+    and accept iff every inner member passes ``is_additive_change``.
+    Handles bulk ``properties`` adds (each inner sub-add is itself a
+    property-add per Rule 5) and enrichment dicts like
+    ``x-f5xc-constraints``.
+    """
+    if not isinstance(after, dict):
+        return False
+    for key, value in after.items():
+        sub_pointer = f"{pointer}[{key!r}]"
+        if not is_additive_change("dictionary_item_added", sub_pointer, None, value):
+            return False
+    return True
+
+
+_MAX_DICT_REWRITE_DEPTH = 4
+
+
+def _is_additive_dict_rewrite(
+    pointer: str,
+    before: object,
+    after: object,
+    _depth: int = 0,
+) -> bool:
+    """Rule 3 — decompose a whole-dict rewrite and apply rules recursively.
+
+    deepdiff reports multi-key changes at a parent dict as a single
+    ``values_changed``. If every inner change is individually additive by
+    the rules above, the whole rewrite is additive.
+
+    ``_depth`` caps recursion through nested dict rewrites to avoid
+    blowing the Python/deepdiff stack on very deep OpenAPI subtrees.
+    """
+    if not (isinstance(before, dict) and isinstance(after, dict)):
+        return False
+    if _depth >= _MAX_DICT_REWRITE_DEPTH:
+        return False
+
+    try:
+        inner = DeepDiff(
+            before,
+            after,
+            ignore_order=True,
+            view="tree",
+            threshold_to_diff_deeper=0.0,
+        )
+    except RecursionError:
+        return False
+    for inner_change_type, inner_changes in inner.items():
+        for inner_change in inner_changes:
+            sub_pointer = f"{pointer}{inner_change.path()}"
+            sub_before = getattr(inner_change, "t1", None)
+            sub_after = getattr(inner_change, "t2", None)
+            if not _is_additive_inner(
+                inner_change_type,
+                sub_pointer,
+                sub_before,
+                sub_after,
+                _depth + 1,
+            ):
+                return False
+    return True
+
+
+def _is_additive_inner(
+    change_type: str,
+    pointer: str,
+    before: object,
+    after: object,
+    depth: int,
+) -> bool:
+    """Depth-aware variant of :func:`is_additive_change` for Rule 3 recursion."""
+    terminal = _terminal_key(pointer)
+    parent = _parent_key(pointer)
+
+    if change_type == "dictionary_item_added":
+        return _is_dictionary_item_added_additive(terminal, pointer, after)
 
     if change_type == "values_changed":
         if terminal in {"description", "summary", "example"}:
             return True
-        return _under_x_extension(pointer)
+        if _under_x_extension(pointer):
+            return True
+        return _is_additive_dict_rewrite(pointer, before, after, depth)
 
     if change_type == "iterable_item_added":
         return parent in _ARRAY_ADDABLE_PARENTS

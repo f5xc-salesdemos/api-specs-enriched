@@ -131,3 +131,136 @@ def test_renamed_operation_id_is_not_additive():
         "values_changed",
         t("root['paths']['/x']['get']['operationId']"),
     )
+
+
+# Rule 1 — error-response type additions (family 5)
+
+
+def test_error_response_type_add_is_additive():
+    pointer = (
+        "root['paths']['/x']['get']['responses']['401']"
+        "['content']['application/json']['schema']['type']"
+    )
+    assert is_additive_change("dictionary_item_added", pointer, None, "string")
+
+
+def test_error_response_type_add_on_2xx_is_not_additive():
+    pointer = (
+        "root['paths']['/x']['get']['responses']['200']"
+        "['content']['application/json']['schema']['type']"
+    )
+    assert not is_additive_change("dictionary_item_added", pointer, None, "string")
+
+
+# Rule 2 — positive-int maxLength additions (family 6)
+
+
+def test_positive_int_max_length_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
+    assert is_additive_change("dictionary_item_added", pointer, None, 128)
+
+
+def test_zero_max_length_add_is_not_additive():
+    """maxLength: 0 means empty-only — always broken."""
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, 0)
+
+
+def test_non_int_max_length_add_is_not_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, "128")
+
+
+# Rule 3 — recursive dict-node rewrites (family 7)
+
+
+def test_additive_dict_rewrite_is_accepted():
+    """Whole-parameter rewrite where every inner change is additive."""
+    pointer = "root['paths']['/x']['get']['parameters'][0]"
+    before = {
+        "name": "namespace",
+        "in": "path",
+        "description": "The namespace.\nx-example: system",
+        "required": True,
+    }
+    after = {
+        "name": "namespace",
+        "in": "path",
+        "description": "The namespace.",
+        "required": True,
+        "x-f5xc-example": "system",
+    }
+    assert is_additive_change("values_changed", pointer, before, after)
+
+
+def test_non_additive_dict_rewrite_is_rejected():
+    """Whole-parameter rewrite where one inner change flips a required flag."""
+    pointer = "root['paths']['/x']['get']['parameters'][0]"
+    before = {"name": "ns", "in": "path", "required": True}
+    after = {"name": "ns", "in": "path", "required": False}
+    assert not is_additive_change("values_changed", pointer, before, after)
+
+
+# Rule 4 — known-format additions (family 8)
+
+
+def test_known_format_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['uid']['format']"
+    assert is_additive_change("dictionary_item_added", pointer, None, "uuid")
+
+
+def test_unknown_format_add_is_not_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['uid']['format']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, "totally-made-up")
+
+
+# Rule 5 — new property on a schema's `properties` dict
+
+
+def test_property_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['new_field']"
+    after = {"type": "string", "maxLength": 1024}
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+def test_property_add_with_nested_extensions_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['new_field']"
+    after = {
+        "type": "string",
+        "maxLength": 1024,
+        "x-f5xc-constraints": {
+            "source": "inferred",
+            "confidence": 0.85,
+            "validatedAt": "2026-04-23T00:00:00",
+        },
+    }
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+# Rule 6 — dict-valued add that decomposes to all-additive inner adds
+
+
+def test_bulk_properties_add_is_additive():
+    """The whole `properties` dict being added to a schema is additive
+    when each inner new property is itself additive (Rule 5)."""
+    pointer = "root['components']['schemas']['routeRouteType']['properties']"
+    after = {
+        "bot_defense_javascript_injection": {
+            "type": "boolean",
+            "x-f5xc-constraints": {"source": "discovery"},
+        },
+        "service_policy": {
+            "type": "string",
+            "maxLength": 256,
+        },
+    }
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+def test_non_additive_dict_add_is_rejected():
+    """A dict add whose inner keys aren't additive should fail."""
+    pointer = "root['components']"
+    after = {
+        "schemas": {"Foo": {"type": "object"}},
+    }
+    assert not is_additive_change("dictionary_item_added", pointer, None, after)

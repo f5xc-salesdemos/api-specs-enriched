@@ -96,7 +96,7 @@ class AcronymNormalizer:
             Specification with normalized acronyms in target fields.
         """
         if target_fields is None:
-            target_fields = ["description", "summary", "title", "x-displayname"]
+            target_fields = ["description", "summary", "x-displayname"]
 
         return self._normalize_recursive(spec, target_fields)
 
