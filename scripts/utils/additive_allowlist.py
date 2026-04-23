@@ -99,7 +99,11 @@ def _is_dictionary_item_added_additive(
         return True
     if _is_positive_int_maxlength_add(terminal, after):
         return True
-    return _is_known_format_add(terminal, after)
+    if _is_known_format_add(terminal, after):
+        return True
+    if _is_property_add(pointer):
+        return True
+    return _is_additive_dict_add(pointer, after)
 
 
 def _is_values_changed_additive(
@@ -161,6 +165,36 @@ def _is_positive_int_maxlength_add(terminal: str, after: object) -> bool:
 def _is_known_format_add(terminal: str, after: object) -> bool:
     """Rule 4 — known OpenAPI format additions (family 8)."""
     return terminal == "format" and after in _OPENAPI_FORMATS
+
+
+def _is_property_add(pointer: str) -> bool:
+    """Rule 5 — additive new property on a schema's ``properties`` dict.
+
+    Matches any ``dictionary_item_added`` under ``...['properties']['<name>']``.
+    Adding a new property to a schema is additive by OpenAPI contract-
+    evolution semantics — the existing surface is unchanged.
+    """
+    return _parent_key(pointer) == "properties"
+
+
+def _is_additive_dict_add(pointer: str, after: object) -> bool:
+    """Rule 6 — dict-valued add that decomposes to all-additive inner adds.
+
+    The "dict value" case for ``dictionary_item_added``: mirrors Rule 3's
+    ``values_changed`` treatment. If adding a key whose value is itself a
+    dict, decompose each inner key as a nested ``dictionary_item_added``
+    and accept iff every inner member passes ``is_additive_change``.
+    Handles bulk ``properties`` adds (each inner sub-add is itself a
+    property-add per Rule 5) and enrichment dicts like
+    ``x-f5xc-constraints``.
+    """
+    if not isinstance(after, dict):
+        return False
+    for key, value in after.items():
+        sub_pointer = f"{pointer}[{key!r}]"
+        if not is_additive_change("dictionary_item_added", sub_pointer, None, value):
+            return False
+    return True
 
 
 _MAX_DICT_REWRITE_DEPTH = 4

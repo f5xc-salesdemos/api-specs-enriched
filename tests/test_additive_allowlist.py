@@ -212,3 +212,55 @@ def test_known_format_add_is_additive():
 def test_unknown_format_add_is_not_additive():
     pointer = "root['components']['schemas']['Foo']['properties']['uid']['format']"
     assert not is_additive_change("dictionary_item_added", pointer, None, "totally-made-up")
+
+
+# Rule 5 — new property on a schema's `properties` dict
+
+
+def test_property_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['new_field']"
+    after = {"type": "string", "maxLength": 1024}
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+def test_property_add_with_nested_extensions_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['new_field']"
+    after = {
+        "type": "string",
+        "maxLength": 1024,
+        "x-f5xc-constraints": {
+            "source": "inferred",
+            "confidence": 0.85,
+            "validatedAt": "2026-04-23T00:00:00",
+        },
+    }
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+# Rule 6 — dict-valued add that decomposes to all-additive inner adds
+
+
+def test_bulk_properties_add_is_additive():
+    """The whole `properties` dict being added to a schema is additive
+    when each inner new property is itself additive (Rule 5)."""
+    pointer = "root['components']['schemas']['routeRouteType']['properties']"
+    after = {
+        "bot_defense_javascript_injection": {
+            "type": "boolean",
+            "x-f5xc-constraints": {"source": "discovery"},
+        },
+        "service_policy": {
+            "type": "string",
+            "maxLength": 256,
+        },
+    }
+    assert is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+def test_non_additive_dict_add_is_rejected():
+    """A dict add whose inner keys aren't additive should fail."""
+    pointer = "root['components']"
+    after = {
+        "schemas": {"Foo": {"type": "object"}},
+    }
+    assert not is_additive_change("dictionary_item_added", pointer, None, after)
