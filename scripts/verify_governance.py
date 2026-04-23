@@ -26,11 +26,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 DEFAULT_GOVERNANCE_JSON = Path(".claude/governance.json")
+
+# Branches created by the docs-control sync-managed-files workflow carry
+# the very files this check would otherwise reject. Exempt them by prefix;
+# the sync is the authorized upstream channel, so blocking it would self-
+# block every consumer every time docs-control updates a managed file.
+SYNC_BRANCH_PREFIXES = ("governance/sync-managed-files",)
+
+
+def _is_governance_sync_branch() -> bool:
+    """Return True when running on a PR from the managed-files sync bot."""
+    head_ref = os.environ.get("GITHUB_HEAD_REF", "")
+    return any(head_ref.startswith(prefix) for prefix in SYNC_BRANCH_PREFIXES)
 
 
 class GovernanceViolationError(RuntimeError):
@@ -99,6 +112,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to governance.json (default: .claude/governance.json)",
     )
     args = parser.parse_args(argv)
+
+    if _is_governance_sync_branch():
+        head_ref = os.environ.get("GITHUB_HEAD_REF", "")
+        print(f"ok: skipping governance check on sync branch {head_ref}")
+        return 0
 
     try:
         violations = verify(args.base, args.head, args.governance_json)
