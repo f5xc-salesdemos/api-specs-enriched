@@ -601,11 +601,14 @@ jobs:
             gh pr merge "$BRANCH" --squash --auto --delete-branch
 
             # Wait for PR to merge with exponential backoff (60 s warm-up + up
-            # to 15 min total). Replaces a prior hardcoded 30×10 s loop that
-            # timed out whenever Super-Linter ran longer than 5 min, leaving
-            # the release PR orphaned. Exits non-zero on CLOSED-without-merge
-            # or on timeout; emits diagnostic JSON to stderr on failure.
-            bash scripts/release/wait-for-merge.sh "$BRANCH"
+            # to 30 min total). The 30-min ceiling accommodates the enforcing
+            # Contract-diff gate which runs the full enrichment pipeline
+            # (~21 min) as the long-pole check. Replaces a prior hardcoded
+            # 30×10 s loop that timed out whenever Super-Linter ran longer
+            # than 5 min, leaving the release PR orphaned. Exits non-zero on
+            # CLOSED-without-merge or on timeout; emits diagnostic JSON to
+            # stderr on failure.
+            WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$BRANCH"
 
             # Switch back to main and pull the merge commit
             git checkout main
