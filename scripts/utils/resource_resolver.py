@@ -54,7 +54,7 @@ def resolve_resource(
     matching_components: list[str] = []
     for comp in sorted(all_domain_components):
         last_segment = comp.rsplit(".", 1)[-1]
-        if last_segment == name or comp == name:
+        if name in (last_segment, comp):
             matching_components.append(comp)
 
     if not matching_components:
@@ -83,13 +83,9 @@ def apply_overrides(
     schema_components = config_entry.get("schema_components", heuristic[0])
     api_paths = config_entry.get("api_paths", heuristic[1])
     if not isinstance(schema_components, list):
-        raise TypeError(
-            f"schema_components must be a list, got {type(schema_components).__name__}"
-        )
+        raise TypeError(f"schema_components must be a list, got {type(schema_components).__name__}")
     if not isinstance(api_paths, list):
-        raise TypeError(
-            f"api_paths must be a list, got {type(api_paths).__name__}"
-        )
+        raise TypeError(f"api_paths must be a list, got {type(api_paths).__name__}")
     return schema_components, api_paths
 
 
@@ -114,16 +110,14 @@ def validate_resource_mappings(
                     f"got {type(entries).__name__}"
                 )
                 continue
-            if not entries:
-                pass
-            else:
-                for comp in entries:
-                    if comp not in all_components:
-                        errors.append(
-                            f"resource '{resource_name}': schema_component '{comp}' "
-                            f"not found in domain '{domain}' operationIds"
-                        )
-                if heuristic[0] and set(override_entry["schema_components"]) != set(heuristic[0]):
+            if entries:
+                errors.extend(
+                    f"resource '{resource_name}': schema_component '{comp}' "
+                    f"not found in domain '{domain}' operationIds"
+                    for comp in entries
+                    if comp not in all_components
+                )
+                if heuristic[0] and set(entries) != set(heuristic[0]):
                     logger.warning(
                         "resource '%s': config schema_components override replaces "
                         "heuristic result — entry may be redundant",
@@ -138,16 +132,14 @@ def validate_resource_mappings(
                     f"got {type(entries).__name__}"
                 )
                 continue
-            if not entries:
-                pass
-            else:
-                for path in entries:
-                    if path not in domain_paths:
-                        errors.append(
-                            f"resource '{resource_name}': api_path '{path}' "
-                            f"not found in domain '{domain}' paths"
-                        )
-                if heuristic[1] and set(override_entry["api_paths"]) != set(heuristic[1]):
+            if entries:
+                errors.extend(
+                    f"resource '{resource_name}': api_path '{path}' "
+                    f"not found in domain '{domain}' paths"
+                    for path in entries
+                    if path not in domain_paths
+                )
+                if heuristic[1] and set(entries) != set(heuristic[1]):
                     logger.warning(
                         "resource '%s': config api_paths override replaces "
                         "heuristic result — entry may be redundant",
@@ -160,7 +152,12 @@ def validate_resource_mappings(
 def _dry_run_discovery() -> None:
     """Print unresolvable resources with candidate components."""
     specs_dir = Path(__file__).parent.parent.parent / "docs" / "specifications" / "api"
-    from scripts.utils.domain_metadata import DOMAIN_PRIMARY_RESOURCES, _load_resource_metadata  # noqa: PLC0415
+
+    from scripts.utils.domain_metadata import (  # noqa: PLC0415
+        DOMAIN_PRIMARY_RESOURCES,
+        _load_resource_metadata,
+    )
+
     resource_config = _load_resource_metadata()
     unresolvable_count = 0
 
@@ -183,16 +180,16 @@ def _dry_run_discovery() -> None:
             unresolvable_count += 1
             print(f"\ndomain: {domain}")
             print(f"resource: {name}")
-            print(f"  heuristic: empty (no operationId match)")
-            print(f"  candidate components from domain operationIds:")
+            print("  heuristic: empty (no operationId match)")
+            print("  candidate components from domain operationIds:")
             for comp in all_components[:8]:
                 print(f"    - {comp}")
             if len(all_components) > 8:
                 print(f"    ... ({len(all_components) - 8} more)")
-            print(f"  stub:")
+            print("  stub:")
             print(f"    {name}:")
-            print(f"      schema_components: []  # fill in from candidates above")
-            print(f"      api_paths: []          # fill in matching path patterns")
+            print("      schema_components: []  # fill in from candidates above")
+            print("      api_paths: []          # fill in matching path patterns")
     print(f"\n# Total unresolvable resources: {unresolvable_count}")
 
 

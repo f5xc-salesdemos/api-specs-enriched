@@ -44,9 +44,7 @@ class TestOperationIdParsing:
         assert match.group(1) == "views.api_definition"
 
     def test_custom_data_api_extracted(self):
-        match = OPERATIONID_REGEX.match(
-            "ves.io.schema.dns_zone.CustomDataAPI.GetMetrics"
-        )
+        match = OPERATIONID_REGEX.match("ves.io.schema.dns_zone.CustomDataAPI.GetMetrics")
         assert match is not None
         assert match.group(1) == "dns_zone"
 
@@ -219,17 +217,13 @@ class TestValidation:
 
     def test_valid_override_passes(self, minimal_domain_paths):
         heuristic = {"http_loadbalancer": (["views.http_loadbalancer"], [])}
-        overrides = {
-            "http_loadbalancer": {"schema_components": ["views.http_loadbalancer"]}
-        }
+        overrides = {"http_loadbalancer": {"schema_components": ["views.http_loadbalancer"]}}
         errors = validate_resource_mappings(heuristic, overrides, minimal_domain_paths, "virtual")
         assert errors == []
 
     def test_invalid_schema_component_fails(self, minimal_domain_paths):
         heuristic = {"http_loadbalancer": ([], [])}
-        overrides = {
-            "http_loadbalancer": {"schema_components": ["views.nonexistent_resource"]}
-        }
+        overrides = {"http_loadbalancer": {"schema_components": ["views.nonexistent_resource"]}}
         errors = validate_resource_mappings(heuristic, overrides, minimal_domain_paths, "virtual")
         assert len(errors) == 1
         assert "views.nonexistent_resource" in errors[0]
@@ -304,6 +298,8 @@ class TestConceptualResources:
         assert api_paths == []
 
     def test_apply_overrides_empty_config_preserves_empty_heuristic(self):
-        schema_comps, api_paths = apply_overrides(([], []), {"schema_components": [], "api_paths": []})
+        schema_comps, api_paths = apply_overrides(
+            ([], []), {"schema_components": [], "api_paths": []}
+        )
         assert schema_comps == []
         assert api_paths == []

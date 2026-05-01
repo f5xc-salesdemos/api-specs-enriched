@@ -334,9 +334,7 @@ def get_primary_resources_metadata(
     domain_paths = spec.get("paths", {})
     resource_config = _load_resource_metadata()
 
-    heuristic_results = {
-        name: resolve_resource(name, domain_paths) for name in resource_names
-    }
+    heuristic_results = {name: resolve_resource(name, domain_paths) for name in resource_names}
 
     # Only apply config overrides where the heuristic returned empty.
     # Resource names can appear in multiple domains (e.g. origin_pool in
@@ -347,18 +345,14 @@ def get_primary_resources_metadata(
         name: resource_config[name]
         for name in resource_names
         if name in resource_config
-        and (
-            "schema_components" in resource_config[name]
-            or "api_paths" in resource_config[name]
-        )
+        and ("schema_components" in resource_config[name] or "api_paths" in resource_config[name])
         and not heuristic_results[name][0]
     }
 
     errors = validate_resource_mappings(heuristic_results, config_overrides, domain_paths, domain)
     if errors:
         raise ValueError(
-            f"Resource mapping validation failed for domain '{domain}':\n"
-            + "\n".join(errors)
+            f"Resource mapping validation failed for domain '{domain}':\n" + "\n".join(errors)
         )
 
     for resource in resources:
