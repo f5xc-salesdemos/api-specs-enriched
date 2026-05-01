@@ -1,6 +1,6 @@
 {
-  "version": "2.1.62",
-  "timestamp": "2026-04-23T08:54:04.516192+00:00",
+  "version": "2.1.63",
+  "timestamp": "2026-05-01T14:05:57.633372+00:00",
   "specifications": [
     {
       "domain": "admin_console_and_ui",
@@ -38,7 +38,12 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["ui.static_component"],
+          "api_paths": [
+            "/api/web/namespaces/{namespace}/static_components",
+            "/api/web/namespaces/{namespace}/static_components/{name}"
+          ]
         },
         {
           "name": "static_asset",
@@ -53,7 +58,12 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["ui.static_component"],
+          "api_paths": [
+            "/api/web/namespaces/{namespace}/static_components",
+            "/api/web/namespaces/{namespace}/static_components/{name}"
+          ]
         }
       ]
     },
@@ -93,7 +103,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "ai_gateway",
@@ -108,7 +120,9 @@
             "required": [],
             "optional": ["ai_policy"]
           },
-          "relationship_hints": ["ai_policy: Policy for AI traffic control"]
+          "relationship_hints": ["ai_policy: Policy for AI traffic control"],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -148,7 +162,19 @@
             "required": [],
             "optional": ["api_endpoint"]
           },
-          "relationship_hints": ["api_endpoint: Endpoints defined by this API"]
+          "relationship_hints": ["api_endpoint: Endpoints defined by this API"],
+          "schema_components": ["views.api_definition"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/api_definitions",
+            "/api/config/namespaces/{metadata.namespace}/api_definitions/{metadata.name}",
+            "/api/config/namespaces/{namespace}/api_definitions",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}/loadbalancers",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}/mark_as_non_api",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}/move_to_inventory",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}/remove_from_inventory",
+            "/api/config/namespaces/{namespace}/api_definitions/{name}/unmark_as_non_api"
+          ]
         },
         {
           "name": "api_endpoint",
@@ -163,7 +189,12 @@
             "required": [],
             "optional": ["api_rate_limit"]
           },
-          "relationship_hints": ["api_rate_limit: Rate limiting for this endpoint"]
+          "relationship_hints": ["api_rate_limit: Rate limiting for this endpoint"],
+          "schema_components": ["api_group_element"],
+          "api_paths": [
+            "/api/web/namespaces/{namespace}/api_group_elements",
+            "/api/web/namespaces/{namespace}/api_group_elements/{name}"
+          ]
         },
         {
           "name": "api_rate_limit",
@@ -178,7 +209,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ],
       "x-f5xc-cli-metadata": {
@@ -262,7 +295,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "token",
@@ -277,7 +312,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "api_credential",
@@ -292,7 +329,16 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["api_credential"],
+          "api_paths": [
+            "/api/web/namespaces/system/bulk_revoke/api_credentials",
+            "/api/web/namespaces/{namespace}/activate/api_credentials",
+            "/api/web/namespaces/{namespace}/api_credentials",
+            "/api/web/namespaces/{namespace}/api_credentials/{name}",
+            "/api/web/namespaces/{namespace}/renew/api_credentials",
+            "/api/web/namespaces/{namespace}/revoke/api_credentials"
+          ]
         }
       ]
     },
@@ -332,7 +378,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "bigip_device",
@@ -347,7 +395,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -387,7 +437,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["subscription", "usage.subscription"],
+          "api_paths": ["/api/web/namespaces/{namespace}/subscriptions/custom_list"]
         },
         {
           "name": "quota",
@@ -402,7 +454,16 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["quota"],
+          "api_paths": [
+            "/api/web/namespaces/{metadata.namespace}/quotas",
+            "/api/web/namespaces/{metadata.namespace}/quotas/{metadata.name}",
+            "/api/web/namespaces/{namespace}/quota/limits",
+            "/api/web/namespaces/{namespace}/quota/usage",
+            "/api/web/namespaces/{namespace}/quotas",
+            "/api/web/namespaces/{namespace}/quotas/{name}"
+          ]
         },
         {
           "name": "usage_report",
@@ -417,7 +478,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["usage"],
+          "api_paths": [
+            "/api/web/namespaces/{namespace}/current_usage",
+            "/api/web/namespaces/{namespace}/hourly_usage_details",
+            "/api/web/namespaces/{namespace}/monthly_usage",
+            "/api/web/namespaces/{namespace}/usage_details"
+          ]
         }
       ]
     },
@@ -456,7 +524,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "secret_policy",
@@ -471,7 +541,17 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["secret_policy"],
+          "api_paths": [
+            "/api/secret_management/namespaces/{metadata.namespace}/secret_policys",
+            "/api/secret_management/namespaces/{metadata.namespace}/secret_policys/{metadata.name}",
+            "/api/secret_management/namespaces/{namespace}/secret_policy/list_policy/{policy_state}",
+            "/api/secret_management/namespaces/{namespace}/secret_policy/{name}/recover",
+            "/api/secret_management/namespaces/{namespace}/secret_policy/{name}/softdelete",
+            "/api/secret_management/namespaces/{namespace}/secret_policys",
+            "/api/secret_management/namespaces/{namespace}/secret_policys/{name}"
+          ]
         },
         {
           "name": "policy_document",
@@ -486,7 +566,12 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["secret_management"],
+          "api_paths": [
+            "/api/secret_management/get_public_key",
+            "/api/secret_management/namespaces/{namespace}/secret_policys/{name}/get_policy_document"
+          ]
         }
       ]
     },
@@ -526,7 +611,12 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["shape_bot_defense_instance"],
+          "api_paths": [
+            "/api/config/namespaces/{namespace}/shape_bot_defense_instances",
+            "/api/config/namespaces/{namespace}/shape_bot_defense_instances/{name}"
+          ]
         },
         {
           "name": "threat_category",
@@ -541,7 +631,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["tpm_category"],
+          "api_paths": [
+            "/api/tpm/namespaces/{metadata.namespace}/tpm_categorys",
+            "/api/tpm/namespaces/{metadata.namespace}/tpm_categorys/{metadata.name}",
+            "/api/tpm/namespaces/{namespace}/tpm_categorys",
+            "/api/tpm/namespaces/{namespace}/tpm_categorys/{name}"
+          ]
         }
       ]
     },
@@ -581,7 +678,23 @@
             "required": ["cdn_origin_pool"],
             "optional": []
           },
-          "relationship_hints": ["cdn_origin_pool: Origin servers for CDN content"]
+          "relationship_hints": ["cdn_origin_pool: Origin servers for CDN content"],
+          "schema_components": ["views.cdn_loadbalancer"],
+          "api_paths": [
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/access_logs",
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/access_logs/aggregation",
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/get-service-operation-status",
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/list-service-operations-status",
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/metrics",
+            "/api/cdn/namespaces/{namespace}/cdn_loadbalancer/{name}/cache-purge",
+            "/api/config/namespaces/{metadata.namespace}/cdn_loadbalancers",
+            "/api/config/namespaces/{metadata.namespace}/cdn_loadbalancers/{metadata.name}",
+            "/api/config/namespaces/{namespace}/cdn_loadbalancers",
+            "/api/config/namespaces/{namespace}/cdn_loadbalancers/get_security_config",
+            "/api/config/namespaces/{namespace}/cdn_loadbalancers/{name}",
+            "/api/config/namespaces/{namespace}/cdn_loadbalancers/{name}/dos_automitigation_rules",
+            "/api/config/namespaces/{namespace}/cdn_loadbalancers/{name}/dos_automitigation_rules/{dos_automitigation_rule_name}"
+          ]
         },
         {
           "name": "cdn_origin_pool",
@@ -596,7 +709,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ],
       "x-f5xc-examples": {
@@ -650,7 +765,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "fleet_config",
@@ -665,7 +782,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["fleet"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/fleets",
+            "/api/config/namespaces/{metadata.namespace}/fleets/{metadata.name}",
+            "/api/config/namespaces/{namespace}/fleets",
+            "/api/config/namespaces/{namespace}/fleets/{name}"
+          ]
         },
         {
           "name": "registration_token",
@@ -680,7 +804,22 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["registration"],
+          "api_paths": [
+            "/api/register/namespaces/system/get-image-download-url",
+            "/api/register/namespaces/system/get-registrations-by-token",
+            "/api/register/namespaces/system/suggest-values",
+            "/api/register/namespaces/{metadata.namespace}/registrations",
+            "/api/register/namespaces/{metadata.namespace}/registrations/{metadata.name}",
+            "/api/register/namespaces/{namespace}/listregistrationsbystate",
+            "/api/register/namespaces/{namespace}/registration/{name}/approve",
+            "/api/register/namespaces/{namespace}/registrations",
+            "/api/register/namespaces/{namespace}/registrations/{name}",
+            "/api/register/namespaces/{namespace}/registrations_by_site/{site_name}",
+            "/api/register/registerBootstrap",
+            "/api/register/requestConfig"
+          ]
         }
       ]
     },
@@ -720,7 +859,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["certificate"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/certificates",
+            "/api/config/namespaces/{metadata.namespace}/certificates/{metadata.name}",
+            "/api/config/namespaces/{namespace}/certificates",
+            "/api/config/namespaces/{namespace}/certificates/{name}"
+          ]
         },
         {
           "name": "ca_certificate",
@@ -735,7 +881,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["trusted_ca_list"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/trusted_ca_lists",
+            "/api/config/namespaces/{metadata.namespace}/trusted_ca_lists/{metadata.name}",
+            "/api/config/namespaces/{namespace}/trusted_ca_lists",
+            "/api/config/namespaces/{namespace}/trusted_ca_lists/{name}"
+          ]
         },
         {
           "name": "certificate_chain",
@@ -750,7 +903,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["certificate_chain"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/certificate_chains",
+            "/api/config/namespaces/{metadata.namespace}/certificate_chains/{metadata.name}",
+            "/api/config/namespaces/{namespace}/certificate_chains",
+            "/api/config/namespaces/{namespace}/certificate_chains/{name}"
+          ]
         }
       ]
     },
@@ -790,7 +950,9 @@
             "required": ["cloud_credentials"],
             "optional": []
           },
-          "relationship_hints": ["cloud_credentials: AWS authentication for deployment"]
+          "relationship_hints": ["cloud_credentials: AWS authentication for deployment"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "azure_vnet_site",
@@ -805,7 +967,9 @@
             "required": ["cloud_credentials"],
             "optional": []
           },
-          "relationship_hints": ["cloud_credentials: Azure authentication for deployment"]
+          "relationship_hints": ["cloud_credentials: Azure authentication for deployment"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "gcp_vpc_site",
@@ -820,7 +984,9 @@
             "required": ["cloud_credentials"],
             "optional": []
           },
-          "relationship_hints": ["cloud_credentials: GCP authentication for deployment"]
+          "relationship_hints": ["cloud_credentials: GCP authentication for deployment"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "cloud_credentials",
@@ -835,7 +1001,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["cloud_credentials"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/cloud_credentialss",
+            "/api/config/namespaces/{metadata.namespace}/cloud_credentialss/{metadata.name}",
+            "/api/config/namespaces/{namespace}/cloud_credentialss",
+            "/api/config/namespaces/{namespace}/cloud_credentialss/{name}"
+          ]
         }
       ]
     },
@@ -875,7 +1048,14 @@
             "required": [],
             "optional": ["workload"]
           },
-          "relationship_hints": ["workload: Container workloads in this namespace"]
+          "relationship_hints": ["workload: Container workloads in this namespace"],
+          "schema_components": ["virtual_k8s"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/virtual_k8ss",
+            "/api/config/namespaces/{metadata.namespace}/virtual_k8ss/{metadata.name}",
+            "/api/config/namespaces/{namespace}/virtual_k8ss",
+            "/api/config/namespaces/{namespace}/virtual_k8ss/{name}"
+          ]
         },
         {
           "name": "workload",
@@ -890,7 +1070,15 @@
             "required": ["virtual_k8s"],
             "optional": []
           },
-          "relationship_hints": ["virtual_k8s: Namespace for workload deployment"]
+          "relationship_hints": ["virtual_k8s: Namespace for workload deployment"],
+          "schema_components": ["views.workload"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/workloads",
+            "/api/config/namespaces/{metadata.namespace}/workloads/{metadata.name}",
+            "/api/config/namespaces/{namespace}/workloads",
+            "/api/config/namespaces/{namespace}/workloads/{name}",
+            "/api/data/namespaces/{namespace}/workloads/usage"
+          ]
         },
         {
           "name": "pod_security_policy",
@@ -905,7 +1093,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -945,7 +1135,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["sensitive_data_policy"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/sensitive_data_policys",
+            "/api/config/namespaces/{metadata.namespace}/sensitive_data_policys/{metadata.name}",
+            "/api/config/namespaces/{namespace}/sensitive_data_policys",
+            "/api/config/namespaces/{namespace}/sensitive_data_policys/{name}"
+          ]
         },
         {
           "name": "data_classification",
@@ -960,7 +1157,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["data_type"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/data_types",
+            "/api/config/namespaces/{metadata.namespace}/data_types/{metadata.name}",
+            "/api/config/namespaces/{namespace}/data_types",
+            "/api/config/namespaces/{namespace}/data_types/{name}"
+          ]
         }
       ]
     },
@@ -999,7 +1203,19 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["shape.data_delivery"],
+          "api_paths": [
+            "/api/data-intelligence/namespaces/system/dataSets",
+            "/api/data-intelligence/namespaces/system/datadictionary/{dataset}",
+            "/api/data-intelligence/namespaces/system/init-request",
+            "/api/data-intelligence/namespaces/{namespace}/data-dictionary/datasets",
+            "/api/data-intelligence/namespaces/{namespace}/di/flowlabels",
+            "/api/data-intelligence/namespaces/{namespace}/di/summary",
+            "/api/data-intelligence/namespaces/{namespace}/receivers/{id}/status",
+            "/api/data-intelligence/namespaces/{namespace}/receivers/{id}/test",
+            "/api/data-intelligence/namespaces/{namespace}/suggest-values"
+          ]
         },
         {
           "name": "data_export",
@@ -1014,7 +1230,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["shape.data_delivery.receiver"],
+          "api_paths": [
+            "/api/data-intelligence/namespaces/{metadata.namespace}/receivers",
+            "/api/data-intelligence/namespaces/{metadata.namespace}/receivers/{metadata.name}",
+            "/api/data-intelligence/namespaces/{namespace}/receivers",
+            "/api/data-intelligence/namespaces/{namespace}/receivers/{name}"
+          ]
         }
       ]
     },
@@ -1053,7 +1276,33 @@
             "required": [],
             "optional": ["ddos_mitigation_rule"]
           },
-          "relationship_hints": ["ddos_mitigation_rule: Custom mitigation rules"]
+          "relationship_hints": ["ddos_mitigation_rule: Custom mitigation rules"],
+          "schema_components": ["infraprotect"],
+          "api_paths": [
+            "/api/data/namespaces/{namespace}/infraprotect/bgp_peer_status",
+            "/api/data/namespaces/{namespace}/infraprotect/transit_usage",
+            "/api/infraprotect/namespaces/system/infraprotect/access",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/alert/{alert_id}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/alert/{alert_id}/to_event",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/alerts",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/alerts",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/attachments",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/detail/{event_detail_id}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/details",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/mitigation_annotations",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/events",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/events_summary",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/annotations",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/countermeasures",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/ips",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigations",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/networks",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/report/{report_id}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect/reports",
+            "/api/infraprotect/namespaces/{namespace}/suggest-values"
+          ]
         },
         {
           "name": "ddos_mitigation_rule",
@@ -1068,7 +1317,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["infraprotect_firewall_rule"],
+          "api_paths": [
+            "/api/infraprotect/namespaces/{metadata.namespace}/infraprotect_firewall_rules",
+            "/api/infraprotect/namespaces/{metadata.namespace}/infraprotect_firewall_rules/{metadata.name}",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rules",
+            "/api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rules/{name}"
+          ]
         }
       ]
     },
@@ -1108,7 +1364,24 @@
             "required": [],
             "optional": ["dns_load_balancer"]
           },
-          "relationship_hints": ["dns_load_balancer: Geographic or weighted DNS routing"]
+          "relationship_hints": ["dns_load_balancer: Geographic or weighted DNS routing"],
+          "schema_components": ["dns_zone"],
+          "api_paths": [
+            "/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain",
+            "/api/config/dns/namespaces/system/dns_zone/import",
+            "/api/config/dns/namespaces/system/dns_zone/import_axfr",
+            "/api/config/dns/namespaces/system/dns_zone/import_bind_create",
+            "/api/config/dns/namespaces/system/dns_zone/import_bind_validate",
+            "/api/config/dns/namespaces/{metadata.namespace}/dns_zones",
+            "/api/config/dns/namespaces/{metadata.namespace}/dns_zones/{metadata.name}",
+            "/api/config/dns/namespaces/{namespace}/dns_zone/{dns_zone_name}/local_zone_file",
+            "/api/config/dns/namespaces/{namespace}/dns_zone/{dns_zone_name}/remote_zone_file",
+            "/api/config/dns/namespaces/{namespace}/dns_zone/{dns_zone_name}/zone_file/export",
+            "/api/config/dns/namespaces/{namespace}/dns_zones",
+            "/api/config/dns/namespaces/{namespace}/dns_zones/{name}",
+            "/api/data/namespaces/{namespace}/dns_zones/metrics",
+            "/api/data/namespaces/{namespace}/dns_zones/request_logs"
+          ]
         },
         {
           "name": "dns_domain",
@@ -1123,7 +1396,15 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["dns_domain"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/dns_domains",
+            "/api/config/namespaces/{metadata.namespace}/dns_domains/{metadata.name}",
+            "/api/config/namespaces/{namespace}/dns_domain/{name}/verify",
+            "/api/config/namespaces/{namespace}/dns_domains",
+            "/api/config/namespaces/{namespace}/dns_domains/{name}"
+          ]
         },
         {
           "name": "dns_load_balancer",
@@ -1138,7 +1419,19 @@
             "required": ["dns_zone"],
             "optional": []
           },
-          "relationship_hints": ["dns_zone: Parent zone for DNS records"]
+          "relationship_hints": ["dns_zone: Parent zone for DNS records"],
+          "schema_components": ["dns_load_balancer"],
+          "api_paths": [
+            "/api/config/dns/namespaces/{metadata.namespace}/dns_load_balancers",
+            "/api/config/dns/namespaces/{metadata.namespace}/dns_load_balancers/{metadata.name}",
+            "/api/config/dns/namespaces/{namespace}/dns_load_balancers",
+            "/api/config/dns/namespaces/{namespace}/dns_load_balancers/{name}",
+            "/api/data/namespaces/{namespace}/dns_load_balancers/health_status",
+            "/api/data/namespaces/{namespace}/dns_load_balancers/pool_members_health_status",
+            "/api/data/namespaces/{namespace}/dns_load_balancers/{dns_lb_name}/dns_lb_pools/{dns_lb_pool_name}/health_status",
+            "/api/data/namespaces/{namespace}/dns_load_balancers/{dns_lb_name}/dns_lb_pools/{dns_lb_pool_name}/pool_members/{pool_member_address}/health_status_change_events",
+            "/api/data/namespaces/{namespace}/dns_load_balancers/{name}/health_status"
+          ]
         }
       ],
       "x-f5xc-cli-metadata": {
@@ -1235,7 +1528,9 @@
             "required": [],
             "optional": ["k8s_cluster_role"]
           },
-          "relationship_hints": ["k8s_cluster_role: RBAC roles for cluster access"]
+          "relationship_hints": ["k8s_cluster_role: RBAC roles for cluster access"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "k8s_cluster_role",
@@ -1250,7 +1545,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["k8s_cluster_role"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/k8s_cluster_roles",
+            "/api/config/namespaces/{metadata.namespace}/k8s_cluster_roles/{metadata.name}",
+            "/api/config/namespaces/{namespace}/k8s_cluster_roles",
+            "/api/config/namespaces/{namespace}/k8s_cluster_roles/{name}"
+          ]
         },
         {
           "name": "container_registry",
@@ -1265,7 +1567,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["container_registry"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/container_registrys",
+            "/api/config/namespaces/{metadata.namespace}/container_registrys/{metadata.name}",
+            "/api/config/namespaces/{namespace}/container_registrys",
+            "/api/config/namespaces/{namespace}/container_registrys/{name}"
+          ]
         }
       ]
     },
@@ -1305,7 +1614,15 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["pbac.addon_service"],
+          "api_paths": [
+            "/api/web/custom/namespaces/shared/addon_services/{name}",
+            "/api/web/namespaces/system/addon_services/{addon_service}/activation-status",
+            "/api/web/namespaces/system/addon_services/{addon_service}/all-activation-status",
+            "/api/web/namespaces/{namespace}/addon_services",
+            "/api/web/namespaces/{namespace}/addon_services/{name}"
+          ]
         },
         {
           "name": "subscription",
@@ -1320,7 +1637,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["pbac.addon_subscription"],
+          "api_paths": [
+            "/api/web/namespaces/{metadata.namespace}/addon_subscriptions",
+            "/api/web/namespaces/{metadata.namespace}/addon_subscriptions/{metadata.name}",
+            "/api/web/namespaces/{namespace}/addon_subscriptions",
+            "/api/web/namespaces/{namespace}/addon_subscriptions/{name}"
+          ]
         }
       ]
     },
@@ -1362,7 +1686,14 @@
             "required": [],
             "optional": ["network_connector"]
           },
-          "relationship_hints": ["network_connector: Connect to external networks"]
+          "relationship_hints": ["network_connector: Connect to external networks"],
+          "schema_components": ["virtual_network"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/virtual_networks",
+            "/api/config/namespaces/{metadata.namespace}/virtual_networks/{metadata.name}",
+            "/api/config/namespaces/{namespace}/virtual_networks",
+            "/api/config/namespaces/{namespace}/virtual_networks/{name}"
+          ]
         },
         {
           "name": "network_connector",
@@ -1377,7 +1708,14 @@
             "required": ["virtual_network"],
             "optional": []
           },
-          "relationship_hints": ["virtual_network: Network to connect"]
+          "relationship_hints": ["virtual_network: Network to connect"],
+          "schema_components": ["network_connector"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/network_connectors",
+            "/api/config/namespaces/{metadata.namespace}/network_connectors/{metadata.name}",
+            "/api/config/namespaces/{namespace}/network_connectors",
+            "/api/config/namespaces/{namespace}/network_connectors/{name}"
+          ]
         },
         {
           "name": "site_mesh_group",
@@ -1392,7 +1730,9 @@
             "required": ["site"],
             "optional": []
           },
-          "relationship_hints": ["site: Sites to include in mesh connectivity"]
+          "relationship_hints": ["site: Sites to include in mesh connectivity"],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -1433,7 +1773,15 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["network_policy"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/network_policys",
+            "/api/config/namespaces/{metadata.namespace}/network_policys/{metadata.name}",
+            "/api/config/namespaces/{namespace}/network_policys",
+            "/api/config/namespaces/{namespace}/network_policys/{name}",
+            "/api/data/namespaces/{namespace}/network_policy/hits"
+          ]
         },
         {
           "name": "forward_proxy_policy",
@@ -1448,7 +1796,15 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["views.forward_proxy_policy"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/forward_proxy_policys",
+            "/api/config/namespaces/{metadata.namespace}/forward_proxy_policys/{metadata.name}",
+            "/api/config/namespaces/{namespace}/forward_proxy_policys",
+            "/api/config/namespaces/{namespace}/forward_proxy_policys/{name}",
+            "/api/data/namespaces/{namespace}/forward_proxy_policy/hits"
+          ]
         },
         {
           "name": "network_firewall",
@@ -1463,7 +1819,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["network_firewall"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/network_firewalls",
+            "/api/config/namespaces/{metadata.namespace}/network_firewalls/{metadata.name}",
+            "/api/config/namespaces/{namespace}/network_firewalls",
+            "/api/config/namespaces/{namespace}/network_firewalls/{name}"
+          ]
         }
       ]
     },
@@ -1502,7 +1865,12 @@
             "required": [],
             "optional": ["nginx_upstream"]
           },
-          "relationship_hints": ["nginx_upstream: Backend server configuration"]
+          "relationship_hints": ["nginx_upstream: Backend server configuration"],
+          "schema_components": ["nginx.one.nginx_csg"],
+          "api_paths": [
+            "/api/config/namespaces/{namespace}/nginx_csgs",
+            "/api/config/namespaces/{namespace}/nginx_csgs/{name}"
+          ]
         },
         {
           "name": "nginx_upstream",
@@ -1517,7 +1885,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -1556,7 +1926,19 @@
             "required": [],
             "optional": ["bucket"]
           },
-          "relationship_hints": ["bucket: Storage buckets in this store"]
+          "relationship_hints": ["bucket: Storage buckets in this store"],
+          "schema_components": ["stored_object"],
+          "api_paths": [
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-app-shield",
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-app-shield/{name}/{version}",
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-integrator",
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-integrator/{name}/{version}",
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve",
+            "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve/{name}/{version}",
+            "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}",
+            "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}/{name}",
+            "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}/{name}/{version}"
+          ]
         },
         {
           "name": "bucket",
@@ -1571,7 +1953,9 @@
             "required": ["object_store"],
             "optional": []
           },
-          "relationship_hints": ["object_store: Parent object store"]
+          "relationship_hints": ["object_store: Parent object store"],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -1610,7 +1994,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "metrics_receiver",
@@ -1625,7 +2011,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "alert_policy",
@@ -1640,7 +2028,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -1698,7 +2088,14 @@
             "required": [],
             "optional": ["rate_limiter_policy"]
           },
-          "relationship_hints": ["rate_limiter_policy: Detailed rate limiting rules"]
+          "relationship_hints": ["rate_limiter_policy: Detailed rate limiting rules"],
+          "schema_components": ["rate_limiter"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/rate_limiters",
+            "/api/config/namespaces/{metadata.namespace}/rate_limiters/{metadata.name}",
+            "/api/config/namespaces/{namespace}/rate_limiters",
+            "/api/config/namespaces/{namespace}/rate_limiters/{name}"
+          ]
         },
         {
           "name": "rate_limiter_policy",
@@ -1713,7 +2110,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["policer"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/policers",
+            "/api/config/namespaces/{metadata.namespace}/policers/{metadata.name}",
+            "/api/config/namespaces/{namespace}/policers",
+            "/api/config/namespaces/{namespace}/policers/{name}"
+          ]
         },
         {
           "name": "rate_limit_threshold",
@@ -1728,7 +2132,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["protocol_policer"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/protocol_policers",
+            "/api/config/namespaces/{metadata.namespace}/protocol_policers/{metadata.name}",
+            "/api/config/namespaces/{namespace}/protocol_policers",
+            "/api/config/namespaces/{namespace}/protocol_policers/{name}"
+          ]
         }
       ]
     },
@@ -1768,7 +2179,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["malicious_user_mitigation"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations",
+            "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations/{metadata.name}",
+            "/api/config/namespaces/{namespace}/malicious_user_mitigations",
+            "/api/config/namespaces/{namespace}/malicious_user_mitigations/{name}"
+          ]
         },
         {
           "name": "malicious_user_rule",
@@ -1783,7 +2201,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["malicious_user_mitigation"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations",
+            "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations/{metadata.name}",
+            "/api/config/namespaces/{namespace}/malicious_user_mitigations",
+            "/api/config/namespaces/{namespace}/malicious_user_mitigations/{name}"
+          ]
         }
       ]
     },
@@ -1823,7 +2248,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["endpoint"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/endpoints",
+            "/api/config/namespaces/{metadata.namespace}/endpoints/{metadata.name}",
+            "/api/config/namespaces/{namespace}/endpoints",
+            "/api/config/namespaces/{namespace}/endpoints/{name}"
+          ]
         },
         {
           "name": "origin_pool",
@@ -1838,7 +2270,9 @@
             "required": [],
             "optional": ["healthcheck"]
           },
-          "relationship_hints": ["healthcheck: Monitor origin server health"]
+          "relationship_hints": ["healthcheck: Monitor origin server health"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "service_discovery",
@@ -1853,7 +2287,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -1893,7 +2329,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "shape_recognizer",
@@ -1908,7 +2346,24 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["shape.recognize"],
+          "api_paths": [
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue",
+            "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code",
+            "/api/shape/recognize/namespaces/system/recognize/addon/provision",
+            "/api/shape/recognize/namespaces/system/recognize/addon/state",
+            "/api/shape/recognize/namespaces/system/recognize/addon/subscribe",
+            "/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe",
+            "/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection"
+          ]
         }
       ]
     },
@@ -1950,7 +2405,58 @@
             "required": [],
             "optional": ["virtual_site"]
           },
-          "relationship_hints": ["virtual_site: Logical grouping of physical sites"]
+          "relationship_hints": ["virtual_site: Logical grouping of physical sites"],
+          "schema_components": ["graph.site", "site"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/sites/{metadata.name}",
+            "/api/config/namespaces/{namespace}/sites",
+            "/api/config/namespaces/{namespace}/sites/{name}",
+            "/api/config/namespaces/{namespace}/sites/{name}/local-kubeconfig",
+            "/api/config/namespaces/{namespace}/sites/{name}/local-kubeconfigs",
+            "/api/config/namespaces/{namespace}/sites/{name}/upgrade_os",
+            "/api/config/namespaces/{namespace}/sites/{name}/upgrade_sw",
+            "/api/config/namespaces/{namespace}/sites/{site}/global_networks",
+            "/api/config/namespaces/{namespace}/sites/{site}/interface",
+            "/api/config/namespaces/{namespace}/sites/{site}/segments",
+            "/api/data/namespaces/system/site/{name}/status",
+            "/api/data/namespaces/system/site/{site}/api/v1/configmaps",
+            "/api/data/namespaces/system/site/{site}/api/v1/endpoints",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/configmaps",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/endpoints",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/persistentvolumeclaims",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/pods",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/secrets",
+            "/api/data/namespaces/system/site/{site}/api/v1/namespaces/{namespace}/services",
+            "/api/data/namespaces/system/site/{site}/api/v1/nodes",
+            "/api/data/namespaces/system/site/{site}/api/v1/persistentvolumeclaims",
+            "/api/data/namespaces/system/site/{site}/api/v1/persistentvolumes",
+            "/api/data/namespaces/system/site/{site}/api/v1/pods",
+            "/api/data/namespaces/system/site/{site}/api/v1/secrets",
+            "/api/data/namespaces/system/site/{site}/api/v1/services",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/daemonsets",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/deployments",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/namespaces/{namespace}/daemonsets",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/namespaces/{namespace}/deployments",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/namespaces/{namespace}/replicasets",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/namespaces/{namespace}/statefulsets",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/replicasets",
+            "/api/data/namespaces/system/site/{site}/apis/apps/v1/statefulsets",
+            "/api/data/namespaces/system/site/{site}/apis/batch/v1/jobs",
+            "/api/data/namespaces/system/site/{site}/apis/batch/v1/namespaces/{namespace}/jobs",
+            "/api/data/namespaces/system/site/{site}/apis/batch/v1beta1/cronjobs",
+            "/api/data/namespaces/system/site/{site}/apis/batch/v1beta1/namespaces/{namespace}/cronjobs",
+            "/api/data/namespaces/system/site/{site}/namespaces/{namespace}/pods/metrics",
+            "/api/data/namespaces/system/site/{site}/namespaces/{namespace}/virtualmachineinstances/metrics",
+            "/api/data/namespaces/system/site/{site}/pods/metrics",
+            "/api/data/namespaces/system/site/{site}/virtualmachineinstances/metrics",
+            "/api/data/namespaces/{namespace}/graph/site",
+            "/api/data/namespaces/{namespace}/graph/site/edge",
+            "/api/data/namespaces/{namespace}/graph/site/node",
+            "/api/data/namespaces/{namespace}/site/{site}/status/metrics",
+            "/api/register/namespaces/{namespace}/site/{name}/state",
+            "/api/web/namespaces/system/sites/{site}/global-kubeconfigs"
+          ]
         },
         {
           "name": "virtual_site",
@@ -1965,7 +2471,15 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["virtual_site"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/virtual_sites",
+            "/api/config/namespaces/{metadata.namespace}/virtual_sites/{metadata.name}",
+            "/api/config/namespaces/{namespace}/virtual_sites",
+            "/api/config/namespaces/{namespace}/virtual_sites/{name}",
+            "/api/config/namespaces/{namespace}/virtual_sites/{name}/selectees"
+          ]
         },
         {
           "name": "site_mesh_group",
@@ -1980,7 +2494,9 @@
             "required": ["site"],
             "optional": []
           },
-          "relationship_hints": ["site: Sites to include in mesh connectivity"]
+          "relationship_hints": ["site: Sites to include in mesh connectivity"],
+          "schema_components": [],
+          "api_paths": []
         }
       ],
       "x-f5xc-cli-metadata": {
@@ -2070,7 +2586,9 @@
             "required": [],
             "optional": ["saved_query"]
           },
-          "relationship_hints": ["saved_query: Queries displayed on dashboard"]
+          "relationship_hints": ["saved_query: Queries displayed on dashboard"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "saved_query",
@@ -2085,7 +2603,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -2124,7 +2644,22 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["customer_support"],
+          "api_paths": [
+            "/api/web/namespaces/system/child_tenant/support_tickets",
+            "/api/web/namespaces/system/customer_support/tax_exempt_request",
+            "/api/web/namespaces/system/customer_support/{name}/comment/{comment_id}/attachment/{attachment_id}",
+            "/api/web/namespaces/{metadata.namespace}/customer_supports",
+            "/api/web/namespaces/{namespace}/admin/customer_supports",
+            "/api/web/namespaces/{namespace}/customer_support/{name}/close",
+            "/api/web/namespaces/{namespace}/customer_support/{name}/comment",
+            "/api/web/namespaces/{namespace}/customer_support/{name}/escalate",
+            "/api/web/namespaces/{namespace}/customer_support/{name}/priority",
+            "/api/web/namespaces/{namespace}/customer_support/{name}/reopen",
+            "/api/web/namespaces/{namespace}/customer_supports",
+            "/api/web/namespaces/{namespace}/customer_supports/{name}"
+          ]
         },
         {
           "name": "alert",
@@ -2139,7 +2674,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "audit_log",
@@ -2154,7 +2691,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -2193,7 +2732,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "insight_query",
@@ -2208,7 +2749,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -2248,7 +2791,23 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["user.setting"],
+          "api_paths": [
+            "/api/web/namespaces/system/user/admin_notifications",
+            "/api/web/namespaces/system/user/admin_notifications/unset",
+            "/api/web/namespaces/system/user/combined_notifications",
+            "/api/web/namespaces/system/user/notifications",
+            "/api/web/namespaces/system/user/notifications/unset",
+            "/api/web/namespaces/system/user/otp/admin_reset",
+            "/api/web/namespaces/system/user/sessions",
+            "/api/web/namespaces/system/user/settings",
+            "/api/web/namespaces/system/user/settings/idm/disable",
+            "/api/web/namespaces/system/user/settings/idm/enable",
+            "/api/web/namespaces/system/user/settings/image",
+            "/api/web/namespaces/system/user/settings/request_initial_access",
+            "/api/web/namespaces/system/user/settings/view_preference"
+          ]
         },
         {
           "name": "session",
@@ -2263,7 +2822,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "otp_policy",
@@ -2278,7 +2839,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -2317,7 +2880,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["app_security"],
+          "api_paths": ["/api/waf/threat_campaign/{id}"]
         }
       ]
     },
@@ -2357,7 +2922,9 @@
             "required": [],
             "optional": ["user_role"]
           },
-          "relationship_hints": ["user_role: Role assignment for user permissions"]
+          "relationship_hints": ["user_role: Role assignment for user permissions"],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "user_role",
@@ -2372,7 +2939,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "namespace_role",
@@ -2387,7 +2956,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     },
@@ -2444,6 +3015,24 @@
             "healthcheck: Monitor backend availability",
             "certificate: TLS termination for HTTPS",
             "rate_limiter: Protect against traffic spikes"
+          ],
+          "schema_components": ["views.http_loadbalancer"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/http_loadbalancers",
+            "/api/config/namespaces/{metadata.namespace}/http_loadbalancers/{metadata.name}",
+            "/api/config/namespaces/{namespace}/http_loadbalancers",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/get_security_config",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/api_definitions/assign",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/api_definitions/available",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/dos_automitigation_rules",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/dos_automitigation_rules/{dos_automitigation_rule_name}",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/get-dns-info",
+            "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/l7ddos_rps_threshold",
+            "/api/ml/data/namespaces/{namespace}/http_loadbalancers/{name}/api_endpoints",
+            "/api/ml/data/namespaces/{namespace}/http_loadbalancers/{name}/api_endpoints/swagger_spec",
+            "/api/ml/data/namespaces/{namespace}/http_loadbalancers/{name}/api_inventory/api_endpoints/get_schema_updates",
+            "/api/ml/data/namespaces/{namespace}/http_loadbalancers/{name}/api_inventory/api_endpoints/update_schemas"
           ]
         },
         {
@@ -2462,6 +3051,14 @@
           "relationship_hints": [
             "origin_pool: Backend servers for TCP/UDP traffic",
             "healthcheck: Monitor origin server health"
+          ],
+          "schema_components": ["views.tcp_loadbalancer"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/tcp_loadbalancers",
+            "/api/config/namespaces/{metadata.namespace}/tcp_loadbalancers/{metadata.name}",
+            "/api/config/namespaces/{namespace}/tcp_loadbalancers",
+            "/api/config/namespaces/{namespace}/tcp_loadbalancers/{name}",
+            "/api/config/namespaces/{namespace}/tcp_loadbalancers/{name}/get-dns-info"
           ]
         },
         {
@@ -2477,7 +3074,14 @@
             "required": [],
             "optional": ["healthcheck"]
           },
-          "relationship_hints": ["healthcheck: Monitor origin server health"]
+          "relationship_hints": ["healthcheck: Monitor origin server health"],
+          "schema_components": ["views.origin_pool"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/origin_pools",
+            "/api/config/namespaces/{metadata.namespace}/origin_pools/{metadata.name}",
+            "/api/config/namespaces/{namespace}/origin_pools",
+            "/api/config/namespaces/{namespace}/origin_pools/{name}"
+          ]
         },
         {
           "name": "healthcheck",
@@ -2492,7 +3096,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["healthcheck"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/healthchecks",
+            "/api/config/namespaces/{metadata.namespace}/healthchecks/{metadata.name}",
+            "/api/config/namespaces/{namespace}/healthchecks",
+            "/api/config/namespaces/{namespace}/healthchecks/{name}"
+          ]
         },
         {
           "name": "app_firewall",
@@ -2507,7 +3118,16 @@
             "required": [],
             "optional": ["service_policy"]
           },
-          "relationship_hints": ["service_policy: Fine-grained access control rules"]
+          "relationship_hints": ["service_policy: Fine-grained access control rules"],
+          "schema_components": ["app_firewall"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/app_firewalls",
+            "/api/config/namespaces/{metadata.namespace}/app_firewalls/{metadata.name}",
+            "/api/config/namespaces/{namespace}/app_firewalls",
+            "/api/config/namespaces/{namespace}/app_firewalls/{name}",
+            "/api/data/namespaces/system/app_firewall/all_ns_metrics",
+            "/api/data/namespaces/{namespace}/app_firewall/metrics"
+          ]
         },
         {
           "name": "service_policy",
@@ -2522,7 +3142,14 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": ["service_policy"],
+          "api_paths": [
+            "/api/config/namespaces/{metadata.namespace}/service_policys",
+            "/api/config/namespaces/{metadata.namespace}/service_policys/{metadata.name}",
+            "/api/config/namespaces/{namespace}/service_policys",
+            "/api/config/namespaces/{namespace}/service_policys/{name}"
+          ]
         },
         {
           "name": "malicious_user_detection",
@@ -2537,7 +3164,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ],
       "x-f5xc-cli-metadata": {
@@ -2668,7 +3297,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         },
         {
           "name": "vpm_config",
@@ -2683,7 +3314,9 @@
             "required": [],
             "optional": []
           },
-          "relationship_hints": []
+          "relationship_hints": [],
+          "schema_components": [],
+          "api_paths": []
         }
       ]
     }
