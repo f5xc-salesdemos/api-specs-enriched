@@ -59,7 +59,15 @@ def generate_viewer_html(domain: str, title: str) -> str:
 
 
 def generate_domain_mdx(domain: str, title: str, description: str) -> str:
-    """Generate a Starlight MDX wrapper page for a domain viewer."""
+    """Generate a Starlight MDX wrapper page for a domain viewer.
+
+    Uses an iframe embedding the standalone Scalar HTML viewer rather than the
+    inline React component. The React component (ScalarApiViewerWrapper.astro)
+    uses client:only="react" which cannot be statically prerendered — this
+    causes the starlight-llms-txt plugin to crash when generating llms-full.txt.
+    Iframes have no SSR dependency and render identically in the browser.
+    See: docs-control#424 (fix starlight-llms-txt to pass exclude in llms-full.txt.ts)
+    """
     viewer_path = f"/specifications/api/viewer/{domain}.html"
     spec_path = f"/specifications/api/{domain}.json"
 
@@ -70,7 +78,6 @@ tableOfContents: false
 ---
 
 import {{ LinkCard }} from '@astrojs/starlight/components';
-import ScalarViewer from '@components/ScalarApiViewerWrapper.astro';
 
 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
     <LinkCard title="Back to API Catalog" href="/api-reference/" />
@@ -78,7 +85,11 @@ import ScalarViewer from '@components/ScalarApiViewerWrapper.astro';
     <LinkCard title="Download Spec" href="{spec_path}" />
 </div>
 
-<ScalarViewer specUrl="{spec_path}" title="{title}" />
+<iframe
+    src="{viewer_path}"
+    style="width: 100%; height: 80vh; border: none; border-radius: 0.5rem;"
+    title="{title} API Reference"
+/>
 """
 
 
