@@ -364,8 +364,14 @@ def get_primary_resources_metadata(
     for resource in resources:
         name = resource["name"]
         heuristic = heuristic_results.get(name, ([], []))
-        override_entry = resource_config.get(name, {})
-        schema_components, api_paths = apply_overrides(heuristic, override_entry)
+        if heuristic[0]:
+            # Heuristic resolved — use it directly, skip config override.
+            # This prevents a flat config entry from applying to domains
+            # where the heuristic already finds the correct mapping.
+            schema_components, api_paths = heuristic
+        else:
+            override_entry = resource_config.get(name, {})
+            schema_components, api_paths = apply_overrides(heuristic, override_entry)
         resource.update({"schema_components": schema_components, "api_paths": api_paths})
 
     return resources
