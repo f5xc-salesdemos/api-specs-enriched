@@ -7,11 +7,8 @@ then ties path inclusion to schema resolution. Config overrides in resource_meta
 take precedence over heuristic results.
 """
 
-import json
 import logging
 import re
-import sys
-from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -147,55 +144,3 @@ def validate_resource_mappings(
                     )
 
     return errors
-
-
-def _dry_run_discovery() -> None:
-    """Print unresolvable resources with candidate components."""
-    specs_dir = Path(__file__).parent.parent.parent / "docs" / "specifications" / "api"
-
-    from scripts.utils.domain_metadata import (  # noqa: PLC0415
-        DOMAIN_PRIMARY_RESOURCES,
-        _load_resource_metadata,
-    )
-
-    resource_config = _load_resource_metadata()
-    unresolvable_count = 0
-
-    for domain, resource_names in sorted(DOMAIN_PRIMARY_RESOURCES.items()):
-        spec_file = specs_dir / f"{domain}.json"
-        if not spec_file.exists():
-            print(f"# SKIP: {domain}.json not found (run make all first)", flush=True)
-            continue
-        with spec_file.open() as f:
-            spec = json.load(f)
-        domain_paths = spec.get("paths", {})
-        all_components = sorted(_get_all_path_components(domain_paths))
-        for name in resource_names:
-            entry = resource_config.get(name, {})
-            if "schema_components" in entry or "api_paths" in entry:
-                continue
-            schema_comps, _ = resolve_resource(name, domain_paths)
-            if schema_comps:
-                continue
-            unresolvable_count += 1
-            print(f"\ndomain: {domain}")
-            print(f"resource: {name}")
-            print("  heuristic: empty (no operationId match)")
-            print("  candidate components from domain operationIds:")
-            for comp in all_components[:8]:
-                print(f"    - {comp}")
-            if len(all_components) > 8:
-                print(f"    ... ({len(all_components) - 8} more)")
-            print("  stub:")
-            print(f"    {name}:")
-            print("      schema_components: []  # fill in from candidates above")
-            print("      api_paths: []          # fill in matching path patterns")
-    print(f"\n# Total unresolvable resources: {unresolvable_count}")
-
-
-if __name__ == "__main__":
-    if "--dry-run" in sys.argv:
-        _dry_run_discovery()
-    else:
-        print("Usage: python scripts/utils/resource_resolver.py --dry-run")
-        sys.exit(1)
