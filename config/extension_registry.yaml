@@ -471,8 +471,31 @@ index_level:
     type: array
     items: object
     purpose: Primary resource metadata for the domain
-    consumers: [mcp, cli, ide]
+    consumers: [mcp, cli, ide, terraform, vscode]
     migrated_from: "primary_resources"
+    item_fields:
+      name: {type: string, purpose: "Resource identifier (e.g. http_loadbalancer)"}
+      description: {type: string, purpose: "Long description"}
+      description_short: {type: string, purpose: "Short label (max 60 chars)"}
+      tier: {type: string, purpose: "Required subscription tier"}
+      icon: {type: string, purpose: "Emoji icon"}
+      category: {type: string, purpose: "Resource category"}
+      supports_logs: {type: boolean, purpose: "Whether resource emits logs"}
+      supports_metrics: {type: boolean, purpose: "Whether resource emits metrics"}
+      dependencies: {type: object, purpose: "required/optional dependency lists"}
+      relationship_hints: {type: array, items: string, purpose: "Human-readable relationship descriptions"}
+      schema_components:
+        type: array
+        items: string
+        purpose: "Dotted operationId component names (e.g. views.http_loadbalancer). Empty array for conceptual resources."
+        consumers: [mcp, cli, ide, terraform, vscode]
+        example: ["views.http_loadbalancer"]
+      api_paths:
+        type: array
+        items: string
+        purpose: "Primary CRUD path patterns with {namespace} placeholder. Empty array for conceptual resources."
+        consumers: [mcp, cli, ide, terraform, vscode]
+        example: ["/api/config/namespaces/{namespace}/http_loadbalancers"]
 
   x-f5xc-description-short:
     type: string
