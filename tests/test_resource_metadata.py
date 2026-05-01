@@ -327,5 +327,81 @@ class TestCategoryDefinitions:
                 assert category in valid_categories, f"Invalid category {category}"
 
 
+class TestMappingKeyAbsenceWithoutSpec:
+    """Verify schema_components and api_paths are absent when spec is not provided."""
+
+    def test_spec_none_omits_schema_components(self):
+        """get_primary_resources_metadata(domain) must not include schema_components."""
+        result = get_primary_resources_metadata("dns")
+        for resource in result:
+            assert "schema_components" not in resource, (
+                f"resource '{resource['name']}' has 'schema_components' key "
+                f"when spec=None — key must be absent, not empty"
+            )
+
+    def test_spec_none_omits_api_paths(self):
+        """get_primary_resources_metadata(domain) must not include api_paths."""
+        result = get_primary_resources_metadata("dns")
+        for resource in result:
+            assert "api_paths" not in resource, (
+                f"resource '{resource['name']}' has 'api_paths' key "
+                f"when spec=None — key must be absent, not empty"
+            )
+
+    def test_spec_none_all_domains(self):
+        """All domains return dicts without mapping keys when spec is not provided."""
+        for domain in DOMAIN_PRIMARY_RESOURCES:
+            result = get_primary_resources_metadata(domain)
+            for resource in result:
+                assert "schema_components" not in resource, (
+                    f"domain '{domain}' resource '{resource['name']}' has "
+                    f"'schema_components' when spec=None"
+                )
+                assert "api_paths" not in resource, (
+                    f"domain '{domain}' resource '{resource['name']}' has "
+                    f"'api_paths' when spec=None"
+                )
+
+
+class TestMappingKeyPresenceWithSpec:
+    """Verify schema_components and api_paths appear when spec is provided."""
+
+    @pytest.fixture
+    def minimal_virtual_spec(self):
+        return {
+            "paths": {
+                "/api/config/namespaces/{namespace}/http_loadbalancers": {
+                    "post": {"operationId": "ves.io.schema.views.http_loadbalancer.API.Create"},
+                    "get": {"operationId": "ves.io.schema.views.http_loadbalancer.API.List"},
+                },
+            }
+        }
+
+    def test_spec_present_includes_schema_components(self, minimal_virtual_spec):
+        """Every resource dict must have schema_components when spec is provided."""
+        result = get_primary_resources_metadata("virtual", spec=minimal_virtual_spec)
+        for resource in result:
+            assert "schema_components" in resource, (
+                f"resource '{resource['name']}' missing 'schema_components' when spec provided"
+            )
+            assert isinstance(resource["schema_components"], list)
+
+    def test_spec_present_includes_api_paths(self, minimal_virtual_spec):
+        """Every resource dict must have api_paths when spec is provided."""
+        result = get_primary_resources_metadata("virtual", spec=minimal_virtual_spec)
+        for resource in result:
+            assert "api_paths" in resource, (
+                f"resource '{resource['name']}' missing 'api_paths' when spec provided"
+            )
+            assert isinstance(resource["api_paths"], list)
+
+    def test_auto_resolvable_resource_gets_populated(self, minimal_virtual_spec):
+        """http_loadbalancer should auto-resolve from the minimal spec."""
+        result = get_primary_resources_metadata("virtual", spec=minimal_virtual_spec)
+        http_lb = next(r for r in result if r["name"] == "http_loadbalancer")
+        assert "views.http_loadbalancer" in http_lb["schema_components"]
+        assert any("http_loadbalancers" in p for p in http_lb["api_paths"])
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

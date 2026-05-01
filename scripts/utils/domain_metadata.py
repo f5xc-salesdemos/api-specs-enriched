@@ -299,45 +299,76 @@ def get_resource_metadata(resource_name: str) -> dict[str, Any]:
     }
 
 
-def get_primary_resources_metadata(domain: str) -> list[dict[str, Any]]:
+def get_primary_resources_metadata(
+    domain: str,
+    spec: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     """Get primary resources with full metadata for a domain.
 
-    Returns rich metadata objects instead of simple resource name strings.
-    This is used by create_spec_index() to generate per-resource metadata
-    in index.json for IDE tooling and CLI integration.
+    When spec is provided, adds 'schema_components' and 'api_paths' to each
+    resource dict by running the heuristic resolver and applying config overrides
+    from resource_metadata.yaml. When spec is None, these keys are absent
+    (backward compatibility for callers without spec data).
 
     Args:
         domain: The domain name (e.g., 'virtual', 'waf', 'dns')
+        spec: Full merged OpenAPI spec for the domain (optional).
+              When provided, schema_components and api_paths are resolved.
 
     Returns:
-        List of resource metadata dictionaries with structure:
-        {
-            "name": str,
-            "description": str,
-            "description_short": str,
-            "tier": str,
-            "icon": str,
-            "category": str,
-            "supports_logs": bool,
-            "supports_metrics": bool,
-            "dependencies": {"required": list, "optional": list},
-            "relationship_hints": list[str]
-        }
-
-    Example:
-        >>> get_primary_resources_metadata("virtual")
-        [
-            {
-                "name": "http_loadbalancer",
-                "description": "Layer 7 HTTP/HTTPS load balancer...",
-                "tier": "Standard",
-                ...
-            },
-            ...
-        ]
+        List of resource metadata dicts. With spec: includes schema_components
+        and api_paths. Without spec: only the original 10 fields.
     """
+    from scripts.utils.resource_resolver import (  # noqa: PLC0415
+        apply_overrides,
+        resolve_resource,
+        validate_resource_mappings,
+    )
+
     resource_names = DOMAIN_PRIMARY_RESOURCES.get(domain, [])
-    return [get_resource_metadata(name) for name in resource_names]
+    resources = [get_resource_metadata(name) for name in resource_names]
+
+    if spec is None:
+        return resources
+
+    domain_paths = spec.get("paths", {})
+    resource_config = _load_resource_metadata()
+
+    heuristic_results = {name: resolve_resource(name, domain_paths) for name in resource_names}
+
+    # Only apply config overrides where the heuristic returned empty.
+    # Resource names can appear in multiple domains (e.g. origin_pool in
+    # virtual and service_mesh). Restricting overrides to heuristic failures
+    # prevents a flat config entry from being validated/applied in domains
+    # where the heuristic already produces the correct result.
+    config_overrides = {
+        name: resource_config[name]
+        for name in resource_names
+        if name in resource_config
+        and ("schema_components" in resource_config[name] or "api_paths" in resource_config[name])
+        and not heuristic_results[name][0]
+    }
+
+    errors = validate_resource_mappings(heuristic_results, config_overrides, domain_paths, domain)
+    if errors:
+        raise ValueError(
+            f"Resource mapping validation failed for domain '{domain}':\n" + "\n".join(errors)
+        )
+
+    for resource in resources:
+        name = resource["name"]
+        heuristic = heuristic_results.get(name, ([], []))
+        if heuristic[0]:
+            # Heuristic resolved — use it directly, skip config override.
+            # This prevents a flat config entry from applying to domains
+            # where the heuristic already finds the correct mapping.
+            schema_components, api_paths = heuristic
+        else:
+            override_entry = resource_config.get(name, {})
+            schema_components, api_paths = apply_overrides(heuristic, override_entry)
+        resource.update({"schema_components": schema_components, "api_paths": api_paths})
+
+    return resources
 
 
 DOMAIN_METADATA = {

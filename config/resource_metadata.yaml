@@ -112,6 +112,9 @@ resources:
         - healthcheck
     relationship_hints:
       - "healthcheck: Monitor origin server health"
+    # In service_mesh - actual API is in virtual domain
+    schema_components: []
+    api_paths: []
 
   healthcheck:
     description: "Health monitoring configuration for origin server availability"
@@ -169,6 +172,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual resource - no direct API CRUD; detection is configured via http_loadbalancer settings
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # dns domain
@@ -261,6 +267,9 @@ resources:
       optional: []
     relationship_hints:
       - "site: Sites to include in mesh connectivity"
+    # In network/sites - actual API is in service_mesh domain
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # cloud_infrastructure domain
@@ -279,6 +288,9 @@ resources:
       optional: []
     relationship_hints:
       - "cloud_credentials: AWS authentication for deployment"
+    # In cloud_infrastructure - actual API is in sites domain
+    schema_components: []
+    api_paths: []
 
   azure_vnet_site:
     description: "Azure VNet site deployment with edge node provisioning"
@@ -294,6 +306,9 @@ resources:
       optional: []
     relationship_hints:
       - "cloud_credentials: Azure authentication for deployment"
+    # In cloud_infrastructure - actual API is in sites domain
+    schema_components: []
+    api_paths: []
 
   gcp_vpc_site:
     description: "Google Cloud VPC site deployment with edge node provisioning"
@@ -309,6 +324,9 @@ resources:
       optional: []
     relationship_hints:
       - "cloud_credentials: GCP authentication for deployment"
+    # In cloud_infrastructure - actual API is in sites domain
+    schema_components: []
+    api_paths: []
 
   cloud_credentials:
     description: "Cloud provider authentication credentials for site deployment"
@@ -386,6 +404,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - CDN origins configured within cdn_loadbalancer
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # network domain
@@ -481,6 +502,10 @@ resources:
         - api_rate_limit
     relationship_hints:
       - "api_rate_limit: Rate limiting for this endpoint"
+    schema_components: ['api_group_element']
+    api_paths:
+      - "/api/web/namespaces/{namespace}/api_group_elements"
+      - "/api/web/namespaces/{namespace}/api_group_elements/{name}"
 
   api_rate_limit:
     description: "API rate limiting configuration for traffic control"
@@ -494,6 +519,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - rate limiting configured via rate_limiter_policy
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # network_security domain
@@ -565,6 +593,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['trusted_ca_list']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/trusted_ca_lists"
+      - "/api/config/namespaces/{metadata.namespace}/trusted_ca_lists/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/trusted_ca_lists"
+      - "/api/config/namespaces/{namespace}/trusted_ca_lists/{name}"
 
   certificate_chain:
     description: "Certificate chain for complete trust verification"
@@ -609,6 +643,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['policer']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/policers"
+      - "/api/config/namespaces/{metadata.namespace}/policers/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/policers"
+      - "/api/config/namespaces/{namespace}/policers/{name}"
 
   rate_limit_threshold:
     description: "Rate limit threshold configuration for traffic control"
@@ -622,6 +662,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['protocol_policer']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/protocol_policers"
+      - "/api/config/namespaces/{metadata.namespace}/protocol_policers/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/protocol_policers"
+      - "/api/config/namespaces/{namespace}/protocol_policers/{name}"
 
   # ===========================================================================
   # container_services domain
@@ -668,6 +714,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - use k8s_pod_security_policy in managed_kubernetes
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # managed_kubernetes domain
@@ -686,6 +735,9 @@ resources:
         - k8s_cluster_role
     relationship_hints:
       - "k8s_cluster_role: RBAC roles for cluster access"
+    # Conceptual - managed via sites and k8s_cluster resources
+    schema_components: []
+    api_paths: []
 
   k8s_cluster_role:
     description: "Kubernetes cluster RBAC role configuration"
@@ -741,6 +793,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - service discovery via app_type and app_setting
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # observability domain
@@ -757,6 +812,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # In observability - actual CRUD API is in statistics domain
+    schema_components: []
+    api_paths: []
 
   metrics_receiver:
     description: "Metrics receiver for centralized metrics collection"
@@ -770,6 +828,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - metrics collection via observability subscription
+    schema_components: []
+    api_paths: []
 
   alert_policy:
     description: "Alert policy for monitoring and notification"
@@ -783,6 +844,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # In observability - actual CRUD API is in statistics domain
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # authentication domain
@@ -799,6 +863,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - authentication configured via OIDC/OAuth providers
+    schema_components: []
+    api_paths: []
 
   token:
     description: "API token for programmatic access"
@@ -812,6 +879,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual in authentication - token CRUD is in users domain
+    schema_components: []
+    api_paths: []
 
   api_credential:
     description: "API credential for service authentication"
@@ -843,6 +913,9 @@ resources:
         - user_role
     relationship_hints:
       - "user_role: Role assignment for user permissions"
+    # Conceptual - user management via tenant_and_identity domain
+    schema_components: []
+    api_paths: []
 
   user_role:
     description: "User role for permission management"
@@ -856,6 +929,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - roles managed via tenant_and_identity role APIs
+    schema_components: []
+    api_paths: []
 
   namespace_role:
     description: "Namespace-scoped role for fine-grained permissions"
@@ -869,6 +945,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - namespace roles via tenant_and_identity
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # blindfold domain
@@ -885,6 +964,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - secrets managed via secret_policy
+    schema_components: []
+    api_paths: []
 
   secret_policy:
     description: "Secret management policy configuration"
@@ -911,6 +993,10 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['secret_management']
+    api_paths:
+      - "/api/secret_management/get_public_key"
+      - "/api/secret_management/namespaces/{namespace}/secret_policys/{name}/get_policy_document"
 
   # ===========================================================================
   # ddos domain
@@ -929,6 +1015,31 @@ resources:
         - ddos_mitigation_rule
     relationship_hints:
       - "ddos_mitigation_rule: Custom mitigation rules"
+    schema_components: ['infraprotect']
+    api_paths:
+      - "/api/data/namespaces/{namespace}/infraprotect/bgp_peer_status"
+      - "/api/data/namespaces/{namespace}/infraprotect/transit_usage"
+      - "/api/infraprotect/namespaces/system/infraprotect/access"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/alert/{alert_id}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/alert/{alert_id}/to_event"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/alerts"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/alerts"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/attachments"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/detail/{event_detail_id}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/details"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/event/{event_id}/mitigation_annotations"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/events"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/events_summary"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/annotations"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/countermeasures"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/ips"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/mitigations"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/networks"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/report/{report_id}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect/reports"
+      - "/api/infraprotect/namespaces/{namespace}/suggest-values"
 
   ddos_mitigation_rule:
     description: "DDoS mitigation rule for attack response"
@@ -942,6 +1053,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['infraprotect_firewall_rule']
+    api_paths:
+      - "/api/infraprotect/namespaces/{metadata.namespace}/infraprotect_firewall_rules"
+      - "/api/infraprotect/namespaces/{metadata.namespace}/infraprotect_firewall_rules/{metadata.name}"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rules"
+      - "/api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rules/{name}"
 
   # ===========================================================================
   # shape domain
@@ -958,6 +1075,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - Shape WAF via protected_application config
+    schema_components: []
+    api_paths: []
 
   shape_recognizer:
     description: "Shape recognizer for traffic pattern analysis"
@@ -971,6 +1091,22 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['shape.recognize']
+    api_paths:
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/provision"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/state"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/subscribe"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe"
+      - "/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection"
 
   # ===========================================================================
   # threat_campaign domain
@@ -987,6 +1123,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['app_security']
+    api_paths:
+      - "/api/waf/threat_campaign/{id}"
 
   # ===========================================================================
   # support domain
@@ -1003,6 +1142,20 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['customer_support']
+    api_paths:
+      - "/api/web/namespaces/system/child_tenant/support_tickets"
+      - "/api/web/namespaces/system/customer_support/tax_exempt_request"
+      - "/api/web/namespaces/system/customer_support/{name}/comment/{comment_id}/attachment/{attachment_id}"
+      - "/api/web/namespaces/{metadata.namespace}/customer_supports"
+      - "/api/web/namespaces/{namespace}/admin/customer_supports"
+      - "/api/web/namespaces/{namespace}/customer_support/{name}/close"
+      - "/api/web/namespaces/{namespace}/customer_support/{name}/comment"
+      - "/api/web/namespaces/{namespace}/customer_support/{name}/escalate"
+      - "/api/web/namespaces/{namespace}/customer_support/{name}/priority"
+      - "/api/web/namespaces/{namespace}/customer_support/{name}/reopen"
+      - "/api/web/namespaces/{namespace}/customer_supports"
+      - "/api/web/namespaces/{namespace}/customer_supports/{name}"
 
   alert:
     description: "System alert for operational notifications"
@@ -1016,6 +1169,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # In support - alerts are read-only data, use alert_policy for config
+    schema_components: []
+    api_paths: []
 
   audit_log:
     description: "Audit log for compliance and security tracking"
@@ -1029,6 +1185,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Read-only - audit logs accessed via data API endpoints
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # system domain
@@ -1089,6 +1248,9 @@ resources:
         - saved_query
     relationship_hints:
       - "saved_query: Queries displayed on dashboard"
+    # Conceptual - dashboards via console UI, no direct CRUD API
+    schema_components: []
+    api_paths: []
 
   saved_query:
     description: "Saved query for metrics and log analysis"
@@ -1102,6 +1264,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - saved queries via console UI, no direct CRUD API
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # billing_and_usage / billing domains
@@ -1118,6 +1283,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['pbac.addon_subscription']
+    api_paths:
+      - "/api/web/namespaces/{metadata.namespace}/addon_subscriptions"
+      - "/api/web/namespaces/{metadata.namespace}/addon_subscriptions/{metadata.name}"
+      - "/api/web/namespaces/{namespace}/addon_subscriptions"
+      - "/api/web/namespaces/{namespace}/addon_subscriptions/{name}"
 
   quota:
     description: "Resource quota for usage limits"
@@ -1144,6 +1315,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['usage']
+    api_paths:
+      - "/api/web/namespaces/{namespace}/current_usage"
+      - "/api/web/namespaces/{namespace}/hourly_usage_details"
+      - "/api/web/namespaces/{namespace}/monthly_usage"
+      - "/api/web/namespaces/{namespace}/usage_details"
 
   invoice:
     description: "Invoice for billing records"
@@ -1186,6 +1363,10 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['ui.static_component']
+    api_paths:
+      - "/api/web/namespaces/{namespace}/static_components"
+      - "/api/web/namespaces/{namespace}/static_components/{name}"
 
   static_asset:
     description: "Static asset for UI resources"
@@ -1199,6 +1380,10 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['ui.static_component']
+    api_paths:
+      - "/api/web/namespaces/{namespace}/static_components"
+      - "/api/web/namespaces/{namespace}/static_components/{name}"
 
   global_setting:
     description: "Global setting for system-wide configuration"
@@ -1241,6 +1426,21 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['user.setting']
+    api_paths:
+      - "/api/web/namespaces/system/user/admin_notifications"
+      - "/api/web/namespaces/system/user/admin_notifications/unset"
+      - "/api/web/namespaces/system/user/combined_notifications"
+      - "/api/web/namespaces/system/user/notifications"
+      - "/api/web/namespaces/system/user/notifications/unset"
+      - "/api/web/namespaces/system/user/otp/admin_reset"
+      - "/api/web/namespaces/system/user/sessions"
+      - "/api/web/namespaces/system/user/settings"
+      - "/api/web/namespaces/system/user/settings/idm/disable"
+      - "/api/web/namespaces/system/user/settings/idm/enable"
+      - "/api/web/namespaces/system/user/settings/image"
+      - "/api/web/namespaces/system/user/settings/request_initial_access"
+      - "/api/web/namespaces/system/user/settings/view_preference"
 
   session:
     description: "User session for authentication state"
@@ -1254,6 +1454,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Read-only - sessions accessed via user.setting endpoints
+    schema_components: []
+    api_paths: []
 
   otp_policy:
     description: "OTP policy for multi-factor authentication"
@@ -1267,6 +1470,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - OTP settings via tenant configuration
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # marketplace domain
@@ -1283,6 +1489,13 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['pbac.addon_service']
+    api_paths:
+      - "/api/web/custom/namespaces/shared/addon_services/{name}"
+      - "/api/web/namespaces/system/addon_services/{addon_service}/activation-status"
+      - "/api/web/namespaces/system/addon_services/{addon_service}/all-activation-status"
+      - "/api/web/namespaces/{namespace}/addon_services"
+      - "/api/web/namespaces/{namespace}/addon_services/{name}"
 
   # ===========================================================================
   # bigip domain
@@ -1299,6 +1512,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - BIG-IP pools managed via views.bigip_http_proxy
+    schema_components: []
+    api_paths: []
 
   bigip_device:
     description: "BIG-IP device registration and management"
@@ -1312,6 +1528,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - BIG-IP devices managed via views.bigip_virtual_server
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # nginx_one domain
@@ -1330,6 +1549,10 @@ resources:
         - nginx_upstream
     relationship_hints:
       - "nginx_upstream: Backend server configuration"
+    schema_components: ['nginx.one.nginx_csg']
+    api_paths:
+      - "/api/config/namespaces/{namespace}/nginx_csgs"
+      - "/api/config/namespaces/{namespace}/nginx_csgs/{name}"
 
   nginx_upstream:
     description: "NGINX upstream for backend server pools"
@@ -1343,6 +1566,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - upstreams configured within nginx_service_discovery
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # ai_services domain
@@ -1359,6 +1585,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - AI policy settings via console, no direct CRUD API
+    schema_components: []
+    api_paths: []
 
   ai_gateway:
     description: "AI gateway for LLM API management"
@@ -1374,6 +1603,9 @@ resources:
         - ai_policy
     relationship_hints:
       - "ai_policy: Policy for AI traffic control"
+    # Conceptual - AI gateway settings via console, no direct CRUD API
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # object_storage domain
@@ -1392,6 +1624,17 @@ resources:
         - bucket
     relationship_hints:
       - "bucket: Storage buckets in this store"
+    schema_components: ['stored_object']
+    api_paths:
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-app-shield"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-app-shield/{name}/{version}"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-integrator"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-integrator/{name}/{version}"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve/{name}/{version}"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}/{name}"
+      - "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}/{name}/{version}"
 
   bucket:
     description: "Storage bucket for object storage"
@@ -1407,6 +1650,9 @@ resources:
       optional: []
     relationship_hints:
       - "object_store: Parent object store"
+    # Conceptual - buckets are object_type within stored_object paths
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # bot_and_threat_defense domain
@@ -1423,6 +1669,10 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['shape_bot_defense_instance']
+    api_paths:
+      - "/api/config/namespaces/{namespace}/shape_bot_defense_instances"
+      - "/api/config/namespaces/{namespace}/shape_bot_defense_instances/{name}"
 
   threat_category:
     description: "Threat category for classification"
@@ -1436,6 +1686,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['tpm_category']
+    api_paths:
+      - "/api/tpm/namespaces/{metadata.namespace}/tpm_categorys"
+      - "/api/tpm/namespaces/{metadata.namespace}/tpm_categorys/{metadata.name}"
+      - "/api/tpm/namespaces/{namespace}/tpm_categorys"
+      - "/api/tpm/namespaces/{namespace}/tpm_categorys/{name}"
 
   # ===========================================================================
   # ce_management domain
@@ -1452,6 +1708,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - site settings distributed across fleet and registration
+    schema_components: []
+    api_paths: []
 
   fleet_config:
     description: "Fleet configuration for multi-site management"
@@ -1465,6 +1724,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['fleet']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/fleets"
+      - "/api/config/namespaces/{metadata.namespace}/fleets/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/fleets"
+      - "/api/config/namespaces/{namespace}/fleets/{name}"
 
   registration_token:
     description: "Registration token for site onboarding"
@@ -1478,6 +1743,20 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['registration']
+    api_paths:
+      - "/api/register/namespaces/system/get-image-download-url"
+      - "/api/register/namespaces/system/get-registrations-by-token"
+      - "/api/register/namespaces/system/suggest-values"
+      - "/api/register/namespaces/{metadata.namespace}/registrations"
+      - "/api/register/namespaces/{metadata.namespace}/registrations/{metadata.name}"
+      - "/api/register/namespaces/{namespace}/listregistrationsbystate"
+      - "/api/register/namespaces/{namespace}/registration/{name}/approve"
+      - "/api/register/namespaces/{namespace}/registrations"
+      - "/api/register/namespaces/{namespace}/registrations/{name}"
+      - "/api/register/namespaces/{namespace}/registrations_by_site/{site_name}"
+      - "/api/register/registerBootstrap"
+      - "/api/register/requestConfig"
 
   # ===========================================================================
   # data_and_privacy_security domain
@@ -1507,6 +1786,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['data_type']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/data_types"
+      - "/api/config/namespaces/{metadata.namespace}/data_types/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/data_types"
+      - "/api/config/namespaces/{namespace}/data_types/{name}"
 
   # ===========================================================================
   # secops_and_incident_response domain
@@ -1523,6 +1808,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['malicious_user_mitigation']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations"
+      - "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/malicious_user_mitigations"
+      - "/api/config/namespaces/{namespace}/malicious_user_mitigations/{name}"
 
   malicious_user_rule:
     description: "Malicious user rule for threat mitigation"
@@ -1536,6 +1827,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['malicious_user_mitigation']
+    api_paths:
+      - "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations"
+      - "/api/config/namespaces/{metadata.namespace}/malicious_user_mitigations/{metadata.name}"
+      - "/api/config/namespaces/{namespace}/malicious_user_mitigations"
+      - "/api/config/namespaces/{namespace}/malicious_user_mitigations/{name}"
 
   # ===========================================================================
   # vpm_and_node_management domain
@@ -1552,6 +1849,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - node config via fleet and site management
+    schema_components: []
+    api_paths: []
 
   vpm_config:
     description: "VPM configuration for virtual platform management"
@@ -1565,6 +1865,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - VPM config via site management APIs
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # client_side_defense domain
@@ -1610,6 +1913,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - telemetry via flow subscription and graph services
+    schema_components: []
+    api_paths: []
 
   insight_query:
     description: "Insight query for analytics"
@@ -1623,6 +1929,9 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    # Conceptual - insights via graph.service and data endpoints
+    schema_components: []
+    api_paths: []
 
   # ===========================================================================
   # data_intelligence domain
@@ -1639,6 +1948,17 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['shape.data_delivery']
+    api_paths:
+      - "/api/data-intelligence/namespaces/system/dataSets"
+      - "/api/data-intelligence/namespaces/system/datadictionary/{dataset}"
+      - "/api/data-intelligence/namespaces/system/init-request"
+      - "/api/data-intelligence/namespaces/{namespace}/data-dictionary/datasets"
+      - "/api/data-intelligence/namespaces/{namespace}/di/flowlabels"
+      - "/api/data-intelligence/namespaces/{namespace}/di/summary"
+      - "/api/data-intelligence/namespaces/{namespace}/receivers/{id}/status"
+      - "/api/data-intelligence/namespaces/{namespace}/receivers/{id}/test"
+      - "/api/data-intelligence/namespaces/{namespace}/suggest-values"
 
   data_export:
     description: "Data export configuration for reporting"
@@ -1652,6 +1972,12 @@ resources:
       required: []
       optional: []
     relationship_hints: []
+    schema_components: ['shape.data_delivery.receiver']
+    api_paths:
+      - "/api/data-intelligence/namespaces/{metadata.namespace}/receivers"
+      - "/api/data-intelligence/namespaces/{metadata.namespace}/receivers/{metadata.name}"
+      - "/api/data-intelligence/namespaces/{namespace}/receivers"
+      - "/api/data-intelligence/namespaces/{namespace}/receivers/{name}"
 
   # ===========================================================================
   # label domain

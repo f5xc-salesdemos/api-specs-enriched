@@ -1396,7 +1396,7 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
         # Get icon and primary resources for the domain
         icon_info = get_domain_icon(domain)
         # Rich metadata format for IDE tooling (Issues #267-270)
-        primary_resources_metadata = get_primary_resources_metadata(domain)
+        primary_resources_metadata = get_primary_resources_metadata(domain, spec=spec)
 
         # Build spec entry with x-f5xc-* namespace (Issue #292)
         spec_entry = {
