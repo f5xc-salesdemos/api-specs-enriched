@@ -535,6 +535,19 @@ jobs:
           path: docs
           retention-days: 1
 
+      - name: Biome-format generated JSON for release PR
+        if: steps.version.outputs.has_changes == 'true'
+        run: |
+          # Re-run biome format on all generated output as a single batch.
+          # json_writer.py already formats per-file during the pipeline, but
+          # biome ci (run by Super-Linter on the release PR) checks all files
+          # in batch mode. Per-file and batch formatting can diverge across
+          # Biome versions. This final batch pass guarantees the committed
+          # files match exactly what biome ci will check.
+          # Files exceeding biome.json maxSize (5 MB) are silently skipped
+          # by both this step and the Super-Linter check.
+          biome format --write docs/specifications/api/ docs/api-reference/ || true
+
       - name: Commit and tag release
         if: steps.version.outputs.has_changes == 'true'
         env:
