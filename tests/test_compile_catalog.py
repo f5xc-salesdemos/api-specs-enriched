@@ -606,3 +606,381 @@ def test_compile_catalog_resolves_body_schema_ref():
     assert op.get("bodySchema") is not None
     assert "$ref" not in op["bodySchema"]
     assert op["bodySchema"]["type"] == "object"
+
+
+# ── Task 2: _resolve_schema_ref ──────────────────────────────────────────────
+
+
+def test_resolve_schema_ref_follows_chain():
+    """Resolves a $ref to its target schema."""
+    components = {
+        "schemas": {
+            "OuterType": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "nested": {"$ref": "#/components/schemas/InnerType"},
+                },
+            },
+            "InnerType": {
+                "type": "object",
+                "properties": {"value": {"type": "integer"}},
+            },
+        }
+    }
+    from scripts.compile_catalog import _resolve_schema_ref
+
+    result = _resolve_schema_ref({"$ref": "#/components/schemas/OuterType"}, components)
+    assert result["type"] == "object"
+    assert "name" in result["properties"]
+
+
+def test_resolve_schema_ref_returns_original_if_no_ref():
+    from scripts.compile_catalog import _resolve_schema_ref
+
+    schema = {"type": "string", "description": "test"}
+    result = _resolve_schema_ref(schema, {})
+    assert result is schema
+
+
+def test_resolve_schema_ref_returns_original_if_ref_not_found():
+    from scripts.compile_catalog import _resolve_schema_ref
+
+    schema = {"$ref": "#/components/schemas/Missing"}
+    result = _resolve_schema_ref(schema, {"schemas": {}})
+    assert result is schema
+
+
+# ── Task 3: minimumPayload ───────────────────────────────────────────────────
+
+
+def test_build_operation_extracts_minimum_payload():
+    """Operations with x-f5xc-minimum-configuration get minimumPayload."""
+    from scripts.compile_catalog import _build_operation
+
+    operation = {
+        "summary": "Create a resource",
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "x-f5xc-minimum-configuration": {
+                            "description": "Minimum config for test",
+                            "required_fields": ["metadata", "spec"],
+                            "example_json": '{"metadata": {"name": "example"}, "spec": {}}',
+                        },
+                    }
+                }
+            }
+        },
+    }
+    result = _build_operation(
+        "/api/config/namespaces/{namespace}/resources", "post", operation, "create_resource", None
+    )
+    assert "minimumPayload" in result
+    assert result["minimumPayload"]["json"] == {"metadata": {"name": "example"}, "spec": {}}
+    assert result["minimumPayload"]["requiredFields"] == ["metadata", "spec"]
+    assert result["minimumPayload"]["description"] == "Minimum config for test"
+
+
+def test_build_operation_skips_minimum_payload_when_absent():
+    from scripts.compile_catalog import _build_operation
+
+    operation = {"summary": "Get a resource"}
+    result = _build_operation(
+        "/api/config/namespaces/{namespace}/resources/{name}",
+        "get",
+        operation,
+        "get_resource",
+        None,
+    )
+    assert "minimumPayload" not in result
+
+
+def test_build_operation_skips_minimum_payload_on_invalid_json():
+    from scripts.compile_catalog import _build_operation
+
+    operation = {
+        "summary": "Create a resource",
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "x-f5xc-minimum-configuration": {
+                            "description": "Bad JSON",
+                            "required_fields": ["metadata"],
+                            "example_json": "NOT VALID JSON {{{",
+                        },
+                    }
+                }
+            }
+        },
+    }
+    result = _build_operation(
+        "/api/config/namespaces/{namespace}/resources", "post", operation, "create_resource", None
+    )
+    assert "minimumPayload" not in result
+
+
+# ── Task 4: _extract_field_metadata ─────────────────────────────────────────
+
+
+def test_extract_field_metadata_from_enriched_properties():
+    from scripts.compile_catalog import _extract_field_metadata
+
+    schema = {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "Resource name",
+                "x-f5xc-constraints": {
+                    "constraintType": "string",
+                    "pattern": "^[a-z0-9][-a-z0-9]*$",
+                    "maxLength": 64,
+                    "deterministic": True,
+                },
+                "x-f5xc-required-for": {
+                    "minimum_config": True,
+                    "create": True,
+                    "update": False,
+                    "read": False,
+                },
+            },
+            "labels": {"type": "object", "description": "User labels"},
+        },
+    }
+    result = _extract_field_metadata(schema, {}, prefix="metadata")
+    assert "metadata.name" in result
+    assert result["metadata.name"]["type"] == "string"
+    assert result["metadata.name"]["description"] == "Resource name"
+    assert result["metadata.name"]["constraints"]["pattern"] == "^[a-z0-9][-a-z0-9]*$"
+    assert result["metadata.name"]["required_for"]["create"] is True
+    assert "metadata.labels" not in result
+
+
+def test_extract_field_metadata_resolves_refs():
+    from scripts.compile_catalog import _extract_field_metadata
+
+    components = {
+        "schemas": {
+            "MetaType": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": {"type": "string", "x-f5xc-constraints": {"maxLength": 64}},
+                },
+            },
+        }
+    }
+    schema = {
+        "type": "object",
+        "properties": {"metadata": {"$ref": "#/components/schemas/MetaType"}},
+    }
+    result = _extract_field_metadata(schema, components, prefix="", depth=0, max_depth=3)
+    assert "metadata.name" in result
+    assert result["metadata.name"]["constraints"]["maxLength"] == 64
+
+
+def test_extract_field_metadata_handles_circular_refs():
+    from scripts.compile_catalog import _extract_field_metadata
+
+    components = {
+        "schemas": {
+            "SelfRef": {
+                "type": "object",
+                "properties": {
+                    "child": {"$ref": "#/components/schemas/SelfRef"},
+                    "value": {"type": "string", "x-f5xc-constraints": {"maxLength": 10}},
+                },
+            },
+        }
+    }
+    schema = {"$ref": "#/components/schemas/SelfRef"}
+    result = _extract_field_metadata(schema, components, prefix="", depth=0, max_depth=3)
+    assert "value" in result
+
+
+def test_extract_field_metadata_respects_max_depth():
+    from scripts.compile_catalog import _extract_field_metadata
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "level1": {
+                "type": "object",
+                "properties": {
+                    "level2": {
+                        "type": "object",
+                        "properties": {
+                            "level3": {
+                                "type": "object",
+                                "properties": {
+                                    "level4": {
+                                        "type": "string",
+                                        "x-f5xc-constraints": {"maxLength": 5},
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+    result = _extract_field_metadata(schema, {}, prefix="", depth=0, max_depth=3)
+    assert "level1.level2.level3.level4" not in result
+
+
+# ── Task 5: _collect_oneof_recommendations ───────────────────────────────────
+
+
+def test_collect_oneof_recommendations_from_nested_schemas():
+    from scripts.compile_catalog import _collect_oneof_recommendations
+
+    components = {
+        "schemas": {
+            "SpecType": {
+                "type": "object",
+                "x-f5xc-recommended-oneof-variant": {
+                    "health_check": "http_health_check",
+                    "tls_choice": "no_tls",
+                },
+                "properties": {"pool": {"$ref": "#/components/schemas/PoolType"}},
+            },
+            "PoolType": {
+                "type": "object",
+                "x-f5xc-recommended-oneof-variant": {"port_choice": "port"},
+                "properties": {"name": {"type": "string"}},
+            },
+        }
+    }
+    root_schema = {
+        "type": "object",
+        "properties": {
+            "metadata": {"type": "object", "properties": {"name": {"type": "string"}}},
+            "spec": {"$ref": "#/components/schemas/SpecType"},
+        },
+    }
+    result = _collect_oneof_recommendations(root_schema, components)
+    assert result["spec.health_check"] == "http_health_check"
+    assert result["spec.tls_choice"] == "no_tls"
+    assert result["spec.pool.port_choice"] == "port"
+
+
+def test_collect_oneof_recommendations_empty_when_none():
+    from scripts.compile_catalog import _collect_oneof_recommendations
+
+    schema = {"type": "object", "properties": {"name": {"type": "string"}}}
+    result = _collect_oneof_recommendations(schema, {})
+    assert result == {}
+
+
+# ── Task 6: wire enrichment into _build_operation ───────────────────────────
+
+
+def test_build_operation_includes_field_metadata():
+    from scripts.compile_catalog import _build_operation
+
+    components = {
+        "schemas": {
+            "CreateReq": {
+                "type": "object",
+                "properties": {
+                    "metadata": {"$ref": "#/components/schemas/MetaType"},
+                    "spec": {"type": "object", "properties": {}},
+                },
+            },
+            "MetaType": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": {"type": "string", "x-f5xc-constraints": {"maxLength": 64}},
+                },
+            },
+        }
+    }
+    operation = {
+        "summary": "Create",
+        "requestBody": {
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateReq"}}}
+        },
+    }
+    result = _build_operation("/api/test", "post", operation, "create_test", components)
+    assert "fieldMetadata" in result
+    assert "metadata.name" in result["fieldMetadata"]
+    assert result["fieldMetadata"]["metadata.name"]["constraints"]["maxLength"] == 64
+
+
+def test_build_operation_includes_oneof_recommendations():
+    from scripts.compile_catalog import _build_operation
+
+    components = {
+        "schemas": {
+            "SpecType": {
+                "type": "object",
+                "x-f5xc-recommended-oneof-variant": {"tls_choice": "no_tls"},
+                "properties": {"port": {"type": "integer"}},
+            },
+        }
+    }
+    operation = {
+        "summary": "Create",
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"spec": {"$ref": "#/components/schemas/SpecType"}},
+                    }
+                }
+            }
+        },
+    }
+    result = _build_operation("/api/test", "post", operation, "create_test", components)
+    assert "oneOfRecommendations" in result
+    assert result["oneOfRecommendations"]["spec.tls_choice"] == "no_tls"
+
+
+def test_build_operation_includes_response_summary():
+    from scripts.compile_catalog import _build_operation
+
+    components = {
+        "schemas": {
+            "ResponseType": {
+                "type": "object",
+                "properties": {
+                    "metadata": {"type": "object", "description": "Resource identity"},
+                    "spec": {"type": "object", "description": "Resource spec"},
+                },
+            },
+        }
+    }
+    operation = {
+        "summary": "Create",
+        "responses": {
+            "200": {
+                "content": {
+                    "application/json": {"schema": {"$ref": "#/components/schemas/ResponseType"}}
+                }
+            }
+        },
+    }
+    result = _build_operation("/api/test", "post", operation, "create_test", components)
+    assert "responseSummary" in result
+    fields = {f["field"] for f in result["responseSummary"]}
+    assert "metadata" in fields
+    assert "spec" in fields
+
+
+def test_build_operation_skips_enrichment_for_get():
+    from scripts.compile_catalog import _build_operation
+
+    operation = {"summary": "List resources"}
+    result = _build_operation("/api/test", "get", operation, "list_test", None)
+    assert "fieldMetadata" not in result
+    assert "oneOfRecommendations" not in result
+    assert "minimumPayload" not in result

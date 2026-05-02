@@ -269,6 +269,165 @@ def _resolve_body_schema(
     return body_schema
 
 
+def _resolve_schema_ref(
+    schema: dict[str, Any], components: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Resolve a $ref to its target schema. Returns original if unresolvable."""
+    ref = schema.get("$ref")
+    if not ref or not components:
+        return schema
+    ref_key = ref.split("/")[-1]
+    resolved = (components.get("schemas") or {}).get(ref_key)
+    return resolved or schema
+
+
+_ENRICHMENT_KEYS = frozenset(
+    {
+        "x-f5xc-constraints",
+        "x-f5xc-required-for",
+        "x-f5xc-server-default",
+        "x-f5xc-recommended-value",
+        "x-f5xc-conflicts-with",
+        "x-f5xc-description",
+    }
+)
+
+
+def _extract_field_metadata(
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    prefix: str = "",
+    depth: int = 0,
+    max_depth: int = 3,
+    visited: set[str] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Walk schema properties to max_depth, resolving $refs, extracting x-f5xc-* metadata."""
+    if visited is None:
+        visited = set()
+
+    resolved = _resolve_schema_ref(schema, components)
+
+    # Cycle detection
+    ref = schema.get("$ref", "")
+    if ref:
+        if ref in visited:
+            return {}
+        visited = visited | {ref}
+        resolved = _resolve_schema_ref(schema, components)
+
+    if depth >= max_depth:
+        return {}
+
+    properties = resolved.get("properties")
+    if not properties:
+        return {}
+
+    result: dict[str, dict[str, Any]] = {}
+
+    for prop_name, prop_schema in properties.items():
+        prop_resolved = _resolve_schema_ref(prop_schema, components)
+        field_path = f"{prefix}.{prop_name}" if prefix else prop_name
+
+        has_enrichment = any(k in prop_resolved for k in _ENRICHMENT_KEYS)
+
+        if has_enrichment:
+            entry: dict[str, Any] = {
+                "type": prop_resolved.get("type", "object"),
+            }
+            desc = prop_resolved.get("x-f5xc-description") or prop_resolved.get("description")
+            if desc:
+                entry["description"] = desc
+
+            constraints = prop_resolved.get("x-f5xc-constraints")
+            if constraints:
+                entry["constraints"] = constraints
+
+            required_for = prop_resolved.get("x-f5xc-required-for")
+            if required_for:
+                entry["required_for"] = required_for
+
+            if prop_resolved.get("x-f5xc-server-default"):
+                entry["serverDefault"] = True
+
+            default_val = prop_resolved.get("default")
+            if default_val is not None:
+                entry["default"] = default_val
+
+            recommended = prop_resolved.get("x-f5xc-recommended-value")
+            if recommended is not None:
+                entry["recommendedValue"] = recommended
+
+            conflicts = prop_resolved.get("x-f5xc-conflicts-with")
+            if conflicts:
+                entry["conflictsWith"] = conflicts
+
+            result[field_path] = entry
+
+        # Recurse into nested objects
+        if prop_resolved.get("type") == "object" or prop_resolved.get("properties"):
+            nested = _extract_field_metadata(
+                prop_resolved,
+                components,
+                prefix=field_path,
+                depth=depth + 1,
+                max_depth=max_depth,
+                visited=visited,
+            )
+            result.update(nested)
+
+    return result
+
+
+def _collect_oneof_recommendations(
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    prefix: str = "",
+    depth: int = 0,
+    max_depth: int = 3,
+    visited: set[str] | None = None,
+) -> dict[str, str]:
+    """Walk schemas reachable via $ref, collecting x-f5xc-recommended-oneof-variant entries."""
+    if visited is None:
+        visited = set()
+
+    ref = schema.get("$ref", "")
+    if ref:
+        if ref in visited:
+            return {}
+        visited = visited | {ref}
+
+    resolved = _resolve_schema_ref(schema, components)
+
+    if depth > max_depth:
+        return {}
+
+    result: dict[str, str] = {}
+
+    oneof_map = resolved.get("x-f5xc-recommended-oneof-variant")
+    if isinstance(oneof_map, dict):
+        for group_name, variant in oneof_map.items():
+            key = f"{prefix}.{group_name}" if prefix else group_name
+            result[key] = variant
+
+    properties = resolved.get("properties")
+    if properties:
+        for prop_name, prop_schema in properties.items():
+            prop_path = f"{prefix}.{prop_name}" if prefix else prop_name
+            nested = _collect_oneof_recommendations(
+                prop_schema,
+                components,
+                prefix=prop_path,
+                depth=depth + 1,
+                max_depth=max_depth,
+                visited=visited,
+            )
+            result.update(nested)
+
+    return result
+
+
 def _build_operation(
     path: str,
     method: str,
@@ -294,6 +453,45 @@ def _build_operation(
     response_schema = extract_response_schema(operation, components)
     if response_schema:
         op["responseSchema"] = response_schema
+
+    # Extract minimumPayload from x-f5xc-minimum-configuration
+    if body_schema:
+        min_config = body_schema.get("x-f5xc-minimum-configuration")
+        if min_config and min_config.get("example_json"):
+            try:
+                parsed_json = json.loads(min_config["example_json"])
+                op["minimumPayload"] = {
+                    "json": parsed_json,
+                    "requiredFields": min_config.get("required_fields", []),
+                    "description": min_config.get("description", ""),
+                }
+            except (json.JSONDecodeError, TypeError):
+                pass  # Skip if example_json is invalid
+
+    # Extract fieldMetadata from enriched properties (POST/PUT/PATCH only)
+    if body_schema and method.upper() in {"POST", "PUT", "PATCH"}:
+        field_meta = _extract_field_metadata(body_schema, components)
+        if field_meta:
+            op["fieldMetadata"] = field_meta
+
+        oneof_recs = _collect_oneof_recommendations(body_schema, components)
+        if oneof_recs:
+            op["oneOfRecommendations"] = oneof_recs
+
+    # Extract responseSummary from response schema
+    if response_schema:
+        resp_props = response_schema.get("properties", {})
+        if resp_props:
+            summary = []
+            for field_name, field_schema in resp_props.items():
+                field_type = field_schema.get("type", "object")
+                field_desc = field_schema.get("description", "")
+                if "$ref" in field_schema:
+                    field_type = field_schema["$ref"].split("/")[-1]
+                summary.append({"field": field_name, "type": field_type, "description": field_desc})
+            if summary:
+                op["responseSummary"] = summary
+
     return op
 
 
