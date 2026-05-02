@@ -42,7 +42,7 @@
 #       ├── openapi.json    (master combined spec)
 #       └── index.json      (spec metadata)
 
-.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains validate-curl validate-curl-dry validate-curl-cleanup serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer test
+.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains validate-curl validate-curl-dry validate-curl-cleanup serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
 
 # Virtual environment
 VENV := .venv
@@ -103,6 +103,12 @@ merge:
 # Generate Scalar API viewer pages and Starlight MDX wrappers
 api-viewer:
 	$(PYTHON) -m scripts.generate_api_viewer
+
+# Compile API catalog from enriched specs
+catalog: ## Compile API catalog from enriched specs
+	@echo "Compiling API catalog..."
+	$(PYTHON) -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
+	@echo "Catalog compiled to release/api-catalog.json"
 
 # Run the pytest suite (honours pyproject.toml addopts, including coverage)
 test: check-deps
