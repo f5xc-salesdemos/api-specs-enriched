@@ -428,6 +428,22 @@ def _collect_oneof_recommendations(
     return result
 
 
+def _extract_raw_response_schema(
+    operation: dict[str, Any],
+    components: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Extract the raw response schema with $refs resolved but descriptions preserved."""
+    responses = operation.get("responses", {})
+    for code in ("200", "201"):
+        resp = responses.get(code)
+        if not resp:
+            continue
+        schema = resp.get("content", {}).get("application/json", {}).get("schema")
+        if schema:
+            return _resolve_schema_ref(schema, components)
+    return None
+
+
 def _build_operation(
     path: str,
     method: str,
@@ -478,16 +494,21 @@ def _build_operation(
         if oneof_recs:
             op["oneOfRecommendations"] = oneof_recs
 
-    # Extract responseSummary from response schema
-    if response_schema:
-        resp_props = response_schema.get("properties", {})
+    # Extract responseSummary from raw operation responses (not the simplified response_schema)
+    raw_resp_schema = _extract_raw_response_schema(operation, components)
+    if raw_resp_schema:
+        resp_props = raw_resp_schema.get("properties", {})
         if resp_props:
             summary = []
             for field_name, field_schema in resp_props.items():
                 field_type = field_schema.get("type", "object")
                 field_desc = field_schema.get("description", "")
                 if "$ref" in field_schema:
-                    field_type = field_schema["$ref"].split("/")[-1]
+                    ref_key = field_schema["$ref"].split("/")[-1]
+                    field_type = ref_key
+                    resolved = _resolve_schema_ref(field_schema, components)
+                    if resolved.get("description"):
+                        field_desc = resolved["description"]
                 summary.append({"field": field_name, "type": field_type, "description": field_desc})
             if summary:
                 op["responseSummary"] = summary
