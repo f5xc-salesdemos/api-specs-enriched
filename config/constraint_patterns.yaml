@@ -1020,3 +1020,57 @@ uniqueness_patterns:
 
   # Case sensitivity (F5 XC enforces case-sensitive names)
   case_sensitive: true
+
+# Resource-Specific Constraint Overrides
+# When a schema name matches the pattern, these constraints replace
+# the global pattern match for the named field. This avoids changing
+# global patterns that may be correct for other resource types.
+resource_constraint_overrides:
+  healthcheck:
+    schema_pattern: "healthcheck.*SpecType"
+    fields:
+      timeout:
+        type: "number"
+        constraints:
+          minimum: 1
+          maximum: 600
+          multipleOf: 1
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "timing"
+          note: "API rejects timeout > 600 for healthchecks (global pattern says 3600)"
+
+      healthy_threshold:
+        type: "number"
+        constraints:
+          minimum: 1
+          maximum: 16
+          multipleOf: 1
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "threshold"
+
+      unhealthy_threshold:
+        type: "number"
+        constraints:
+          minimum: 1
+          maximum: 16
+          multipleOf: 1
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "threshold"
+
+      jitter_percent:
+        type: "number"
+        constraints:
+          minimum: 0
+          maximum: 50
+          multipleOf: 1
+        metadata:
+          source: "api-probed"
+          confidence: 0.95
+          category: "timing"
+          note: "Accepts {0} union [10, 50] — simplified to [0, 50] for OpenAPI compat"

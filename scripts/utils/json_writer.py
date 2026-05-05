@@ -78,6 +78,14 @@ def _is_publishing_path(output_path: Path) -> bool:
     return any(marker in resolved for marker in _PUBLISHING_PATH_MARKERS)
 
 
+def _is_formatter_disabled(result: subprocess.CompletedProcess[str]) -> bool:
+    """True iff biome skipped the file because formatter is disabled for its path."""
+    stderr = result.stderr
+    no_files = "No files were processed" in stderr
+    not_oversize = "exceeds the configured maximum" not in stderr
+    return no_files and not_oversize
+
+
 def _format_with_biome(output_path: Path) -> None:
     if not _is_publishing_path(output_path):
         # Writes outside the release-committed docs tree do not need
@@ -122,6 +130,9 @@ def _format_with_biome(output_path: Path) -> None:
             "Super-Linter will treat this as a warning, not an error.",
             file=sys.stderr,
         )
+        return
+
+    if _is_formatter_disabled(result):
         return
 
     msg = (

@@ -92,6 +92,7 @@ from scripts.utils import (
     ReadOnlyEnricher,
     ResourceExamplesEnricher,
     SchemaFixer,
+    SchemaOverrideEnricher,
     TagGenerator,
     ValidationEnricher,
     ValidationExporter,
@@ -1110,6 +1111,7 @@ def merge_specs_by_domain(
         "guided_workflows_added": 0,
         "server_defaults_added": 0,
         "conflicts_with_added": 0,
+        "schema_overrides_applied": 0,
     }
 
     # Load description enricher for domain-specific descriptions
@@ -1127,6 +1129,10 @@ def merge_specs_by_domain(
     # Load conflicts-with enricher (Issue #494)
     # Auto-derives mutual exclusivity from x-ves-oneof-field-* extensions
     conflicts_with_enricher = ConflictsWithEnricher()
+
+    # Load schema override enricher (Issue #294)
+    # Injects missing oneOf variants from schema_overrides.yaml before conflicts-with
+    schema_override_enricher = SchemaOverrideEnricher()
 
     for domain, spec_list in sorted(domain_specs.items()):
         domain_title = domain.replace("_", " ").title()
@@ -1270,6 +1276,12 @@ def merge_specs_by_domain(
             stats["server_defaults_added"],
             dv_stats.get("defaults_added", 0),
         )
+
+        # Schema overrides: inject missing oneOf variants (Issue #294)
+        merged_spec = schema_override_enricher.enrich_spec(merged_spec)
+        so_stats = schema_override_enricher.get_stats()
+        stats["schema_overrides_applied"] += so_stats.get("properties_injected", 0)
+        schema_override_enricher.reset_stats()
 
         # Conflicts-with: auto-derive mutual exclusivity from x-ves-oneof-field-* (Issue #494)
         merged_spec = conflicts_with_enricher.enrich_spec(merged_spec)
