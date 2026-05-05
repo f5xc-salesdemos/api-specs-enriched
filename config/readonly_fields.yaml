@@ -75,3 +75,13 @@ metadata_patterns:
   - "ObjectMetaType"
   - ".*MetadataType$"
   - "SystemMetadata"
+
+# Resource-specific response-only fields (tracking only — not yet enforced by ReadOnlyEnricher)
+# These fields are documented here for audit purposes. Context-aware readOnly marking
+# requires the constraint prober (Phase 3) to identify them per schema.
+resource_specific_fields:
+  healthcheck:
+    jitter:
+      description: "Server-computed absolute jitter value derived from jitter_percent"
+      reason: "Computed by API from jitter_percent; read-only in responses"
+      schema_pattern: "healthcheck.*SpecType"

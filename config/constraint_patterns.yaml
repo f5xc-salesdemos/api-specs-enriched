@@ -17,26 +17,26 @@ metadata:
 # Pattern structure: field name regex → constraint metadata
 string_patterns:
 
-  # Identity and Naming (RFC 1123, Kubernetes standards)
+  # Identity and Naming (DNS-1035, F5 XC API enforcement)
   - pattern: '\bname$'
-    description: "DNS label format resource name"
+    description: "DNS-1035 label format resource name"
     constraints:
       minLength: 1
       maxLength: 63
-      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
       characterSet:
         allowed: '[a-z0-9-]'
         restricted: '[^a-z0-9-]'
         required: '[a-z0-9]'
-        description: "Lowercase alphanumeric with hyphens, not at start/end"
+        description: "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
       format: "dns-label"
-      formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
+      formatDescription: "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric"
       validation:
-        rfc: "RFC 1123"
-        standard: "Kubernetes resource naming"
+        rfc: "RFC 1035"
+        standard: "DNS-1035 label (alpha-first)"
     metadata:
-      source: "inferred"
-      confidence: 0.95
+      source: "api-probed"
+      confidence: 0.99
       category: "naming"
 
   - pattern: '\bnamespace$'
@@ -44,14 +44,18 @@ string_patterns:
     constraints:
       minLength: 1
       maxLength: 63
-      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
       characterSet:
         allowed: '[a-z0-9-]'
-        description: "Kubernetes namespace format"
+        description: "DNS-1035 label format (alpha-first)"
       format: "dns-label"
+      formatDescription: "DNS-1035 label: must start with a lowercase letter"
+      validation:
+        rfc: "RFC 1035"
+        standard: "DNS-1035 label (alpha-first)"
     metadata:
-      source: "inferred"
-      confidence: 0.95
+      source: "api-probed"
+      confidence: 0.99
       category: "naming"
 
   - pattern: '\b(user|username)$'
@@ -1066,11 +1070,14 @@ resource_constraint_overrides:
       jitter_percent:
         type: "number"
         constraints:
-          minimum: 0
-          maximum: 50
+          ranges:
+            - minimum: 0
+              maximum: 0
+            - minimum: 10
+              maximum: 50
           multipleOf: 1
         metadata:
           source: "api-probed"
-          confidence: 0.95
+          confidence: 0.99
           category: "timing"
-          note: "Accepts {0} union [10, 50] — simplified to [0, 50] for OpenAPI compat"
+          note: "Non-contiguous: {0} union [10, 50] — values 1-9 rejected by API"

@@ -530,16 +530,26 @@ class ConstraintEnricher:
         # Check for resource-specific constraint override
         resource_override = self._get_resource_override(schema_name, field_name)
         if resource_override:
-            override_result: dict[str, Any] = {
-                **resource_override.get("constraints", {}),
-            }
+            override_constraints = resource_override.get("constraints", {})
             override_metadata = resource_override.get("metadata", {})
-            if override_metadata:
-                override_result["metadata"] = override_metadata
+            confidence = override_metadata.get("confidence", 0)
+            threshold = (
+                self.config.get("metadata", {}).get("confidence_thresholds", {}).get("high", 0.9)
+            )
+            override_result: dict[str, Any] = {
+                "constraintType": resource_override.get("type", "number"),
+                "category": override_metadata.get("category", "api-probed"),
+                **override_constraints,
+                "deterministic": confidence >= threshold,
+                "metadata": {
+                    **override_metadata,
+                    "validatedAt": datetime.now(timezone.utc).isoformat(),
+                },
+            }
             schema["x-f5xc-constraints"] = override_result
             self.stats["constraints_added"] += 1
-            if "confidence" in override_metadata:
-                self.stats["confidence_scores"].append(override_metadata["confidence"])
+            if confidence:
+                self.stats["confidence_scores"].append(confidence)
             return
 
         # Extract inferred constraints based on type
