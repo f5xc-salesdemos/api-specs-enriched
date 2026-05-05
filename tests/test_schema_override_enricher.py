@@ -169,6 +169,39 @@ class TestEdgeCases:
         create_schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
         assert len(create_schema["x-ves-oneof-field-health_check"]) == 7
 
+    def test_preserves_json_string_encoding(self, enricher):
+        """When x-ves-oneof-field is a JSON string, output must also be a JSON string."""
+        import json
+
+        spec = {
+            "components": {
+                "schemas": {
+                    "healthcheckCreateSpecType": {
+                        "type": "object",
+                        "properties": {
+                            "http_health_check": {
+                                "$ref": "#/components/schemas/healthcheckHttpHealthCheck"
+                            },
+                        },
+                        "x-ves-oneof-field-health_check": json.dumps(
+                            [
+                                "http_health_check",
+                                "tcp_health_check",
+                                "udp_icmp_health_check",
+                            ]
+                        ),
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
+        ext_value = schema["x-ves-oneof-field-health_check"]
+        assert isinstance(ext_value, str), f"Expected JSON string, got {type(ext_value)}"
+        parsed = json.loads(ext_value)
+        assert len(parsed) == 7
+        assert "dns_health_check" in parsed
+
 
 class TestConfigLoading:
     """Config file loading and validation."""

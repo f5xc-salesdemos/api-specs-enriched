@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from pathlib import Path
@@ -88,9 +89,9 @@ class SchemaOverrideEnricher:
             group = override["oneof_group"]
             ext_key = f"x-ves-oneof-field-{group}"
 
-            existing_variants = schema.get(ext_key, [])
-            if isinstance(existing_variants, str):
-                existing_variants = yaml.safe_load(existing_variants)
+            raw_existing = schema.get(ext_key, [])
+            was_string = isinstance(raw_existing, str)
+            existing_variants = yaml.safe_load(raw_existing) if was_string else raw_existing
             existing_set = set(existing_variants)
 
             props = schema.get("properties", {})
@@ -109,7 +110,8 @@ class SchemaOverrideEnricher:
                     existing_set.add(v)
 
             if new_variants:
-                schema[ext_key] = sorted(existing_set)
+                updated = sorted(existing_set)
+                schema[ext_key] = json.dumps(updated) if was_string else updated
                 self._stats["oneof_arrays_updated"] += 1
 
     def get_stats(self) -> dict[str, int]:

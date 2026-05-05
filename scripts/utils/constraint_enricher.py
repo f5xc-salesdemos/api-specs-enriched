@@ -575,7 +575,7 @@ class ConstraintEnricher:
                 self.stats["object_constraints"] += 1
 
         # Reconcile constraints from all sources
-        constraints = ConstraintReconciler.reconcile(
+        constraints: dict[str, Any] | None = ConstraintReconciler.reconcile(
             existing=existing,
             discovery=discovery,
             inferred=inferred,
