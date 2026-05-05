@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -22,27 +23,50 @@ def enricher(config_path):
 
 
 @pytest.fixture
-def healthcheck_spec():
-    """Minimal spec with 3-variant healthcheck schemas (mimics upstream gap)."""
+def synthetic_config(tmp_path):
+    """Config with a synthetic override for testing enricher behavior."""
+    config = {
+        "version": "1.0.0",
+        "overrides": {
+            "test_resource": {
+                "upstream_issue": "test#1",
+                "schemas": [
+                    {
+                        "pattern": "testResource(Create|Get)SpecType",
+                        "oneof_group": "variant_choice",
+                        "complete_variants": ["variant_a", "variant_b", "variant_c"],
+                        "inject_properties": {
+                            "variant_c": {"$ref": "#/components/schemas/emptySchema"},
+                        },
+                    },
+                ],
+            },
+        },
+    }
+    config_file = tmp_path / "schema_overrides.yaml"
+    with config_file.open("w") as f:
+        yaml.dump(config, f)
+    return config_file
+
+
+@pytest.fixture
+def synthetic_enricher(synthetic_config):
+    return SchemaOverrideEnricher(config_path=synthetic_config)
+
+
+@pytest.fixture
+def test_spec():
+    """Spec with 2-variant schemas for synthetic override testing."""
     base_props = {
-        "http_health_check": {"$ref": "#/components/schemas/healthcheckHttpHealthCheck"},
-        "tcp_health_check": {"$ref": "#/components/schemas/healthcheckTcpHealthCheck"},
-        "udp_icmp_health_check": {"$ref": "#/components/schemas/ioschemaEmpty"},
-        "timeout": {"type": "integer"},
-        "interval": {"type": "integer"},
-        "healthy_threshold": {"type": "integer"},
-        "unhealthy_threshold": {"type": "integer"},
-        "jitter_percent": {"type": "integer"},
+        "variant_a": {"$ref": "#/components/schemas/typeA"},
+        "variant_b": {"$ref": "#/components/schemas/typeB"},
+        "other_field": {"type": "string"},
     }
     base_ext = {
-        "x-ves-oneof-field-health_check": [
-            "http_health_check",
-            "tcp_health_check",
-            "udp_icmp_health_check",
-        ],
+        "x-ves-oneof-field-variant_choice": ["variant_a", "variant_b"],
     }
 
-    def make_schema(_name):
+    def make_schema():
         return {
             "type": "object",
             "properties": dict(base_props),
@@ -52,83 +76,66 @@ def healthcheck_spec():
     return {
         "components": {
             "schemas": {
-                "healthcheckCreateSpecType": make_schema("Create"),
-                "healthcheckGetSpecType": make_schema("Get"),
-                "healthcheckReplaceSpecType": make_schema("Replace"),
-                "healthcheckHttpHealthCheck": {"type": "object", "properties": {}},
-                "healthcheckTcpHealthCheck": {"type": "object", "properties": {}},
-                "ioschemaEmpty": {"type": "object"},
+                "testResourceCreateSpecType": make_schema(),
+                "testResourceGetSpecType": make_schema(),
+                "emptySchema": {"type": "object"},
             },
         },
     }
 
 
 class TestSchemaOverrideEnricher:
-    """Core enricher behavior."""
+    """Core enricher behavior with synthetic overrides."""
 
-    def test_injects_missing_properties(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        for variant in [
-            "dns_health_check",
-            "dns_proxy_icmp_health_check",
-            "dns_proxy_tcp_health_check",
-            "dns_proxy_udp_health_check",
-        ]:
-            assert variant in schema["properties"], f"Missing injected property: {variant}"
-            assert schema["properties"][variant] == {"$ref": "#/components/schemas/ioschemaEmpty"}
+    def test_injects_missing_properties(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        assert "variant_c" in schema["properties"]
+        assert schema["properties"]["variant_c"] == {"$ref": "#/components/schemas/emptySchema"}
 
-    def test_updates_oneof_extension_array(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        for schema_name in [
-            "healthcheckCreateSpecType",
-            "healthcheckGetSpecType",
-            "healthcheckReplaceSpecType",
-        ]:
+    def test_updates_oneof_extension_array(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        for schema_name in ["testResourceCreateSpecType", "testResourceGetSpecType"]:
             schema = result["components"]["schemas"][schema_name]
-            variants = schema["x-ves-oneof-field-health_check"]
-            assert len(variants) == 7
-            assert "dns_health_check" in variants
-            assert "dns_proxy_udp_health_check" in variants
+            variants = schema["x-ves-oneof-field-variant_choice"]
+            assert len(variants) == 3
+            assert "variant_c" in variants
 
-    def test_preserves_existing_properties(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        assert "http_health_check" in schema["properties"]
-        assert "timeout" in schema["properties"]
-        assert schema["properties"]["http_health_check"] == {
-            "$ref": "#/components/schemas/healthcheckHttpHealthCheck"
-        }
+    def test_preserves_existing_properties(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        assert "variant_a" in schema["properties"]
+        assert "other_field" in schema["properties"]
 
-    def test_preserves_existing_variants_in_extension(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        variants = schema["x-ves-oneof-field-health_check"]
-        for existing in ["http_health_check", "tcp_health_check", "udp_icmp_health_check"]:
+    def test_preserves_existing_variants_in_extension(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        variants = schema["x-ves-oneof-field-variant_choice"]
+        for existing in ["variant_a", "variant_b"]:
             assert existing in variants
 
-    def test_does_not_duplicate_existing_variants(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        variants = schema["x-ves-oneof-field-health_check"]
+    def test_does_not_duplicate_existing_variants(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        variants = schema["x-ves-oneof-field-variant_choice"]
         assert len(variants) == len(set(variants))
 
-    def test_skips_non_matching_schemas(self, enricher, healthcheck_spec):
-        result = enricher.enrich_spec(healthcheck_spec)
-        empty = result["components"]["schemas"]["ioschemaEmpty"]
-        assert "x-ves-oneof-field-health_check" not in empty
+    def test_skips_non_matching_schemas(self, synthetic_enricher, test_spec):
+        result = synthetic_enricher.enrich_spec(test_spec)
+        empty = result["components"]["schemas"]["emptySchema"]
+        assert "x-ves-oneof-field-variant_choice" not in empty
 
-    def test_stats_tracking(self, enricher, healthcheck_spec):
-        enricher.enrich_spec(healthcheck_spec)
-        stats = enricher.get_stats()
+    def test_stats_tracking(self, synthetic_enricher, test_spec):
+        synthetic_enricher.enrich_spec(test_spec)
+        stats = synthetic_enricher.get_stats()
         assert stats["schemas_processed"] > 0
-        assert stats["properties_injected"] == 12  # 4 variants x 3 schema types
-        assert stats["oneof_arrays_updated"] == 3
+        assert stats["properties_injected"] == 2  # 1 variant x 2 schema types
+        assert stats["oneof_arrays_updated"] == 2
 
-    def test_reset_stats(self, enricher, healthcheck_spec):
-        enricher.enrich_spec(healthcheck_spec)
-        enricher.reset_stats()
-        stats = enricher.get_stats()
+    def test_reset_stats(self, synthetic_enricher, test_spec):
+        synthetic_enricher.enrich_spec(test_spec)
+        synthetic_enricher.reset_stats()
+        stats = synthetic_enricher.get_stats()
         assert stats["schemas_processed"] == 0
         assert stats["properties_injected"] == 0
 
@@ -144,7 +151,7 @@ class TestEdgeCases:
         result = enricher.enrich_spec({"components": {}})
         assert result == {"components": {}}
 
-    def test_no_matching_schemas(self, enricher):
+    def test_no_matching_schemas(self, synthetic_enricher):
         spec = {
             "components": {
                 "schemas": {
@@ -155,52 +162,54 @@ class TestEdgeCases:
                 },
             },
         }
-        result = enricher.enrich_spec(spec)
+        result = synthetic_enricher.enrich_spec(spec)
         schema = result["components"]["schemas"]["unrelatedSchema"]
-        assert "x-ves-oneof-field-health_check" not in schema
+        assert "x-ves-oneof-field-variant_choice" not in schema
 
-    def test_already_complete_spec(self, enricher, healthcheck_spec):
-        """If all 7 variants already present, enricher should be a no-op."""
-        schema = healthcheck_spec["components"]["schemas"]["healthcheckCreateSpecType"]
-        schema["properties"]["dns_health_check"] = {"$ref": "#/components/schemas/ioschemaEmpty"}
-        schema["x-ves-oneof-field-health_check"].append("dns_health_check")
+    def test_already_complete_spec(self, synthetic_enricher, test_spec):
+        """If all variants already present, enricher should be a no-op for that variant."""
+        schema = test_spec["components"]["schemas"]["testResourceCreateSpecType"]
+        schema["properties"]["variant_c"] = {"$ref": "#/components/schemas/emptySchema"}
+        schema["x-ves-oneof-field-variant_choice"].append("variant_c")
 
-        result = enricher.enrich_spec(healthcheck_spec)
-        create_schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        assert len(create_schema["x-ves-oneof-field-health_check"]) == 7
+        result = synthetic_enricher.enrich_spec(test_spec)
+        create_schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        assert len(create_schema["x-ves-oneof-field-variant_choice"]) == 3
 
-    def test_preserves_json_string_encoding(self, enricher):
+    def test_preserves_json_string_encoding(self, synthetic_enricher):
         """When x-ves-oneof-field is a JSON string, output must also be a JSON string."""
-        import json
-
         spec = {
             "components": {
                 "schemas": {
-                    "healthcheckCreateSpecType": {
+                    "testResourceCreateSpecType": {
                         "type": "object",
                         "properties": {
-                            "http_health_check": {
-                                "$ref": "#/components/schemas/healthcheckHttpHealthCheck"
-                            },
+                            "variant_a": {"$ref": "#/components/schemas/typeA"},
                         },
-                        "x-ves-oneof-field-health_check": json.dumps(
-                            [
-                                "http_health_check",
-                                "tcp_health_check",
-                                "udp_icmp_health_check",
-                            ]
-                        ),
+                        "x-ves-oneof-field-variant_choice": json.dumps(["variant_a", "variant_b"]),
                     },
                 },
             },
         }
-        result = enricher.enrich_spec(spec)
-        schema = result["components"]["schemas"]["healthcheckCreateSpecType"]
-        ext_value = schema["x-ves-oneof-field-health_check"]
+        result = synthetic_enricher.enrich_spec(spec)
+        schema = result["components"]["schemas"]["testResourceCreateSpecType"]
+        ext_value = schema["x-ves-oneof-field-variant_choice"]
         assert isinstance(ext_value, str), f"Expected JSON string, got {type(ext_value)}"
         parsed = json.loads(ext_value)
-        assert len(parsed) == 7
-        assert "dns_health_check" in parsed
+        assert len(parsed) == 3
+        assert "variant_c" in parsed
+
+    def test_empty_overrides_is_noop(self, enricher, test_spec):
+        """Real config has no overrides — enricher should not modify any schema."""
+        import copy
+
+        original = copy.deepcopy(test_spec)
+        result = enricher.enrich_spec(test_spec)
+        for schema_name in ["testResourceCreateSpecType", "testResourceGetSpecType"]:
+            assert (
+                result["components"]["schemas"][schema_name]["properties"]
+                == original["components"]["schemas"][schema_name]["properties"]
+            )
 
 
 class TestConfigLoading:
@@ -209,15 +218,21 @@ class TestConfigLoading:
     def test_loads_real_config(self, config_path):
         enricher = SchemaOverrideEnricher(config_path=config_path)
         assert enricher.overrides is not None
-        assert "healthcheck" in enricher.overrides
 
-    def test_config_structure(self, config_path):
+    def test_empty_overrides_config(self, config_path):
+        """Real config should have empty overrides dict."""
         with config_path.open() as f:
             config = yaml.safe_load(f)
         assert "overrides" in config
-        hc = config["overrides"]["healthcheck"]
-        assert "schemas" in hc
-        for schema_entry in hc["schemas"]:
+        assert config["overrides"] == {} or config["overrides"] is None
+
+    def test_synthetic_config_structure(self, synthetic_config):
+        with synthetic_config.open() as f:
+            config = yaml.safe_load(f)
+        assert "overrides" in config
+        tr = config["overrides"]["test_resource"]
+        assert "schemas" in tr
+        for schema_entry in tr["schemas"]:
             assert "pattern" in schema_entry
             assert "oneof_group" in schema_entry
             assert "complete_variants" in schema_entry
