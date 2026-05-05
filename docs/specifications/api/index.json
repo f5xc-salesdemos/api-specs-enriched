@@ -1,6 +1,6 @@
 {
   "version": "2.1.67",
-  "timestamp": "2026-05-01T21:39:36.043826+00:00",
+  "timestamp": "2026-05-05T02:21:21.360885+00:00",
   "specifications": [
     {
       "domain": "admin_console_and_ui",
@@ -3626,13 +3626,18 @@
         "healthcheck": {
           "minimal": {
             "description": "Basic HTTP health check",
-            "use_case": "Simple health monitoring",
+            "use_case": "Simple health monitoring for web services",
             "yaml": "metadata:\n  name: http-health\n  namespace: default\nspec:\n  http_health_check:\n    path: /health\n  timeout: 3\n  interval: 15\n  unhealthy_threshold: 3\n  healthy_threshold: 2\n"
           },
           "production": {
-            "description": "Production health check with custom headers",
-            "use_case": "Production monitoring with authentication",
-            "yaml": "metadata:\n  name: prod-health\n  namespace: production\nspec:\n  http_health_check:\n    path: /api/health\n    headers:\n      x-health-check: \"true\"\n    expected_status_codes:\n      - 200\n      - 204\n  timeout: 5\n  interval: 10\n  unhealthy_threshold: 2\n  healthy_threshold: 3\n"
+            "description": "Production HTTP health check with custom headers and jitter",
+            "use_case": "Production monitoring with authentication, jitter for distributed probes",
+            "yaml": "metadata:\n  name: prod-health\n  namespace: production\nspec:\n  http_health_check:\n    path: /api/health\n    headers:\n      x-health-check: \"true\"\n    expected_status_codes:\n      - 200\n      - 204\n  timeout: 5\n  interval: 10\n  unhealthy_threshold: 2\n  healthy_threshold: 3\n  jitter_percent: 20\n"
+          },
+          "advanced": {
+            "description": "TCP health check for non-HTTP backends",
+            "use_case": "Database, cache, or TCP service health monitoring",
+            "yaml": "metadata:\n  name: tcp-health\n  namespace: production\nspec:\n  tcp_health_check:\n    send_payload: \"PING\"\n    expected_response: \"PONG\"\n  timeout: 5\n  interval: 30\n  unhealthy_threshold: 3\n  healthy_threshold: 2\n  jitter_percent: 15\n"
           }
         }
       }

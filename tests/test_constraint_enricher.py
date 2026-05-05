@@ -658,6 +658,100 @@ class TestPatternCoverage:
         assert "constraints" in result
 
 
+class TestResourceConstraintOverrides:
+    """Tests for resource_constraint_overrides in constraint_patterns.yaml."""
+
+    @pytest.fixture
+    def config_path(self):
+        return Path(__file__).parent.parent / "config" / "constraint_patterns.yaml"
+
+    @pytest.fixture
+    def enricher(self, config_path):
+        return ConstraintEnricher(config_path=config_path)
+
+    @pytest.fixture
+    def healthcheck_spec(self):
+        return {
+            "components": {
+                "schemas": {
+                    "healthcheckCreateSpecType": {
+                        "type": "object",
+                        "properties": {
+                            "timeout": {"type": "integer"},
+                            "interval": {"type": "integer"},
+                            "healthy_threshold": {"type": "integer"},
+                            "unhealthy_threshold": {"type": "integer"},
+                            "jitter_percent": {"type": "integer"},
+                        },
+                    },
+                },
+            },
+        }
+
+    def test_timeout_uses_healthcheck_override(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        timeout = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "timeout"
+        ]
+        constraints = timeout["x-f5xc-constraints"]
+        assert constraints["maximum"] == 600, f"Expected 600 but got {constraints['maximum']}"
+
+    def test_healthy_threshold_has_constraints(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        field = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "healthy_threshold"
+        ]
+        constraints = field["x-f5xc-constraints"]
+        assert constraints["minimum"] == 1
+        assert constraints["maximum"] == 16
+
+    def test_unhealthy_threshold_has_constraints(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        field = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "unhealthy_threshold"
+        ]
+        constraints = field["x-f5xc-constraints"]
+        assert constraints["minimum"] == 1
+        assert constraints["maximum"] == 16
+
+    def test_jitter_percent_has_constraints(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        field = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "jitter_percent"
+        ]
+        constraints = field["x-f5xc-constraints"]
+        assert constraints["minimum"] == 0
+        assert constraints["maximum"] == 50
+
+    def test_interval_uses_global_pattern(self, enricher, healthcheck_spec):
+        """interval has no resource override — should use global pattern (max 600)."""
+        result = enricher.enrich_spec(healthcheck_spec)
+        interval = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "interval"
+        ]
+        constraints = interval["x-f5xc-constraints"]
+        assert constraints["maximum"] == 600
+
+    def test_non_healthcheck_timeout_uses_global(self, enricher):
+        """A non-healthcheck schema should still get the global timeout max (3600)."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "someOtherSpecType": {
+                        "type": "object",
+                        "properties": {
+                            "timeout": {"type": "integer"},
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        timeout = result["components"]["schemas"]["someOtherSpecType"]["properties"]["timeout"]
+        constraints = timeout["x-f5xc-constraints"]
+        assert constraints["maximum"] == 3600
+
+
 if __name__ == "__main__":
     pytest.main(
         [__file__, "-v", "--cov=scripts.utils.constraint_enricher", "--cov-report=term-missing"],

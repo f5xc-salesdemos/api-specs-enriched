@@ -33,6 +33,7 @@ from .property_description_short_enricher import PropertyDescriptionShortEnriche
 from .readonly_enricher import ReadOnlyEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
+from .schema_override_enricher import SchemaOverrideEnricher
 from .tag_generator import TagGenerator
 from .uniqueness_enricher import UniquenessEnricher
 from .validation_enricher import ValidationEnricher
@@ -79,6 +80,7 @@ __all__ = [
     "ReadOnlyEnricher",
     "ResourceExamplesEnricher",
     "SchemaFixer",
+    "SchemaOverrideEnricher",
     "TagGenerator",
     "UniquenessEnricher",
     "ValidationEnricher",

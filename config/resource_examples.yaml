@@ -188,7 +188,7 @@ domains:
     healthcheck:
       minimal:
         description: "Basic HTTP health check"
-        use_case: "Simple health monitoring"
+        use_case: "Simple health monitoring for web services"
         yaml: |
           metadata:
             name: http-health
@@ -202,8 +202,8 @@ domains:
             healthy_threshold: 2
 
       production:
-        description: "Production health check with custom headers"
-        use_case: "Production monitoring with authentication"
+        description: "Production HTTP health check with custom headers and jitter"
+        use_case: "Production monitoring with authentication, jitter for distributed probes"
         yaml: |
           metadata:
             name: prod-health
@@ -220,6 +220,24 @@ domains:
             interval: 10
             unhealthy_threshold: 2
             healthy_threshold: 3
+            jitter_percent: 20
+
+      advanced:
+        description: "TCP health check for non-HTTP backends"
+        use_case: "Database, cache, or TCP service health monitoring"
+        yaml: |
+          metadata:
+            name: tcp-health
+            namespace: production
+          spec:
+            tcp_health_check:
+              send_payload: "PING"
+              expected_response: "PONG"
+            timeout: 5
+            interval: 30
+            unhealthy_threshold: 3
+            healthy_threshold: 2
+            jitter_percent: 15
 
   # ============================================================================
   # WAF Domain - Web Application Firewall

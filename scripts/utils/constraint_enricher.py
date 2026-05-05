@@ -306,6 +306,7 @@ class ConstraintEnricher:
         self.config_path = Path(config_path)
         self.config = self._load_config()
         self.pattern_matcher = PatternMatcher(self.config)
+        self.resource_overrides = self._compile_resource_overrides()
 
         # Statistics
         self.stats: dict[str, Any] = {
@@ -330,6 +331,32 @@ class ConstraintEnricher:
             logger.exception("Failed to load config from %s", self.config_path)
             raise
 
+    def _compile_resource_overrides(self) -> list[dict]:
+        """Compile resource_constraint_overrides patterns."""
+        overrides = self.config.get("resource_constraint_overrides", {})
+        compiled = []
+        for entry in overrides.values():
+            pattern = entry.get("schema_pattern", "")
+            try:
+                compiled.append(
+                    {
+                        "regex": re.compile(pattern),
+                        "fields": entry.get("fields", {}),
+                    }
+                )
+            except re.error as e:
+                logger.warning("Invalid resource override pattern '%s': %s", pattern, e)
+        return compiled
+
+    def _get_resource_override(self, schema_name: str, field_name: str) -> dict | None:
+        """Check if a field has a resource-specific constraint override."""
+        for override in self.resource_overrides:
+            if override["regex"].search(schema_name):
+                field_override = override["fields"].get(field_name)
+                if field_override:
+                    return field_override
+        return None
+
     def enrich_spec(self, spec: dict) -> dict:
         """Enrich OpenAPI specification with x-f5xc-constraints.
 
@@ -352,13 +379,13 @@ class ConstraintEnricher:
         )
         return spec
 
-    def _enrich_schema(self, _schema_name: str, schema: dict) -> None:
+    def _enrich_schema(self, schema_name: str, schema: dict) -> None:
         """Enrich a single schema definition."""
         if "properties" not in schema:
             return
 
         for prop_name, prop_schema in schema["properties"].items():
-            self._enrich_property(prop_name, prop_schema)
+            self._enrich_property(prop_name, prop_schema, schema_name=schema_name)
 
     def _extract_discovery_constraints(self, schema: dict) -> dict | None:
         """Extract constraints from x-ves-validation-rules.
@@ -474,12 +501,13 @@ class ConstraintEnricher:
 
         return result
 
-    def _enrich_property(self, field_name: str, schema: dict) -> None:
+    def _enrich_property(self, field_name: str, schema: dict, *, schema_name: str = "") -> None:
         """Enrich a single property with constraints.
 
         Args:
             field_name: Name of the property
             schema: Property schema
+            schema_name: Name of the parent schema (for resource overrides)
         """
         self.stats["properties_analyzed"] += 1
 
@@ -497,6 +525,20 @@ class ConstraintEnricher:
         # Determine field type
         field_type = schema.get("type")
         if not field_type:
+            return
+
+        # Check for resource-specific constraint override
+        resource_override = self._get_resource_override(schema_name, field_name)
+        if resource_override:
+            override_constraints = resource_override.get("constraints", {})
+            override_metadata = resource_override.get("metadata", {})
+            constraints = {**override_constraints}
+            if override_metadata:
+                constraints["metadata"] = override_metadata
+            schema["x-f5xc-constraints"] = constraints
+            self.stats["constraints_added"] += 1
+            if "confidence" in override_metadata:
+                self.stats["confidence_scores"].append(override_metadata["confidence"])
             return
 
         # Extract inferred constraints based on type
