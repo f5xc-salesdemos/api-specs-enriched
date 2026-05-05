@@ -530,12 +530,13 @@ class ConstraintEnricher:
         # Check for resource-specific constraint override
         resource_override = self._get_resource_override(schema_name, field_name)
         if resource_override:
-            override_constraints = resource_override.get("constraints", {})
+            override_result: dict[str, Any] = {
+                **resource_override.get("constraints", {}),
+            }
             override_metadata = resource_override.get("metadata", {})
-            constraints = {**override_constraints}
             if override_metadata:
-                constraints["metadata"] = override_metadata
-            schema["x-f5xc-constraints"] = constraints
+                override_result["metadata"] = override_metadata
+            schema["x-f5xc-constraints"] = override_result
             self.stats["constraints_added"] += 1
             if "confidence" in override_metadata:
                 self.stats["confidence_scores"].append(override_metadata["confidence"])
@@ -575,7 +576,7 @@ class ConstraintEnricher:
                 self.stats["object_constraints"] += 1
 
         # Reconcile constraints from all sources
-        constraints: dict[str, Any] | None = ConstraintReconciler.reconcile(
+        constraints = ConstraintReconciler.reconcile(
             existing=existing,
             discovery=discovery,
             inferred=inferred,
