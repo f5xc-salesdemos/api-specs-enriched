@@ -18,7 +18,7 @@ field_patterns:
     x-f5xc-validation:
       minLength: 1
       maxLength: 63
-      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
     x-f5xc-examples:
       - value: 'example-resource'
         context: 'Basic alphanumeric name'
@@ -27,7 +27,7 @@ field_patterns:
     x-f5xc-completion:
       type: 'string-value'
       hint: 'Resource name (alphanumeric and hyphens, 1-63 chars)'
-      pattern: '^[a-z0-9-]+$'
+      pattern: '^[a-z][a-z0-9-]*$'
     x-f5xc-defaults:
       value: null
       reasoning: 'Name must be explicitly provided by user'
@@ -135,7 +135,7 @@ field_patterns:
     x-f5xc-validation:
       minLength: 1
       maxLength: 63
-      pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
     x-f5xc-examples:
       - value: 'default'
         context: 'Default namespace'
@@ -181,6 +181,29 @@ field_patterns:
     x-f5xc-completion:
       type: 'file-path'
       hint: 'File path reference'
+
+  - pattern: '\bexpected_status_codes$'
+    x-f5xc-description: 'List of expected HTTP status codes or code ranges for health check validation'
+    x-f5xc-validation:
+      type: array
+      maxItems: 16
+    x-f5xc-examples:
+      - value: '200'
+        context: 'Single status code'
+      - value: '200-299'
+        context: 'Status code range'
+    x-f5xc-completion:
+      type: 'string-value'
+      hint: 'HTTP status code (200) or range (200-299)'
+      pattern: '^\d{3}(-\d{3})?$'
+    x-f5xc-defaults:
+      value: null
+      reasoning: 'Empty list means accept 200-299 by default'
+    x-f5xc-required-for-operations:
+      create: false
+      read: false
+      update: false
+      delete: false
 
 # Deprecation database - mark fields as deprecated
 deprecations: []

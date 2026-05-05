@@ -69,8 +69,8 @@ class TestPatternMatcher:
         """Test matching 'name' field against string patterns"""
         result = pattern_matcher.match_string_pattern("name")
         assert result is not None
-        assert result["description"] == "DNS label format resource name"
-        assert result["metadata"]["confidence"] == 0.95
+        assert result["description"] == "DNS-1035 label format resource name"
+        assert result["metadata"]["confidence"] == 0.99
 
     def test_match_string_email_pattern(self, pattern_matcher):
         """Test matching 'email' field against string patterns"""
@@ -720,8 +720,13 @@ class TestResourceConstraintOverrides:
             "jitter_percent"
         ]
         constraints = field["x-f5xc-constraints"]
-        assert constraints["minimum"] == 0
-        assert constraints["maximum"] == 50
+        assert "ranges" in constraints
+        assert "minimum" not in constraints
+        assert "maximum" not in constraints
+        ranges = constraints["ranges"]
+        assert len(ranges) == 2
+        assert ranges[0] == {"minimum": 0, "maximum": 0}
+        assert ranges[1] == {"minimum": 10, "maximum": 50}
 
     def test_interval_uses_global_pattern(self, enricher, healthcheck_spec):
         """interval has no resource override — should use global pattern (max 600)."""
@@ -750,6 +755,38 @@ class TestResourceConstraintOverrides:
         timeout = result["components"]["schemas"]["someOtherSpecType"]["properties"]["timeout"]
         constraints = timeout["x-f5xc-constraints"]
         assert constraints["maximum"] == 3600
+
+    def test_override_includes_constraint_type(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        timeout = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "timeout"
+        ]
+        constraints = timeout["x-f5xc-constraints"]
+        assert constraints["constraintType"] == "number"
+
+    def test_override_includes_deterministic(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        timeout = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "timeout"
+        ]
+        constraints = timeout["x-f5xc-constraints"]
+        assert constraints["deterministic"] is True
+
+    def test_override_includes_validated_at(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        timeout = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "timeout"
+        ]
+        constraints = timeout["x-f5xc-constraints"]
+        assert "validatedAt" in constraints["metadata"]
+
+    def test_override_includes_category(self, enricher, healthcheck_spec):
+        result = enricher.enrich_spec(healthcheck_spec)
+        timeout = result["components"]["schemas"]["healthcheckCreateSpecType"]["properties"][
+            "timeout"
+        ]
+        constraints = timeout["x-f5xc-constraints"]
+        assert constraints["category"] == "timing"
 
 
 if __name__ == "__main__":
