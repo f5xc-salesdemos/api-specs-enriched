@@ -10,6 +10,7 @@ Systematically explores live API to discover undocumented behavior:
 """
 
 from .cli_explorer import CLIExplorer
+from .constraint_prober import ConstraintProber
 from .diff_analyzer import DiffAnalyzer, SchemaDiff
 from .rate_limiter import RateLimiter
 from .report_generator import ReportGenerator
@@ -17,6 +18,7 @@ from .schema_inferrer import SchemaInferrer
 
 __all__ = [
     "CLIExplorer",
+    "ConstraintProber",
     "DiffAnalyzer",
     "RateLimiter",
     "ReportGenerator",

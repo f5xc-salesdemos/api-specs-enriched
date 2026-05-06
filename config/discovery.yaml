@@ -84,3 +84,13 @@ discovery:
     log_file: "reports/discovery.log"
     log_requests: false           # Don't log individual requests (verbose)
     log_responses: false          # Don't log responses (very verbose)
+
+# Constraint Boundary Prober
+audit:
+  resource: "healthcheck"
+  namespace: "${F5XC_NAMESPACE:-r-mordasiewicz}"
+  rate_limit:
+    requests_per_second: 5.0
+    ci_requests_per_second: 2.0
+  max_probes_per_resource: 50
+  output_dir: "reports/audit"
