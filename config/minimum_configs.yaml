@@ -311,6 +311,9 @@ resources:
       - field: "spec.health_checks"
         contexts: ["monitoring", "availability"]
         reason: "Recommended for health monitoring"
+      - field: "spec.use_tls.tls_config"
+        contexts: ["tls", "secure"]
+        reason: "Required when use_tls is chosen — API returns 400 without it"
 
     # Minimum example - only required fields (verified via case study 2026-01-17)
     example_yaml: |
@@ -368,6 +371,12 @@ resources:
         values: ["DISTRIBUTED", "LOCAL_ONLY", "LOCAL_PREFERRED"]
         default: "DISTRIBUTED"
         description: "Policy for selecting endpoints from local/remote sites"
+
+    notes:
+      - "MaxRequestsPerConnectionChoice: undocumented oneOf group — default is no_request_limit_per_connection: {}"
+      - "enable_lb_source_ip_persistance: quota-limited to 1 per namespace — excess returns 429"
+      - "PUT/Replace returns empty body {}; POST/Create returns full object with system_metadata"
+      - "Nested origin_server oneOf conflicts are silently accepted (stores first variant); top-level oneOf conflicts return 400"
 
   # ============================================================================
 
@@ -462,7 +471,7 @@ resources:
       spec:
         http_health_check:
           path: /health
-          use_origin_server_hostname: true
+          use_origin_server_name: {}
         interval: 15
         timeout: 3
         unhealthy_threshold: 1
@@ -477,7 +486,7 @@ resources:
           "namespace": "default"
         },
         "spec": {
-          "http_health_check": {"path": "/health", "use_origin_server_hostname": true},
+          "http_health_check": {"path": "/health", "use_origin_server_name": {}},
           "interval": 15,
           "timeout": 3,
           "unhealthy_threshold": 1,
