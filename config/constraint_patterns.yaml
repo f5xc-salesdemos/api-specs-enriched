@@ -1081,3 +1081,36 @@ resource_constraint_overrides:
           confidence: 0.99
           category: "timing"
           note: "Non-contiguous: {0} union [10, 50] — values 1-9 rejected by API"
+
+  origin_pool:
+    schema_pattern: "origin_pool.*SpecType"
+    fields:
+      retries:
+        type: "number"
+        constraints:
+          minimum: 0
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "resilience"
+          note: "No upper bound enforced for origin_pool circuit_breaker.retries (global says max=10)"
+
+      interval:
+        type: "number"
+        constraints: {}
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "timing"
+          note: "No min/max enforced for origin_pool outlier_detection.interval (global says [1,600])"
+
+      health_check_port:
+        type: "number"
+        constraints:
+          minimum: 0
+          maximum: 65535
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "networking"
+          note: "Asymmetry: port enforces [1,65535], health_check_port allows 0"
