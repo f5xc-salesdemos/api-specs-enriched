@@ -205,6 +205,25 @@ push-discovery:
 # Full local discovery workflow (discover + push)
 discover-and-push: discover push-discovery
 
+# Constraint boundary audit targets
+audit: check-deps ## Probe healthcheck constraints against live API (requires F5XC_API_TOKEN)
+	@if [ -z "$$F5XC_API_TOKEN" ]; then \
+		echo "F5XC_API_TOKEN not set. Set credentials first."; \
+		exit 1; \
+	fi
+	@mkdir -p reports/audit
+	$(PYTHON) -m scripts.discovery.constraint_prober --resource healthcheck --output reports/audit/healthcheck.json
+
+audit-dry-run: check-deps ## Generate probes without API calls
+	$(PYTHON) -m scripts.discovery.constraint_prober --resource healthcheck --dry-run
+
+audit-report: ## Display results from last audit run
+	@if [ -f reports/audit/healthcheck.json ]; then \
+		$(PYTHON) -c "import json; r=json.load(open('reports/audit/healthcheck.json')); print(f'Fields probed: {len(r[\"fields\"])}'); print(f'Probes: {r[\"probes_executed\"]} executed, {r[\"probes_accepted\"]} accepted, {r[\"probes_rejected\"]} rejected'); print(f'Server defaults: {list(r[\"server_default_fields\"].keys())}')"; \
+	else \
+		echo "No audit report found. Run 'make audit' or 'make audit-dry-run' first."; \
+	fi
+
 # Full pipeline with discovery enrichment
 build-enriched: check-deps download discover pipeline-enriched
 	@echo ""
