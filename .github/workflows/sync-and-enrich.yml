@@ -411,6 +411,16 @@ jobs:
 
           echo "Version consistent: $INDEX_VERSION"
 
+      - name: Align catalog version with release
+        if: steps.version.outputs.has_changes == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          if [ -f release/api-catalog.json ]; then
+            jq --arg v "$VERSION" '.version = $v' release/api-catalog.json > /tmp/catalog.json
+            mv /tmp/catalog.json release/api-catalog.json
+            echo "Catalog version aligned to $VERSION"
+          fi
+
       - name: Generate discovery summary
         id: discovery-summary
         if: steps.check-discovery.outputs.has_discovery == 'true'

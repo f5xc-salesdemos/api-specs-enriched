@@ -10,6 +10,7 @@ Usage:
 """
 
 import argparse
+import os
 import json
 import re
 import sys
@@ -563,8 +564,9 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
     _deduplicate_global_op_names(categories)
 
+    env_version = os.environ.get("CATALOG_VERSION", "")
     tag_version = get_version_from_tags()
-    version = tag_version if tag_version != "0.0.0" else "1.0.0"
+    version = env_version or (tag_version if tag_version != "0.0.0" else "1.0.0")
 
     return {
         "service": "f5xc",
