@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def _to_num(s: str) -> int | float:
@@ -11,7 +15,7 @@ def _to_num(s: str) -> int | float:
     return int(f) if f == int(f) else f
 
 
-_PATTERNS: list[tuple[re.Pattern, callable]] = [
+_PATTERNS: list[tuple[re.Pattern, Callable]] = [
     (
         re.compile(r"must be >= (-?[\d.]+) and <= (-?[\d.]+)", re.IGNORECASE),
         lambda m: {"minimum": _to_num(m.group(1)), "maximum": _to_num(m.group(2))},

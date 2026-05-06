@@ -71,7 +71,6 @@ class ProbeStrategy(Protocol):
         current_constraints: dict | None,
     ) -> list[ProbeRequest]:
         """Generate probe requests for a field."""
-        ...
 
     def interpret_results(
         self,
@@ -79,4 +78,3 @@ class ProbeStrategy(Protocol):
         results: list[ProbeResponse],
     ) -> FieldProbeResult:
         """Interpret probe responses into a field result."""
-        ...
