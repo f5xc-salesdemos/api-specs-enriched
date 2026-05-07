@@ -329,6 +329,11 @@ def _extract_field_metadata(
         prop_resolved = _resolve_schema_ref(prop_schema, components)
         field_path = f"{prefix}.{prop_name}" if prefix else prop_name
 
+        if prop_schema is not prop_resolved:
+            inline_extensions = {k: prop_schema[k] for k in _ENRICHMENT_KEYS if k in prop_schema}
+            if inline_extensions:
+                prop_resolved = {**prop_resolved, **inline_extensions}
+
         has_enrichment = any(k in prop_resolved for k in _ENRICHMENT_KEYS)
 
         if has_enrichment:
