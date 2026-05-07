@@ -515,23 +515,12 @@ resources:
     domain: "virtual"
     resource_type: "policy"
 
+    # NOTE: spec.detection_settings is NOT required.
+    # Server applies default_detection_settings: {} when spec is empty.
+    # True minimum: spec: {}. Practical minimum for a blocking WAF: spec: {blocking: {}}.
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.detection_settings"  # Core WAF detection configuration
-
-    context_requirements:
-      - field: "spec.signature_set"
-        contexts: ["signature-protection", "owasp"]
-        reason: "Enables signature-based attack detection"
-
-      - field: "spec.bot_defense"
-        contexts: ["bot-protection"]
-        reason: "Enables bot detection and mitigation"
-
-      - field: "spec.data_guard"
-        contexts: ["sensitive-data"]
-        reason: "Protects sensitive data in responses"
 
     example_yaml: |
       apiVersion: v1
@@ -540,16 +529,7 @@ resources:
         name: default-waf
         namespace: default
       spec:
-        detection_settings:
-          signature_detection: true
-        signature_set:
-          signature_set_name: default_waf_signature_set
-        bot_defense:
-          disabled: false
-        data_guard:
-          disabled: false
-        blocking:
-          disabled: false
+        blocking: {}
 
     # Example JSON configuration (preferred format)
     example_json: |
@@ -559,11 +539,7 @@ resources:
           "namespace": "default"
         },
         "spec": {
-          "detection_settings": {"signature_detection": true},
-          "signature_set": {"signature_set_name": "default_waf_signature_set"},
-          "bot_defense": {"disabled": false},
-          "data_guard": {"disabled": false},
-          "blocking": {"disabled": false}
+          "blocking": {}
         }
       }
 
