@@ -522,12 +522,8 @@ class ConstraintEnricher:
         if discovery:
             self.stats["discovery_merges"] += 1
 
-        # Determine field type
-        field_type = schema.get("type")
-        if not field_type:
-            return
-
-        # Check for resource-specific constraint override
+        # Check for resource-specific constraint override (before type check —
+        # overrides supply their own type and must apply to $ref properties)
         resource_override = self._get_resource_override(schema_name, field_name)
         if resource_override:
             override_constraints = resource_override.get("constraints", {})
@@ -550,6 +546,11 @@ class ConstraintEnricher:
             self.stats["constraints_added"] += 1
             if confidence:
                 self.stats["confidence_scores"].append(confidence)
+            return
+
+        # Determine field type
+        field_type = schema.get("type")
+        if not field_type:
             return
 
         # Extract inferred constraints based on type

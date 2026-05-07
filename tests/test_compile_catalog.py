@@ -724,6 +724,96 @@ def test_build_operation_skips_minimum_payload_on_invalid_json():
     assert "minimumPayload" not in result
 
 
+# ── Fix 2: $ref wrapper extension merge ────────────────────────────────────
+
+
+def test_extract_field_metadata_merges_ref_wrapper_inline_extensions():
+    """Inline x-f5xc-* extensions on a $ref wrapper dict appear in extracted metadata."""
+    from scripts.compile_catalog import _extract_field_metadata
+
+    components = {
+        "schemas": {
+            "TlsConfig": {
+                "type": "object",
+                "properties": {
+                    "default_security": {"type": "object"},
+                },
+            },
+        }
+    }
+    schema = {
+        "type": "object",
+        "properties": {
+            "tls_config": {
+                "$ref": "#/components/schemas/TlsConfig",
+                "x-f5xc-constraints": {
+                    "constraintType": "object",
+                    "category": "tls",
+                    "metadata": {
+                        "note": "Required when use_tls is selected",
+                    },
+                },
+            },
+        },
+    }
+    result = _extract_field_metadata(schema, components, prefix="", depth=0, max_depth=3)
+    assert "tls_config" in result
+    assert "constraints" in result["tls_config"]
+    assert result["tls_config"]["constraints"]["category"] == "tls"
+
+
+def test_extract_field_metadata_ref_without_inline_extensions_resolves_normally():
+    """A $ref property with no inline extensions still resolves via the component schema."""
+    from scripts.compile_catalog import _extract_field_metadata
+
+    components = {
+        "schemas": {
+            "MetaType": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "x-f5xc-constraints": {"maxLength": 64},
+                    },
+                },
+            },
+        }
+    }
+    schema = {
+        "type": "object",
+        "properties": {
+            "metadata": {"$ref": "#/components/schemas/MetaType"},
+        },
+    }
+    result = _extract_field_metadata(schema, components, prefix="", depth=0, max_depth=3)
+    assert "metadata.name" in result
+    assert result["metadata.name"]["constraints"]["maxLength"] == 64
+
+
+def test_extract_field_metadata_ref_merge_does_not_mutate_component_schema():
+    """Merging inline extensions from a $ref wrapper must not mutate the component schema."""
+    from scripts.compile_catalog import _extract_field_metadata
+
+    component_schema = {
+        "type": "object",
+        "properties": {
+            "value": {"type": "string"},
+        },
+    }
+    components = {"schemas": {"Shared": component_schema}}
+    schema = {
+        "type": "object",
+        "properties": {
+            "field_a": {
+                "$ref": "#/components/schemas/Shared",
+                "x-f5xc-constraints": {"note": "only for field_a"},
+            },
+        },
+    }
+    _extract_field_metadata(schema, components, prefix="", depth=0, max_depth=3)
+    assert "x-f5xc-constraints" not in component_schema
+
+
 # ── Task 4: _extract_field_metadata ─────────────────────────────────────────
 
 

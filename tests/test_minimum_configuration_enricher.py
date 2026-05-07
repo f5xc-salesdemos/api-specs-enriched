@@ -8,7 +8,11 @@ for AI-assisted resource creation.
 
 import pytest
 
-from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_MINIMUM_CONFIGURATION
+from scripts.utils.extension_constants import (
+    X_F5XC_CLI_DOMAIN,
+    X_F5XC_MINIMUM_CONFIGURATION,
+    X_F5XC_REQUIRED_FOR,
+)
 from scripts.utils.minimum_configuration_enricher import (
     MinimumConfigurationEnricher,
     MinimumConfigurationStats,
@@ -614,6 +618,182 @@ class TestAllResourcePatterns:
         # All should have CLI domain
         assert X_F5XC_CLI_DOMAIN in schema
         assert schema[X_F5XC_CLI_DOMAIN] is not None
+
+
+class TestOneOfAwareRequiredInference:
+    """Test that oneOf variant fields are not marked as required via validation rules."""
+
+    def _make_spec_with_schema(self, schema_name, schema):
+        return {"components": {"schemas": {schema_name: schema}}}
+
+    def test_oneof_member_with_gte_rule_not_required(self):
+        """A field in a x-ves-oneof-field-* group with gte >= 1 should NOT get required_for."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "x-ves-oneof-field-session_type": '["default_caching", "disable_caching", "max_keys"]',
+            "properties": {
+                "max_keys": {
+                    "type": "integer",
+                    "x-ves-validation-rules": {
+                        "ves.io.schema.rules.uint32.gte": "2",
+                    },
+                },
+                "default_caching": {"$ref": "#/components/schemas/Empty"},
+                "disable_caching": {"$ref": "#/components/schemas/Empty"},
+            },
+        }
+        spec = self._make_spec_with_schema("origin_poolUpstreamTlsParameters", schema)
+        enriched = enricher.enrich_spec(spec)
+        props = enriched["components"]["schemas"]["origin_poolUpstreamTlsParameters"]["properties"]
+        max_keys_rf = props["max_keys"].get(X_F5XC_REQUIRED_FOR)
+        if max_keys_rf is not None:
+            assert max_keys_rf["minimum_config"] is False
+            assert max_keys_rf["create"] is False
+
+    def test_non_oneof_field_with_gte_rule_is_required(self):
+        """A field NOT in any oneOf group with gte >= 1 SHOULD get required_for: true."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "properties": {
+                "threshold": {
+                    "type": "integer",
+                    "x-ves-validation-rules": {
+                        "ves.io.schema.rules.uint32.gte": "1",
+                    },
+                },
+            },
+        }
+        spec = self._make_spec_with_schema("SomeUnknownType", schema)
+        enriched = enricher.enrich_spec(spec)
+        props = enriched["components"]["schemas"]["SomeUnknownType"]["properties"]
+        threshold_rf = props["threshold"].get(X_F5XC_REQUIRED_FOR)
+        assert threshold_rf is not None
+        assert threshold_rf["minimum_config"] is True
+        assert threshold_rf["create"] is True
+
+    def test_oneof_member_in_explicit_required_fields_wins(self):
+        """Config-defined required_fields overrides oneOf membership — config always wins."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "x-ves-oneof-field-tls_choice": '["no_tls", "use_tls"]',
+            "properties": {
+                "no_tls": {"$ref": "#/components/schemas/Empty"},
+                "use_tls": {"$ref": "#/components/schemas/TlsParams"},
+                "metadata": {"type": "object"},
+                "spec": {"type": "object"},
+            },
+        }
+        spec = self._make_spec_with_schema("origin_poolCreateRequest", schema)
+        enriched = enricher.enrich_spec(spec)
+        props = enriched["components"]["schemas"]["origin_poolCreateRequest"]["properties"]
+        metadata_rf = props["metadata"].get(X_F5XC_REQUIRED_FOR)
+        assert metadata_rf is not None
+        assert metadata_rf["minimum_config"] is True
+
+    def test_collect_oneof_members_valid_json_array(self):
+        """_collect_oneof_members parses valid JSON arrays from x-ves-oneof-field-* keys."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "x-ves-oneof-field-group_a": '["field_1", "field_2"]',
+            "x-ves-oneof-field-group_b": '["field_3"]',
+        }
+        result = enricher._collect_oneof_members(schema)
+        assert isinstance(result, frozenset)
+        assert result == frozenset({"field_1", "field_2", "field_3"})
+
+    def test_collect_oneof_members_malformed_json(self):
+        """Malformed JSON in x-ves-oneof-field-* is silently ignored."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "x-ves-oneof-field-bad": "not valid json",
+            "x-ves-oneof-field-good": '["field_1"]',
+        }
+        result = enricher._collect_oneof_members(schema)
+        assert result == frozenset({"field_1"})
+
+    def test_collect_oneof_members_dict_value_ignored(self):
+        """A dict value (valid JSON but not a list) is silently ignored."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "x-ves-oneof-field-bad": '{"key": "value"}',
+            "x-ves-oneof-field-good": '["field_1"]',
+        }
+        result = enricher._collect_oneof_members(schema)
+        assert result == frozenset({"field_1"})
+
+    def test_collect_oneof_members_no_annotations(self):
+        """Schema with no x-ves-oneof-field-* returns empty frozenset."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {"type": "object", "properties": {}}
+        result = enricher._collect_oneof_members(schema)
+        assert result == frozenset()
+
+    def test_origin_pool_tls_params_max_session_keys_not_required(self):
+        """Integration: max_session_keys in real-world origin_pool schema must not be required."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "x-ves-oneof-field-max_session_keys_type": (
+                '["default_session_key_caching","disable_session_key_caching","max_session_keys"]'
+            ),
+            "x-ves-oneof-field-mtls_choice": '["no_mtls","use_mtls","use_mtls_obj"]',
+            "x-ves-oneof-field-server_validation_choice": (
+                '["skip_server_verification","use_server_verification","volterra_trusted_ca"]'
+            ),
+            "x-ves-oneof-field-sni_choice": ('["disable_sni","sni","use_host_header_as_sni"]'),
+            "properties": {
+                "default_session_key_caching": {"$ref": "#/components/schemas/Empty"},
+                "disable_session_key_caching": {"$ref": "#/components/schemas/Empty"},
+                "max_session_keys": {
+                    "type": "integer",
+                    "format": "int64",
+                    "x-ves-validation-rules": {
+                        "ves.io.schema.rules.uint32.gte": "2",
+                        "ves.io.schema.rules.uint32.lte": "64",
+                    },
+                },
+                "tls_config": {"$ref": "#/components/schemas/viewsTlsConfig"},
+                "no_mtls": {"$ref": "#/components/schemas/Empty"},
+                "skip_server_verification": {"$ref": "#/components/schemas/Empty"},
+                "sni": {"type": "string"},
+                "disable_sni": {"$ref": "#/components/schemas/Empty"},
+                "use_host_header_as_sni": {"$ref": "#/components/schemas/Empty"},
+                "use_mtls": {"$ref": "#/components/schemas/TlsCerts"},
+                "use_mtls_obj": {"$ref": "#/components/schemas/ObjRef"},
+                "use_server_verification": {"$ref": "#/components/schemas/TlsValidation"},
+                "volterra_trusted_ca": {"$ref": "#/components/schemas/Empty"},
+            },
+        }
+        spec = self._make_spec_with_schema("origin_poolUpstreamTlsParameters", schema)
+        enriched = enricher.enrich_spec(spec)
+        props = enriched["components"]["schemas"]["origin_poolUpstreamTlsParameters"]["properties"]
+
+        # max_session_keys is in a oneOf group with gte:2 — must NOT be marked required
+        max_keys_rf = props["max_session_keys"].get(X_F5XC_REQUIRED_FOR)
+        if max_keys_rf is not None:
+            assert max_keys_rf["minimum_config"] is False, (
+                "max_session_keys should not be required — it's a oneOf variant"
+            )
+            assert max_keys_rf["create"] is False
+
+        # All other oneOf members should also not be required
+        for oneof_field in [
+            "default_session_key_caching",
+            "disable_session_key_caching",
+            "no_mtls",
+            "skip_server_verification",
+            "volterra_trusted_ca",
+            "disable_sni",
+            "use_host_header_as_sni",
+        ]:
+            rf = props[oneof_field].get(X_F5XC_REQUIRED_FOR)
+            if rf is not None:
+                assert rf["minimum_config"] is False, (
+                    f"{oneof_field} is a oneOf variant — should not be required"
+                )
 
 
 if __name__ == "__main__":

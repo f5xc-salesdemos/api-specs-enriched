@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -329,6 +330,11 @@ def _extract_field_metadata(
         prop_resolved = _resolve_schema_ref(prop_schema, components)
         field_path = f"{prefix}.{prop_name}" if prefix else prop_name
 
+        if prop_schema is not prop_resolved:
+            inline_extensions = {k: prop_schema[k] for k in _ENRICHMENT_KEYS if k in prop_schema}
+            if inline_extensions:
+                prop_resolved = {**prop_resolved, **inline_extensions}
+
         has_enrichment = any(k in prop_resolved for k in _ENRICHMENT_KEYS)
 
         if has_enrichment:
@@ -563,8 +569,9 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
 
     _deduplicate_global_op_names(categories)
 
+    env_version = os.environ.get("CATALOG_VERSION", "")
     tag_version = get_version_from_tags()
-    version = tag_version if tag_version != "0.0.0" else "1.0.0"
+    version = env_version or (tag_version if tag_version != "0.0.0" else "1.0.0")
 
     return {
         "service": "f5xc",

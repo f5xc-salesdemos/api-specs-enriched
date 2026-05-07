@@ -788,6 +788,86 @@ class TestResourceConstraintOverrides:
         constraints = timeout["x-f5xc-constraints"]
         assert constraints["category"] == "timing"
 
+    def test_override_applies_to_ref_property(self, enricher):
+        """A resource override should apply to a bare $ref property (no inline type)."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "origin_poolUpstreamTlsParameters": {
+                        "type": "object",
+                        "properties": {
+                            "tls_config": {
+                                "$ref": "#/components/schemas/TlsConfig",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        tls_config = result["components"]["schemas"]["origin_poolUpstreamTlsParameters"][
+            "properties"
+        ]["tls_config"]
+        assert "x-f5xc-constraints" in tls_config
+        constraints = tls_config["x-f5xc-constraints"]
+        assert constraints["constraintType"] == "object"
+        assert "note" in constraints["metadata"]
+        assert "use_tls" in constraints["metadata"]["note"]
+
+    def test_override_on_ref_respects_existing_constraints(self, enricher):
+        """If a $ref property already has x-f5xc-constraints, override is skipped."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "origin_poolUpstreamTlsParameters": {
+                        "type": "object",
+                        "properties": {
+                            "tls_config": {
+                                "$ref": "#/components/schemas/TlsConfig",
+                                "x-f5xc-constraints": {"existing": True},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        tls_config = result["components"]["schemas"]["origin_poolUpstreamTlsParameters"][
+            "properties"
+        ]["tls_config"]
+        assert tls_config["x-f5xc-constraints"] == {"existing": True}
+
+    def test_tls_config_note_on_upstream_tls_parameters(self, enricher):
+        """Integration: tls_config in origin_poolUpstreamTlsParameters gets constraint note."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "origin_poolUpstreamTlsParameters": {
+                        "type": "object",
+                        "properties": {
+                            "tls_config": {
+                                "$ref": "#/components/schemas/TlsConfig",
+                            },
+                            "max_session_keys": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.gte": "2",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        props = result["components"]["schemas"]["origin_poolUpstreamTlsParameters"]["properties"]
+
+        # tls_config should have the constraint note
+        assert "x-f5xc-constraints" in props["tls_config"]
+        note = props["tls_config"]["x-f5xc-constraints"]["metadata"]["note"]
+        assert "use_tls" in note
+        assert "400" in note
+
 
 if __name__ == "__main__":
     pytest.main(
