@@ -1126,3 +1126,29 @@ resource_constraint_overrides:
           confidence: 0.99
           category: "tls"
           note: "Required when use_tls is selected — API returns 400 if nil"
+
+  app_firewall_staging:
+    schema_pattern: "app_firewallSignaturesStagingSettings"
+    fields:
+      staging_period:
+        type: "number"
+        constraints:
+          minimum: 1
+          maximum: 20
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "timing"
+          note: "Staging period in days. Default 7, max 20. Applies to both stage_new_and_updated_signatures and stage_new_signatures."
+
+  app_firewall_blocking_page:
+    schema_pattern: "app_firewallCustomBlockingPage"
+    fields:
+      blocking_page:
+        type: "string"
+        constraints: {}
+        metadata:
+          source: "api-probed"
+          confidence: 0.99
+          category: "content"
+          note: "Must be a valid URI (uri_ref). API rejects inline HTML despite the description example."
