@@ -27,6 +27,7 @@ from .extension_constants import (
     X_F5XC_CLI_DOMAIN,
     X_F5XC_MINIMUM_CONFIGURATION,
     X_F5XC_REQUIRED_FOR,
+    X_VES_ONEOF_FIELD_PREFIX,
 )
 
 # Precompiled regex pattern for performance (used in hot paths)
@@ -391,6 +392,9 @@ class MinimumConfigurationEnricher:
         2. x-ves-required: "true" (F5's original required indicator)
         3. Validation rules that indicate required status
 
+        OneOf variant fields are excluded from indicators 2 and 3 —
+        their signals are conditional on variant selection.
+
         Args:
             schema: Schema definition
         """
@@ -399,16 +403,18 @@ class MinimumConfigurationEnricher:
             return
 
         required_list = schema.get("required", []) or []
+        oneof_members = self._collect_oneof_members(schema)
 
         for field_name, field_schema in properties.items():
             if not isinstance(field_schema, dict):
                 continue
 
-            # Check multiple indicators for required status
-            is_required = (
-                field_name in required_list
-                or field_schema.get("x-ves-required") == "true"
-                or self._has_required_validation_rules(field_schema)
+            is_required = field_name in required_list or (
+                field_name not in oneof_members
+                and (
+                    field_schema.get("x-ves-required") == "true"
+                    or self._has_required_validation_rules(field_schema)
+                )
             )
 
             field_requirements = {
@@ -472,6 +478,27 @@ class MinimumConfigurationEnricher:
                 pass
 
         return False
+
+    @staticmethod
+    def _collect_oneof_members(schema: dict[str, Any]) -> frozenset[str]:
+        """Collect field names that are members of x-ves-oneof-field-* groups.
+
+        Args:
+            schema: Parent schema containing x-ves-oneof-field-* annotations
+
+        Returns:
+            Immutable set of field names belonging to any oneOf group
+        """
+        members: list[str] = []
+        for key, value in schema.items():
+            if key.startswith(X_VES_ONEOF_FIELD_PREFIX) and isinstance(value, str):
+                try:
+                    parsed = json.loads(value)
+                    if isinstance(parsed, list):
+                        members.extend(parsed)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+        return frozenset(members)
 
     def _detect_resource_type(self, schema_name: str) -> str | None:
         """Detect resource type from schema name.
@@ -563,6 +590,8 @@ class MinimumConfigurationEnricher:
 
         Uses explicit configuration as primary source, but also checks
         x-ves-required and validation rules for fields not in config.
+        OneOf variant fields are excluded from schema-inferred required
+        signals — their validation rules are conditional on variant selection.
 
         Args:
             schema: Schema definition
@@ -573,17 +602,18 @@ class MinimumConfigurationEnricher:
             return
 
         required_fields = self._extract_required_fields_list(resource_config)
+        oneof_members = self._collect_oneof_members(schema)
 
         for field_name, field_schema in properties.items():
             if not isinstance(field_schema, dict):
                 continue
 
-            # Check config-defined required fields first, then fall back to
-            # x-ves-required and validation rules for comprehensive coverage
-            is_required = (
-                field_name in required_fields
-                or field_schema.get("x-ves-required") == "true"
-                or self._has_required_validation_rules(field_schema)
+            is_required = field_name in required_fields or (
+                field_name not in oneof_members
+                and (
+                    field_schema.get("x-ves-required") == "true"
+                    or self._has_required_validation_rules(field_schema)
+                )
             )
 
             field_requirements = {
