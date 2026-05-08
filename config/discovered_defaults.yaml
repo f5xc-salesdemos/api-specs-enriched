@@ -337,6 +337,47 @@ resources:
           recommended:
             ip: ""  # Required, user must provide (e.g., "8.8.8.8")
 
+  # ============================================================================
+  # API Security - API Definitions
+  # ============================================================================
+
+  api_definition_views:
+    description: "API definition server-applied defaults"
+    schema_pattern: "api_definition.*SpecType"
+    oneof_recommended:
+      schema_updates_strategy: "mixed_schema_origin"
+
+  # ============================================================================
+  # Rate Limiting
+  # ============================================================================
+
+  rate_limiter_policy:
+    description: "Rate limiter policy server-applied defaults"
+    schema_pattern: "rate_limiter_policy.*SpecType"
+    oneof_recommended:
+      server_choice: "any_server"
+
+  # ============================================================================
+  # Network Security - Service Policies
+  # ============================================================================
+
+  service_policy_views:
+    description: "Service policy server-applied defaults"
+    schema_pattern: "service_policy.*SpecType"
+    oneof_recommended:
+      rule_choice: "allow_all_requests"
+      server_choice: "any_server"
+
+  # ============================================================================
+  # Certificates
+  # ============================================================================
+
+  certificate_views:
+    description: "Certificate server-applied defaults"
+    schema_pattern: "certificate.*SpecType"
+    oneof_recommended:
+      ocsp_stapling_choice: "use_system_defaults"
+
 # Documentation for adding new defaults:
 # 1. Create resource in F5 XC with minimal/empty spec via API
 # 2. Read back the created resource to see server-applied values

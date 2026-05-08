@@ -563,53 +563,30 @@ resources:
     domain: "network_security"
     resource_type: "policy"
 
+    # NOTE: spec.rule_choice is required — API returns 400 if nil.
+    # Simplest variant: allow_all_requests: {}
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      # One of rule_choice options (allow_all_requests, deny_all_requests, etc.)
-
-    mutually_exclusive_groups:
-      - fields:
-          - "spec.allow_all_requests"
-          - "spec.deny_all_requests"
-          - "spec.allow_list"
-          - "spec.deny_list"
-          - "spec.rule_list"
-        reason: "Choose exactly one rule type"
 
     example_yaml: |
       apiVersion: v1
       kind: service_policy
       metadata:
-        name: allow-internal
+        name: allow-all
         namespace: default
       spec:
-        allow_list:
-          rules:
-            - metadata:
-                name: internal-traffic
-              spec:
-                ip_prefix_list:
-                  prefix:
-                    - "10.0.0.0/8"
-                    - "192.168.0.0/16"
+        allow_all_requests: {}
 
     # Example JSON configuration (preferred format)
     example_json: |
       {
         "metadata": {
-          "name": "allow-internal",
+          "name": "allow-all",
           "namespace": "default"
         },
         "spec": {
-          "allow_list": {
-            "rules": [{
-              "metadata": {"name": "internal-traffic"},
-              "spec": {
-                "ip_prefix_list": {"prefix": ["10.0.0.0/8", "192.168.0.0/16"]}
-              }
-            }]
-          }
+          "allow_all_requests": {}
         }
       }
 
@@ -677,6 +654,366 @@ resources:
     cli:
       domain: "certificates"
       resource_name: "certificate"
+
+  # ============================================================================
+  # API Security - API Definitions
+  # ============================================================================
+
+  api_definition:
+    description: "API definition for documenting and protecting HTTP APIs"
+    domain: "api"
+    resource_type: "definition"
+
+    # API accepts empty spec — all fields optional
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: api_definition
+      metadata:
+        name: example-api
+        namespace: default
+      spec: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-api",
+          "namespace": "default"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/api_definitions" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @api-definition.json
+
+    cli:
+      domain: "api"
+      resource_name: "api_definition"
+
+  # ============================================================================
+  # API Security - API Discovery
+  # ============================================================================
+
+  api_discovery:
+    description: "API discovery configuration for automatic API endpoint detection"
+    domain: "api"
+    resource_type: "discovery"
+
+    # API requires user_defined_api_discovery_policy (returns 400 if nil)
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.user_defined_api_discovery_policy"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: api_discovery
+      metadata:
+        name: example-discovery
+        namespace: default
+      spec:
+        user_defined_api_discovery_policy: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-discovery",
+          "namespace": "default"
+        },
+        "spec": {
+          "user_defined_api_discovery_policy": {}
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/api_discoverys" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @api-discovery.json
+
+    cli:
+      domain: "api"
+      resource_name: "api_discovery"
+
+  # ============================================================================
+  # Rate Limiting
+  # ============================================================================
+
+  rate_limiter_policy:
+    description: "Rate limiter policy for controlling request rates to protected endpoints"
+    domain: "rate_limiting"
+    resource_type: "policy"
+
+    # API accepts empty spec — rules are optional
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: rate_limiter_policy
+      metadata:
+        name: example-rl
+        namespace: default
+      spec: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-rl",
+          "namespace": "default"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/rate_limiter_policys" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @rate-limiter.json
+
+    cli:
+      domain: "rate_limiting"
+      resource_name: "rate_limiter_policy"
+
+  # ============================================================================
+  # WAF Tuning - Exclusion Policies
+  # ============================================================================
+
+  waf_exclusion_policy:
+    description: "WAF exclusion policy for tuning false positives in app_firewall rules"
+    domain: "waf"
+    resource_type: "policy"
+
+    # API requires waf_exclusion_rules with at least one rule
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.waf_exclusion_rules"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: waf_exclusion_policy
+      metadata:
+        name: example-waf-exclusion
+        namespace: default
+      spec:
+        waf_exclusion_rules:
+          - metadata:
+              name: exclude-health
+            exact_path: "/health"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-waf-exclusion",
+          "namespace": "default"
+        },
+        "spec": {
+          "waf_exclusion_rules": [
+            {"metadata": {"name": "exclude-health"}}
+          ]
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/waf_exclusion_policys" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @waf-exclusion.json
+
+    cli:
+      domain: "waf"
+      resource_name: "waf_exclusion_policy"
+
+  # ============================================================================
+  # User Identification
+  # ============================================================================
+
+  user_identification:
+    description: "User identification rules for bot defense and rate limiting"
+    domain: "tenant_and_identity"
+    resource_type: "identification"
+
+    # API requires rules with minItems: 1
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.rules"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: user_identification
+      metadata:
+        name: example-user-id
+        namespace: default
+      spec:
+        rules:
+          - client_ip: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-user-id",
+          "namespace": "default"
+        },
+        "spec": {
+          "rules": [{"client_ip": {}}]
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/user_identifications" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @user-identification.json
+
+    cli:
+      domain: "tenant_and_identity"
+      resource_name: "user_identification"
+
+  # ============================================================================
+  # Malicious User Mitigation
+  # ============================================================================
+
+  malicious_user_mitigation:
+    description: "Malicious user mitigation configuration for challenge-based defense"
+    domain: "secops_and_incident_response"
+    resource_type: "mitigation"
+
+    # API accepts empty spec — server applies defaults
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: malicious_user_mitigation
+      metadata:
+        name: example-mitigation
+        namespace: default
+      spec: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-mitigation",
+          "namespace": "default"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/malicious_user_mitigations" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @malicious-user-mitigation.json
+
+    cli:
+      domain: "secops_and_incident_response"
+      resource_name: "malicious_user_mitigation"
+
+  # ============================================================================
+  # Sensitive Data Protection
+  # ============================================================================
+
+  sensitive_data_policy:
+    description: "Sensitive data policy for PII detection and masking in API responses"
+    domain: "data_and_privacy_security"
+    resource_type: "policy"
+
+    # API accepts empty spec — server applies defaults
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: sensitive_data_policy
+      metadata:
+        name: example-sensitive-data
+        namespace: default
+      spec: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-sensitive-data",
+          "namespace": "default"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/sensitive_data_policys" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @sensitive-data.json
+
+    cli:
+      domain: "data_and_privacy_security"
+      resource_name: "sensitive_data_policy"
+
+  # ============================================================================
+  # Protocol Inspection
+  # ============================================================================
+
+  protocol_inspection:
+    description: "Protocol inspection for compliance checks and signature-based detection"
+    domain: "network_security"
+    resource_type: "inspection"
+
+    # API requires BOTH enable_disable_compliance_checks AND enable_disable_signatures
+    # Each is a nested oneOf with no server default
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.enable_disable_compliance_checks"
+      - "spec.enable_disable_signatures"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: protocol_inspection
+      metadata:
+        name: example-inspection
+        namespace: default
+      spec:
+        enable_disable_compliance_checks:
+          disable_compliance_checks: {}
+        enable_disable_signatures:
+          disable_signatures: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-inspection",
+          "namespace": "default"
+        },
+        "spec": {
+          "enable_disable_compliance_checks": {
+            "disable_compliance_checks": {}
+          },
+          "enable_disable_signatures": {
+            "disable_signatures": {}
+          }
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/protocol_inspections" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @protocol-inspection.json
+
+    cli:
+      domain: "network_security"
+      resource_name: "protocol_inspection"
 
 # Field-level requirements for cross-resource patterns
 field_requirements:
