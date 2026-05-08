@@ -161,7 +161,11 @@ class MinimumConfigurationEnricher:
             # Check if x-f5xc-cli-domain already exists (idempotent behavior)
             has_existing_cli_domain = X_F5XC_CLI_DOMAIN in schema
 
-            if resource_type and resource_type in self.resources:
+            if (
+                resource_type
+                and resource_type in self.resources
+                and self._is_resource_schema(schema_name)
+            ):
                 # Explicit configuration exists
                 resource_config = self.resources[resource_type]
                 self._enrich_from_config(schema, schema_name, resource_type, resource_config)
@@ -193,7 +197,7 @@ class MinimumConfigurationEnricher:
     def _enrich_from_config(
         self,
         schema: dict[str, Any],
-        _schema_name: str,
+        schema_name: str,
         resource_type: str | None,
         resource_config: dict[str, Any],
     ) -> None:
@@ -201,10 +205,11 @@ class MinimumConfigurationEnricher:
 
         Args:
             schema: Schema to enrich
-            _schema_name: Schema name
+            schema_name: Schema name
             resource_type: Detected resource type
             resource_config: Configuration from config file
         """
+        logger.debug("Enriching %s from config (resource: %s)", schema_name, resource_type)
         # Add x-f5xc-minimum-configuration at schema level
         minimum_config = {
             "description": resource_config.get("description", ""),
@@ -225,15 +230,16 @@ class MinimumConfigurationEnricher:
         self,
         schema: dict[str, Any],
         schema_name: str,
-        _resource_type: str | None,
+        resource_type: str | None,
     ) -> None:
         """Auto-generate minimum configuration for unconfigured resources.
 
         Args:
             schema: Schema to enrich
             schema_name: Schema name
-            _resource_type: Detected or inferred resource type
+            resource_type: Detected or inferred resource type
         """
+        logger.debug("Auto-generating config for %s (resource: %s)", schema_name, resource_type)
         # Generate sensible defaults
         auto_config = self._auto_generate_minimum_config(schema, schema_name)
 
@@ -499,6 +505,25 @@ class MinimumConfigurationEnricher:
                 except (json.JSONDecodeError, TypeError):
                     pass
         return frozenset(members)
+
+    @staticmethod
+    def _is_resource_schema(schema_name: str) -> bool:
+        """Check if schema is a top-level resource schema (not a sub-schema).
+
+        Only top-level resource schemas (CreateSpecType, CreateRequest, etc.)
+        should receive config-driven enrichment. Sub-schemas matched via
+        partial name matching get auto-generated enrichment instead.
+        """
+        resource_suffixes = (
+            "CreateSpecType",
+            "UpdateSpecType",
+            "GetSpecType",
+            "ReplaceSpecType",
+            "DeleteSpecType",
+            "CreateRequest",
+            "ReplaceRequest",
+        )
+        return any(schema_name.endswith(suffix) for suffix in resource_suffixes)
 
     def _detect_resource_type(self, schema_name: str) -> str | None:
         """Detect resource type from schema name.
