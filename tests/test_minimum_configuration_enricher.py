@@ -848,5 +848,99 @@ class TestSpecValuePlaceholderFix:
         )
 
 
+class TestSubSchemaNotConfigEnriched:
+    """Test that sub-schemas matched via partial name don't get parent config applied."""
+
+    def test_sub_schema_gets_auto_generated_not_config(self):
+        """A sub-schema like UpstreamTlsParameters should NOT get origin_pool's config."""
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "origin_poolUpstreamTlsParameters": {
+                        "type": "object",
+                        "properties": {
+                            "tls_config": {"$ref": "#/components/schemas/TlsConfig"},
+                            "max_session_keys": {"type": "integer"},
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        schema = enriched["components"]["schemas"]["origin_poolUpstreamTlsParameters"]
+        min_config = schema.get("x-f5xc-minimum-configuration", {})
+        # Should NOT have origin_pool's config-defined required_fields
+        rf = min_config.get("required_fields", [])
+        assert "metadata.name" not in rf, (
+            "Sub-schema should not inherit parent resource's required_fields"
+        )
+        assert "spec.origin_servers" not in rf
+
+    def test_resource_schema_still_gets_config(self):
+        """A CreateSpecType schema should still get config-driven enrichment."""
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "viewsorigin_poolCreateSpecType": {
+                        "type": "object",
+                        "properties": {
+                            "metadata": {"type": "object"},
+                            "spec": {"type": "object"},
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        schema = enriched["components"]["schemas"]["viewsorigin_poolCreateSpecType"]
+        min_config = schema.get("x-f5xc-minimum-configuration", {})
+        rf = min_config.get("required_fields", [])
+        # Should have origin_pool's config required_fields
+        assert "metadata.name" in rf
+
+    def test_is_resource_schema_recognizes_suffixes(self):
+        """_is_resource_schema correctly identifies resource vs sub schemas."""
+        assert (
+            MinimumConfigurationEnricher._is_resource_schema("viewsorigin_poolCreateSpecType")
+            is True
+        )
+        assert MinimumConfigurationEnricher._is_resource_schema("app_firewallCreateRequest") is True
+        assert (
+            MinimumConfigurationEnricher._is_resource_schema("origin_poolReplaceSpecType") is True
+        )
+        assert (
+            MinimumConfigurationEnricher._is_resource_schema("origin_poolUpstreamTlsParameters")
+            is False
+        )
+        assert (
+            MinimumConfigurationEnricher._is_resource_schema("app_firewallDetectionSetting")
+            is False
+        )
+        assert (
+            MinimumConfigurationEnricher._is_resource_schema("healthcheckHttpHealthCheck") is False
+        )
+
+    def test_sub_schema_still_gets_cli_domain(self):
+        """Sub-schemas should still get x-f5xc-cli-domain even without config enrichment."""
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "origin_poolUpstreamTlsParameters": {
+                        "type": "object",
+                        "properties": {
+                            "tls_config": {"$ref": "#/components/schemas/TlsConfig"},
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        schema = enriched["components"]["schemas"]["origin_poolUpstreamTlsParameters"]
+        assert "x-f5xc-cli-domain" in schema
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
