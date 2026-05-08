@@ -477,7 +477,7 @@ def _build_operation(
         op["responseSchema"] = response_schema
 
     # Extract minimumPayload from x-f5xc-minimum-configuration
-    if body_schema:
+    if body_schema and method.upper() in {"POST", "PUT", "PATCH"}:
         min_config = body_schema.get("x-f5xc-minimum-configuration")
         if min_config and min_config.get("example_json"):
             try:

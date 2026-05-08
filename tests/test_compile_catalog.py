@@ -1074,3 +1074,74 @@ def test_build_operation_skips_enrichment_for_get():
     assert "fieldMetadata" not in result
     assert "oneOfRecommendations" not in result
     assert "minimumPayload" not in result
+
+
+def test_delete_operation_has_no_minimum_payload():
+    """DELETE operations should not have a minimumPayload — query params are not body fields."""
+    from scripts.compile_catalog import _build_operation
+
+    operation = {
+        "parameters": [
+            {"name": "name", "in": "query", "required": True, "schema": {"type": "string"}},
+            {"name": "namespace", "in": "query", "required": True, "schema": {"type": "string"}},
+            {"name": "fail_if_referred", "in": "query", "schema": {"type": "boolean"}},
+        ],
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "fail_if_referred": {"type": "boolean"},
+                            "name": {"type": "string"},
+                            "namespace": {"type": "string"},
+                        },
+                        "x-f5xc-minimum-configuration": {
+                            "required_fields": ["name", "namespace"],
+                            "example_json": '{"metadata": {"name": "test"}, "spec": {"name": "value"}}',
+                        },
+                    }
+                }
+            }
+        },
+    }
+    result = _build_operation(
+        path="/api/config/namespaces/{namespace}/resources/{name}",
+        method="delete",
+        operation=operation,
+        op_name="delete_resource",
+        components={},
+    )
+    assert "minimumPayload" not in result
+
+
+def test_post_operation_still_gets_minimum_payload():
+    """POST operations should still get minimumPayload as before."""
+    from scripts.compile_catalog import _build_operation
+
+    operation = {
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                        },
+                        "x-f5xc-minimum-configuration": {
+                            "required_fields": ["name"],
+                            "example_json": '{"metadata": {"name": "test"}, "spec": {}}',
+                        },
+                    }
+                }
+            }
+        },
+    }
+    result = _build_operation(
+        path="/api/config/namespaces/{namespace}/resources",
+        method="post",
+        operation=operation,
+        op_name="create_resource",
+        components={},
+    )
+    assert "minimumPayload" in result
