@@ -317,7 +317,7 @@ class MinimumConfigurationEnricher:
             spec_fields = [
                 f"  {field}: value"
                 for field in required_fields[:5]
-                if field not in ["metadata", "apiVersion", "kind"]
+                if field not in ["metadata", "apiVersion", "kind", "spec"]
             ]
             lines.extend(spec_fields)
 
@@ -344,7 +344,7 @@ class MinimumConfigurationEnricher:
             spec_fields = {
                 field: "value"
                 for field in required_fields[:5]
-                if field not in ["metadata", "apiVersion", "kind"]
+                if field not in ["metadata", "apiVersion", "kind", "spec"]
             }
             if spec_fields:
                 example["spec"] = spec_fields

@@ -796,5 +796,57 @@ class TestOneOfAwareRequiredInference:
                 )
 
 
+class TestSpecValuePlaceholderFix:
+    """Test that schemas with a 'spec' property don't produce spec:value collision."""
+
+    def test_spec_property_not_included_in_example_json(self):
+        """A schema with 'spec' as a property should not produce {"spec": {"spec": "value"}}."""
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "SomeResourceCreateRequest": {
+                        "type": "object",
+                        "properties": {
+                            "metadata": {"type": "object"},
+                            "spec": {"$ref": "#/components/schemas/SomeSpec"},
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        schema = enriched["components"]["schemas"]["SomeResourceCreateRequest"]
+        min_config = schema.get("x-f5xc-minimum-configuration", {})
+        example_json = min_config.get("example_json", "")
+        assert '"spec": "value"' not in example_json, (
+            "spec property should be excluded from example — it collides with the spec container"
+        )
+
+    def test_spec_property_not_included_in_example_yaml(self):
+        """A schema with 'spec' as a property should not produce 'spec: value' in YAML."""
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "SomeResourceCreateRequest": {
+                        "type": "object",
+                        "properties": {
+                            "metadata": {"type": "object"},
+                            "spec": {"$ref": "#/components/schemas/SomeSpec"},
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        schema = enriched["components"]["schemas"]["SomeResourceCreateRequest"]
+        min_config = schema.get("x-f5xc-minimum-configuration", {})
+        example_yaml = min_config.get("example_yaml", "")
+        assert "  spec: value" not in example_yaml, (
+            "spec property should be excluded from YAML example — it collides with the spec container"
+        )
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
