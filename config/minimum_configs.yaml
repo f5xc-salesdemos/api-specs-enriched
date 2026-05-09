@@ -350,6 +350,16 @@ resources:
         min_items: 1
         reason: "Inline pool requires at least one origin server"
 
+      - field: "spec.default_pool.port"
+        type: "integer"
+        range: [1, 65535]
+        required: true
+        description: "Pool port (mandatory, unlike https_auto_cert.port which accepts 0)"
+
+      - field: "spec.host_name"
+        read_only: true
+        description: "System-generated hostname. Accepts any value but server always stores empty string."
+
     # Referential integrity (verified via live API)
     referential_integrity:
       - field: "spec.default_route_pools[].pool"
