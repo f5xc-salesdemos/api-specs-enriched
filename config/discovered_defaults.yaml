@@ -357,6 +357,16 @@ resources:
     oneof_recommended:
       server_choice: "any_server"
 
+  # Alias for enricher schema matching (policerCreateSpecType)
+  policer:
+    description: "Rate limiter policy server-applied defaults (schema alias)"
+    schema_pattern: "policer.*SpecType"
+    defaults:
+      policer_type: "POLICER_SINGLE_RATE_TWO_COLOR"
+      policer_mode: "POLICER_MODE_NOT_SHARED"
+    oneof_recommended:
+      server_choice: "any_server"
+
   # ============================================================================
   # Network Security - Service Policies
   # ============================================================================
@@ -381,6 +391,20 @@ resources:
       private_key:
         oneof_recommended:
           secret_info_oneof: "clear_secret_info"
+
+  # ============================================================================
+  # Protocol Inspection
+  # ============================================================================
+
+  protocol_inspection:
+    description: "Protocol inspection server-applied defaults"
+    schema_pattern: "protocol_inspection.*SpecType"
+    defaults:
+      # Server overrides disable_signatures with enable_signature on creation
+      action: "ALLOW"
+    oneof_recommended:
+      enable_disable_signatures: "enable_signature"
+      enable_disable_compliance_checks: "disable_compliance_checks"
 
 # Documentation for adding new defaults:
 # 1. Create resource in F5 XC with minimal/empty spec via API
