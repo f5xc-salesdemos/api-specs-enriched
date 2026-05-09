@@ -614,6 +614,12 @@ resources:
       - "metadata.name"
       - "metadata.namespace"
       - "spec.certificate_url"  # Required, min_bytes: 1
+      - "spec.private_key"      # Required, not nil
+
+    # Note: private_key supports two variants:
+    #   - clear_secret_info (for automation/testing): url field with string:///BASE64_KEY
+    #   - blindfold_secret_info (for production): location field with blindfold-encrypted key
+    # The clear_secret_info variant is used here for deterministic CRUD.
 
     example_yaml: |
       apiVersion: v1
@@ -624,8 +630,9 @@ resources:
       spec:
         certificate_url: "string:///BASE64_ENCODED_CERTIFICATE"
         private_key:
-          blindfold_secret_info:
-            location: "string:///BASE64_ENCODED_ENCRYPTED_KEY"
+          clear_secret_info:
+            url: "string:///BASE64_ENCODED_PRIVATE_KEY"
+            provider: ""
 
     # Example JSON configuration (preferred format)
     example_json: |
@@ -637,8 +644,9 @@ resources:
         "spec": {
           "certificate_url": "string:///BASE64_ENCODED_CERTIFICATE",
           "private_key": {
-            "blindfold_secret_info": {
-              "location": "string:///BASE64_ENCODED_ENCRYPTED_KEY"
+            "clear_secret_info": {
+              "url": "string:///BASE64_ENCODED_PRIVATE_KEY",
+              "provider": ""
             }
           }
         }
@@ -744,6 +752,32 @@ resources:
   # ============================================================================
   # Rate Limiting
   # ============================================================================
+
+  # Note: API schema uses 'policer' internally (policerCreateSpecType),
+  # but the resource is exposed as 'rate_limiter_policy' in the UI/docs.
+  # Both keys are needed: 'policer' for enricher schema matching,
+  # 'rate_limiter_policy' for documentation/CLI.
+  policer:
+    description: "Rate limiter policy for controlling request rates to protected endpoints"
+    domain: "rate_limiting"
+    resource_type: "policy"
+    # API requires burst_size >= 1 and committed_information_rate >= 1
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.burst_size"
+      - "spec.committed_information_rate"
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-rl",
+          "namespace": "default"
+        },
+        "spec": {
+          "burst_size": 1,
+          "committed_information_rate": 1
+        }
+      }
 
   rate_limiter_policy:
     description: "Rate limiter policy for controlling request rates to protected endpoints"
@@ -977,7 +1011,8 @@ resources:
     resource_type: "inspection"
 
     # API requires BOTH enable_disable_compliance_checks AND enable_disable_signatures
-    # Each is a nested oneOf with no server default
+    # Each is a nested oneOf. Server overrides disable_signatures with enable_signature
+    # and adds action: ALLOW as a default.
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
@@ -994,8 +1029,10 @@ resources:
         enable_disable_compliance_checks:
           disable_compliance_checks: {}
         enable_disable_signatures:
-          disable_signatures: {}
+          enable_signature: {}
 
+    # Example JSON configuration (preferred format)
+    # Server-applied defaults: action=ALLOW
     example_json: |
       {
         "metadata": {
@@ -1007,7 +1044,7 @@ resources:
             "disable_compliance_checks": {}
           },
           "enable_disable_signatures": {
-            "disable_signatures": {}
+            "enable_signature": {}
           }
         }
       }
