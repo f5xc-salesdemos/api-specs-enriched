@@ -24,7 +24,7 @@ resources:
     required_fields:
       - "metadata.name"  # DNS label format: [a-z0-9]([-a-z0-9]*[a-z0-9])?
       - "metadata.namespace"  # DNS label format
-      - "spec.domains"  # Array, min_items: 1
+      - "spec.domains"  # Array, min_items: 1, format: vh_domain (www.foo.com[:port], *.foo.com[:port]). Bare * rejected.
       # One of: spec.http, spec.https, spec.https_auto_cert (lb_type oneOf)
       # https_auto_cert: {} suffices — port, tls_config, advertising are all optional
 
@@ -214,6 +214,12 @@ resources:
 
     # Constrained fields - enum values and ranges
     constrained_fields:
+      - field: "spec.domains"
+        type: "array"
+        min_items: 1
+        item_format: "vh_domain"
+        description: "Domain list. Format: www.foo.com[:port], *.foo.com[:port]. Bare * rejected."
+
       - field: "spec.https_auto_cert.port"
         type: "integer"
         range: [0, 65535]
