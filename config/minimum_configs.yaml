@@ -302,6 +302,20 @@ resources:
         default: "advertise_on_public_default_vip"
         description: "Load balancer advertising configuration"
 
+    # Cross-field dependencies (verified via live API)
+    dependencies:
+      - field: "spec.data_guard_rules"
+        requires: "spec.enable_waf"
+        reason: "Data Guard requires WAF to be enabled (400 when disable_waf is set)"
+
+      - field: "spec.trusted_clients[].actions"
+        required: true
+        reason: "Trusted client entries require non-empty actions list (500 without)"
+
+      - field: "spec.http.port"
+        required: true
+        reason: "HTTP lb_type requires port_choice (400 when port omitted, unlike https_auto_cert)"
+
   # ============================================================================
 
   origin_pool:
