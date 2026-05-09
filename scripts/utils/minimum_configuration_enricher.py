@@ -319,13 +319,18 @@ class MinimumConfigurationEnricher:
         ]
 
         if required_fields:
-            lines.append("spec:")
             spec_fields = [
                 f"  {field}: value"
                 for field in required_fields[:5]
                 if field not in ["metadata", "apiVersion", "kind", "spec"]
             ]
-            lines.extend(spec_fields)
+            if spec_fields:
+                lines.append("spec:")
+                lines.extend(spec_fields)
+            else:
+                lines.append("spec: {}")
+        else:
+            lines.append("spec: {}")
 
         return "\n".join(lines)
 
@@ -354,6 +359,10 @@ class MinimumConfigurationEnricher:
             }
             if spec_fields:
                 example["spec"] = spec_fields
+            else:
+                example["spec"] = {}
+        else:
+            example["spec"] = {}
 
         return json.dumps(example, indent=2)
 
@@ -542,10 +551,14 @@ class MinimumConfigurationEnricher:
             return schema_name
 
         # Remove common prefixes (e.g., "views", "api", "schema")
+        # Skip stripping when remainder starts with underscore — the prefix
+        # is part of the resource name (e.g., "api_definition"), not a namespace.
         working_name = schema_name
         for prefix in ["views", "api", "schema"]:
             if working_name.startswith(prefix):
-                working_name = working_name[len(prefix) :]
+                remaining = working_name[len(prefix) :]
+                if remaining and remaining[0] != "_":
+                    working_name = remaining
                 break
 
         # Remove common suffixes in order of specificity

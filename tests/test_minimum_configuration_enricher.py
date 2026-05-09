@@ -942,5 +942,76 @@ class TestSubSchemaNotConfigEnriched:
         assert "x-f5xc-cli-domain" in schema
 
 
+class TestPrefixStrippingFix:
+    """Test that resource names starting with 'api_' are not broken by prefix stripping."""
+
+    def test_api_definition_create_request_detected(self):
+        """api_definitionCreateRequest should detect as api_definition, not None."""
+        enricher = MinimumConfigurationEnricher()
+        result = enricher._detect_resource_type("api_definitionCreateRequest")
+        assert result == "api_definition"
+
+    def test_api_discovery_create_request_detected(self):
+        """api_discoveryCreateRequest should detect as api_discovery."""
+        enricher = MinimumConfigurationEnricher()
+        result = enricher._detect_resource_type("api_discoveryCreateRequest")
+        assert result == "api_discovery"
+
+    def test_views_prefix_still_stripped(self):
+        """viewsorigin_poolCreateSpecType should still strip 'views' prefix."""
+        enricher = MinimumConfigurationEnricher()
+        result = enricher._detect_resource_type("viewsorigin_poolCreateSpecType")
+        assert result == "origin_pool"
+
+    def test_schema_prefix_still_stripped(self):
+        """schemaservice_policyCreateSpecType should still strip 'schema' prefix."""
+        enricher = MinimumConfigurationEnricher()
+        result = enricher._detect_resource_type("schemaservice_policyCreateSpecType")
+        assert result == "service_policy"
+
+
+class TestSpecKeyAlwaysPresent:
+    """Test that auto-generated min configs always include spec: {} (#344)."""
+
+    def _make_spec_with_schema(self, schema_name, schema):
+        return {"components": {"schemas": {schema_name: schema}}}
+
+    def test_json_includes_spec_key_when_no_spec_fields(self):
+        """Auto-generated JSON should include 'spec': {} even with no required spec fields."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "properties": {
+                "metadata": {"type": "object"},
+                "spec": {"$ref": "#/components/schemas/SomeSpec"},
+            },
+        }
+        spec = self._make_spec_with_schema("UnknownResourceCreateRequest", schema)
+        enriched = enricher.enrich_spec(spec)
+        mc = enriched["components"]["schemas"]["UnknownResourceCreateRequest"]
+        example_json = mc.get("x-f5xc-minimum-configuration", {}).get("example_json", "")
+        assert '"spec": {}' in example_json or '"spec": {' in example_json, (
+            f"spec key must be present in auto-generated JSON, got: {example_json}"
+        )
+
+    def test_yaml_includes_spec_key_when_no_spec_fields(self):
+        """Auto-generated YAML should include 'spec: {}' even with no required spec fields."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "properties": {
+                "metadata": {"type": "object"},
+                "spec": {"$ref": "#/components/schemas/SomeSpec"},
+            },
+        }
+        spec = self._make_spec_with_schema("UnknownResourceCreateRequest", schema)
+        enriched = enricher.enrich_spec(spec)
+        mc = enriched["components"]["schemas"]["UnknownResourceCreateRequest"]
+        example_yaml = mc.get("x-f5xc-minimum-configuration", {}).get("example_yaml", "")
+        assert "spec: {}" in example_yaml or "spec:" in example_yaml, (
+            f"spec key must be present in auto-generated YAML, got: {example_yaml}"
+        )
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

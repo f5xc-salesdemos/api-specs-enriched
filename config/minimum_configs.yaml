@@ -750,10 +750,12 @@ resources:
     domain: "rate_limiting"
     resource_type: "policy"
 
-    # API accepts empty spec — rules are optional
+    # API requires burst_size >= 1 and committed_information_rate >= 1
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
+      - "spec.burst_size"
+      - "spec.committed_information_rate"
 
     example_yaml: |
       apiVersion: v1
@@ -761,7 +763,9 @@ resources:
       metadata:
         name: example-rl
         namespace: default
-      spec: {}
+      spec:
+        burst_size: 1
+        committed_information_rate: 1
 
     example_json: |
       {
@@ -769,7 +773,10 @@ resources:
           "name": "example-rl",
           "namespace": "default"
         },
-        "spec": {}
+        "spec": {
+          "burst_size": 1,
+          "committed_information_rate": 1
+        }
       }
 
     example_curl: |
