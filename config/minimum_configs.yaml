@@ -19,16 +19,19 @@ resources:
     resource_type: "loadbalancer"
 
     # Minimum required fields for creating a functional HTTP load balancer
+    # NOTE: The absolute minimum is just metadata.name + metadata.namespace + spec.domains + lb_type.
+    # advertise_on_public_default_vip, port, tls_config are all server-applied when omitted.
     required_fields:
       - "metadata.name"  # DNS label format: [a-z0-9]([-a-z0-9]*[a-z0-9])?
       - "metadata.namespace"  # DNS label format
-      - "spec.domains"  # Array, min_items: 1
-      # One of: spec.http, spec.https, spec.https_auto_cert, spec.http_https (lb_type oneOf)
+      - "spec.domains"  # Array, min_items: 1, format: vh_domain (example.com[:port], *.example.com[:port]). Bare * rejected.
+      # One of: spec.http, spec.https, spec.https_auto_cert (lb_type oneOf)
+      # https_auto_cert: {} suffices — port, tls_config, advertising are all optional
 
     # Mutually exclusive field groups - only one from each group allowed
     mutually_exclusive_groups:
       - name: "lb_type"
-        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert"]
         reason: "Choose exactly one load balancer type"
 
       - name: "advertising"
@@ -112,7 +115,7 @@ resources:
         reason: "Choose exactly one connection coalescing option"
 
       - name: "ddos_mitigation"
-        fields: ["spec.l7_ddos_protection.mitigation_block", "spec.l7_ddos_protection.mitigation_challenge", "spec.l7_ddos_protection.mitigation_none"]
+        fields: ["spec.l7_ddos_protection.mitigation_block", "spec.l7_ddos_protection.mitigation_js_challenge", "spec.l7_ddos_protection.mitigation_captcha_challenge", "spec.l7_ddos_protection.mitigation_none"]
         reason: "Choose exactly one DDoS mitigation action"
 
       - name: "ddos_rps_threshold"
@@ -128,7 +131,7 @@ resources:
         reason: "DDoS policy reference or none"
 
       - name: "challenge"
-        fields: ["spec.no_challenge", "spec.js_challenge", "spec.captcha_challenge"]
+        fields: ["spec.no_challenge", "spec.js_challenge", "spec.captcha_challenge", "spec.enable_challenge", "spec.policy_based_challenge"]
         reason: "Choose exactly one challenge type"
 
       - name: "user_identification"
@@ -144,8 +147,8 @@ resources:
         reason: "Use system default or custom timeouts"
 
       - name: "service_policies_source"
-        fields: ["spec.service_policies_from_namespace", "spec.active_service_policies"]
-        reason: "Service policies from namespace or active list"
+        fields: ["spec.service_policies_from_namespace", "spec.active_service_policies", "spec.no_service_policies"]
+        reason: "Service policies from namespace, active list, or none"
 
       - name: "sensitive_data_policy"
         fields: ["spec.default_sensitive_data_policy", "spec.custom_sensitive_data_policy"]
@@ -155,7 +158,7 @@ resources:
         fields: ["spec.round_robin", "spec.least_request", "spec.ring_hash", "spec.random"]
         reason: "Choose exactly one load balancing algorithm"
 
-    # Example minimal YAML configuration
+    # Example minimal YAML configuration (absolute minimum)
     example_yaml: |
       apiVersion: v1
       kind: http_loadbalancer
@@ -165,32 +168,26 @@ resources:
       spec:
         domains:
           - example.com
-        https_auto_cert:
-          port: 443
-          tls_config:
-            default_security: {}
-        advertise_on_public_default_vip: {}
-        routes:
-          - prefix: "/"
-            origin_pool:
-              pool_name: backend-pool
+        https_auto_cert: {}
 
     # Example JSON configuration (preferred format)
-    # Server applies defaults: https_auto_cert.port=443, https_auto_cert.http_redirect=false,
-    # https_auto_cert.add_hsts=false, https_auto_cert.tls_config.default_security={},
-    # https_auto_cert.no_mtls={}, https_auto_cert.default_header={},
-    # https_auto_cert.enable_path_normalize={}, https_auto_cert.default_loadbalancer={},
-    # https_auto_cert.header_transformation_type.legacy_header_transformation={},
-    # https_auto_cert.connection_idle_timeout=120000, https_auto_cert.http_protocol_options.http_protocol_enable_v1_v2={},
-    # https_auto_cert.coalescing_options.default_coalescing={}, advertise_on_public_default_vip={},
-    # disable_waf={}, disable_bot_defense={}, disable_rate_limit={}, disable_api_discovery={},
-    # disable_api_testing={}, disable_api_definition={}, disable_malware_protection={},
-    # disable_client_side_defense={}, disable_ip_reputation={}, disable_threat_mesh={},
-    # disable_malicious_user_detection={}, l7_ddos_protection.mitigation_block={},
-    # l7_ddos_protection.default_rps_threshold={}, l7_ddos_protection.clientside_action_none={},
-    # l7_ddos_protection.ddos_policy_none={}, round_robin={}, add_location=true, no_challenge={},
-    # user_id_client_ip={}, disable_trust_client_ip_headers={}, system_default_timeouts={},
-    # service_policies_from_namespace={}, default_sensitive_data_policy={}
+    # Server applies defaults: disable_waf={}, disable_rate_limit={},
+    # disable_api_discovery={}, disable_api_testing={}, disable_api_definition={},
+    # disable_malware_protection={}, disable_threat_mesh={},
+    # disable_malicious_user_detection={}, disable_trust_client_ip_headers={},
+    # round_robin={}, no_challenge={}, user_id_client_ip={},
+    # service_policies_from_namespace={}, default_sensitive_data_policy={},
+    # l7_ddos_protection={}, add_location=false,
+    # https_auto_cert: no_mtls={}, enable_path_normalize={},
+    # http_redirect=false, add_hsts=false, connection_idle_timeout=0
+    # NOT server-applied (contrary to earlier assumptions):
+    # disable_bot_defense, disable_client_side_defense, disable_ip_reputation,
+    # system_default_timeouts, default_header, default_loadbalancer
+    # header_transformation_type=null, http_protocol_options=null, coalescing_options=null
+    # Absolute minimum JSON (verified against live API):
+    # Server applies: advertise_on_public_default_vip, port=0 (=443),
+    # tls_config=null (=default_security), all security toggles disabled,
+    # round_robin, no_challenge, etc.
     example_json: |
       {
         "metadata": {
@@ -199,14 +196,35 @@ resources:
         },
         "spec": {
           "domains": ["example.com"],
-          "https_auto_cert": {
-            "port": 443,
-            "tls_config": {"default_security": {}}
-          },
-          "advertise_on_public_default_vip": {},
-          "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+          "https_auto_cert": {}
         }
       }
+
+    # Functional minimum with inline pool (no separate origin_pool resource needed):
+    example_json_with_pool: |
+      {
+        "metadata": {
+          "name": "example-app",
+          "namespace": "default"
+        },
+        "spec": {
+          "domains": ["example.com"],
+          "https_auto_cert": {},
+          "default_pool": {
+            "port": 80,
+            "origin_servers": [{"public_name": {"dns_name": "backend.example.com"}}],
+            "no_tls": {}
+          }
+        }
+      }
+
+    # Five routing fields (ALL composable — not mutually exclusive, verified via live API):
+    # 1. default_pool: inline pool (simplest, no dependency resources)
+    # 2. default_route_pools: references to existing origin_pool resources
+    # 3. routes/simple_route: path-based proxy routing to pool
+    # 4. routes/direct_response_route: static response (no backend needed)
+    # 5. routes/redirect_route: HTTP redirect (requires proto_redirect from [incoming-proto, http, https])
+    # NOTE: All five can coexist in the same LB. default_pool + default_route_pools + routes all composable.
 
     # Example curl command (industry standard API interaction)
     example_curl: |
@@ -222,17 +240,23 @@ resources:
 
     # Constrained fields - enum values and ranges
     constrained_fields:
+      - field: "spec.domains"
+        type: "array"
+        min_items: 1
+        item_format: "vh_domain"
+        description: "Domain list. Format: example.com[:port], *.example.com[:port]. Bare * rejected."
+
       - field: "spec.https_auto_cert.port"
         type: "integer"
-        range: [1, 65535]
+        range: [0, 65535]
         default: 443
         description: "HTTPS port number"
 
       - field: "spec.https_auto_cert.connection_idle_timeout"
         type: "integer"
-        range: [1000, 3600000]
-        default: 120000
-        description: "Connection idle timeout in milliseconds (1 second to 1 hour)"
+        range: [0, 600000]
+        default: 0
+        description: "Connection idle timeout in milliseconds (0 = system default 120000ms, max 600000 = 10 minutes)"
 
       - field: "spec.https_auto_cert.tls_config"
         type: "enum"
@@ -243,20 +267,20 @@ resources:
       - field: "spec.https_auto_cert.header_transformation_type"
         type: "enum"
         values: ["legacy_header_transformation", "proper_header_transformation", "preserve_case_header_transformation"]
-        default: "legacy_header_transformation"
-        description: "HTTP header transformation type"
+        default: null  # API returns null; platform applies legacy_header_transformation internally
+        description: "HTTP header transformation type (null in API = implicit legacy)"
 
       - field: "spec.https_auto_cert.http_protocol_options"
         type: "enum"
         values: ["http_protocol_enable_v1_only", "http_protocol_enable_v1_v2", "http_protocol_enable_v2_only"]
-        default: "http_protocol_enable_v1_v2"
-        description: "HTTP protocol versions to enable"
+        default: null  # API returns null; platform applies http_protocol_enable_v1_v2 internally
+        description: "HTTP protocol versions to enable (null in API = implicit v1+v2)"
 
       - field: "spec.https_auto_cert.coalescing_options"
         type: "enum"
         values: ["default_coalescing", "disable_coalescing", "enable_for_same_origin"]
-        default: "default_coalescing"
-        description: "HTTP/2 connection coalescing options"
+        default: null  # API returns null; platform applies default_coalescing internally
+        description: "HTTP/2 connection coalescing options (null in API = implicit default)"
 
       - field: "spec.load_balancing_algorithm"
         type: "enum"
@@ -266,7 +290,7 @@ resources:
 
       - field: "spec.l7_ddos_protection.mitigation"
         type: "enum"
-        values: ["mitigation_block", "mitigation_challenge", "mitigation_none"]
+        values: ["mitigation_block", "mitigation_captcha_challenge", "mitigation_js_challenge", "mitigation_none"]
         default: "mitigation_block"
         description: "Layer 7 DDoS mitigation action"
 
@@ -284,15 +308,68 @@ resources:
 
       - field: "spec.challenge"
         type: "enum"
-        values: ["no_challenge", "js_challenge", "captcha_challenge"]
+        values: ["no_challenge", "js_challenge", "captcha_challenge", "enable_challenge", "policy_based_challenge"]
         default: "no_challenge"
         description: "Client challenge type for bot detection"
+
+      - field: "spec.js_challenge.cookie_expiry"
+        type: "integer"
+        range: [1, null]
+        description: "JS challenge cookie expiry in seconds (min 1)"
+
+      - field: "spec.js_challenge.js_script_delay"
+        type: "integer"
+        range: [1000, null]
+        description: "JS challenge script delay in milliseconds (min 1000)"
 
       - field: "spec.advertising"
         type: "enum"
         values: ["advertise_on_public_default_vip", "advertise_on_public", "advertise_custom", "do_not_advertise"]
         default: "advertise_on_public_default_vip"
         description: "Load balancer advertising configuration"
+
+    # Cross-field dependencies (verified via live API)
+    dependencies:
+      - field: "spec.data_guard_rules"
+        requires: "spec.enable_waf"
+        reason: "Data Guard requires WAF to be enabled (400 when disable_waf is set)"
+
+      - field: "spec.trusted_clients[].actions"
+        required: true
+        reason: "Trusted client entries require non-empty actions list (500 without)"
+
+      - field: "spec.http.port"
+        required: true
+        reason: "HTTP lb_type requires port_choice (400 when port omitted, unlike https_auto_cert)"
+
+      - field: "spec.default_pool.use_tls.tls_config"
+        required: true
+        reason: "use_tls requires tls_config sub-field (400 without)"
+
+      - field: "spec.default_pool.origin_servers"
+        required: true
+        min_items: 1
+        reason: "Inline pool requires at least one origin server"
+
+      - field: "spec.default_pool.port"
+        type: "integer"
+        range: [1, 65535]
+        required: true
+        description: "Pool port (mandatory, unlike https_auto_cert.port which accepts 0)"
+
+      - field: "spec.host_name"
+        read_only: true
+        description: "System-generated hostname. Accepts any value but server always stores empty string."
+
+    # Referential integrity (verified via live API)
+    referential_integrity:
+      - field: "spec.default_route_pools[].pool"
+        validated: true
+        reason: "Pool reference must exist (400 if pool doesn't exist)"
+
+      - field: "spec.default_pool.healthcheck[]"
+        validated: false
+        reason: "Healthcheck reference NOT validated (accepts nonexistent, may fail at runtime)"
 
   # ============================================================================
 

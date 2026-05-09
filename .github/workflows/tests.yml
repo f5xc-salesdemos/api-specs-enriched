@@ -53,7 +53,7 @@ jobs:
         # of skipping at import time.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.download
+        run: python -m scripts.download --force
 
       - name: Run pytest
         run: python -m pytest
@@ -86,7 +86,9 @@ jobs:
       - name: Seed specs/original/ from upstream releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.download
+        # --force: .etag tracks version but specs/original/ is gitignored
+        # and absent in CI. Without --force, download skips with 'No updates'.
+        run: python -m scripts.download --force
 
       - name: Run enrichment pipeline
         # Override Makefile's PYTHON=.venv/bin/python since CI installs
