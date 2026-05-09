@@ -200,6 +200,29 @@ resources:
         }
       }
 
+    # Functional minimum with inline pool (no separate origin_pool resource needed):
+    example_json_with_pool: |
+      {
+        "metadata": {
+          "name": "example-app",
+          "namespace": "default"
+        },
+        "spec": {
+          "domains": ["example.com"],
+          "https_auto_cert": {},
+          "default_pool": {
+            "port": 80,
+            "origin_servers": [{"public_name": {"dns_name": "backend.example.com"}}],
+            "no_tls": {}
+          }
+        }
+      }
+
+    # Three routing approaches (verified via live API):
+    # 1. default_pool: inline pool (simplest, no dependency resources)
+    # 2. default_route_pools: references to existing origin_pool resources
+    # 3. routes/simple_route: path-based routing with pool references
+
     # Example curl command (industry standard API interaction)
     example_curl: |
       curl -X POST "$F5XC_API_URL/api/config/namespaces/default/http_loadbalancers" \
