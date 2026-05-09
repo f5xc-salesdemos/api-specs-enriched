@@ -406,6 +406,59 @@ resources:
       enable_disable_signatures: "enable_signature"
       enable_disable_compliance_checks: "disable_compliance_checks"
 
+
+  # ============================================================================
+  # Virtual Services - HTTP Load Balancers
+  # ============================================================================
+
+  http_loadbalancer:
+    description: "HTTP load balancer server-applied defaults for minimal configuration"
+    schema_pattern: "http_loadbalancer.*SpecType"
+    defaults:
+      # Security toggles - all disabled by default
+      disable_waf: {}
+      disable_rate_limit: {}
+      disable_api_discovery: {}
+      disable_api_testing: {}
+      disable_api_definition: {}
+      disable_malware_protection: {}
+      disable_threat_mesh: {}
+      disable_malicious_user_detection: {}
+      disable_trust_client_ip_headers: {}
+      # Load balancing and routing
+      round_robin: {}
+      no_challenge: {}
+      user_id_client_ip: {}
+      service_policies_from_namespace: {}
+      default_sensitive_data_policy: {}
+      l7_ddos_protection: {}
+      add_location: false
+    nested:
+      https_auto_cert:
+        no_mtls: {}
+        enable_path_normalize: {}
+        http_redirect: false
+        add_hsts: false
+        connection_idle_timeout: 0
+    oneof_recommended:
+      # lb_type
+      loadbalancer_type: "https_auto_cert"
+      # advertising
+      advertise_choice: "advertise_on_public_default_vip"
+      # waf
+      waf_choice: "disable_waf"
+      # challenge
+      challenge_type: "no_challenge"
+      # rate_limit
+      rate_limit_choice: "disable_rate_limit"
+      # user_identification
+      user_identification_choice: "user_id_client_ip"
+      # lb_algorithm
+      hash_policy_choice: "round_robin"
+      # service_policies
+      service_policy_choice: "service_policies_from_namespace"
+      # sensitive_data
+      sensitive_data_policy_choice: "default_sensitive_data_policy"
 # Documentation for adding new defaults:
 # 1. Create resource in F5 XC with minimal/empty spec via API
 # 2. Read back the created resource to see server-applied values
