@@ -341,6 +341,25 @@ resources:
         required: true
         reason: "HTTP lb_type requires port_choice (400 when port omitted, unlike https_auto_cert)"
 
+      - field: "spec.default_pool.use_tls.tls_config"
+        required: true
+        reason: "use_tls requires tls_config sub-field (400 without)"
+
+      - field: "spec.default_pool.origin_servers"
+        required: true
+        min_items: 1
+        reason: "Inline pool requires at least one origin server"
+
+    # Referential integrity (verified via live API)
+    referential_integrity:
+      - field: "spec.default_route_pools[].pool"
+        validated: true
+        reason: "Pool reference must exist (400 if pool doesn't exist)"
+
+      - field: "spec.default_pool.healthcheck[]"
+        validated: false
+        reason: "Healthcheck reference NOT validated (accepts nonexistent, may fail at runtime)"
+
   # ============================================================================
 
   origin_pool:
