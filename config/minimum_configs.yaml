@@ -458,53 +458,79 @@ resources:
   # ============================================================================
 
   tcp_loadbalancer:
-    description: "TCP/UDP load balancer for non-HTTP protocols like databases"
+    description: "TCP load balancer for non-HTTP protocols"
     domain: "virtual"
     resource_type: "loadbalancer"
 
+    # Minimum required fields (verified via live API)
+    # The absolute minimum is: metadata.name + metadata.namespace + spec.listen_port
+    #   + spec.origin_pools_weights + advertising choice (do_not_advertise or advertise_on_public_default_vip)
+    # NOTE: Public VIP requires SNI for TCP. Allowed public ports:
+    #   HTTP: 80, 8080, 8880, 2052, 2082, 2086, 2095, 25565
+    #   HTTPS: 443, 2053, 2083, 2087, 2096, 8443, 25565
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.origin_pools"  # Backend pool reference
-      # One of: spec.listen_port, spec.port_ranges (port_choice oneof)
+      - "spec.listen_port"  # port_choice oneOf (or spec.port_ranges)
+      - "spec.origin_pools_weights"  # Pool references with weight/priority
+      # One of: spec.do_not_advertise, spec.advertise_on_public_default_vip, spec.advertise_on_public, spec.advertise_custom
 
     mutually_exclusive_groups:
-      - fields: ["spec.listen_port", "spec.port_ranges"]
-        reason: "Specify either a single port or port ranges (port_choice)"
-      - fields: ["spec.listener.tcp_port", "spec.listener.udp_port"]
-        reason: "Specify either TCP or UDP protocol"
+      - name: "port_choice"
+        fields: ["spec.listen_port", "spec.port_ranges"]
+        reason: "Specify either a single port or port ranges"
+      - name: "advertising"
+        fields: ["spec.do_not_advertise", "spec.advertise_on_public_default_vip", "spec.advertise_on_public", "spec.advertise_custom"]
+        reason: "Choose exactly one advertising method"
+      - name: "hash_policy"
+        fields: ["spec.hash_policy_choice_round_robin", "spec.hash_policy_choice_source_ip"]
+        reason: "Choose load balancing hash policy"
+      - name: "protocol"
+        fields: ["spec.tcp", "spec.tls"]
+        reason: "Choose TCP or TLS protocol"
+      - name: "sni"
+        fields: ["spec.no_sni", "spec.sni"]
+        reason: "SNI matching or none"
+      - name: "service_policies"
+        fields: ["spec.service_policies_from_namespace", "spec.no_service_policies"]
+        reason: "Service policies from namespace or none"
 
-    context_requirements:
-      - field: "spec.listener.tls"
-        contexts: ["tls", "secure"]
-        reason: "Required for encrypted TCP traffic"
+    # TCP vs HTTP behavior differences:
+    # - TCP without explicit advertising: server applies advertise_on_public_default_vip
+    #   but TCP on shared public VIP requires SNI (fails with 400 unlike HTTP)
+    # - do_not_advertise is the safe default for TCP LBs
+    # - dns_volterra_managed=true requires public VIP (400 with do_not_advertise)
+    # - hash_policy and protocol oneOf are silently resolved (200), others strict (400)
 
+    # Absolute minimum YAML (verified)
     example_yaml: |
       apiVersion: v1
       kind: tcp_loadbalancer
       metadata:
-        name: database-lb
+        name: example-tcp-lb
         namespace: default
       spec:
-        listener:
-          port: 5432
-          protocol: "TCP"
-        origin_pools:
-          - pool_name: postgres-cluster
-        advertise:
-          - public_ip: true
+        listen_port: 80
+        do_not_advertise: {}
+        origin_pools_weights:
+          - pool:
+              namespace: default
+              name: backend-pool
 
-    # Example JSON configuration (preferred format)
+    # Absolute minimum JSON (verified)
+    # Server applies: no_sni, hash_policy_choice_round_robin, tcp,
+    # service_policies_from_namespace, retract_cluster,
+    # dns_volterra_managed=false, idle_timeout=0
     example_json: |
       {
         "metadata": {
-          "name": "database-lb",
+          "name": "example-tcp-lb",
           "namespace": "default"
         },
         "spec": {
-          "listener": {"port": 5432, "protocol": "TCP"},
-          "origin_pools": [{"pool_name": "postgres-cluster"}],
-          "advertise": [{"public_ip": true}]
+          "listen_port": 80,
+          "do_not_advertise": {},
+          "origin_pools_weights": [{"pool": {"namespace": "default", "name": "backend-pool"}}]
         }
       }
 
