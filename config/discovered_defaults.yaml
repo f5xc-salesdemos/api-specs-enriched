@@ -49,6 +49,22 @@ resources:
       bot_protection_choice: "default_bot_setting"
       enhance_with_ai_choice: "disable_ai_enhancements"
 
+    nested:
+      detection_settings:
+        oneof_recommended:
+          bot_protection_choice: "default_bot_setting"
+          false_positive_suppression: "disable_suppression"
+          threat_campaign_choice: "enable_threat_campaigns"
+          violation_detection_setting: "default_violation_settings"
+          signatures_staging_settings: "stage_new_and_updated_signatures"
+        nested:
+          signature_selection_setting:
+            oneof_recommended:
+              attack_type_setting: "default_attack_type_settings"
+              signature_selection_by_accuracy: "high_medium_accuracy_signatures"
+      enable_ai_enhancements:
+        oneof_recommended:
+          risk_score_action_choice: "mitigate_high_medium_risk_action"
   # ============================================================================
   # Virtual Services - Health Checks
   # ============================================================================
@@ -224,6 +240,21 @@ resources:
           connection_timeout: 2000
           # UI Option 8: HTTP Idle Timeout (milliseconds)
           http_idle_timeout: 300000
+        oneof_recommended:
+          circuit_breaker_choice: "default_circuit_breaker"
+          outlier_detection_choice: "disable_outlier_detection"
+          panic_threshold_type: "no_panic_threshold"
+          subset_choice: "disable_subsets"
+          http_protocol_type: "auto_http_config"
+          proxy_protocol_choice: "disable_proxy_protocol"
+          lb_source_ip_persistance_choice: "disable_lb_source_ip_persistance"
+        nested:
+          enable_subsets:
+            oneof_recommended:
+              fallback_policy_choice: "any_endpoint"
+      upstream_conn_pool_reuse_type:
+        oneof_recommended:
+          map_downstream_to_upstream_conn_pool_type: "enable_conn_pool_reuse"
       public_name:
         defaults:
           refresh_interval: 0
@@ -283,6 +314,8 @@ resources:
           trusted_ca: "volterra_trusted_ca"
           mtls_choice: "no_mtls"
           session_key_caching: "default_session_key_caching"
+          max_session_keys_type: "default_session_key_caching"
+          server_validation_choice: "volterra_trusted_ca"
         nested:
           custom_security:
             # Triple-nested defaults within use_tls.tls_config.custom_security (verified 2026-05-10)
@@ -291,6 +324,12 @@ resources:
               max_version: "TLS_AUTO"
               cipher_suites: []
 
+          tls_config:
+            oneof_recommended:
+              choice: "default_security"
+          use_server_verification:
+            oneof_recommended:
+              trusted_ca_choice: "trusted_ca"
     # =========================================================================
     # OneOf field recommended selections
     # Maps OneOf group names to their recommended variant for UI/CLI/AI assistants
@@ -594,11 +633,185 @@ resources:
       add_location: false
     nested:
       https_auto_cert:
-        no_mtls: {}
-        enable_path_normalize: {}
-        http_redirect: false
-        add_hsts: false
-        connection_idle_timeout: 0
+        defaults:
+          no_mtls: {}
+          enable_path_normalize: {}
+          http_redirect: false
+          add_hsts: false
+          connection_idle_timeout: 0
+        oneof_recommended:
+          coalescing_choice: "default_coalescing"
+          default_lb_choice: "default_loadbalancer"
+          http_protocol_choice: "http_protocol_enable_v1_v2"
+          mtls_choice: "no_mtls"
+          path_normalize_choice: "enable_path_normalize"
+          port_choice: "port"
+          server_header_choice: "default_header"
+          tls_config_choice: "default_security"
+        nested:
+          tls_config:
+            oneof_recommended:
+              choice: "default_security"
+          coalescing_options:
+            oneof_recommended:
+              coalescing_choice: "default_coalescing"
+          http_protocol_options:
+            oneof_recommended:
+              http_protocol_choice: "http_protocol_enable_v1_v2"
+          use_mtls:
+            oneof_recommended:
+              crl_choice: "no_crl"
+              trusted_ca_choice: "trusted_ca"
+              xfcc_header: "xfcc_disabled"
+      https:
+        oneof_recommended:
+          coalescing_choice: "default_coalescing"
+          default_lb_choice: "default_loadbalancer"
+          http_protocol_choice: "http_protocol_enable_v1_v2"
+          path_normalize_choice: "enable_path_normalize"
+          port_choice: "port"
+          server_header_choice: "default_header"
+          tls_certificates_choice: "tls_cert_params"
+        nested:
+          tls_cert_params:
+            oneof_recommended:
+              mtls_choice: "no_mtls"
+          tls_parameters:
+            oneof_recommended:
+              mtls_choice: "no_mtls"
+          coalescing_options:
+            oneof_recommended:
+              coalescing_choice: "default_coalescing"
+          http_protocol_options:
+            oneof_recommended:
+              http_protocol_choice: "http_protocol_enable_v1_v2"
+      http:
+        oneof_recommended:
+          port_choice: "port"
+      default_pool:
+        nested:
+          advanced_options:
+            oneof_recommended:
+              circuit_breaker_choice: "default_circuit_breaker"
+              http_protocol_type: "auto_http_config"
+              lb_source_ip_persistance_choice: "disable_lb_source_ip_persistance"
+              outlier_detection_choice: "disable_outlier_detection"
+              panic_threshold_type: "no_panic_threshold"
+              proxy_protocol_choice: "disable_proxy_protocol"
+              subset_choice: "disable_subsets"
+          upstream_conn_pool_reuse_type:
+            oneof_recommended:
+              map_downstream_to_upstream_conn_pool_type: "enable_conn_pool_reuse"
+          use_tls:
+            oneof_recommended:
+              max_session_keys_type: "default_session_key_caching"
+              server_validation_choice: "volterra_trusted_ca"
+      bot_defense:
+        oneof_recommended:
+          cors_support_choice: "disable_cors_support"
+        nested:
+          policy:
+            oneof_recommended:
+              java_script_choice: "js_insert_all_pages"
+              mobile_sdk_choice: "disable_mobile_sdk"
+      bot_defense_advanced:
+        oneof_recommended:
+          java_script_choice: "js_insert_all_pages"
+          mobile_sdk_choice: "disable_mobile_sdk"
+      client_side_defense:
+        nested:
+          policy:
+            oneof_recommended:
+              java_script_choice: "js_insert_all_pages"
+      enable_api_discovery:
+        oneof_recommended:
+          api_discovery_settings_choice: "default_api_auth_discovery"
+          learn_from_redirect_traffic: "disable_learn_from_redirect_traffic"
+        nested:
+          api_crawler:
+            oneof_recommended:
+              api_crawler: "disable_api_crawler"
+      api_specification:
+        oneof_recommended:
+          validation_target_choice: "validation_disabled"
+      api_testing:
+        oneof_recommended:
+          frequency_choice: "every_week"
+      api_rate_limit:
+        oneof_recommended:
+          ip_allowed_list_choice: "no_ip_allowed_list"
+      rate_limit:
+        oneof_recommended:
+          ip_allowed_list_choice: "no_ip_allowed_list"
+          policy_choice: "no_policies"
+        nested:
+          rate_limiter:
+            oneof_recommended:
+              action_choice: "action_block"
+              algorithm: "token_bucket"
+      enable_challenge:
+        oneof_recommended:
+          captcha_challenge_parameters_choice: "default_captcha_challenge_parameters"
+          js_challenge_parameters_choice: "default_js_challenge_parameters"
+          malicious_user_mitigation_choice: "default_mitigation_settings"
+      policy_based_challenge:
+        oneof_recommended:
+          captcha_challenge_parameters_choice: "default_captcha_challenge_parameters"
+          challenge_choice: "no_challenge"
+          js_challenge_parameters_choice: "default_js_challenge_parameters"
+          malicious_user_mitigation_choice: "default_mitigation_settings"
+          temporary_blocking_parameters_choice: "default_temporary_blocking_parameters"
+      l7_ddos_protection:
+        oneof_recommended:
+          clientside_action_choice: "clientside_action_none"
+          ddos_policy_choice: "ddos_policy_none"
+          mitigation_action_choice: "mitigation_block"
+          rps_threshold_choice: "default_rps_threshold"
+      single_lb_app:
+        oneof_recommended:
+          api_discovery_choice: "disable_discovery"
+          malicious_user_detection_choice: "disable_malicious_user_detection"
+        nested:
+          enable_discovery:
+            oneof_recommended:
+              api_discovery_settings_choice: "default_api_auth_discovery"
+              learn_from_redirect_traffic: "disable_learn_from_redirect_traffic"
+      slow_ddos_mitigation:
+        oneof_recommended:
+          request_timeout_choice: "disable_request_timeout"
+      cookie_stickiness:
+        oneof_recommended:
+          httponly: "add_httponly"
+          samesite: "samesite_strict"
+          secure: "add_secure"
+      csrf_policy:
+        oneof_recommended:
+          allowed_domains: "all_load_balancer_domains"
+      waf_exclusion:
+        oneof_recommended:
+          waf_exclusion_choice: "waf_exclusion_policy"
+      more_option:
+        oneof_recommended:
+          path_normalize_choice: "enable_path_normalize"
+      jwt_validation:
+        nested:
+          action:
+            oneof_recommended:
+              action_choice: "block"
+          reserved_claims:
+            oneof_recommended:
+              audience_validation: "audience_disable"
+              issuer_validation: "issuer_disable"
+              validate_period: "validate_period_enable"
+          target:
+            oneof_recommended:
+              target: "all_endpoint"
+          token_location:
+            oneof_recommended:
+              token_location: "bearer_token"
+      enable_ai_enhancements:
+        oneof_recommended:
+          risk_score_action_choice: "mitigate_high_medium_risk_action"
     oneof_recommended:
       # lb_type
       loadbalancer_type: "https_auto_cert"
@@ -618,6 +831,23 @@ resources:
       service_policy_choice: "service_policies_from_namespace"
       # sensitive_data
       sensitive_data_policy_choice: "default_sensitive_data_policy"
+      # Additional oneOf recommendations for uncovered groups
+      api_definition_choice: "disable_api_definition"
+      api_discovery_choice: "disable_api_discovery"
+      api_testing_choice: "disable_api_testing"
+      bot_defense_choice: "disable_bot_defense"
+      cache_options: "disable_caching"
+      client_side_defense_choice: "disable_client_side_defense"
+      ip_reputation_choice: "disable_ip_reputation"
+      l7_ddos_auto_mitigation_action: "l7_ddos_action_default"
+      malicious_user_detection_choice: "disable_malicious_user_detection"
+      malware_protection: "disable_malware_protection"
+      ml_config_choice: "single_lb_app"
+      origin_pool_choice: "default_pool"
+      slow_ddos_mitigation_choice: "system_default_timeouts"
+      threat_mesh_choice: "disable_threat_mesh"
+      trust_client_ip_headers_choice: "disable_trust_client_ip_headers"
+      user_id_choice: "user_id_client_ip"
 
   # ============================================================================
   # WAF Exclusion Policy
@@ -715,3 +945,32 @@ resources:
       protocol: "tcp"
       sni: "no_sni"
       service_policies: "service_policies_from_namespace"
+      advertise_choice: "do_not_advertise"
+      cluster_retract_choice: "retract_cluster"
+      hash_policy_choice: "hash_policy_choice_round_robin"
+      loadbalancer_type: "tcp"
+      service_policy_choice: "service_policies_from_namespace"
+      sni_default_lb_choice: "no_sni"
+    nested:
+      tls_tcp:
+        oneof_recommended:
+          tls_certificates_choice: "tls_cert_params"
+        nested:
+          tls_cert_params:
+            oneof_recommended:
+              mtls_choice: "no_mtls"
+          tls_parameters:
+            oneof_recommended:
+              mtls_choice: "no_mtls"
+      tls_tcp_auto_cert:
+        oneof_recommended:
+          mtls_choice: "no_mtls"
+        nested:
+          tls_config:
+            oneof_recommended:
+              choice: "default_security"
+          use_mtls:
+            oneof_recommended:
+              crl_choice: "no_crl"
+              trusted_ca_choice: "trusted_ca"
+              xfcc_header: "xfcc_disabled"
