@@ -138,12 +138,31 @@ resources:
   # ============================================================================
 
   api_definition:
-    description: "API definition server-applied defaults"
+    description: "API definition server-applied defaults (verified 2026-05-10)"
     schema_pattern: "api_definition.*SpecType"
     defaults:
-      # Swagger/OpenAPI spec references
       swagger_specs: []
+      default_api_groups_builders: []
+      api_inventory_inclusion_list: []
+      api_inventory_exclusion_list: []
+      non_api_endpoints: []
+      strict_schema_origin: {}
+      # Server auto-generates api_groups with name pattern: ves-io-api-def-{name}-base-urls
+    oneof_recommended:
+      schema_updates_strategy: "mixed_schema_origin"
 
+  api_discovery:
+    description: "API discovery server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "api_discovery.*SpecType"
+    defaults:
+      custom_auth_types: []
+    nested:
+      user_defined_api_discovery_policy:
+        defaults:
+          discovery_rules: []
+          inclusive: {}
+        oneof_recommended:
+          discovery_scope: "inclusive"
   # ============================================================================
   # Origin Pools (Enhanced 2026-01-17 with all 15 UI options)
   # ============================================================================
@@ -183,23 +202,20 @@ resources:
       advanced_options:
         # Server-applied defaults (what server sets when fields are omitted)
         defaults:
-          # UI Option 3: Health check port - default uses endpoint port
-          same_as_endpoint_port: {}
-          # UI Option 9: Circuit breaker - use default settings
+          # Connection and timeout defaults (verified 2026-05-10)
+          connection_timeout: 0
+          http_idle_timeout: 0
+          # Circuit breaker and outlier detection
           default_circuit_breaker: {}
-          # UI Option 10: Outlier detection - disabled
           disable_outlier_detection: {}
-          # UI Option 11: Panic threshold - none
+          # Panic threshold and subsets
           no_panic_threshold: {}
-          # UI Option 12: Subset load balancing - disabled
           disable_subsets: {}
-          # UI Option 13: HTTP protocol - auto negotiation
+          # HTTP protocol
           auto_http_config: {}
-          # UI Option 14: Proxy protocol - disabled
-          disable_proxy_protocol: {}
-          # UI Option 15: LB source IP persistence - disabled
-          disable_lb_source_ip_persistance: {}
-          # UI Option 16: Max requests per connection - no limit by default
+          # Header transformation
+          header_transformation_type: null
+          # Request limits
           no_request_limit_per_connection: {}
         # Recommended values for UI/CLI/AI assistants
         # These match F5 XC web interface pre-populated values
@@ -211,9 +227,69 @@ resources:
       public_name:
         defaults:
           refresh_interval: 0
+      public_ip:
+        # No additional server defaults beyond labels: {}
+        defaults: {}
+      private_name:
+        # Requires site_locator (400 without). site_locator requires oneOf: site|virtual_site (verified 2026-05-10)
+        defaults:
+          refresh_interval: 0
+          inside_network: {}
+          snat_pool: null
+        oneof_recommended:
+          network_choice: "inside_network"
+      private_ip:
+        # Requires site_locator (400 without) (verified 2026-05-10)
+        defaults:
+          inside_network: {}
+          snat_pool: null
+        oneof_recommended:
+          network_choice: "inside_network"
       k8s_service:
+        # Requires site_locator (400 without) (verified 2026-05-10)
         defaults:
           protocol: "PROTOCOL_TCP"
+          inside_network: {}
+          snat_pool: null
+        oneof_recommended:
+          network_choice: "inside_network"
+      consul_service:
+        # Requires site_locator (400 without) (verified 2026-05-10)
+        defaults:
+          inside_network: {}
+          snat_pool: null
+        oneof_recommended:
+          network_choice: "inside_network"
+      custom_endpoint_object:
+        # No site_locator needed. Server fills in tenant automatically.
+        defaults: {}
+      use_tls:
+        # Server-applied defaults when use_tls: {"tls_config": {}} is sent (verified 2026-05-10)
+        # NOTE: tls_config is REQUIRED within use_tls (400 without)
+        defaults:
+          # SNI choice
+          use_host_header_as_sni: {}
+          # TLS security level (within tls_config)
+          # tls_config resolves to: {"default_security": {}}
+          # Trusted CA
+          volterra_trusted_ca: {}
+          # mTLS choice
+          no_mtls: {}
+          # Session key caching
+          default_session_key_caching: {}
+        oneof_recommended:
+          sni_choice: "use_host_header_as_sni"
+          security_level: "default_security"
+          trusted_ca: "volterra_trusted_ca"
+          mtls_choice: "no_mtls"
+          session_key_caching: "default_session_key_caching"
+        nested:
+          custom_security:
+            # Triple-nested defaults within use_tls.tls_config.custom_security (verified 2026-05-10)
+            defaults:
+              min_version: "TLS_AUTO"
+              max_version: "TLS_AUTO"
+              cipher_suites: []
 
     # =========================================================================
     # OneOf field recommended selections
@@ -239,9 +315,9 @@ resources:
       subset_choice: "disable_subsets"
       # UI Option 13: HTTP Protocol
       http_protocol_type: "auto_http_config"
-      # UI Option 14: Proxy Protocol
+      # NOTE: These are NOT advanced_options server defaults (not in API readback)
+      # They exist as oneof recommendations for documentation only:
       proxy_protocol_choice: "disable_proxy_protocol"
-      # UI Option 15: LB Source IP Persistence
       lb_source_ip_persistence_choice: "disable_lb_source_ip_persistance"
 
     # =========================================================================
@@ -311,20 +387,41 @@ resources:
               description: "Specify origin server with public IP"
               nested_fields:
                 - ip (required, IPv4)
-            # TODO: Site-dependent types require "site" logic development
-            # See: docs/ORIGINPOOL_ENHANCEMENTS.md for full specification
+            # Site-dependent types (verified via live API 2026-05-10)
             - value: "private_ip"
               description: "Specify origin server with private/public IP and site information"
-              status: "TODO - requires site logic"
+              nested_fields:
+                - ip (required, IPv4)
+                - site_locator (required, oneOf: site|virtual_site)
+              defaults:
+                - inside_network: {}
+                - snat_pool: null
             - value: "private_name"
               description: "Specify origin server with DNS name and site information"
-              status: "TODO - requires site logic"
+              nested_fields:
+                - dns_name (required)
+                - site_locator (required, oneOf: site|virtual_site)
+              defaults:
+                - refresh_interval: 0
+                - inside_network: {}
+                - snat_pool: null
             - value: "k8s_service"
               description: "Specify origin server with K8s service name and site information"
-              status: "TODO - requires site logic"
+              nested_fields:
+                - service_name (required)
+                - site_locator (required, oneOf: site|virtual_site)
+              defaults:
+                - protocol: PROTOCOL_TCP
+                - inside_network: {}
+                - snat_pool: null
             - value: "consul_service"
               description: "Specify origin server with HashiCorp Consul service name and site"
-              status: "TODO - requires site logic"
+              nested_fields:
+                - service_name (required)
+                - site_locator (required, oneOf: site|virtual_site)
+              defaults:
+                - inside_network: {}
+                - snat_pool: null
 
       # Completed type configurations
       nested:
@@ -352,11 +449,30 @@ resources:
   # ============================================================================
 
   rate_limiter_policy:
-    description: "Rate limiter policy server-applied defaults"
+    description: "Rate limiter policy server-applied defaults (verified 2026-05-10)"
     schema_pattern: "rate_limiter_policy.*SpecType"
+    # NOTE: burst_size and committed_information_rate accepted in POST but stripped from GET readback
     oneof_recommended:
       server_choice: "any_server"
-
+    nested:
+      rules_spec:
+        # Server-applied defaults within each rules[].spec (verified 2026-05-10)
+        defaults:
+          any_country: {}
+          http_method: null
+          domain_matcher: null
+          path: null
+          headers: []
+          segment_policy: null
+        oneof_recommended:
+          rate_limiter_choice: "apply_rate_limiter"
+          ip_choice: "any_ip"
+          country_choice: "any_country"
+      ip_prefix_list:
+        defaults:
+          ip_prefixes: []
+          ipv6_prefixes: []
+          invert_match: false
   # Alias for enricher schema matching (policerCreateSpecType)
   policer:
     description: "Rate limiter policy server-applied defaults (schema alias)"
@@ -371,8 +487,49 @@ resources:
   # Network Security - Service Policies
   # ============================================================================
 
+  service_policy:
+    description: "Service policy server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "service_policy.*SpecType"
+    # Top-level spec defaults
+    defaults:
+      algo: "FIRST_MATCH"
+      any_server: {}
+      port_matcher: null
+      rules: []
+      simple_rules: []
+    oneof_recommended:
+      rule_choice: "allow_all_requests"
+      server_choice: "any_server"
+    nested:
+      rule_list_rule_spec:
+        # Server-applied defaults within each rule_list.rules[].spec (verified 2026-05-10)
+        # NOTE: waf_action is REQUIRED (not a default — 400 if omitted)
+        defaults:
+          any_client: {}
+          any_ip: {}
+          any_asn: {}
+          challenge_action: "DEFAULT_CHALLENGE"
+          origin_server_subsets_action: {}
+          log_rule_evaluation: false
+          headers: []
+          query_params: []
+          additional_api_group_matchers: []
+          rate_limiter: []
+          forwarding_class: []
+          scheme: []
+          goto_policy: []
+          arg_matchers: []
+          cookie_matchers: []
+          jwt_claims: []
+        oneof_recommended:
+          client_choice: "any_client"
+          ip_choice: "any_ip"
+          asn_choice: "any_asn"
+          waf_action_choice: "none"
+
+  # Alias for enricher schema matching
   service_policy_views:
-    description: "Service policy server-applied defaults"
+    description: "Service policy views (alias for service_policy)"
     schema_pattern: "service_policy.*SpecType"
     oneof_recommended:
       rule_choice: "allow_all_requests"
@@ -397,7 +554,7 @@ resources:
   # ============================================================================
 
   protocol_inspection:
-    description: "Protocol inspection server-applied defaults"
+    description: "Protocol inspection server-applied defaults (verified 2026-05-10)"
     schema_pattern: "protocol_inspection.*SpecType"
     defaults:
       # Server overrides disable_signatures with enable_signature on creation
@@ -461,6 +618,59 @@ resources:
       service_policy_choice: "service_policies_from_namespace"
       # sensitive_data
       sensitive_data_policy_choice: "default_sensitive_data_policy"
+
+  # ============================================================================
+  # WAF Exclusion Policy
+  # ============================================================================
+
+  waf_exclusion_policy:
+    description: "WAF exclusion policy server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "waf_exclusion_policy.*SpecType"
+    nested:
+      waf_exclusion_rules:
+        # Per-rule server-applied defaults
+        defaults:
+          any_domain: {}
+          any_path: {}
+          methods: []
+          expiration_timestamp: null
+        oneof_recommended:
+          domain_choice: "any_domain"
+          path_choice: "any_path"
+
+  # ============================================================================
+  # User Identification
+  # ============================================================================
+
+  user_identification:
+    description: "User identification server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "user_identification.*SpecType"
+    # Minimal resource — no additional server defaults beyond what is sent
+    oneof_recommended:
+      identification_type: "client_ip"
+
+  # ============================================================================
+  # Malicious User Mitigation
+  # ============================================================================
+
+  malicious_user_mitigation:
+    description: "Malicious user mitigation server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "malicious_user_mitigation.*SpecType"
+    defaults:
+      mitigation_type: null
+
+  # ============================================================================
+  # Sensitive Data Policy
+  # ============================================================================
+
+  sensitive_data_policy:
+    description: "Sensitive data policy server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "sensitive_data_policy.*SpecType"
+    defaults:
+      compliances: []
+      disabled_predefined_data_types: []
+      custom_data_types: []
+
 # Documentation for adding new defaults:
 # 1. Create resource in F5 XC with minimal/empty spec via API
 # 2. Read back the created resource to see server-applied values

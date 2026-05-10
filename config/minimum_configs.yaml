@@ -392,6 +392,51 @@ resources:
         contexts: ["tls", "secure"]
         reason: "Required when use_tls is chosen — API returns 400 without it"
 
+    # Cross-field dependencies (verified via live API 2026-05-10)
+    dependencies:
+      - field: "spec.use_tls.tls_config"
+        required: true
+        reason: "use_tls requires tls_config sub-field (400: 'tls_config should be not nil')"
+
+      - field: "spec.use_tls.use_mtls.tls_certificates"
+        required: true
+        min_items: 1
+        reason: "use_mtls requires at least one TLS certificate (400: 'tls_certificates should have minimum items of 1')"
+
+      - field: "spec.origin_servers[].private_name.site_locator"
+        required: true
+        reason: "private_name requires site_locator (400: 'site_locator should be not nil')"
+
+      - field: "spec.origin_servers[].private_ip.site_locator"
+        required: true
+        reason: "private_ip requires site_locator (400: 'site_locator should be not nil')"
+
+      - field: "spec.origin_servers[].k8s_service.site_locator"
+        required: true
+        reason: "k8s_service requires site_locator (400: 'site_locator should be not nil')"
+
+      - field: "spec.origin_servers[].consul_service.site_locator"
+        required: true
+        reason: "consul_service requires site_locator (400: 'site_locator should be not nil')"
+
+      - field: "spec.origin_servers[].*.site_locator.choice"
+        required: true
+        reason: "site_locator requires oneOf choice: site or virtual_site (400: 'choice should be not nil')"
+
+    # Referential integrity (verified via live API 2026-05-10)
+    referential_integrity:
+      - field: "spec.origin_servers[].private_name.site_locator.site"
+        validated: false
+        reason: "Site reference NOT validated (accepts nonexistent site names, may fail at runtime)"
+
+      - field: "spec.origin_servers[].private_name.site_locator.virtual_site"
+        validated: false
+        reason: "Virtual site reference NOT validated (accepts nonexistent names, may fail at runtime)"
+
+      - field: "spec.healthcheck[]"
+        validated: false
+        reason: "Health check reference NOT validated (accepts nonexistent, may fail at runtime)"
+
     # Minimum example - only required fields (verified via case study 2026-01-17)
     example_yaml: |
       apiVersion: v1
@@ -449,11 +494,31 @@ resources:
         default: "DISTRIBUTED"
         description: "Policy for selecting endpoints from local/remote sites"
 
+      - field: "spec.use_tls.tls_config.custom_security.min_version"
+        type: "enum"
+        values: ["TLS_AUTO", "TLS11", "TLS12", "TLS13"]
+        default: "TLS_AUTO"
+        description: "Minimum TLS version for custom security"
+      - field: "spec.use_tls.tls_config.custom_security.max_version"
+        type: "enum"
+        values: ["TLS_AUTO", "TLS11", "TLS12", "TLS13"]
+        default: "TLS_AUTO"
+        description: "Maximum TLS version for custom security"
+      - field: "spec.origin_servers[].k8s_service.protocol"
+        type: "enum"
+        values: ["PROTOCOL_TCP", "PROTOCOL_UDP", "PROTOCOL_TCP_UDP"]
+        default: "PROTOCOL_TCP"
+        description: "K8s service protocol"
+
     notes:
       - "MaxRequestsPerConnectionChoice: undocumented oneOf group — default is no_request_limit_per_connection: {}"
       - "enable_lb_source_ip_persistance: quota-limited to 1 per namespace — excess returns 429"
       - "PUT/Replace returns empty body {}; POST/Create returns full object with system_metadata"
       - "Nested origin_server oneOf conflicts are silently accepted (stores first variant); top-level oneOf conflicts return 400"
+      - "advanced_options: null unless explicitly sent. When sent as {}, server applies 9 defaults (verified 2026-05-10)"
+      - "use_tls.tls_config REQUIRED within use_tls (400 without). 5 nested defaults applied (verified 2026-05-10)"
+      - "Site-dependent types (private_name, private_ip, k8s_service, consul_service) all require site_locator with oneOf site|virtual_site"
+      - "Site/virtual_site references NOT validated at creation time — nonexistent names accepted"
 
   # ============================================================================
 
@@ -671,6 +736,32 @@ resources:
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
+      # spec.rule_choice is a REQUIRED oneOf (400 if nil)
+      # Variants: allow_all_requests, deny_all_requests, rule_list
+
+    mutually_exclusive_groups:
+      - name: "rule_choice"
+        fields: ["spec.allow_all_requests", "spec.deny_all_requests", "spec.rule_list"]
+        reason: "Choose exactly one rule selection method (REQUIRED)"
+      - name: "server_choice"
+        fields: ["spec.any_server", "spec.server_name", "spec.server_selector", "spec.server_name_matcher"]
+        reason: "Choose server scope (default: any_server)"
+
+    # Cross-field dependencies (verified via live API 2026-05-10)
+    dependencies:
+      - field: "spec.rule_list.rules[].spec.waf_action"
+        required: true
+        reason: "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
+
+      - field: "spec.rule_list.rules[].spec.action"
+        required: true
+        reason: "action is required in each rule (ALLOW, DENY, etc.)"
+
+    # Referential integrity (verified via live API 2026-05-10)
+    referential_integrity:
+      - field: "spec.rule_list.rules[].spec.server_selector"
+        validated: false
+        reason: "Server selectors NOT validated at creation time"
 
     example_yaml: |
       apiVersion: v1
@@ -703,6 +794,29 @@ resources:
     cli:
       domain: "network_security"
       resource_name: "service_policy"
+
+    constrained_fields:
+      - field: "spec.algo"
+        type: "enum"
+        values: ["FIRST_MATCH", "DENY_OVERRIDES"]
+        default: "FIRST_MATCH"
+        description: "Rule matching algorithm"
+      - field: "spec.rule_list.rules[].spec.action"
+        type: "enum"
+        values: ["ALLOW", "DENY", "NEXT_POLICY"]
+        description: "Rule action"
+      - field: "spec.rule_list.rules[].spec.challenge_action"
+        type: "enum"
+        values: ["DEFAULT_CHALLENGE", "ENABLE_CHALLENGE", "DISABLE_CHALLENGE"]
+        default: "DEFAULT_CHALLENGE"
+        description: "Challenge action for the rule"
+
+    notes:
+      - "rule_choice is a REQUIRED oneOf — spec: {} returns 400 (verified 2026-05-10)"
+      - "waf_action REQUIRED in rule_list.rules[].spec — 400 without (verified 2026-05-10)"
+      - "allow_all_requests and deny_all_requests auto-generate simple_rules with system-prefixed names"
+      - "rule_list.rules can be empty array (rules: []) — accepted as valid"
+      - "Server auto-applies any_client, any_ip, any_asn as default matchers in each rule"
 
   # ============================================================================
   # Certificates - TLS Certificate Management
@@ -807,6 +921,11 @@ resources:
       domain: "api"
       resource_name: "api_definition"
 
+    notes:
+      - "Empty spec accepted — spec: {} is valid (verified 2026-05-10)"
+      - "Server applies strict_schema_origin: {} default"
+      - "Server auto-generates api_groups with name pattern: ves-io-api-def-{name}-base-urls"
+      - "swagger_specs[] requires stored_object URL pattern, not inline base64"
   # ============================================================================
   # API Security - API Discovery
   # ============================================================================
@@ -852,6 +971,10 @@ resources:
       domain: "api"
       resource_name: "api_discovery"
 
+    notes:
+      - "user_defined_api_discovery_policy is REQUIRED (400 if nil) (verified 2026-05-10)"
+      - "Server applies inclusive: {} as default discovery scope"
+      - "custom_auth_types: [] server default"
   # ============================================================================
   # Rate Limiting
   # ============================================================================
@@ -926,6 +1049,18 @@ resources:
       domain: "rate_limiting"
       resource_name: "rate_limiter_policy"
 
+    constrained_fields:
+      - field: "spec.rules[].spec.rate_limiter_choice"
+        type: "enum"
+        values: ["apply_rate_limiter", "bypass_rate_limiter"]
+        description: "Rate limiter action per rule"
+
+    notes:
+      - "burst_size and committed_information_rate accepted in POST but stripped from GET readback (verified 2026-05-10)"
+      - "any_country: {} is server default in each rule (country_choice oneOf)"
+      - "ip_choice (any_ip/ip_prefix_list) is optional — no default applied when omitted"
+      - "any_client/specific_client are NOT valid at rule level — silently dropped"
+      - "ip_prefix_list uses ip_prefixes/ipv6_prefixes (not 'prefixes')"
   # ============================================================================
   # WAF Tuning - Exclusion Policies
   # ============================================================================
@@ -976,6 +1111,17 @@ resources:
       domain: "waf"
       resource_name: "waf_exclusion_policy"
 
+    mutually_exclusive_groups:
+      - name: "domain_choice"
+        fields: ["spec.waf_exclusion_rules[].any_domain", "spec.waf_exclusion_rules[].exact_domain"]
+        reason: "Choose domain matching type per rule"
+      - name: "path_choice"
+        fields: ["spec.waf_exclusion_rules[].any_path", "spec.waf_exclusion_rules[].exact_path", "spec.waf_exclusion_rules[].path_prefix", "spec.waf_exclusion_rules[].path_regex"]
+        reason: "Choose path matching type per rule"
+
+    notes:
+      - "waf_exclusion_rules requires at least one rule (verified 2026-05-10)"
+      - "Per-rule defaults: any_domain:{}, any_path:{}, methods:[], expiration_timestamp:null"
   # ============================================================================
   # User Identification
   # ============================================================================
@@ -1022,6 +1168,10 @@ resources:
       domain: "tenant_and_identity"
       resource_name: "user_identification"
 
+    notes:
+      - "rules requires min_items: 1 (verified 2026-05-10)"
+      - "Minimal resource — no additional server defaults applied"
+      - "Rule identification oneOf: client_ip, client_asn, tls_fingerprint, http_header, cookie"
   # ============================================================================
   # Malicious User Mitigation
   # ============================================================================
@@ -1063,6 +1213,9 @@ resources:
       domain: "secops_and_incident_response"
       resource_name: "malicious_user_mitigation"
 
+    notes:
+      - "Empty spec accepted — spec: {} is valid (verified 2026-05-10)"
+      - "Server applies mitigation_type: null (no default mitigation)"
   # ============================================================================
   # Sensitive Data Protection
   # ============================================================================
@@ -1104,6 +1257,9 @@ resources:
       domain: "data_and_privacy_security"
       resource_name: "sensitive_data_policy"
 
+    notes:
+      - "Empty spec accepted — spec: {} is valid (verified 2026-05-10)"
+      - "Server defaults: compliances:[], disabled_predefined_data_types:[], custom_data_types:[]"
   # ============================================================================
   # Protocol Inspection
   # ============================================================================
@@ -1162,6 +1318,17 @@ resources:
       domain: "network_security"
       resource_name: "protocol_inspection"
 
+    constrained_fields:
+      - field: "spec.action"
+        type: "enum"
+        values: ["ALLOW", "BLOCK"]
+        default: "ALLOW"
+        description: "Default action for inspected protocol violations"
+
+    notes:
+      - "Both enable_disable_compliance_checks AND enable_disable_signatures are REQUIRED (verified 2026-05-10)"
+      - "Server applies action: ALLOW default"
+      - "Server overrides disable_signatures with enable_signature on creation"
 # Field-level requirements for cross-resource patterns
 field_requirements:
   # These patterns apply across all resources
