@@ -477,3 +477,29 @@ resources:
 # - private_name: dns_name, site_locator, network_choice, snat_pool
 # - k8s_service: service_name, site_locator, network_choice
 # - consul_service: service_name, site_locator, network_choice
+
+
+  # ============================================================================
+  # TCP Load Balancer
+  # ============================================================================
+
+  tcp_loadbalancer:
+    description: "TCP load balancer server-applied defaults"
+    schema_pattern: "tcp_loadbalancer.*SpecType"
+    defaults:
+      # Protocol and routing defaults
+      no_sni: {}
+      hash_policy_choice_round_robin: {}
+      tcp: {}
+      service_policies_from_namespace: {}
+      retract_cluster: {}
+      # Boolean/numeric defaults
+      dns_volterra_managed: false
+      idle_timeout: 0
+    oneof_recommended:
+      port_choice: "listen_port"
+      advertising: "do_not_advertise"
+      hash_policy: "hash_policy_choice_round_robin"
+      protocol: "tcp"
+      sni: "no_sni"
+      service_policies: "service_policies_from_namespace"
