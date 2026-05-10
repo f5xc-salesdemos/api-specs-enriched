@@ -418,6 +418,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-requires
+
+- **Applied at:** schema property
+- **Purpose:** Documents cross-field dependencies where one field requires another to be set.
+- **Consumers:** compile_catalog.py, xcsh CLI
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/dependency_enricher.py
+- **Driven by config:** config/minimum_configs.yaml (dependencies section)
+- **Example:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-constraints
 
 - **Applied at:** schema property

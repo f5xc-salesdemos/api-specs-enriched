@@ -6,6 +6,7 @@ from .acronym_enricher import AcronymEnricher
 from .acronyms import AcronymNormalizer
 from .best_practices_enricher import BestPracticesEnricher
 from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, BrandingValidator
+from .constrained_fields_enricher import ConstrainedFieldsEnricher
 from .conflicts_with_enricher import ConflictsWithEnricher
 from .consistency_validator import ConsistencyValidator
 from .constraint_analyzer import ConstraintAnalyzer
@@ -13,6 +14,7 @@ from .constraint_enricher import ConstraintEnricher
 from .constraint_reconciler import ConstraintReconciler
 from .curl_validator import CurlExampleValidator
 from .default_value_enricher import DefaultValueEnricher
+from .dependency_enricher import DependencyEnricher
 from .deprecated_tier_enricher import DeprecatedTierEnricher
 from .description_enricher import DescriptionEnricher
 from .description_structure import DescriptionStructureTransformer
@@ -53,6 +55,7 @@ __all__ = [
     "BrandingStats",
     "BrandingTransformer",
     "BrandingValidator",
+    "ConstrainedFieldsEnricher",
     "ConflictsWithEnricher",
     "ConsistencyValidator",
     "ConstraintAnalyzer",
@@ -60,6 +63,7 @@ __all__ = [
     "ConstraintReconciler",
     "CurlExampleValidator",
     "DefaultValueEnricher",
+    "DependencyEnricher",
     "DeprecatedTierEnricher",
     "DescriptionEnricher",
     "DescriptionStructureTransformer",

@@ -289,6 +289,7 @@ _ENRICHMENT_KEYS = frozenset(
         "x-f5xc-server-default",
         "x-f5xc-recommended-value",
         "x-f5xc-conflicts-with",
+        "x-f5xc-requires",
         "x-f5xc-description",
     }
 )
@@ -368,6 +369,10 @@ def _extract_field_metadata(
             if conflicts:
                 entry["conflictsWith"] = conflicts
 
+            requires = prop_resolved.get("x-f5xc-requires")
+            if requires:
+                entry["requires"] = requires
+
             result[field_path] = entry
 
         # Recurse into nested objects
@@ -422,6 +427,71 @@ def _collect_oneof_recommendations(
         for prop_name, prop_schema in properties.items():
             prop_path = f"{prefix}.{prop_name}" if prefix else prop_name
             nested = _collect_oneof_recommendations(
+                prop_schema,
+                components,
+                prefix=prop_path,
+                depth=depth + 1,
+                max_depth=max_depth,
+                visited=visited,
+            )
+            result.update(nested)
+
+    return result
+
+
+def _collect_oneof_variants(
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    prefix: str = "",
+    depth: int = 0,
+    max_depth: int = 3,
+    visited: set[str] | None = None,
+) -> dict[str, list[str]]:
+    """Walk schemas collecting full oneOf variant lists from x-ves-oneof-field-* extensions.
+
+    Returns {group_name: [variant1, variant2, ...]} for every oneOf group found.
+    """
+    if visited is None:
+        visited = set()
+
+    ref = schema.get("$ref", "")
+    if ref:
+        if ref in visited:
+            return {}
+        visited = visited | {ref}
+
+    resolved = _resolve_schema_ref(schema, components)
+
+    if depth > max_depth:
+        return {}
+
+    result: dict[str, list[str]] = {}
+
+    # Collect x-ves-oneof-field-* extensions from this schema
+    # Collect x-ves-oneof-field-* extensions from this schema.
+    # Values may be JSON-encoded strings (e.g. '["a","b"]') or native lists.
+    for key, val in resolved.items():
+        if not key.startswith("x-ves-oneof-field-"):
+            continue
+        group_name = key[len("x-ves-oneof-field-"):]
+        full_key = f"{prefix}.{group_name}" if prefix else group_name
+        if isinstance(val, list):
+            result[full_key] = val
+        elif isinstance(val, str):
+            try:
+                parsed = json.loads(val)
+                if isinstance(parsed, list):
+                    result[full_key] = parsed
+            except (json.JSONDecodeError, ValueError):
+                pass
+
+    # Recurse into properties
+    properties = resolved.get("properties")
+    if properties:
+        for prop_name, prop_schema in properties.items():
+            prop_path = f"{prefix}.{prop_name}" if prefix else prop_name
+            nested = _collect_oneof_variants(
                 prop_schema,
                 components,
                 prefix=prop_path,
@@ -499,6 +569,10 @@ def _build_operation(
         oneof_recs = _collect_oneof_recommendations(body_schema, components)
         if oneof_recs:
             op["oneOfRecommendations"] = oneof_recs
+
+        oneof_variants = _collect_oneof_variants(body_schema, components)
+        if oneof_variants:
+            op["oneOfVariants"] = oneof_variants
 
     # Extract responseSummary from raw operation responses (not the simplified response_schema)
     raw_resp_schema = _extract_raw_response_schema(operation, components)
