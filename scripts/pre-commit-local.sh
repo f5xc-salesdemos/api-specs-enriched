@@ -18,6 +18,16 @@ if [ -n "$CONFIG_FILES" ]; then
   python -m scripts.validate_configs 2>/dev/null || echo "[local] validate_configs failed or not configured"
 fi
 
+# --- Curl example validation ---
+# Catch missing example_json before pushing (prevents CI failure in sync pipeline)
+if [ -n "$CONFIG_FILES" ]; then
+  echo "[local] Validating curl examples (dry-run)..."
+  python scripts/validate_curl_examples.py --dry-run || {
+    echo "[local] FAILED: curl validation. Add example_json to all resources in minimum_configs.yaml."
+    exit 1
+  }
+fi
+
 # --- Python linting (ruff) ---
 PY_FILES=$(echo "$STAGED_FILES" | grep '\.py$' || true)
 if [ -n "$PY_FILES" ]; then
