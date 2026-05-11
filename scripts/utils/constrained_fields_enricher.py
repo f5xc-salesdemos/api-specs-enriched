@@ -35,10 +35,9 @@ _RESOURCE_SUFFIXES = (
 class ConstrainedFieldsEnricher:
     """Enrich OpenAPI specs with constraint metadata from minimum_configs.yaml."""
 
-    def __init__(self, config_path: Path | None = None) -> None:
+    def __init__(self, config_path: Path | None = None) -> None:  # noqa: D107
         self.config_path = (
-            config_path
-            or Path(__file__).parent.parent.parent / "config" / "minimum_configs.yaml"
+            config_path or Path(__file__).parent.parent.parent / "config" / "minimum_configs.yaml"
         )
         self._resources: dict[str, Any] = {}
         self.stats: dict[str, int] = {
@@ -103,13 +102,14 @@ class ConstrainedFieldsEnricher:
         return spec
 
     def get_stats(self) -> dict[str, int]:
+        """Return enrichment statistics."""
         return dict(self.stats)
-
 
     def reset_stats(self) -> None:
         """Reset stats counters (call between domains in pipeline)."""
         for key in self.stats:
             self.stats[key] = 0
+
     # ------------------------------------------------------------------
     # Field resolution
     # ------------------------------------------------------------------
@@ -120,8 +120,11 @@ class ConstrainedFieldsEnricher:
         schema: dict[str, Any],
         all_schemas: dict[str, Any],
     ) -> None:
-        """Resolve a dot-path like ``spec.use_tls.tls_config.custom_security.min_version``
-        and stamp ``x-f5xc-constraints`` on the terminal property."""
+        """Resolve a dot-path and stamp ``x-f5xc-constraints`` on the terminal property.
+
+        Walks ``spec.use_tls.tls_config.custom_security.min_version`` style paths
+        through $ref chains and applies constraint metadata.
+        """
         raw_path: str = field_def.get("field", "")
         parts = self._normalize_path(raw_path)
         if not parts:

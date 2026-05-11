@@ -474,7 +474,7 @@ def _collect_oneof_variants(
     for key, val in resolved.items():
         if not key.startswith("x-ves-oneof-field-"):
             continue
-        group_name = key[len("x-ves-oneof-field-"):]
+        group_name = key[len("x-ves-oneof-field-") :]
         full_key = f"{prefix}.{group_name}" if prefix else group_name
         if isinstance(val, list):
             result[full_key] = val

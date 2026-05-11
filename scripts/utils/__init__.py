@@ -6,9 +6,9 @@ from .acronym_enricher import AcronymEnricher
 from .acronyms import AcronymNormalizer
 from .best_practices_enricher import BestPracticesEnricher
 from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, BrandingValidator
-from .constrained_fields_enricher import ConstrainedFieldsEnricher
 from .conflicts_with_enricher import ConflictsWithEnricher
 from .consistency_validator import ConsistencyValidator
+from .constrained_fields_enricher import ConstrainedFieldsEnricher
 from .constraint_analyzer import ConstraintAnalyzer
 from .constraint_enricher import ConstraintEnricher
 from .constraint_reconciler import ConstraintReconciler
@@ -55,9 +55,9 @@ __all__ = [
     "BrandingStats",
     "BrandingTransformer",
     "BrandingValidator",
-    "ConstrainedFieldsEnricher",
     "ConflictsWithEnricher",
     "ConsistencyValidator",
+    "ConstrainedFieldsEnricher",
     "ConstraintAnalyzer",
     "ConstraintEnricher",
     "ConstraintReconciler",

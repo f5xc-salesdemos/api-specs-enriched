@@ -326,11 +326,12 @@ class DefaultValueEnricher:
             # Recurse into sub-nested configs
             sub_nested = nested_config.get("nested", {}) if isinstance(nested_config, dict) else {}
             if sub_nested:
-                target_schema = ref_schema if ref_schema else parent_prop
+                target_schema = ref_schema or parent_prop
                 if target_schema:
                     self._apply_nested_defaults(
                         target_schema, sub_nested, all_schemas, depth + 1, max_depth
                     )
+
     def _apply_recommended_to_properties(
         self,
         schema: dict[str, Any],
@@ -425,7 +426,7 @@ class DefaultValueEnricher:
             # Recurse into sub-nested configs
             sub_nested = nested_config.get("nested", {}) if isinstance(nested_config, dict) else {}
             if sub_nested:
-                target_schema = ref_schema if ref_schema else parent_prop
+                target_schema = ref_schema or parent_prop
                 if target_schema:
                     self._apply_nested_recommended(
                         target_schema, sub_nested, all_schemas, depth + 1, max_depth
@@ -482,7 +483,7 @@ class DefaultValueEnricher:
             # Recurse into sub-nested configs
             sub_nested = nested_config.get("nested", {}) if isinstance(nested_config, dict) else {}
             if sub_nested:
-                target_schema = ref_schema if ref_schema else parent_prop
+                target_schema = ref_schema or parent_prop
                 if target_schema:
                     self._apply_nested_oneof_recommended(
                         target_schema, sub_nested, all_schemas, depth + 1, max_depth

@@ -66,8 +66,7 @@ class DependencyEnricher:
                         Defaults to config/minimum_configs.yaml
         """
         self.config_path = (
-            config_path
-            or Path(__file__).parent.parent.parent / "config" / "minimum_configs.yaml"
+            config_path or Path(__file__).parent.parent.parent / "config" / "minimum_configs.yaml"
         )
         self.resources: dict[str, dict[str, Any]] = {}
         self.stats = DependencyEnrichmentStats()
