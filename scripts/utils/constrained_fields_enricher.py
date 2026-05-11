@@ -35,7 +35,8 @@ _RESOURCE_SUFFIXES = (
 class ConstrainedFieldsEnricher:
     """Enrich OpenAPI specs with constraint metadata from minimum_configs.yaml."""
 
-    def __init__(self, config_path: Path | None = None) -> None:  # noqa: D107
+    def __init__(self, config_path: Path | None = None) -> None:
+        """Initialize enricher, loading constrained_fields from minimum_configs.yaml."""
         self.config_path = (
             config_path or Path(__file__).parent.parent.parent / "config" / "minimum_configs.yaml"
         )
