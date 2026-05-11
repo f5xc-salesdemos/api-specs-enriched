@@ -142,6 +142,32 @@ def _categorize(change_type: str, pointer: str) -> str:
     return "other"
 
 
+def _flatten_allof_refs(obj: Any) -> Any:
+    """Collapse single-element allOf $ref wrappers for diffing.
+
+    ``{"allOf": [{"$ref": "X"}], "x-foo": 1}`` becomes
+    ``{"$ref": "X", "x-foo": 1}`` so that the contract diff sees
+    allOf-wrapped refs as equivalent to direct refs.
+    """
+    if isinstance(obj, dict):
+        allof = obj.get("allOf")
+        if (
+            isinstance(allof, list)
+            and len(allof) == 1
+            and isinstance(allof[0], dict)
+            and list(allof[0].keys()) == ["$ref"]
+        ):
+            flat: dict[str, Any] = {"$ref": allof[0]["$ref"]}
+            for k, v in obj.items():
+                if k != "allOf":
+                    flat[k] = _flatten_allof_refs(v)
+            return flat
+        return {k: _flatten_allof_refs(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_flatten_allof_refs(item) for item in obj]
+    return obj
+
+
 def run_contract_diff(
     input_spec: dict,
     output_spec: dict,
@@ -157,6 +183,7 @@ def run_contract_diff(
             set is suppressed (design spec 2026-04-22 §5).
     """
     known = known_drift or set()
+    output_spec = _flatten_allof_refs(output_spec)
     diff = DeepDiff(
         input_spec,
         output_spec,

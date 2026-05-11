@@ -160,15 +160,46 @@ def test_positive_int_max_length_add_is_additive():
     assert is_additive_change("dictionary_item_added", pointer, None, 128)
 
 
-def test_zero_max_length_add_is_not_additive():
-    """maxLength: 0 means empty-only — always broken."""
+def test_zero_max_length_add_is_additive():
+    """maxLength: 0 is a valid server-discovered constraint (e.g. bot_defense continue fields)."""
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
-    assert not is_additive_change("dictionary_item_added", pointer, None, 0)
+    assert is_additive_change("dictionary_item_added", pointer, None, 0)
 
 
 def test_non_int_max_length_add_is_not_additive():
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
     assert not is_additive_change("dictionary_item_added", pointer, None, "128")
+
+
+# Rule 7 — additive constraint additions
+
+
+def test_minlength_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['minLength']"
+    assert is_additive_change("dictionary_item_added", pointer, None, 17)
+
+
+def test_minlength_zero_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['minLength']"
+    assert is_additive_change("dictionary_item_added", pointer, None, 0)
+
+
+# Rule 8 — server-discovered default values
+
+
+def test_default_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['default']"
+    assert is_additive_change("dictionary_item_added", pointer, None, [])
+
+
+def test_default_string_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['default']"
+    assert is_additive_change("dictionary_item_added", pointer, None, "DISTRIBUTED")
+
+
+def test_default_bool_add_is_additive():
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['default']"
+    assert is_additive_change("dictionary_item_added", pointer, None, False)
 
 
 # Rule 3 — recursive dict-node rewrites (family 7)

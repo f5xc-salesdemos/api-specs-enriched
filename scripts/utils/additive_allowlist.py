@@ -99,6 +99,10 @@ def _is_dictionary_item_added_additive(
         return True
     if _is_positive_int_maxlength_add(terminal, after):
         return True
+    if _is_constraint_add(terminal, after):
+        return True
+    if _is_default_add(terminal):
+        return True
     if _is_known_format_add(terminal, after):
         return True
     if _is_property_add(pointer):
@@ -160,6 +164,18 @@ def _is_positive_int_maxlength_add(terminal: str, after: object) -> bool:
         and not isinstance(after, bool)
         and after > 0
     )
+
+
+def _is_constraint_add(terminal: str, after: object) -> bool:
+    """Rule 7 — additive constraint additions (minLength, maxLength, minItems, etc.)."""
+    if terminal in {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum"}:
+        return isinstance(after, int) and not isinstance(after, bool) and after >= 0
+    return False
+
+
+def _is_default_add(terminal: str) -> bool:
+    """Rule 8 — server-discovered default values."""
+    return terminal == "default"
 
 
 def _is_known_format_add(terminal: str, after: object) -> bool:

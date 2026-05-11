@@ -252,3 +252,34 @@ def test_load_known_drift_malformed_entry_raises_value_error(tmp_path: Path):
     drift.write_text(json.dumps({"version": 1, "entries": [{"foo": "bar"}]}))
     with pytest.raises(ValueError, match=r"entries\[0\] missing or non-string 'fingerprint'"):
         load_known_drift(drift)
+
+
+def test_allof_wrapped_ref_is_not_a_violation() -> None:
+    """allOf-wrapped $ref with vendor extensions is semantically equivalent."""
+    input_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {"$ref": "#/components/schemas/Bar"},
+                    },
+                },
+            },
+        },
+    }
+    output_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {
+                            "allOf": [{"$ref": "#/components/schemas/Bar"}],
+                            "x-f5xc-example": "test",
+                        },
+                    },
+                },
+            },
+        },
+    }
+    violations = run_contract_diff(input_spec, output_spec)
+    assert violations == []
