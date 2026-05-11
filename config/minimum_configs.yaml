@@ -1560,6 +1560,19 @@ resources:
         fields: ["spec.primary", "spec.secondary"]
         reason: "Choose primary or secondary zone type (REQUIRED)"
 
+    # NOTE: Requires system namespace. This example uses FQDN as name.
+    example_json: |
+      {
+        "metadata": {
+          "name": "example.com",
+          "namespace": "system"
+        },
+        "spec": {
+          "domain": "example.com",
+          "primary": {}
+        }
+      }
+
     cli:
       domain: "dns"
       resource_name: "dns_zone"
@@ -1591,6 +1604,24 @@ resources:
       - field: "spec.rule_list.rules[].client_choice"
         required: true
         reason: "Each rule requires client_choice oneOf: geo_location_set, ip_prefix_list, asn_list, asn_matcher, geo_location_label_selector"
+
+    # NOTE: Requires system namespace. Pool reference must exist.
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-dns-lb",
+          "namespace": "system"
+        },
+        "spec": {
+          "rule_list": {
+            "rules": [{
+              "pool": {"name": "example-pool", "namespace": "system"},
+              "score": 100,
+              "ip_prefix_list": {"ip_prefixes": ["0.0.0.0/0"]}
+            }]
+          }
+        }
+      }
 
     cli:
       domain: "dns"
