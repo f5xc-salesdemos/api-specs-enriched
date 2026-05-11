@@ -2475,7 +2475,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411419+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270557+00:00"
               },
               "deterministic": true
             },
@@ -2514,7 +2514,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411441+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270578+00:00"
               },
               "deterministic": true
             },
@@ -2527,27 +2527,41 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722416+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360217+00:00"
           },
           "negative_feedback": {
-            "$ref": "#/components/schemas/ai_assistantNegativeFeedbackDetails",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ai_assistantNegativeFeedbackDetails"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for negative feedback.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "positive_feedback"
+            ]
           },
           "positive_feedback": {
-            "$ref": "#/components/schemas/schemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaEmpty"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for positive feedback.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "negative_feedback"
+            ]
           },
           "query": {
             "type": "string",
@@ -2565,7 +2579,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-05-11T04:36:48.411464+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270601+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2598,7 +2612,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411498+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270636+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2649,7 +2663,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411515+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270654+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2687,7 +2701,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411529+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270668+00:00"
               },
               "deterministic": true
             },
@@ -2700,7 +2714,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722449+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360251+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -2739,7 +2753,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411545+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270684+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2750,14 +2764,25 @@
             }
           },
           "explain_log": {
-            "$ref": "#/components/schemas/explain_log_recordExplainLogRecordResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordExplainLogRecordResponse"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for explain log.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "gen_dashboard_filter",
+              "generic_response",
+              "list_response",
+              "site_analysis_response",
+              "widget_response"
+            ]
           },
           "follow_up_queries": {
             "type": "array",
@@ -2784,7 +2809,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411569+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270708+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2795,34 +2820,67 @@
             }
           },
           "gen_dashboard_filter": {
-            "$ref": "#/components/schemas/gen_dashboard_filterGenDashboardFilterResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/gen_dashboard_filterGenDashboardFilterResponse"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for gen dashboard filter.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "explain_log",
+              "generic_response",
+              "list_response",
+              "site_analysis_response",
+              "widget_response"
+            ]
           },
           "generic_response": {
-            "$ref": "#/components/schemas/commonGenericResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonGenericResponse"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for generic response.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "explain_log",
+              "gen_dashboard_filter",
+              "list_response",
+              "site_analysis_response",
+              "widget_response"
+            ]
           },
           "list_response": {
-            "$ref": "#/components/schemas/listListResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/listListResponse"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for list response.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "explain_log",
+              "gen_dashboard_filter",
+              "generic_response",
+              "site_analysis_response",
+              "widget_response"
+            ]
           },
           "query_id": {
             "type": "string",
@@ -2847,7 +2905,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411605+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270743+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2859,23 +2917,45 @@
             "x-field-mutability": "read-only"
           },
           "site_analysis_response": {
-            "$ref": "#/components/schemas/site_analysisSiteAnalysisResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/site_analysisSiteAnalysisResponse"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "explain_log",
+              "gen_dashboard_filter",
+              "generic_response",
+              "list_response",
+              "widget_response"
+            ]
           },
           "widget_response": {
-            "$ref": "#/components/schemas/widgetWidgetResponse",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/widgetWidgetResponse"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for widget response.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "explain_log",
+              "gen_dashboard_filter",
+              "generic_response",
+              "list_response",
+              "site_analysis_response"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -2931,7 +3011,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411628+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270766+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3035,7 +3115,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.CellProperties",
         "properties": {
           "status_style": {
-            "$ref": "#/components/schemas/commonStatusStyle",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonStatusStyle"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3140,7 +3224,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411643+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270780+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3152,7 +3236,7 @@
             "x-original-maxLength": 1024,
             "minLength": 7,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722502+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360306+00:00"
           },
           "log_filters": {
             "type": "array",
@@ -3196,7 +3280,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411662+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270797+00:00"
               },
               "deterministic": true
             },
@@ -3209,7 +3293,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722517+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360320+00:00"
           },
           "object_name": {
             "type": "string",
@@ -3226,7 +3310,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411677+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270812+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3251,7 +3335,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411691+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270827+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3276,7 +3360,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411703+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270839+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3288,10 +3372,14 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722535+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360339+00:00"
           },
           "type": {
-            "$ref": "#/components/schemas/commonDashboardLinkType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonDashboardLinkType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3359,7 +3447,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.Display",
         "properties": {
           "colour": {
-            "$ref": "#/components/schemas/commonColourType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonColourType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3368,7 +3460,11 @@
             }
           },
           "display_type": {
-            "$ref": "#/components/schemas/commonDisplayType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonDisplayType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3400,7 +3496,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411726+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270861+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3458,7 +3554,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.FieldProperties",
         "properties": {
           "data_type": {
-            "$ref": "#/components/schemas/commonColumnType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonColumnType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3468,7 +3568,11 @@
             }
           },
           "display": {
-            "$ref": "#/components/schemas/commonDisplay",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonDisplay"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3505,7 +3609,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411741+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270876+00:00"
               },
               "deterministic": true
             },
@@ -3518,7 +3622,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722568+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360372+00:00"
           },
           "title": {
             "type": "string",
@@ -3535,7 +3639,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411754+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270889+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3547,7 +3651,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722579+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360383+00:00"
           },
           "tooltip": {
             "type": "string",
@@ -3562,7 +3666,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411767+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270902+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3573,7 +3677,11 @@
             }
           },
           "unit": {
-            "$ref": "#/components/schemas/ai_assistantcommonUnitType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ai_assistantcommonUnitType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3678,7 +3786,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411780+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270916+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3690,7 +3798,7 @@
             "x-original-maxLength": 1024,
             "minLength": 7,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722599+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360402+00:00"
           },
           "title": {
             "type": "string",
@@ -3707,7 +3815,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411792+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270928+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3719,7 +3827,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722609+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360413+00:00"
           },
           "url": {
             "type": "string",
@@ -3744,7 +3852,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-05-11T04:36:48.411805+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270941+00:00"
               },
               "deterministic": true
             },
@@ -3779,7 +3887,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.GenericResponse",
         "properties": {
           "error": {
-            "$ref": "#/components/schemas/schemaErrorType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaErrorType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3817,7 +3929,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411821+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270957+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3851,24 +3963,38 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.Link",
         "properties": {
           "dashboard_link": {
-            "$ref": "#/components/schemas/commonDashboardLink",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonDashboardLink"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for dashboard link.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "generic_link"
+            ]
           },
           "generic_link": {
-            "$ref": "#/components/schemas/commonGenericLink",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonGenericLink"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for generic link.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "dashboard_link"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -3906,7 +4032,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411833+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270970+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3918,10 +4044,14 @@
             "x-original-maxLength": 1024,
             "minLength": 7,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722643+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360447+00:00"
           },
           "op": {
-            "$ref": "#/components/schemas/commonFilterOperator",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonFilterOperator"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3953,7 +4083,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411853+00:00"
+                "validatedAt": "2026-05-11T18:34:59.270990+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3986,7 +4116,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.common.OverlayContent",
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/commonOverlayData",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonOverlayData"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4010,7 +4144,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411868+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271004+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4022,10 +4156,14 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722665+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360472+00:00"
           },
           "type": {
-            "$ref": "#/components/schemas/commonDashboardLinkType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonDashboardLinkType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -4070,7 +4208,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411882+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271019+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4095,7 +4233,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411898+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271034+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4120,7 +4258,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411911+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271048+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4145,7 +4283,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411925+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271064+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4170,7 +4308,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411938+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271076+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4195,7 +4333,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411951+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271090+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4326,7 +4464,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411967+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271106+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4365,7 +4503,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.411980+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271119+00:00"
               },
               "deterministic": true
             },
@@ -4378,7 +4516,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722706+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360512+00:00"
           },
           "type": {
             "type": "string",
@@ -4395,7 +4533,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.411991+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271130+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4428,7 +4566,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.explain_log_record.BotDefenseEventDetails",
         "properties": {
           "action": {
-            "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -4451,7 +4593,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412008+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271147+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4476,7 +4618,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412021+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271160+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4501,7 +4643,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412033+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271174+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4526,7 +4668,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412048+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271188+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4600,7 +4742,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412062+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271202+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4625,7 +4767,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412075+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271216+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4636,24 +4778,42 @@
             }
           },
           "bot_defense_event_details": {
-            "$ref": "#/components/schemas/explain_log_recordBotDefenseEventDetails",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordBotDefenseEventDetails"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "request_details",
+              "svc_policy_event_details",
+              "waf_event_details"
+            ]
           },
           "request_details": {
-            "$ref": "#/components/schemas/explain_log_recordRequestDetails",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordRequestDetails"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for request details.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "bot_defense_event_details",
+              "svc_policy_event_details",
+              "waf_event_details"
+            ]
           },
           "summary": {
             "type": "string",
@@ -4670,7 +4830,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412090+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271232+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4681,24 +4841,42 @@
             }
           },
           "svc_policy_event_details": {
-            "$ref": "#/components/schemas/explain_log_recordSvcPolicyEventDetails",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordSvcPolicyEventDetails"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "bot_defense_event_details",
+              "request_details",
+              "waf_event_details"
+            ]
           },
           "waf_event_details": {
-            "$ref": "#/components/schemas/explain_log_recordWAFEventDetails",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordWAFEventDetails"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "bot_defense_event_details",
+              "request_details",
+              "svc_policy_event_details"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -4765,7 +4943,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412106+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271248+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4778,7 +4956,7 @@
             "minLength": 26,
             "format": "hostname",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722763+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360571+00:00"
           },
           "rsp_code": {
             "type": "integer",
@@ -4810,7 +4988,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412128+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271269+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4835,7 +5013,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412146+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271287+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4869,7 +5047,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.explain_log_record.Signature",
         "properties": {
           "accuracy": {
-            "$ref": "#/components/schemas/explain_log_recordAccuracy",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordAccuracy"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -4892,7 +5074,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412162+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271304+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4917,7 +5099,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412175+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271317+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4944,7 +5126,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412185+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271326+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4969,7 +5151,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412200+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271341+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5008,7 +5190,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412212+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271353+00:00"
               },
               "deterministic": true
             },
@@ -5021,7 +5203,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722802+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360610+00:00"
           },
           "state": {
             "type": "string",
@@ -5039,7 +5221,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412224+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271365+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5076,7 +5258,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.explain_log_record.SvcPolicyEventDetails",
         "properties": {
           "action": {
-            "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5085,7 +5271,11 @@
             }
           },
           "ip_risk": {
-            "$ref": "#/components/schemas/explain_log_recordIPReputation",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordIPReputation"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5111,7 +5301,11 @@
             }
           },
           "ip_trustworthiness": {
-            "$ref": "#/components/schemas/explain_log_recordIPReputation",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordIPReputation"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5134,7 +5328,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412248+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271387+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5159,7 +5353,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412265+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271403+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5184,7 +5378,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412280+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271420+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5235,7 +5429,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412294+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271436+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5262,7 +5456,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412304+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271446+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5301,7 +5495,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412317+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271457+00:00"
               },
               "deterministic": true
             },
@@ -5314,7 +5508,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722848+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360657+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -5353,7 +5547,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412331+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271472+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5378,7 +5572,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412344+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271485+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5403,7 +5597,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412358+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271500+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5442,7 +5636,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412371+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271511+00:00"
               },
               "deterministic": true
             },
@@ -5455,7 +5649,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722870+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360678+00:00"
           },
           "state": {
             "type": "string",
@@ -5473,7 +5667,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412382+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271523+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5508,7 +5702,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.explain_log_record.WAFEventDetails",
         "properties": {
           "action": {
-            "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ai_assistantexplain_log_recordAction"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5531,7 +5729,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412398+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271540+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5542,7 +5740,11 @@
             }
           },
           "bot": {
-            "$ref": "#/components/schemas/explain_log_recordBot",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordBot"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5551,7 +5753,11 @@
             }
           },
           "enforcement_mode": {
-            "$ref": "#/components/schemas/explain_log_recordEnforcementMode",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/explain_log_recordEnforcementMode"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for enforcement mode.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -5650,7 +5856,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412427+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271569+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5691,7 +5897,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412443+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271586+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5721,7 +5927,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.list.Item",
         "properties": {
           "link": {
-            "$ref": "#/components/schemas/commonLink",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonLink"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5765,7 +5975,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:36:48.412461+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271604+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5777,7 +5987,7 @@
             "maxLength": 26,
             "minLength": 15,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722923+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360733+00:00"
           },
           "title": {
             "type": "string",
@@ -5794,7 +6004,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412473+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271616+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5806,7 +6016,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722934+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360744+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -5854,7 +6064,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412493+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271636+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5882,7 +6092,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:36:48.412508+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271650+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5907,7 +6117,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412520+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271663+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5982,7 +6192,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412534+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271677+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6005,7 +6215,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412547+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271690+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6017,7 +6227,7 @@
             "x-original-maxLength": 1024,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.722962+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360772+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -6089,7 +6299,11 @@
         "x-ves-proto-message": "ves.io.schema.ErrorType",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/schemaErrorCode",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaErrorCode"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6098,7 +6312,11 @@
             }
           },
           "error_obj": {
-            "$ref": "#/components/schemas/protobufAny",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/protobufAny"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6121,7 +6339,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412562+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271706+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6179,7 +6397,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412581+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271725+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6214,7 +6432,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412601+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271745+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6225,7 +6443,11 @@
             }
           },
           "overlay_content": {
-            "$ref": "#/components/schemas/commonOverlayContent",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonOverlayContent"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for overlay content.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6249,7 +6471,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412614+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271759+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6260,7 +6482,11 @@
             }
           },
           "table_view": {
-            "$ref": "#/components/schemas/widgetWidgetView",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/widgetWidgetView"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6290,7 +6516,11 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.widget.Cell",
         "properties": {
           "link": {
-            "$ref": "#/components/schemas/commonLink",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonLink"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6299,7 +6529,11 @@
             }
           },
           "properties": {
-            "$ref": "#/components/schemas/commonCellProperties",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonCellProperties"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6322,7 +6556,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412628+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271775+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6334,7 +6568,7 @@
             "x-original-maxLength": 1024,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:20.723008+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:41.360820+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6416,7 +6650,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:36:48.412653+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271799+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6444,7 +6678,11 @@
             }
           },
           "widget_type": {
-            "$ref": "#/components/schemas/commonWidgetType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/commonWidgetType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6509,7 +6747,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:36:48.412674+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271820+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6534,7 +6772,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:36:48.412687+00:00"
+                "validatedAt": "2026-05-11T18:34:59.271834+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6564,13 +6802,21 @@
         "x-ves-proto-message": "ves.io.schema.ai_assistant.widget.WidgetView",
         "properties": {
           "item": {
-            "$ref": "#/components/schemas/widgetTable",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/widgetTable"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "maxLength": 26,
+            "minLength": 15,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-05-11T18:40:41.360864+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6642,7 +6888,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:04.608166+00:00"
+                "validatedAt": "2026-05-11T18:35:15.708820+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6689,7 +6935,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:04.608190+00:00"
+                "validatedAt": "2026-05-11T18:35:15.708844+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6734,7 +6980,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701001+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819763+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6780,7 +7026,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701027+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819791+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6807,7 +7053,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701043+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819808+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6834,7 +7080,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701066+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819824+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6861,7 +7107,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-05-11T04:37:05.701085+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819843+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6909,7 +7155,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701101+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819860+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6955,7 +7201,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-05-11T04:37:05.701117+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819877+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7000,7 +7246,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:37:05.701133+00:00"
+                "validatedAt": "2026-05-11T18:35:16.819894+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7063,7 +7309,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:11.371572+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669226+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7124,7 +7370,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:11.371601+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669254+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7150,7 +7396,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:11.371613+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669264+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7198,7 +7444,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:11.371628+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669280+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7231,7 +7477,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:11.371661+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669308+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7278,7 +7524,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:11.371678+00:00"
+                "validatedAt": "2026-05-11T18:37:25.669324+00:00"
               }
             },
             "x-f5xc-required-for": {

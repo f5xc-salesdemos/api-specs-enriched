@@ -320,34 +320,58 @@
         "x-ves-proto-message": "ves.io.schema.maintenance_status.GetUpgradeStatusResponse",
         "properties": {
           "upgrade_in_progress": {
-            "$ref": "#/components/schemas/schemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaEmpty"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for upgrade in progress.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "upgrade_in_progress_with_config_downtime",
+              "upgrade_not_in_progress"
+            ]
           },
           "upgrade_in_progress_with_config_downtime": {
-            "$ref": "#/components/schemas/schemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaEmpty"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for upgrade in progress with config downtime.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "upgrade_in_progress",
+              "upgrade_not_in_progress"
+            ]
           },
           "upgrade_not_in_progress": {
-            "$ref": "#/components/schemas/schemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaEmpty"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for upgrade not in progress.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "upgrade_in_progress",
+              "upgrade_in_progress_with_config_downtime"
+            ]
           }
         },
         "x-f5xc-description-short": "Response message for Upgrade Status Request. Response contain different states in upgrade process.",
