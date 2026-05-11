@@ -74,9 +74,11 @@ from scripts.utils import (
     BrandingTransformer,
     ConflictsWithEnricher,
     ConsistencyValidator,
+    ConstrainedFieldsEnricher,
     ConstraintEnricher,
     ConstraintReconciler,
     DefaultValueEnricher,
+    DependencyEnricher,
     DescriptionEnricher,
     DescriptionStructureTransformer,
     DescriptionValidator,
@@ -441,10 +443,17 @@ def _remove_ref_siblings(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
         nonlocal removed_count
 
         if isinstance(obj, dict):
-            # If this dict has a $ref, remove all other properties
+            # Preserve $ref and vendor extensions (x-* prefixed keys).
+            # Vendor extensions are explicitly allowed alongside $ref in
+            # OpenAPI tooling. Also preserve 'default' for server-applied
+            # default values that enrichers stamp on $ref properties.
             if "$ref" in obj:
-                removed_count += len(obj) - 1
-                return {"$ref": obj["$ref"]}
+                preserved = {"$ref": obj["$ref"]}
+                for key, value in obj.items():
+                    if key.startswith("x-") or key == "default":
+                        preserved[key] = clean_recursive(value)
+                removed_count += len(obj) - len(preserved)
+                return preserved
 
             # Otherwise, recursively clean all values
             result = {}
@@ -1130,6 +1139,12 @@ def merge_specs_by_domain(
     # Auto-derives mutual exclusivity from x-ves-oneof-field-* extensions
     conflicts_with_enricher = ConflictsWithEnricher()
 
+    # Load dependency enricher — stamps x-f5xc-requires for cross-field deps
+    dependency_enricher = DependencyEnricher()
+
+    # Load constrained fields enricher — stamps enum/range constraints from config
+    constrained_fields_enricher = ConstrainedFieldsEnricher()
+
     # Load schema override enricher (Issue #294)
     # Injects missing oneOf variants from schema_overrides.yaml before conflicts-with
     schema_override_enricher = SchemaOverrideEnricher()
@@ -1289,6 +1304,20 @@ def merge_specs_by_domain(
         stats["conflicts_with_added"] += cw_stats.get("conflicts_added", 0)
         # Reset stats for next domain to avoid double-counting
         conflicts_with_enricher.reset_stats()
+
+        # Cross-field dependencies: stamp x-f5xc-requires from minimum_configs.yaml
+        merged_spec = dependency_enricher.enrich_spec(merged_spec)
+        dep_stats = dependency_enricher.get_stats()
+        stats.setdefault("dependencies_added", 0)
+        stats["dependencies_added"] += dep_stats.get("dependencies_added", 0)
+        dependency_enricher.reset_stats()
+
+        # Constrained fields: stamp enum/range constraints from minimum_configs.yaml
+        merged_spec = constrained_fields_enricher.enrich_spec(merged_spec)
+        cf_stats = constrained_fields_enricher.get_stats()
+        stats.setdefault("constrained_fields_added", 0)
+        stats["constrained_fields_added"] += cf_stats.get("constraints_applied", 0)
+        constrained_fields_enricher.reset_stats()
 
         # Final cleanup: strip any $ref siblings introduced by enrichers
         merged_spec, _ = _remove_ref_siblings(merged_spec)
