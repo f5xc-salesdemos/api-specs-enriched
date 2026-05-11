@@ -430,32 +430,32 @@ def _count_text_fields(spec: dict[str, Any], target_fields: list[str]) -> int:
 
 
 def _remove_ref_siblings(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Remove properties that are siblings to $ref (violates OpenAPI spec).
+    """Remove non-compliant siblings from $ref objects.
 
-    OpenAPI spec requires that $ref MUST NOT have siblings.
-    This function removes all properties next to $ref to comply.
+    OAS3 requires $ref to stand alone. When enrichment annotations (x-*
+    vendor extensions or 'default') are present, the $ref is wrapped in
+    allOf so annotations become valid schema-level properties.
 
-    Returns (modified_spec, count_of_properties_removed).
+    Returns (modified_spec, count_of_refs_wrapped).
     """
-    removed_count = 0
+    wrapped_count = 0
 
     def clean_recursive(obj: Any) -> Any:
-        nonlocal removed_count
+        nonlocal wrapped_count
 
         if isinstance(obj, dict):
-            # Preserve $ref and vendor extensions (x-* prefixed keys).
-            # Vendor extensions are explicitly allowed alongside $ref in
-            # OpenAPI tooling. Also preserve 'default' for server-applied
-            # default values that enrichers stamp on $ref properties.
             if "$ref" in obj:
-                preserved = {"$ref": obj["$ref"]}
+                extras: dict[str, Any] = {}
                 for key, value in obj.items():
-                    if key.startswith("x-") or key == "default":
-                        preserved[key] = clean_recursive(value)
-                removed_count += len(obj) - len(preserved)
-                return preserved
+                    if key != "$ref" and (key.startswith("x-") or key == "default"):
+                        extras[key] = clean_recursive(value)
+                if extras:
+                    wrapped_count += 1
+                    result: dict[str, Any] = {"allOf": [{"$ref": obj["$ref"]}]}
+                    result.update(extras)
+                    return result
+                return {"$ref": obj["$ref"]}
 
-            # Otherwise, recursively clean all values
             result = {}
             for key, value in obj.items():
                 result[key] = clean_recursive(value)
@@ -467,7 +467,7 @@ def _remove_ref_siblings(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
         return obj
 
     cleaned_spec = clean_recursive(spec)
-    return cleaned_spec, removed_count
+    return cleaned_spec, wrapped_count
 
 
 def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dict[str, int]]:

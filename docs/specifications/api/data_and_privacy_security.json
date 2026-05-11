@@ -3155,7 +3155,11 @@
         "x-ves-proto-message": "ves.io.schema.data_type.CreateRequest",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectCreateMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectCreateMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3165,7 +3169,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/data_typeCreateSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeCreateSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3193,7 +3201,11 @@
         "x-ves-proto-message": "ves.io.schema.data_type.CreateResponse",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3203,7 +3215,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/data_typeGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3213,7 +3229,11 @@
             }
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3275,7 +3295,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492237+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125081+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3348,7 +3368,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492272+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125121+00:00"
               },
               "deterministic": true
             },
@@ -3426,7 +3446,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492290+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125138+00:00"
               },
               "deterministic": true
             },
@@ -3439,7 +3459,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700442+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893364+00:00"
           },
           "namespace": {
             "type": "string",
@@ -3469,7 +3489,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492303+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125152+00:00"
               },
               "deterministic": true
             },
@@ -3482,7 +3502,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700453+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893376+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -3508,34 +3528,58 @@
         "x-ves-proto-message": "ves.io.schema.data_type.DetectionRule",
         "properties": {
           "key_pattern": {
-            "$ref": "#/components/schemas/data_typeRulePatternType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeRulePatternType"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for key pattern.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "key_value_pattern",
+              "value_pattern"
+            ]
           },
           "key_value_pattern": {
-            "$ref": "#/components/schemas/data_typeKeyValuePattern",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeKeyValuePattern"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for key value pattern.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "key_pattern",
+              "value_pattern"
+            ]
           },
           "value_pattern": {
-            "$ref": "#/components/schemas/data_typeRulePatternType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeRulePatternType"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for value pattern.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "key_pattern",
+              "key_value_pattern"
+            ]
           }
         },
         "x-f5xc-description-short": "The detection rule specifies patterns and values to detect data type by.",
@@ -3591,7 +3635,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492328+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125176+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3622,7 +3666,11 @@
         "x-ves-proto-message": "ves.io.schema.data_type.GetResponse",
         "properties": {
           "create_form": {
-            "$ref": "#/components/schemas/data_typeCreateRequest",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeCreateRequest"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for create form.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3664,7 +3712,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3690,7 +3742,11 @@
             }
           },
           "replace_form": {
-            "$ref": "#/components/schemas/data_typeReplaceRequest",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeReplaceRequest"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for replace form.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3700,7 +3756,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/data_typeGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3728,10 +3788,14 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700503+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893427+00:00"
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3799,7 +3863,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492375+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125223+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3872,7 +3936,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492412+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125251+00:00"
               },
               "deterministic": true
             },
@@ -3884,7 +3948,11 @@
             }
           },
           "type": {
-            "$ref": "#/components/schemas/data_typeOriginType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeOriginType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -3918,7 +3986,11 @@
         "x-ves-proto-message": "ves.io.schema.data_type.KeyValuePattern",
         "properties": {
           "key_pattern": {
-            "$ref": "#/components/schemas/data_typeRulePatternType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeRulePatternType"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for key pattern.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3928,7 +4000,11 @@
             }
           },
           "value_pattern": {
-            "$ref": "#/components/schemas/data_typeRulePatternType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeRulePatternType"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for value pattern.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -3994,7 +4070,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:38:40.492432+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125271+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4056,7 +4132,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-11T04:38:40.492458+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125295+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4068,7 +4144,7 @@
             "x-original-maxLength": 1024,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700555+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893479+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -4086,7 +4162,11 @@
             }
           },
           "get_spec": {
-            "$ref": "#/components/schemas/data_typeGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeGetSpecType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -4109,7 +4189,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4147,7 +4231,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492476+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125313+00:00"
               },
               "deterministic": true
             },
@@ -4160,7 +4244,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700580+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893505+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4189,7 +4273,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492488+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125327+00:00"
               },
               "deterministic": true
             },
@@ -4202,10 +4286,14 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700591+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893516+00:00"
           },
           "owner_view": {
-            "$ref": "#/components/schemas/schemaViewRefType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaViewRefType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -4230,7 +4318,11 @@
             }
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4254,7 +4346,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492507+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125346+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4267,7 +4359,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700612+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893538+00:00"
           },
           "uid": {
             "type": "string",
@@ -4284,7 +4376,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492519+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125356+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4298,7 +4390,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700623+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893550+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of data_type is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -4333,22 +4425,36 @@
         "x-ves-proto-message": "ves.io.schema.data_type.OriginType",
         "properties": {
           "custom": {
-            "$ref": "#/components/schemas/ioschemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "predefined"
+            ]
           },
           "predefined": {
-            "$ref": "#/components/schemas/ioschemaEmpty",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "custom"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -4372,7 +4478,11 @@
         "x-ves-proto-message": "ves.io.schema.data_type.ReplaceRequest",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectReplaceMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectReplaceMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4382,7 +4492,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/data_typeReplaceSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeReplaceSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4456,7 +4570,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492546+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125383+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4529,7 +4643,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492573+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125411+00:00"
               },
               "deterministic": true
             },
@@ -4566,14 +4680,22 @@
         "x-ves-proto-message": "ves.io.schema.data_type.RulePatternType",
         "properties": {
           "exact_values": {
-            "$ref": "#/components/schemas/data_typeExactValues",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/data_typeExactValues"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for exact values.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "regex_value",
+              "substring_value"
+            ]
           },
           "regex_value": {
             "type": "string",
@@ -4603,7 +4725,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492603+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125441+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4643,7 +4765,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492640+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125469+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4695,7 +4817,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaStatusMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -4767,7 +4893,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492671+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125496+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4790,7 +4916,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492685+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125510+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4802,7 +4928,7 @@
             "x-original-maxLength": 1024,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700688+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893617+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -4848,7 +4974,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-05-11T04:38:40.492705+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125525+00:00"
               },
               "deterministic": true
             },
@@ -4874,7 +5000,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492730+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125540+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4901,7 +5027,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492748+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125554+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4913,7 +5039,7 @@
             "x-original-maxLength": 1024,
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700707+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893637+00:00"
           },
           "service_name": {
             "type": "string",
@@ -4930,7 +5056,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492763+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125569+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4963,7 +5089,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492777+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125583+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4975,7 +5101,7 @@
             "x-original-maxLength": 1024,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700721+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893651+00:00"
           },
           "type": {
             "type": "string",
@@ -5000,7 +5126,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492789+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125596+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5068,7 +5194,11 @@
         "x-ves-proto-message": "ves.io.schema.ErrorType",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/schemaErrorCode",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaErrorCode"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5077,7 +5207,11 @@
             }
           },
           "error_obj": {
-            "$ref": "#/components/schemas/protobufAny",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/protobufAny"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5100,7 +5234,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492806+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125613+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5162,7 +5296,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492819+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125626+00:00"
               },
               "deterministic": true
             },
@@ -5175,7 +5309,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700748+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893678+00:00"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -5216,7 +5350,11 @@
             }
           },
           "result": {
-            "$ref": "#/components/schemas/schemaStatusType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -5299,7 +5437,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492856+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125665+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -5315,7 +5453,7 @@
             "x-original-maxLength": 1200,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700771+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893702+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -5385,7 +5523,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492872+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125681+00:00"
               },
               "deterministic": true
             },
@@ -5398,7 +5536,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700789+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893721+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5429,7 +5567,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492884+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125693+00:00"
               },
               "deterministic": true
             },
@@ -5442,7 +5580,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700801+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893733+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
@@ -5524,7 +5662,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492916+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125727+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -5540,7 +5678,7 @@
             "x-original-maxLength": 1200,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700817+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893749+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -5612,7 +5750,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492931+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125742+00:00"
               },
               "deterministic": true
             },
@@ -5625,7 +5763,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700835+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893768+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5656,7 +5794,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492943+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125754+00:00"
               },
               "deterministic": true
             },
@@ -5669,7 +5807,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700846+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893779+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
@@ -5714,7 +5852,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492956+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125768+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5727,7 +5865,7 @@
             "x-original-maxLength": 1024,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700858+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893791+00:00"
           },
           "name": {
             "type": "string",
@@ -5760,7 +5898,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492968+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125780+00:00"
               },
               "deterministic": true
             },
@@ -5773,7 +5911,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700869+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893802+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5804,7 +5942,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.492981+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125792+00:00"
               },
               "deterministic": true
             },
@@ -5817,7 +5955,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700880+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893813+00:00"
           },
           "tenant": {
             "type": "string",
@@ -5836,7 +5974,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.492993+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125805+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5850,7 +5988,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700892+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893824+00:00"
           },
           "uid": {
             "type": "string",
@@ -5869,7 +6007,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493003+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125816+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5884,7 +6022,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700903+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893836+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -5966,7 +6104,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.493036+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125852+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -5982,7 +6120,7 @@
             "x-original-maxLength": 1200,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700920+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893852+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6052,7 +6190,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.493051+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125868+00:00"
               },
               "deterministic": true
             },
@@ -6065,7 +6203,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700938+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893870+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6096,7 +6234,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.493063+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125880+00:00"
               },
               "deterministic": true
             },
@@ -6109,7 +6247,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700949+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893881+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
@@ -6154,7 +6292,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493080+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125898+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6182,7 +6320,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493095+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125913+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6210,7 +6348,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493109+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125928+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6222,7 +6360,11 @@
             "x-field-mutability": "read-only"
           },
           "publish": {
-            "$ref": "#/components/schemas/schemaStatusPublishType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusPublishType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6245,7 +6387,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493128+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125943+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6272,7 +6414,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493138+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125953+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6286,7 +6428,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.700978+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893910+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -6302,7 +6444,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493151+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125966+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6411,7 +6553,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493173+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125985+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6423,7 +6565,7 @@
             "x-original-maxLength": 1024,
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701000+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893932+00:00"
           },
           "status": {
             "type": "string",
@@ -6441,7 +6583,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493186+00:00"
+                "validatedAt": "2026-05-11T18:36:54.125999+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6453,7 +6595,7 @@
             "x-original-maxLength": 1024,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701011+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893943+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -6495,7 +6637,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493205+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126015+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6522,7 +6664,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493221+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126030+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6549,7 +6691,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493235+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126044+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6577,7 +6719,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493251+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126060+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6607,7 +6749,11 @@
             }
           },
           "initializers": {
-            "$ref": "#/components/schemas/schemaInitializersType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaInitializersType"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -6649,7 +6795,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493275+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126084+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6679,7 +6825,11 @@
             "x-field-mutability": "read-only"
           },
           "owner_view": {
-            "$ref": "#/components/schemas/schemaViewRefType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaViewRefType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6704,7 +6854,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493294+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126102+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6717,7 +6867,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701056+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.893989+00:00"
           },
           "uid": {
             "type": "string",
@@ -6736,7 +6886,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493305+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126112+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6750,7 +6900,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701069+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.894001+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -6800,7 +6950,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493318+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126124+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6812,7 +6962,7 @@
             "x-original-maxLength": 1024,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701081+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.894012+00:00"
           },
           "name": {
             "type": "string",
@@ -6845,7 +6995,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.493330+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126137+00:00"
               },
               "deterministic": true
             },
@@ -6858,7 +7008,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701092+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.894023+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6889,7 +7039,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:38:40.493343+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126149+00:00"
               },
               "deterministic": true
             },
@@ -6902,7 +7052,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701103+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.894035+00:00"
           },
           "uid": {
             "type": "string",
@@ -6919,7 +7069,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:38:40.493353+00:00"
+                "validatedAt": "2026-05-11T18:36:54.126159+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6933,7 +7083,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:24.701114+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:45.894046+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -6992,7 +7142,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7018,7 +7172,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/geo_configGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/geo_configGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7046,10 +7204,14 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493766+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764011+00:00"
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7108,7 +7270,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:08.152751+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342691+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7155,7 +7317,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaStatusMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7219,7 +7385,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:08.152778+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342720+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7232,7 +7398,7 @@
             "x-original-maxLength": 1024,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493798+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764043+00:00"
           },
           "name": {
             "type": "string",
@@ -7265,7 +7431,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:08.152794+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342739+00:00"
               },
               "deterministic": true
             },
@@ -7278,7 +7444,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493810+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764055+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7309,7 +7475,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:08.152808+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342756+00:00"
               },
               "deterministic": true
             },
@@ -7322,7 +7488,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493821+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764067+00:00"
           },
           "tenant": {
             "type": "string",
@@ -7341,7 +7507,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:08.152822+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342772+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7355,7 +7521,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493833+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764078+00:00"
           },
           "uid": {
             "type": "string",
@@ -7374,7 +7540,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:08.152834+00:00"
+                "validatedAt": "2026-05-11T18:37:22.342799+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7389,7 +7555,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:25.493845+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:46.764090+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -7438,7 +7604,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.310904+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753336+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7449,7 +7615,11 @@
             }
           },
           "password": {
-            "$ref": "#/components/schemas/schemaSecretType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSecretType"
+              }
+            ],
             "x-f5xc-example": "MySecureP@ssw0rd123!",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7483,7 +7653,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:43.310921+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753354+00:00"
               },
               "deterministic": true
             },
@@ -7520,7 +7690,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.310935+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753369+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7631,7 +7801,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7657,7 +7831,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/lma_regionGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/lma_regionGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7685,10 +7863,14 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.503955+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902696+00:00"
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7724,7 +7906,11 @@
         "x-ves-proto-message": "ves.io.schema.data_privacy.lma_region.GetSpecType",
         "properties": {
           "clickhouse_params": {
-            "$ref": "#/components/schemas/lma_regionClickhouseParams",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/lma_regionClickhouseParams"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for clickhouse params.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7734,7 +7920,11 @@
             }
           },
           "elastic_params": {
-            "$ref": "#/components/schemas/lma_regionElasticParams",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/lma_regionElasticParams"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for elastic params.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7757,7 +7947,11 @@
             }
           },
           "kafka_params": {
-            "$ref": "#/components/schemas/lma_regionKafkaParams",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/lma_regionKafkaParams"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for kafka params.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -7871,7 +8065,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:39:43.310990+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753427+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7934,7 +8128,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-11T04:39:43.311013+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753450+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7946,7 +8140,7 @@
             "x-original-maxLength": 1024,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504001+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902743+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -7964,7 +8158,11 @@
             }
           },
           "get_spec": {
-            "$ref": "#/components/schemas/lma_regionGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/lma_regionGetSpecType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -7987,7 +8185,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8025,7 +8227,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:43.311029+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753467+00:00"
               },
               "deterministic": true
             },
@@ -8038,7 +8240,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504026+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902769+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8067,7 +8269,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:43.311042+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753480+00:00"
               },
               "deterministic": true
             },
@@ -8080,10 +8282,14 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504037+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902780+00:00"
           },
           "owner_view": {
-            "$ref": "#/components/schemas/schemaViewRefType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaViewRefType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -8108,7 +8314,11 @@
             }
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8132,7 +8342,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.311060+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753501+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8145,7 +8355,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504059+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902802+00:00"
           },
           "uid": {
             "type": "string",
@@ -8162,7 +8372,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.311070+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753512+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8176,7 +8386,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504071+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902813+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of lma_region is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -8229,7 +8439,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaStatusMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -8294,7 +8508,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.311124+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753574+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8332,7 +8546,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:43.311151+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753602+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8344,7 +8558,7 @@
             "x-original-maxLength": 1024,
             "minLength": 4,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504113+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902856+00:00"
           },
           "store_provider": {
             "type": "string",
@@ -8363,7 +8577,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.311166+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753618+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8414,7 +8628,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:43.311180+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753633+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8426,7 +8640,7 @@
             "x-original-maxLength": 1024,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:26.504128+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:47.902872+00:00"
           },
           "url": {
             "type": "string",
@@ -8464,7 +8678,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:39:43.311208+00:00"
+                "validatedAt": "2026-05-11T18:37:58.753662+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -8523,22 +8737,36 @@
         "x-ves-proto-message": "ves.io.schema.SecretType",
         "properties": {
           "blindfold_secret_info": {
-            "$ref": "#/components/schemas/schemaBlindfoldSecretInfoType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaBlindfoldSecretInfoType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "clear_secret_info"
+            ]
           },
           "clear_secret_info": {
-            "$ref": "#/components/schemas/schemaClearSecretInfoType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaClearSecretInfoType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "blindfold_secret_info"
+            ]
           }
         },
         "x-f5xc-description-short": "SecretType is used in an object to indicate a sensitive/confidential field.",
@@ -8582,7 +8810,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:50.747332+00:00"
+                "validatedAt": "2026-05-11T18:38:06.543398+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8614,7 +8842,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:39:50.747347+00:00"
+                "validatedAt": "2026-05-11T18:38:06.543413+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8625,7 +8853,11 @@
             }
           },
           "secret_access_key": {
-            "$ref": "#/components/schemas/schemaSecretType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSecretType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -8686,7 +8918,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796229+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476401+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8721,7 +8953,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796249+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476422+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8764,7 +8996,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796272+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476445+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8829,7 +9061,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796294+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476469+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8864,7 +9096,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796313+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476489+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8907,7 +9139,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796335+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476510+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8972,7 +9204,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796356+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476532+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9007,7 +9239,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796375+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476551+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9050,7 +9282,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796396+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476572+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9102,7 +9334,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaStatusMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaStatusMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9192,7 +9428,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796433+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476610+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -9208,7 +9444,7 @@
             },
             "x-original-maxLength": 128,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589815+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111294+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9245,7 +9481,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796457+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476635+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -9261,7 +9497,7 @@
             "x-original-maxLength": 64,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589827+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111305+00:00"
           },
           "tenant": {
             "type": "string",
@@ -9290,7 +9526,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796481+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476658+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9304,7 +9540,7 @@
             "x-original-maxLength": 64,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589838+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111316+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",
@@ -9331,7 +9567,11 @@
         "x-ves-proto-message": "ves.io.schema.sensitive_data_policy.CreateRequest",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectCreateMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectCreateMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -9341,7 +9581,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/schemasensitive_data_policyCreateSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemasensitive_data_policyCreateSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9369,7 +9613,11 @@
         "x-ves-proto-message": "ves.io.schema.sensitive_data_policy.CreateResponse",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9379,7 +9627,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9389,7 +9641,11 @@
             }
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9421,7 +9677,11 @@
         "x-ves-proto-message": "ves.io.schema.sensitive_data_policy.CustomDataTypeRef",
         "properties": {
           "custom_data_type_ref": {
-            "$ref": "#/components/schemas/schemaviewsObjectRefType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaviewsObjectRefType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9493,7 +9753,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796502+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476681+00:00"
               },
               "deterministic": true
             },
@@ -9506,7 +9766,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589875+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111354+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9536,7 +9796,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796514+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476694+00:00"
               },
               "deterministic": true
             },
@@ -9549,7 +9809,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589886+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111365+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -9574,7 +9834,11 @@
         "x-ves-proto-message": "ves.io.schema.sensitive_data_policy.GetResponse",
         "properties": {
           "create_form": {
-            "$ref": "#/components/schemas/sensitive_data_policyCreateRequest",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/sensitive_data_policyCreateRequest"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for create form.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9616,7 +9880,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9642,7 +9910,11 @@
             }
           },
           "replace_form": {
-            "$ref": "#/components/schemas/sensitive_data_policyReplaceRequest",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/sensitive_data_policyReplaceRequest"
+              }
+            ],
             "x-f5xc-description-short": "Configuration parameter for replace form.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9652,7 +9924,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9680,10 +9956,14 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589921+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111401+00:00"
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9755,7 +10035,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-11T04:40:54.796555+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476734+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9818,7 +10098,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-11T04:40:54.796575+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476754+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9830,7 +10110,7 @@
             "x-original-maxLength": 1024,
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589948+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111429+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -9848,7 +10128,11 @@
             }
           },
           "get_spec": {
-            "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemasensitive_data_policyGetSpecType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -9871,7 +10155,11 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -9909,7 +10197,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796591+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476770+00:00"
               },
               "deterministic": true
             },
@@ -9922,7 +10210,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589972+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111453+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9951,7 +10239,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-11T04:40:54.796602+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476782+00:00"
               },
               "deterministic": true
             },
@@ -9964,10 +10252,14 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.589984+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111464+00:00"
           },
           "owner_view": {
-            "$ref": "#/components/schemas/schemaViewRefType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaViewRefType"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -9992,7 +10284,11 @@
             }
           },
           "system_metadata": {
-            "$ref": "#/components/schemas/schemaSystemObjectGetMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -10016,7 +10312,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:40:54.796621+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476801+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10029,7 +10325,7 @@
             "x-original-maxLength": 1024,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.590004+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111485+00:00"
           },
           "uid": {
             "type": "string",
@@ -10047,7 +10343,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-11T04:40:54.796631+00:00"
+                "validatedAt": "2026-05-11T18:39:12.476811+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10061,7 +10357,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-11T04:42:28.590016+00:00"
+            "x-reconciled-at": "2026-05-11T18:40:50.111497+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of sensitive_data_policy is returned in 'List'.",
@@ -10098,7 +10394,11 @@
         "x-ves-proto-message": "ves.io.schema.sensitive_data_policy.ReplaceRequest",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/schemaObjectReplaceMetaType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaObjectReplaceMetaType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": true,
@@ -10108,7 +10408,11 @@
             }
           },
           "spec": {
-            "$ref": "#/components/schemas/schemasensitive_data_policyReplaceSpecType",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemasensitive_data_policyReplaceSpecType"
+              }
+            ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
               "minimum_config": false,
