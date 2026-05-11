@@ -6,8 +6,6 @@ Verifies that _apply_nested_defaults, _apply_nested_recommended, and
 _apply_nested_oneof_recommended recurse into nested.X.nested.Y configs.
 """
 
-from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
