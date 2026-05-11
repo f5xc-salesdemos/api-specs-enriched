@@ -812,6 +812,39 @@ resources:
       enable_ai_enhancements:
         oneof_recommended:
           risk_score_action_choice: "mitigate_high_medium_risk_action"
+      routes:
+        # Routes-level defaults (on the route wrapper object)
+        defaults:
+          route_state_enabled: {}
+        oneof_recommended:
+          route_state_choice: "route_state_enabled"
+        nested:
+          simple_route:
+            # Server-applied defaults within simple_route (verified 2026-05-10)
+            defaults:
+              http_method: "ANY"
+              headers: []
+              incoming_port: null
+              advanced_options: null
+              query_params: null
+            oneof_recommended:
+              host_rewrite_choice: "auto_host_rewrite"
+          redirect_route:
+            defaults:
+              http_method: "ANY"
+              headers: []
+              incoming_port: null
+            nested:
+              route_redirect:
+                defaults:
+                  host_redirect: ""
+                  port_redirect: 0
+                  response_code: 0
+          direct_response_route:
+            defaults:
+              http_method: "ANY"
+              headers: []
+              incoming_port: null
     oneof_recommended:
       # lb_type
       loadbalancer_type: "https_auto_cert"

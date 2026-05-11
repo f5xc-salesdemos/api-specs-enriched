@@ -361,6 +361,23 @@ resources:
         read_only: true
         description: "System-generated hostname. Accepts any value but server always stores empty string."
 
+
+      - field: "spec.routes[].simple_route.path"
+        required: true
+        reason: "simple_route requires path (400: 'path should be not nil')"
+
+      - field: "spec.routes[].simple_route.origin_pools"
+        required: true
+        min_items: 1
+        reason: "simple_route requires at least one origin_pool (400: 'origin_pools should have minimum items of 1')"
+
+      - field: "spec.routes[].direct_response_route.route_direct_response"
+        required: true
+        reason: "direct_response_route requires route_direct_response (500 without: 'Route does not have action')"
+
+      - field: "spec.routes[].redirect_route.route_redirect"
+        required: true
+        reason: "redirect_route requires route_redirect with at least proto_redirect"
     # Referential integrity (verified via live API)
     referential_integrity:
       - field: "spec.default_route_pools[].pool"
@@ -370,6 +387,19 @@ resources:
       - field: "spec.default_pool.healthcheck[]"
         validated: false
         reason: "Healthcheck reference NOT validated (accepts nonexistent, may fail at runtime)"
+
+      - field: "spec.enable_waf.app_firewall"
+        validated: false
+        reason: "app_firewall reference NOT validated at creation — nonexistent ref silently resolves to disable_waf:{} (200, not 400)"
+
+
+    notes:
+      - "routes[].simple_route.path REQUIRED (400 without) — supports prefix, regex, path (exact) (verified 2026-05-10)"
+      - "routes[].simple_route.origin_pools REQUIRED min_items:1 (400 without) (verified 2026-05-10)"
+      - "routes[].direct_response_route requires route_direct_response (500 without) (verified 2026-05-10)"
+      - "enable_waf with nonexistent app_firewall silently falls back to disable_waf:{} (200, not 400) (verified 2026-05-10)"
+      - "Domains must be globally unique across all http_loadbalancers in namespace"
+      - "routes[].simple_route server defaults: http_method=ANY, auto_host_rewrite:{}, weight=0, priority=0"
 
   # ============================================================================
 
