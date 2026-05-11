@@ -1359,6 +1359,195 @@ resources:
       - "Both enable_disable_compliance_checks AND enable_disable_signatures are REQUIRED (verified 2026-05-10)"
       - "Server applies action: ALLOW default"
       - "Server overrides disable_signatures with enable_signature on creation"
+
+  # ============================================================================
+  # Network Security - Network Policies
+  # ============================================================================
+
+  network_policy:
+    description: "Network-level access control policy for site and namespace traffic"
+    domain: "network_security"
+    resource_type: "policy"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.endpoint"  # REQUIRED oneOf
+
+    mutually_exclusive_groups:
+      - name: "endpoint_choice"
+        fields: ["spec.endpoint.any", "spec.endpoint.prefix_list", "spec.endpoint.inside_outside_network", "spec.endpoint.interface", "spec.endpoint.label_selector"]
+        reason: "Choose endpoint matching strategy (REQUIRED)"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-np",
+          "namespace": "default"
+        },
+        "spec": {
+          "endpoint": {"any": {}}
+        }
+      }
+
+    cli:
+      domain: "network_security"
+      resource_name: "network_policy"
+
+    notes:
+      - "endpoint REQUIRED oneOf (400 without) (verified 2026-05-10)"
+      - "any:{} resolves to prefix_list: {prefixes: ['0.0.0.0/0'], ipv6_prefixes: []}"
+      - "Server default: legacy_rules: {ingress_rules: [], egress_rules: []}"
+      - "Rules at spec.ingress_rules are silently dropped — correct path is spec.legacy_rules.ingress_rules"
+
+  # ============================================================================
+  # Virtual Infrastructure - Virtual Sites
+  # ============================================================================
+
+  virtual_site:
+    description: "Label-based site selector for grouping RE and CE sites"
+    domain: "virtual_infrastructure"
+    resource_type: "site"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.site_type"  # enum: REGIONAL_EDGE, CUSTOMER_EDGE
+      - "spec.site_selector"  # with expressions list
+
+    constrained_fields:
+      - field: "spec.site_type"
+        type: "enum"
+        values: ["REGIONAL_EDGE", "CUSTOMER_EDGE"]
+        description: "Type of sites to select"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-vsite",
+          "namespace": "default"
+        },
+        "spec": {
+          "site_type": "REGIONAL_EDGE",
+          "site_selector": {"expressions": ["ves.io/region=iad"]}
+        }
+      }
+
+    cli:
+      domain: "virtual_infrastructure"
+      resource_name: "virtual_site"
+
+    notes:
+      - "site_type and site_selector both required (verified 2026-05-10)"
+      - "Minimal resource — no additional server defaults"
+
+  # ============================================================================
+  # Network Security - Forward Proxy Policies
+  # ============================================================================
+
+  forward_proxy_policy:
+    description: "Egress proxy policy for controlling outbound traffic from sites"
+    domain: "network_security"
+    resource_type: "policy"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      # spec.proxy_choice is REQUIRED oneOf
+      # spec.rule_choice is REQUIRED oneOf
+
+    mutually_exclusive_groups:
+      - name: "proxy_choice"
+        fields: ["spec.any_proxy", "spec.drp_http_connect", "spec.network_connector", "spec.proxy_label_selector"]
+        reason: "Choose proxy scope (any_proxy requires system namespace)"
+      - name: "rule_choice"
+        fields: ["spec.allow_all", "spec.allow_list", "spec.deny_list", "spec.rule_list"]
+        reason: "Choose rule type"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-fpp",
+          "namespace": "default"
+        },
+        "spec": {
+          "drp_http_connect": {},
+          "allow_all": {}
+        }
+      }
+
+    cli:
+      domain: "network_security"
+      resource_name: "forward_proxy_policy"
+
+    notes:
+      - "any_proxy requires system namespace (400 in app namespace) (verified 2026-05-10)"
+      - "drp_http_connect works in app namespace"
+      - "Server default: segment_policy: null"
+
+  # ============================================================================
+  # DNS - DNS Zones
+  # ============================================================================
+
+  dns_zone:
+    description: "DNS zone for domain management and record configuration"
+    domain: "dns"
+    resource_type: "zone"
+
+    required_fields:
+      - "metadata.name"  # MUST be a valid FQDN
+      - "metadata.namespace"  # MUST be 'system'
+      - "spec.domain"
+      # spec.dns_type REQUIRED oneOf
+
+    mutually_exclusive_groups:
+      - name: "dns_type"
+        fields: ["spec.primary", "spec.secondary"]
+        reason: "Choose primary or secondary zone type (REQUIRED)"
+
+    cli:
+      domain: "dns"
+      resource_name: "dns_zone"
+
+    notes:
+      - "REQUIRES system namespace (400: 'Creation of DNS objects outside system namespace not permitted') (verified 2026-05-10)"
+      - "metadata.name MUST be a valid FQDN (400: 'must be a valid fully qualified domain name')"
+      - "spec.dns_type REQUIRED oneOf (400: 'dns_type should be not nil')"
+
+  # ============================================================================
+  # DNS - DNS Load Balancers
+  # ============================================================================
+
+  dns_load_balancer:
+    description: "DNS-based load balancer for geolocation and health-aware DNS responses"
+    domain: "dns"
+    resource_type: "loadbalancer"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"  # MUST be 'system'
+      - "spec.rule_list"  # REQUIRED
+      - "spec.rule_list.rules"  # min_items: 1
+
+    dependencies:
+      - field: "spec.rule_list.rules[].action_choice"
+        required: true
+        reason: "Each rule requires action_choice oneOf: pool"
+      - field: "spec.rule_list.rules[].client_choice"
+        required: true
+        reason: "Each rule requires client_choice oneOf: geo_location_set, ip_prefix_list, asn_list, asn_matcher, geo_location_label_selector"
+
+    cli:
+      domain: "dns"
+      resource_name: "dns_load_balancer"
+
+    notes:
+      - "REQUIRES system namespace (400: 'Creation of DNS objects outside system namespace not permitted') (verified 2026-05-10)"
+      - "spec.rule_list REQUIRED (400: 'rule_list should be not nil')"
+      - "spec.rule_list.rules min_items:1 (400: 'should have minimum items of 1')"
+      - "Each rule needs action_choice (pool) AND client_choice (geo/ip/asn selector)"
+      - "pool is a direct name/namespace ref (not nested in {pool: {...}})"
+
 # Field-level requirements for cross-resource patterns
 field_requirements:
   # These patterns apply across all resources
