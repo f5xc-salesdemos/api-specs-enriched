@@ -91,21 +91,15 @@ def _is_dictionary_item_added_additive(
     after: object,
 ) -> bool:
     """Dispatch table for ``dictionary_item_added`` changes."""
-    if terminal.startswith("x-"):
-        return True
-    if terminal in _FREE_TEXT_KEYS:
-        return True
-    if _is_error_response_type_add(pointer):
-        return True
-    if _is_positive_int_maxlength_add(terminal, after):
-        return True
-    if _is_constraint_add(terminal, after):
-        return True
-    if _is_default_add(terminal):
-        return True
-    if _is_known_format_add(terminal, after):
-        return True
-    if _is_property_add(pointer):
+    if (
+        terminal.startswith("x-")
+        or terminal in _FREE_TEXT_KEYS
+        or _is_error_response_type_add(pointer)
+        or _is_constraint_add(terminal, after)
+        or _is_default_add(terminal)
+        or _is_known_format_add(terminal, after)
+        or _is_property_add(pointer)
+    ):
         return True
     return _is_additive_dict_add(pointer, after)
 
@@ -154,16 +148,6 @@ def is_additive_change(
 def _is_error_response_type_add(pointer: str) -> bool:
     """Rule 1 — `type: "string"` on 4XX/5XX response schemas (family 5)."""
     return bool(_ERROR_RESPONSE_TYPE_RE.search(pointer))
-
-
-def _is_positive_int_maxlength_add(terminal: str, after: object) -> bool:
-    """Rule 2 — `maxLength` with positive int (family 6)."""
-    return (
-        terminal == "maxLength"
-        and isinstance(after, int)
-        and not isinstance(after, bool)
-        and after > 0
-    )
 
 
 def _is_constraint_add(terminal: str, after: object) -> bool:
