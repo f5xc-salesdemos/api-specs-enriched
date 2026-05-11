@@ -6,7 +6,6 @@ Verifies that _apply_nested_defaults, _apply_nested_recommended, and
 _apply_nested_oneof_recommended recurse into nested.X.nested.Y configs.
 """
 
-
 import pytest
 
 from scripts.utils.default_value_enricher import DefaultValueEnricher
