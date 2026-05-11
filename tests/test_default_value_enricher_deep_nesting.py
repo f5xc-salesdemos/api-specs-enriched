@@ -138,11 +138,15 @@ class TestDeepNestedDefaults:
                 "deeper": {"$ref": "#/components/schemas/Deep"},
             },
         }
+
         # Build a deeply nested config that would loop
         def build_nested(depth):
             if depth <= 0:
                 return {"defaults": {"val": "found"}}
-            return {"defaults": {"val": f"level{depth}"}, "nested": {"deeper": build_nested(depth - 1)}}
+            return {
+                "defaults": {"val": f"level{depth}"},
+                "nested": {"deeper": build_nested(depth - 1)},
+            }
 
         nested = {"deeper": build_nested(10)}
 
