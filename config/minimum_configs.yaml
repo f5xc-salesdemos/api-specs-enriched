@@ -328,6 +328,22 @@ resources:
         default: "advertise_on_public_default_vip"
         description: "Load balancer advertising configuration"
 
+      - field: "spec.advertise_custom.advertise_where[].network"
+        type: "enum"
+        values: ["SITE_NETWORK_INSIDE_AND_OUTSIDE", "SITE_NETWORK_INSIDE", "SITE_NETWORK_OUTSIDE", "SITE_NETWORK_SUBSCRIBER"]
+        description: "Network scope for site advertising"
+
+      - field: "spec.bot_defense.policy.protected_app_endpoints[].http_methods"
+        type: "enum"
+        values: ["METHOD_GET", "METHOD_POST", "METHOD_PUT", "METHOD_PATCH", "METHOD_DELETE", "METHOD_HEAD", "METHOD_OPTIONS"]
+        description: "HTTP methods for bot defense endpoint matching"
+
+      - field: "spec.rate_limit.rate_limiter.unit"
+        type: "enum"
+        values: ["SECOND", "MINUTE", "HOUR"]
+        default: "SECOND"
+        description: "Rate limit time unit"
+
     # Cross-field dependencies (verified via live API)
     dependencies:
       - field: "spec.data_guard_rules"
@@ -378,6 +394,32 @@ resources:
       - field: "spec.routes[].redirect_route.route_redirect"
         required: true
         reason: "redirect_route requires route_redirect with at least proto_redirect"
+
+      - field: "spec.advertise_custom.advertise_where"
+        required: true
+        min_items: 1
+        reason: "advertise_custom requires advertise_where with min_items:1 (400 without)"
+
+      - field: "spec.advertise_custom.advertise_where[].choice"
+        required: true
+        reason: "Each where entry needs choice oneOf: site, virtual_site, vk8s_networks, virtual_network (400 without)"
+
+      - field: "spec.bot_defense.policy.protected_app_endpoints"
+        required: true
+        min_items: 1
+        reason: "bot_defense.policy.protected_app_endpoints REQUIRED min_items:1 (400 without)"
+
+      - field: "spec.bot_defense.policy.protected_app_endpoints[].flow_label_choice"
+        required: true
+        reason: "Each endpoint requires flow_label_choice oneOf: undefined_flow_label, flow_label (400 without)"
+
+      - field: "spec.bot_defense.policy.protected_app_endpoints[].mitigation"
+        required: true
+        reason: "Each endpoint requires mitigation (400 without)"
+
+      - field: "spec.rate_limit.rate_limiter.burst_multiplier"
+        required: true
+        reason: "burst_multiplier MUST be > 0 (400: 'should be greater than 0')"
     # Referential integrity (verified via live API)
     referential_integrity:
       - field: "spec.default_route_pools[].pool"
@@ -393,6 +435,14 @@ resources:
         reason: "app_firewall reference NOT validated at creation — nonexistent ref silently resolves to disable_waf:{} (200, not 400)"
 
 
+      - field: "spec.advertise_custom.advertise_where[].site.site"
+        validated: true
+        reason: "site references ARE validated at creation (400 on nonexistent)"
+
+      - field: "spec.advertise_custom.advertise_where[].virtual_site.virtual_site"
+        validated: false
+        reason: "virtual_site references NOT validated (200 on nonexistent)"
+
     notes:
       - "routes[].simple_route.path REQUIRED (400 without) — supports prefix, regex, path (exact) (verified 2026-05-10)"
       - "routes[].simple_route.origin_pools REQUIRED min_items:1 (400 without) (verified 2026-05-10)"
@@ -400,6 +450,11 @@ resources:
       - "enable_waf with nonexistent app_firewall silently falls back to disable_waf:{} (200, not 400) (verified 2026-05-10)"
       - "Domains must be globally unique across all http_loadbalancers in namespace"
       - "routes[].simple_route server defaults: http_method=ANY, auto_host_rewrite:{}, weight=0, priority=0"
+      - "advertise_custom.advertise_where min_items:1, each entry needs choice oneOf (verified 2026-05-10)"
+      - "advertise_custom site refs VALIDATED (400 on nonexistent); virtual_site refs NOT validated"
+      - "bot_defense requires f5xc-bot-defense-standard addon subscription"
+      - "rate_limit.rate_limiter.burst_multiplier must be > 0 (verified 2026-05-10)"
+      - "slow_ddos_mitigation: only request_headers_timeout and request_timeout stored; others silently dropped"
 
   # ============================================================================
 
@@ -1547,6 +1602,91 @@ resources:
       - "spec.rule_list.rules min_items:1 (400: 'should have minimum items of 1')"
       - "Each rule needs action_choice (pool) AND client_choice (geo/ip/asn selector)"
       - "pool is a direct name/namespace ref (not nested in {pool: {...}})"
+
+  # ============================================================================
+  # Cloud Infrastructure - Azure VNet Site
+  # ============================================================================
+
+  azure_vnet_site:
+    description: "Azure Virtual Network CE site for deploying F5 XC nodes in Azure"
+    domain: "cloud_infrastructure"
+    resource_type: "site"
+    # NOTE: requires system namespace
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"  # MUST be 'system'
+      - "spec.azure_region"   # e.g. 'eastus2'
+      - "spec.resource_group"
+      - "spec.azure_cred"     # reference to azure credentials object
+      - "spec.vnet"           # oneOf: new_vnet | existing_vnet
+      - "spec.ssh_key"        # REQUIRED, min_len:1 (public key string)
+      # Plus one of: spec.ingress_gw | spec.ingress_egress_gw | spec.voltstack_cluster
+
+    mutually_exclusive_groups:
+      - name: "vnet_choice"
+        fields: ["spec.vnet.new_vnet", "spec.vnet.existing_vnet"]
+        reason: "Create new VNet or use existing"
+      - name: "deployment"
+        fields: ["spec.ingress_gw", "spec.ingress_egress_gw", "spec.voltstack_cluster"]
+        reason: "Choose site deployment type (REQUIRED)"
+
+    dependencies:
+      - field: "spec.ingress_gw.azure_certified_hw"
+        required: true
+        reason: "ingress_gw requires azure_certified_hw string (e.g. 'azure-byol-voltmesh')"
+      - field: "spec.ingress_gw.az_nodes"
+        required: true
+        min_items: 1
+        reason: "ingress_gw requires at least one az_nodes entry"
+      - field: "spec.ingress_gw.az_nodes[].azure_az"
+        required: true
+        reason: "Each az_node requires azure_az (AZ number string: '1', '2', '3')"
+      - field: "spec.ingress_gw.az_nodes[].local_subnet"
+        required: true
+        reason: "Each az_node requires local_subnet.subnet_param.ipv4 (CIDR)"
+      - field: "spec.vnet.new_vnet.name"
+        required: true
+        reason: "new_vnet requires name"
+      - field: "spec.vnet.new_vnet.primary_ipv4"
+        required: true
+        reason: "new_vnet requires primary_ipv4 CIDR (e.g. '10.0.0.0/16')"
+
+    referential_integrity:
+      - field: "spec.azure_cred"
+        validated: false
+        reason: "azure_cred reference NOT validated at creation (200 on nonexistent)"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-azure-site",
+          "namespace": "system"
+        },
+        "spec": {
+          "azure_region": "eastus2",
+          "resource_group": "my-resource-group",
+          "azure_cred": {"name": "my-azure-cred", "namespace": "system"},
+          "vnet": {"new_vnet": {"name": "my-vnet", "primary_ipv4": "10.0.0.0/16"}},
+          "ingress_gw": {
+            "azure_certified_hw": "azure-byol-voltmesh",
+            "az_nodes": [{"azure_az": "1", "local_subnet": {"subnet_param": {"ipv4": "10.0.1.0/24"}}}]
+          },
+          "ssh_key": "ssh-rsa AAAA... user@host"
+        }
+      }
+
+    cli:
+      domain: "cloud_infrastructure"
+      resource_name: "azure_vnet_site"
+
+    notes:
+      - "REQUIRES system namespace (verified 2026-05-10)"
+      - "ssh_key REQUIRED min_len:1 (400 without)"
+      - "deployment oneOf REQUIRED (ingress_gw | ingress_egress_gw | voltstack_cluster)"
+      - "azure_cred ref NOT validated (200 on nonexistent)"
+      - "coordinates auto-resolved from azure_region (server-applied)"
+      - "Server defaults: no_worker_nodes:{}, block_all_services:{}, logs_streaming_disabled:{}"
 
 # Field-level requirements for cross-resource patterns
 field_requirements:

@@ -741,11 +741,16 @@ resources:
         oneof_recommended:
           ip_allowed_list_choice: "no_ip_allowed_list"
       rate_limit:
+        defaults:
+          no_ip_allowed_list: {}
+          no_policies: {}
         oneof_recommended:
           ip_allowed_list_choice: "no_ip_allowed_list"
           policy_choice: "no_policies"
         nested:
           rate_limiter:
+            defaults:
+              period_multiplier: 0
             oneof_recommended:
               action_choice: "action_block"
               algorithm: "token_bucket"
@@ -777,8 +782,11 @@ resources:
               api_discovery_settings_choice: "default_api_auth_discovery"
               learn_from_redirect_traffic: "disable_learn_from_redirect_traffic"
       slow_ddos_mitigation:
+        # Only these two fields are stored; others are silently dropped
+        # request_timeout_choice: use request_timeout (int, ms) or disable_request_timeout: {}
+        defaults: {}
         oneof_recommended:
-          request_timeout_choice: "disable_request_timeout"
+          request_timeout_choice: "request_timeout"
       cookie_stickiness:
         oneof_recommended:
           httponly: "add_httponly"
@@ -845,6 +853,17 @@ resources:
               http_method: "ANY"
               headers: []
               incoming_port: null
+      advertise_custom:
+        # Server default per advertise_where entry
+        oneof_recommended:
+          choice: "virtual_site"
+        nested:
+          advertise_where_entry:
+            defaults:
+              use_default_port: {}
+            oneof_recommended:
+              port_choice: "use_default_port"
+              choice: "virtual_site"
     oneof_recommended:
       # lb_type
       loadbalancer_type: "https_auto_cert"
@@ -951,6 +970,34 @@ resources:
 # - k8s_service: service_name, site_locator, network_choice
 # - consul_service: service_name, site_locator, network_choice
 
+
+  azure_vnet_site:
+    description: "Azure VNET site server-applied defaults (verified 2026-05-10)"
+    schema_pattern: "azure_vnet_site.*SpecType"
+    defaults:
+      machine_type: ""
+      disk_size: 0
+      volterra_software_version: ""
+      operating_system_version: ""
+      tags: {}
+      no_worker_nodes: {}
+      block_all_services: {}
+      logs_streaming_disabled: {}
+    oneof_recommended:
+      deployment: "ingress_gw"
+      vnet_choice: "new_vnet"
+      worker_nodes_choice: "no_worker_nodes"
+      allowed_services_choice: "block_all_services"
+      logs_streaming_choice: "logs_streaming_disabled"
+    nested:
+      ingress_gw:
+        defaults:
+          accelerated_networking: null
+          performance_enhancement_mode: null
+        nested:
+          az_nodes:
+            defaults:
+              disk_size: 0
 
   # ============================================================================
   # TCP Load Balancer
