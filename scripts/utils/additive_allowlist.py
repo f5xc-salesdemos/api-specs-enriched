@@ -20,6 +20,7 @@ _FREE_TEXT_KEYS = frozenset(
     {
         "description",
         "summary",
+        "title",
         "example",
         "examples",
         "externalDocs",
@@ -91,7 +92,7 @@ def _is_terminal_additive(terminal: str, after: object) -> bool:
         terminal.startswith("x-")
         or terminal in _FREE_TEXT_KEYS
         or _is_constraint_add(terminal, after)
-        or _is_default_add(terminal)
+        or _is_schema_annotation_add(terminal, after)
         or _is_known_format_add(terminal, after)
     )
 
@@ -102,7 +103,7 @@ def _is_dictionary_item_added_additive(
     after: object,
 ) -> bool:
     """Dispatch table for ``dictionary_item_added`` changes."""
-    if _is_terminal_additive(terminal, after):
+    if _is_terminal_additive(terminal, after) or _under_x_extension(pointer):
         return True
     if _is_error_response_type_add(pointer) or _is_property_add(pointer):
         return True
@@ -116,7 +117,7 @@ def _is_values_changed_additive(
     after: object,
 ) -> bool:
     """Dispatch table for ``values_changed`` changes."""
-    if terminal in {"description", "summary", "example"}:
+    if terminal in {"description", "summary", "title", "example"}:
         return True
     if _under_x_extension(pointer):
         return True
@@ -156,15 +157,21 @@ def _is_error_response_type_add(pointer: str) -> bool:
 
 
 def _is_constraint_add(terminal: str, after: object) -> bool:
-    """Rule 7 — additive constraint additions (minLength, maxLength, minItems, etc.)."""
+    """Rule 7 — additive constraint additions."""
     if terminal in {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum"}:
         return isinstance(after, int) and not isinstance(after, bool) and after >= 0
+    if terminal == "pattern" and isinstance(after, str):
+        return True
     return False
 
 
-def _is_default_add(terminal: str) -> bool:
-    """Rule 8 — server-discovered default values."""
-    return terminal == "default"
+def _is_schema_annotation_add(terminal: str, after: object) -> bool:
+    """Rule 8 — additive schema annotations (default, readOnly)."""
+    if terminal == "default":
+        return True
+    if terminal == "readOnly" and after is True:
+        return True
+    return False
 
 
 def _is_known_format_add(terminal: str, after: object) -> bool:
@@ -172,14 +179,16 @@ def _is_known_format_add(terminal: str, after: object) -> bool:
     return terminal == "format" and after in _OPENAPI_FORMATS
 
 
-def _is_property_add(pointer: str) -> bool:
-    """Rule 5 — additive new property on a schema's ``properties`` dict.
+_ADDITIVE_PARENT_KEYS = frozenset({"properties", "securitySchemes"})
 
-    Matches any ``dictionary_item_added`` under ``...['properties']['<name>']``.
-    Adding a new property to a schema is additive by OpenAPI contract-
-    evolution semantics — the existing surface is unchanged.
+
+def _is_property_add(pointer: str) -> bool:
+    """Rule 5 — additive new entries in properties or component buckets.
+
+    Adding a new property to a schema or a new securityScheme to
+    components is additive — it doesn't break existing consumers.
     """
-    return _parent_key(pointer) == "properties"
+    return _parent_key(pointer) in _ADDITIVE_PARENT_KEYS
 
 
 def _is_additive_dict_add(pointer: str, after: object) -> bool:
