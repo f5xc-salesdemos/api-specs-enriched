@@ -85,23 +85,26 @@ def _under_x_extension(pointer: str) -> bool:
     return bool(_X_EXTENSION_RE.search(pointer))
 
 
+def _is_terminal_additive(terminal: str, after: object) -> bool:
+    """Check if the terminal key itself marks the change as additive."""
+    return (
+        terminal.startswith("x-")
+        or terminal in _FREE_TEXT_KEYS
+        or _is_constraint_add(terminal, after)
+        or _is_default_add(terminal)
+        or _is_known_format_add(terminal, after)
+    )
+
+
 def _is_dictionary_item_added_additive(
     terminal: str,
     pointer: str,
     after: object,
 ) -> bool:
     """Dispatch table for ``dictionary_item_added`` changes."""
-    if terminal.startswith("x-"):
+    if _is_terminal_additive(terminal, after):
         return True
-    if terminal in _FREE_TEXT_KEYS:
-        return True
-    if _is_error_response_type_add(pointer):
-        return True
-    if _is_positive_int_maxlength_add(terminal, after):
-        return True
-    if _is_known_format_add(terminal, after):
-        return True
-    if _is_property_add(pointer):
+    if _is_error_response_type_add(pointer) or _is_property_add(pointer):
         return True
     return _is_additive_dict_add(pointer, after)
 
@@ -152,14 +155,16 @@ def _is_error_response_type_add(pointer: str) -> bool:
     return bool(_ERROR_RESPONSE_TYPE_RE.search(pointer))
 
 
-def _is_positive_int_maxlength_add(terminal: str, after: object) -> bool:
-    """Rule 2 — `maxLength` with positive int (family 6)."""
-    return (
-        terminal == "maxLength"
-        and isinstance(after, int)
-        and not isinstance(after, bool)
-        and after > 0
-    )
+def _is_constraint_add(terminal: str, after: object) -> bool:
+    """Rule 7 — additive constraint additions (minLength, maxLength, minItems, etc.)."""
+    if terminal in {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum"}:
+        return isinstance(after, int) and not isinstance(after, bool) and after >= 0
+    return False
+
+
+def _is_default_add(terminal: str) -> bool:
+    """Rule 8 — server-discovered default values."""
+    return terminal == "default"
 
 
 def _is_known_format_add(terminal: str, after: object) -> bool:
