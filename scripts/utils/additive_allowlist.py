@@ -160,18 +160,14 @@ def _is_constraint_add(terminal: str, after: object) -> bool:
     """Rule 7 — additive constraint additions."""
     if terminal in {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum"}:
         return isinstance(after, int) and not isinstance(after, bool) and after >= 0
-    if terminal == "pattern" and isinstance(after, str):
-        return True
-    return False
+    return terminal == "pattern" and isinstance(after, str)
 
 
 def _is_schema_annotation_add(terminal: str, after: object) -> bool:
     """Rule 8 — additive schema annotations (default, readOnly)."""
     if terminal == "default":
         return True
-    if terminal == "readOnly" and after is True:
-        return True
-    return False
+    return terminal == "readOnly" and after is True
 
 
 def _is_known_format_add(terminal: str, after: object) -> bool:
