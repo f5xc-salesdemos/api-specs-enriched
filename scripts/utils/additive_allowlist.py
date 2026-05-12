@@ -85,21 +85,26 @@ def _under_x_extension(pointer: str) -> bool:
     return bool(_X_EXTENSION_RE.search(pointer))
 
 
+def _is_terminal_additive(terminal: str, after: object) -> bool:
+    """Check if the terminal key itself marks the change as additive."""
+    return (
+        terminal.startswith("x-")
+        or terminal in _FREE_TEXT_KEYS
+        or _is_constraint_add(terminal, after)
+        or _is_default_add(terminal)
+        or _is_known_format_add(terminal, after)
+    )
+
+
 def _is_dictionary_item_added_additive(
     terminal: str,
     pointer: str,
     after: object,
 ) -> bool:
     """Dispatch table for ``dictionary_item_added`` changes."""
-    if (
-        terminal.startswith("x-")
-        or terminal in _FREE_TEXT_KEYS
-        or _is_error_response_type_add(pointer)
-        or _is_constraint_add(terminal, after)
-        or _is_default_add(terminal)
-        or _is_known_format_add(terminal, after)
-        or _is_property_add(pointer)
-    ):
+    if _is_terminal_additive(terminal, after):
+        return True
+    if _is_error_response_type_add(pointer) or _is_property_add(pointer):
         return True
     return _is_additive_dict_add(pointer, after)
 
