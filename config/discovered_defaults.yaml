@@ -1073,3 +1073,30 @@ resources:
     oneof_recommended:
       proxy_choice: "drp_http_connect"
       rule_choice: "allow_all"
+
+  namespace:
+    description: "Namespace server-applied defaults (verified 2026-05-13)"
+    schema_pattern: "namespace.*SpecType"
+    defaults: {}
+    notes:
+      - "spec is empty — no server-applied defaults in spec"
+      - "metadata.disable: false (server default)"
+      - "metadata.labels: {} (server default)"
+      - "metadata.annotations: {} (server default)"
+
+  certificate:
+    description: "Certificate server-applied defaults (verified 2026-05-13)"
+    schema_pattern: "certificate.*SpecType"
+    defaults:
+      certificate_chain: null
+      http_loadbalancers: []
+      tcp_loadbalancers: []
+    nested:
+      private_key:
+        secret_encoding_type: "EncodingNone"
+        blindfold_secret_info_internal: null
+    notes:
+      - "spec.certificate_url REQUIRED (min 1 byte, must be valid PEM)"
+      - "spec.private_key REQUIRED (clear_secret_info.url + provider)"
+      - "Server parses cert and populates infos[] (CN, SANs, expiry, issuer, algorithm)"
+      - "Server default: secret_encoding_type=EncodingNone"

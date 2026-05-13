@@ -961,9 +961,21 @@ resources:
         -H "Content-Type: application/json" \
         -d @certificate.json
 
+    mutually_exclusive_groups:
+      - name: "private_key_type"
+        fields: ["spec.private_key.clear_secret_info", "spec.private_key.blindfold_secret_info"]
+        reason: "Clear text (automation) vs blindfold-encrypted (production)"
+
     cli:
       domain: "certificates"
       resource_name: "certificate"
+
+    notes:
+      - "spec.certificate_url REQUIRED: min 1 byte, must be valid PEM (400: 'not a valid certificate') (verified 2026-05-13)"
+      - "spec.private_key REQUIRED: must contain clear_secret_info or blindfold_secret_info (verified 2026-05-13)"
+      - "clear_secret_info: url=string:///BASE64_PEM, provider='' (empty string)"
+      - "Server parses cert and populates infos[]: CN, SANs, organization, expiry, issuer, public_key_algorithm"
+      - "Server defaults: certificate_chain=null, http_loadbalancers=[], tcp_loadbalancers=[], secret_encoding_type=EncodingNone"
 
   # ============================================================================
   # API Security - API Definitions
@@ -1718,6 +1730,50 @@ resources:
       - "azure_cred ref NOT validated (200 on nonexistent)"
       - "coordinates auto-resolved from azure_region (server-applied)"
       - "Server defaults: no_worker_nodes:{}, block_all_services:{}, logs_streaming_disabled:{}"
+
+  # ============================================================================
+  # Identity - Namespace
+  # ============================================================================
+
+  namespace:
+    description: "Logical grouping for F5 XC resources within a tenant"
+    domain: "tenant_and_identity"
+    resource_type: "namespace"
+
+    required_fields:
+      - "metadata.name"
+      # spec: {} is required (400 without) but has no defined properties
+
+    example_yaml: |
+      apiVersion: v1
+      kind: namespace
+      metadata:
+        name: example-ns
+      spec: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-ns"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/web/namespaces" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{"metadata": {"name": "example-ns"}, "spec": {}}'
+
+    cli:
+      domain: "tenant_and_identity"
+      resource_name: "namespace"
+
+    notes:
+      - "spec must be present but can be empty (400: 'spec should not be empty in request') (verified 2026-05-13)"
+      - "metadata.namespace is empty string for namespace resources"
+      - "Server defaults: metadata.disable=false, metadata.labels={}, metadata.annotations={}"
+      - "Readback includes: create_form, replace_form, resource_version, status[], referring_objects[]"
 
 # Field-level requirements for cross-resource patterns
 field_requirements:
