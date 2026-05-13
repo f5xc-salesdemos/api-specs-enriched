@@ -1237,9 +1237,15 @@ def merge_specs_by_domain(
                             stats["paths"] += 1
                         elif isinstance(operation, dict):
                             existing_op = merged_spec["paths"][path][method]
-                            existing_id = existing_op.get("operationId", "") if isinstance(existing_op, dict) else ""
+                            existing_id = (
+                                existing_op.get("operationId", "")
+                                if isinstance(existing_op, dict)
+                                else ""
+                            )
                             incoming_id = operation.get("operationId", "")
-                            if _GARBLED_OPID_RE.search(existing_id) and not _GARBLED_OPID_RE.search(incoming_id):
+                            if _GARBLED_OPID_RE.search(existing_id) and not _GARBLED_OPID_RE.search(
+                                incoming_id
+                            ):
                                 merged_spec["paths"][path][method] = operation
 
             # Merge components
