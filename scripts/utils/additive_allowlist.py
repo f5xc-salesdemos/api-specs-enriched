@@ -110,6 +110,9 @@ def _is_dictionary_item_added_additive(
     return _is_additive_dict_add(pointer, after)
 
 
+_MERGE_ORDER_KEYS = frozenset({"$ref", "operationId"})
+
+
 def _is_values_changed_additive(
     terminal: str,
     pointer: str,
@@ -118,6 +121,8 @@ def _is_values_changed_additive(
 ) -> bool:
     """Dispatch table for ``values_changed`` changes."""
     if terminal in {"description", "summary", "title", "example"}:
+        return True
+    if terminal in _MERGE_ORDER_KEYS:
         return True
     if _under_x_extension(pointer):
         return True

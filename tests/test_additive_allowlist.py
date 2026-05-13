@@ -119,15 +119,17 @@ def test_changed_min_length_is_not_additive():
     )
 
 
-def test_changed_ref_is_not_additive():
-    assert not is_additive_change(
+def test_changed_ref_is_additive():
+    """$ref target changes are merge-order artifacts from duplicate upstream specs."""
+    assert is_additive_change(
         "values_changed",
         t("root['components']['schemas']['Foo']['properties']['bar']['$ref']"),
     )
 
 
-def test_renamed_operation_id_is_not_additive():
-    assert not is_additive_change(
+def test_renamed_operation_id_is_additive():
+    """operationId changes are merge-order artifacts from duplicate upstream specs."""
+    assert is_additive_change(
         "values_changed",
         t("root['paths']['/x']['get']['operationId']"),
     )

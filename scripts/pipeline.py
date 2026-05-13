@@ -130,8 +130,6 @@ from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
 
-_GARBLED_OPID_RE = re.compile(r"_(post|get|put|delete|patch)_\1_\1$")
-
 # Default configuration
 DEFAULT_CONFIG = {
     "paths": {
@@ -1235,18 +1233,6 @@ def merge_specs_by_domain(
                         if method not in merged_spec["paths"][path]:
                             merged_spec["paths"][path][method] = operation
                             stats["paths"] += 1
-                        elif isinstance(operation, dict):
-                            existing_op = merged_spec["paths"][path][method]
-                            existing_id = (
-                                existing_op.get("operationId", "")
-                                if isinstance(existing_op, dict)
-                                else ""
-                            )
-                            incoming_id = operation.get("operationId", "")
-                            if _GARBLED_OPID_RE.search(existing_id) and not _GARBLED_OPID_RE.search(
-                                incoming_id
-                            ):
-                                merged_spec["paths"][path][method] = operation
 
             # Merge components
             for comp_type in ["schemas", "responses", "parameters", "requestBodies"]:
