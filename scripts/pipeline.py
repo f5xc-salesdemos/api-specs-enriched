@@ -908,7 +908,14 @@ def _sanitize_script_tags(
 
 
 def _merge_schema_union(target: dict[str, Any], source: dict[str, Any]) -> None:
-    """Union-merge a schema: add missing keys at every level from source."""
+    """Union-merge a schema: add missing keys at every level from source.
+
+    Skips merging when schemas have incompatible ``type`` values
+    (e.g., one is ``object`` and the other is ``string``) since those
+    represent different schemas that share a name.
+    """
+    if target.get("type") != source.get("type") and "type" in target and "type" in source:
+        return
     for key, value in source.items():
         if key not in target:
             target[key] = value

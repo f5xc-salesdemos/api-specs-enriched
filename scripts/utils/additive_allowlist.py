@@ -110,10 +110,18 @@ def _is_dictionary_item_added_additive(
     return _is_additive_dict_add(pointer, after)
 
 
-_MERGE_ORDER_KEYS = frozenset({
-    "$ref", "operationId",
-    "minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum",
-})
+_MERGE_ORDER_KEYS = frozenset(
+    {
+        "$ref",
+        "operationId",
+        "minLength",
+        "maxLength",
+        "minItems",
+        "maxItems",
+        "minimum",
+        "maximum",
+    }
+)
 
 
 def _is_values_changed_additive(
