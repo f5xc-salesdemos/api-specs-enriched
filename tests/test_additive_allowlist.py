@@ -65,8 +65,9 @@ def test_added_to_required_is_not_additive():
     )
 
 
-def test_added_to_enum_is_not_additive():
-    assert not is_additive_change(
+def test_added_to_enum_is_additive():
+    """New enum values from upstream duplicate files are additive."""
+    assert is_additive_change(
         "iterable_item_added",
         t("root['components']['schemas']['Foo']['enum'][2]"),
     )
@@ -112,8 +113,9 @@ def test_changed_type_is_not_additive():
     )
 
 
-def test_changed_min_length_is_not_additive():
-    assert not is_additive_change(
+def test_changed_min_length_is_additive():
+    """Constraint value changes are merge-order artifacts from duplicate upstream specs."""
+    assert is_additive_change(
         "values_changed",
         t("root['components']['schemas']['Foo']['properties']['bar']['minLength']"),
     )

@@ -27,7 +27,7 @@ _FREE_TEXT_KEYS = frozenset(
         "tags",
     },
 )
-_ARRAY_ADDABLE_PARENTS = frozenset({"tags", "servers", "examples"})
+_ARRAY_ADDABLE_PARENTS = frozenset({"tags", "servers", "examples", "enum"})
 
 _SEGMENT_RE = re.compile(r"\['([^']+)'\]|\[(\d+)\]")
 _X_EXTENSION_RE = re.compile(r"\['x-[^']+'\]")
@@ -110,7 +110,18 @@ def _is_dictionary_item_added_additive(
     return _is_additive_dict_add(pointer, after)
 
 
-_MERGE_ORDER_KEYS = frozenset({"$ref", "operationId"})
+_MERGE_ORDER_KEYS = frozenset(
+    {
+        "$ref",
+        "operationId",
+        "minLength",
+        "maxLength",
+        "minItems",
+        "maxItems",
+        "minimum",
+        "maximum",
+    }
+)
 
 
 def _is_values_changed_additive(
