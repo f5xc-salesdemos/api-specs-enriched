@@ -243,22 +243,30 @@ def _merge_specs(
         specs: list of ``(filename, parsed_json)`` tuples.
 
     Returns:
-        A single dict with unioned top-level maps. Later entries
-        overwrite earlier ones on collision; for a contract diff we
-        care about presence and shape, and same-named schemas/paths
-        across inputs should have identical bodies by construction.
+        A single dict with unioned top-level maps. Uses recursive
+        union merge (superset of all sources) to match the pipeline.
     """
+
+    def _union(target: dict, source: dict) -> None:
+        for key, value in source.items():
+            if key not in target:
+                target[key] = value
+            elif isinstance(value, dict) and isinstance(target[key], dict):
+                _union(target[key], value)
+
     merged: dict[str, Any] = {}
     merged_components: dict[str, Any] = {}
     for _filename, spec in specs:
         for key in _MERGE_KEYS:
             if key in spec and isinstance(spec[key], dict):
-                merged.setdefault(key, {}).update(spec[key])
+                target = merged.setdefault(key, {})
+                _union(target, spec[key])
         components = spec.get("components") or {}
         if isinstance(components, dict):
             for bucket in _COMPONENT_MERGE_KEYS:
                 if bucket in components and isinstance(components[bucket], dict):
-                    merged_components.setdefault(bucket, {}).update(components[bucket])
+                    target_bucket = merged_components.setdefault(bucket, {})
+                    _union(target_bucket, components[bucket])
     if merged_components:
         merged["components"] = merged_components
     return merged

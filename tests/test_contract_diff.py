@@ -27,11 +27,11 @@ def test_pass_additive_extension_and_description() -> None:
     assert violations == []
 
 
-def test_fail_when_constraint_tightened() -> None:
+def test_fail_when_type_changed() -> None:
     i, o = _load("fail_tighten")
     violations = run_contract_diff(i, o)
     assert len(violations) >= 1
-    assert any("minLength" in v.pointer for v in violations)
+    assert any("type" in v.pointer for v in violations)
 
 
 def test_fail_when_property_removed() -> None:

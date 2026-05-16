@@ -907,6 +907,15 @@ def _sanitize_script_tags(
 # =============================================================================
 
 
+def _merge_schema_union(target: dict[str, Any], source: dict[str, Any]) -> None:
+    """Union-merge a schema: add missing keys at every level from source."""
+    for key, value in source.items():
+        if key not in target:
+            target[key] = value
+        elif isinstance(value, dict) and isinstance(target[key], dict):
+            _merge_schema_union(target[key], value)
+
+
 def ensure_unique_operation_ids(
     paths: dict[str, Any],
     existing_ids: set[str],
@@ -1245,6 +1254,8 @@ def merge_specs_by_domain(
                             stats["schemas"] += 1
                         elif comp_type == "requestBodies":
                             stats["requestBodies"] += 1
+                    elif isinstance(comp, dict) and isinstance(target_comps[name], dict):
+                        _merge_schema_union(target_comps[name], comp)
 
             # Collect tags
             all_tags.extend(spec.get("tags", []))
@@ -1363,13 +1374,15 @@ def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) ->
             if path not in master["paths"]:
                 master["paths"][path] = path_item
 
-        # Merge components
+        # Merge components (union merge for schema superset)
         for comp_type in ["schemas", "responses", "parameters", "requestBodies"]:
             source_comps = spec.get("components", {}).get(comp_type, {})
             target_comps = master["components"].setdefault(comp_type, {})
             for name, comp in source_comps.items():
                 if name not in target_comps:
                     target_comps[name] = comp
+                elif isinstance(comp, dict) and isinstance(target_comps[name], dict):
+                    _merge_schema_union(target_comps[name], comp)
 
         all_tags.extend(spec.get("tags", []))
 
