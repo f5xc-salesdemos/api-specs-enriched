@@ -923,7 +923,7 @@ def _merge_schema_union(target: dict[str, Any], source: dict[str, Any]) -> None:
             if "$ref" not in target[key] and "$ref" not in value:
                 _merge_schema_union(target[key], value)
         elif isinstance(value, list) and isinstance(target[key], list) and key == "enum":
-            existing = set(str(v) for v in target[key])
+            existing = {str(v) for v in target[key]}
             for item in value:
                 if str(item) not in existing:
                     target[key].append(item)
@@ -1256,14 +1256,22 @@ def merge_specs_by_domain(
                         if method not in merged_spec["paths"][path]:
                             merged_spec["paths"][path][method] = operation
                             stats["paths"] += 1
-                        elif isinstance(operation, dict) and isinstance(merged_spec["paths"][path].get(method), dict):
+                        elif isinstance(operation, dict) and isinstance(
+                            merged_spec["paths"][path].get(method), dict
+                        ):
                             existing = merged_spec["paths"][path][method]
                             for k, v in operation.items():
                                 if k not in existing:
                                     existing[k] = v
 
             # Merge components
-            for comp_type in ["schemas", "responses", "parameters", "requestBodies", "securitySchemes"]:
+            for comp_type in [
+                "schemas",
+                "responses",
+                "parameters",
+                "requestBodies",
+                "securitySchemes",
+            ]:
                 source_comps = spec.get("components", {}).get(comp_type, {})
                 target_comps = merged_spec["components"].setdefault(comp_type, {})
                 for name, comp in source_comps.items():

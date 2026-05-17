@@ -255,7 +255,7 @@ def _merge_specs(
                 if "$ref" not in target[key] and "$ref" not in value:
                     _union(target[key], value)
             elif isinstance(value, list) and isinstance(target[key], list) and key == "enum":
-                existing = set(str(v) for v in target[key])
+                existing = {str(v) for v in target[key]}
                 for item in value:
                     if str(item) not in existing:
                         target[key].append(item)
