@@ -252,7 +252,14 @@ def _merge_specs(
             if key not in target:
                 target[key] = value
             elif isinstance(value, dict) and isinstance(target[key], dict):
-                _union(target[key], value)
+                if "$ref" not in target[key] and "$ref" not in value:
+                    _union(target[key], value)
+            elif isinstance(value, list) and isinstance(target[key], list) and key == "enum":
+                existing = set(str(v) for v in target[key])
+                for item in value:
+                    if str(item) not in existing:
+                        target[key].append(item)
+                        existing.add(str(item))
 
     merged: dict[str, Any] = {}
     merged_components: dict[str, Any] = {}
