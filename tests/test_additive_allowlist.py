@@ -294,8 +294,6 @@ def test_bulk_properties_add_is_additive():
 
 def test_non_additive_dict_add_is_rejected():
     """A dict add whose inner keys aren't additive should fail."""
-    pointer = "root['components']"
-    after = {
-        "schemas": {"Foo": {"type": "object"}},
-    }
+    pointer = "root['components']['schemas']['Foo']['required']"
+    after = ["bar", "baz"]
     assert not is_additive_change("dictionary_item_added", pointer, None, after)

@@ -191,7 +191,7 @@ def _is_known_format_add(terminal: str, after: object) -> bool:
     return terminal == "format" and after in _OPENAPI_FORMATS
 
 
-_ADDITIVE_PARENT_KEYS = frozenset({"properties", "securitySchemes"})
+_ADDITIVE_PARENT_KEYS = frozenset({"properties", "schemas", "securitySchemes"})
 
 
 def _is_property_add(pointer: str) -> bool:
