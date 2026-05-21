@@ -1504,9 +1504,20 @@ resources:
       domain: "virtual_infrastructure"
       resource_name: "virtual_site"
 
+    example_yaml: |
+      metadata:
+        name: my-virtual-site
+        namespace: default
+      spec:
+        site_type: REGIONAL_EDGE
+        site_selector:
+          expressions:
+            - "ves.io/siteName=any"
+
     notes:
       - "site_type and site_selector both required (verified 2026-05-10)"
       - "Minimal resource — no additional server defaults"
+      - "CRUD-verified against staging API 2026-05-20"
 
   # ============================================================================
   # Network Security - Forward Proxy Policies
@@ -1774,6 +1785,93 @@ resources:
       - "metadata.namespace is empty string for namespace resources"
       - "Server defaults: metadata.disable=false, metadata.labels={}, metadata.annotations={}"
       - "Readback includes: create_form, replace_form, resource_version, status[], referring_objects[]"
+
+  # ============================================================================
+
+  global_log_receiver:
+    description: "Global log receiver for F5 XC centralized logging"
+    domain: "log"
+    resource_type: "global_log_receiver"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.log_type"         # oneOf: request_logs, dns_logs, audit_logs, security_events
+      - "spec.receiver_choice"  # oneOf: http_receiver, s3_receiver, kafka_receiver, etc.
+
+    mutually_exclusive_groups:
+      - fields: ["spec.request_logs", "spec.dns_logs", "spec.audit_logs", "spec.security_events"]
+        reason: "Choose exactly one log type"
+      - fields: ["spec.http_receiver", "spec.s3_receiver", "spec.kafka_receiver", "spec.splunk_receiver", "spec.datadog_receiver", "spec.new_relic_receiver", "spec.sumo_logic_receiver", "spec.qradar_receiver", "spec.aws_cloud_watch_receiver", "spec.azure_event_hubs_receiver", "spec.azure_receiver", "spec.gcp_bucket_receiver"]
+        reason: "Choose exactly one receiver type"
+
+    example_yaml: |
+      metadata:
+        name: my-log-receiver
+        namespace: system
+      spec:
+        request_logs: {}
+        http_receiver:
+          uri: http://logs.example.com/ingest
+
+    example_json: |
+      {
+        "metadata": {"name": "my-log-receiver", "namespace": "system"},
+        "spec": {
+          "request_logs": {},
+          "http_receiver": {"uri": "http://logs.example.com/ingest"}
+        }
+      }
+
+    cli:
+      domain: "log"
+      resource_name: "global_log_receiver"
+
+    notes:
+      - "API requires both log_type and receiver_choice oneOf selections"
+      - "Server applies ns_current: {} when namespace_choice is omitted"
+      - "Server applies request_logs.sampled: {} when sampling mode is omitted"
+      - "CRUD-verified against staging API 2026-05-20"
+
+  # ============================================================================
+
+  alert_receiver:
+    description: "Alert receiver for F5 XC alert notifications"
+    domain: "alert"
+    resource_type: "alert_receiver"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.receiver_choice"  # oneOf: email, opsgenie, pagerduty, slack, sms, webhook
+
+    mutually_exclusive_groups:
+      - fields: ["spec.email", "spec.opsgenie", "spec.pagerduty", "spec.slack", "spec.sms", "spec.webhook"]
+        reason: "Choose exactly one notification channel"
+
+    example_yaml: |
+      metadata:
+        name: my-alert-receiver
+        namespace: system
+      spec:
+        email:
+          email_address: alerts@example.com
+
+    example_json: |
+      {
+        "metadata": {"name": "my-alert-receiver", "namespace": "system"},
+        "spec": {
+          "email": {"email_address": "alerts@example.com"}
+        }
+      }
+
+    cli:
+      domain: "alert"
+      resource_name: "alert_receiver"
+
+    notes:
+      - "API requires spec.receiver oneOf — empty spec returns 400"
+      - "CRUD-verified against staging API 2026-05-20"
 
 # Field-level requirements for cross-resource patterns
 field_requirements:
