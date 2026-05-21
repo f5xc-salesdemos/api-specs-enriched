@@ -1873,6 +1873,70 @@ resources:
       - "API requires spec.receiver oneOf — empty spec returns 400"
       - "CRUD-verified against staging API 2026-05-20"
 
+  # ============================================================================
+
+  k8s_cluster:
+    description: "Kubernetes cluster configuration for F5 XC managed K8s"
+    domain: "container_services"
+    resource_type: "k8s_cluster"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      metadata:
+        name: my-k8s-cluster
+        namespace: system
+      spec: {}
+
+    notes:
+      - "Empty spec accepted — server applies all K8s defaults"
+      - "Server defaults: no_local_access, no_global_access, use_default_psp, etc."
+      - "CRUD-verified against staging API 2026-05-21"
+
+  # ============================================================================
+
+  network_firewall:
+    description: "Network firewall policy for site-level traffic filtering"
+    domain: "network_security"
+    resource_type: "network_firewall"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      metadata:
+        name: my-network-firewall
+        namespace: system
+      spec: {}
+
+    notes:
+      - "Empty spec accepted — server defaults to disable_network_policy, disable_forward_proxy_policy, disable_fast_acl"
+      - "CRUD-verified against staging API 2026-05-21"
+
+  # ============================================================================
+
+  enhanced_firewall_policy:
+    description: "Enhanced L4 firewall policy with segment-based access control"
+    domain: "network_security"
+    resource_type: "enhanced_firewall_policy"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+
+    example_yaml: |
+      metadata:
+        name: my-efp
+        namespace: default
+      spec: {}
+
+    notes:
+      - "Empty spec accepted — server defaults to allow_all"
+      - "CRUD-verified against staging API 2026-05-21"
+
 # Field-level requirements for cross-resource patterns
 field_requirements:
   # These patterns apply across all resources
