@@ -1100,3 +1100,28 @@ resources:
       - "spec.private_key REQUIRED (clear_secret_info.url + provider)"
       - "Server parses cert and populates infos[] (CN, SANs, expiry, issuer, algorithm)"
       - "Server default: secret_encoding_type=EncodingNone"
+
+  global_log_receiver:
+    description: "Global log receiver server-applied defaults (verified 2026-05-20)"
+    schema_pattern: "global_log_receiver.*SpecType"
+    defaults:
+      ns_current: {}
+    nested:
+      request_logs:
+        sampled: {}
+    notes:
+      - "spec.log_type REQUIRED: oneOf request_logs, dns_logs, audit_logs, security_events"
+      - "spec.receiver_choice REQUIRED: oneOf http_receiver, s3_receiver, kafka_receiver, splunk_receiver, datadog_receiver, new_relic_receiver, sumo_logic_receiver, qradar_receiver, aws_cloud_watch_receiver, azure_event_hubs_receiver, azure_receiver, gcp_bucket_receiver"
+      - "spec.namespace_choice defaults to ns_current: {} (all namespaces in current tenant)"
+      - "request_logs.sampled: {} is server-applied when no sampling mode specified"
+      - "CRUD-verified: POST with {request_logs: {}, http_receiver: {uri: ...}} succeeds"
+
+  alert_receiver:
+    description: "Alert receiver server-applied defaults (verified 2026-05-20)"
+    schema_pattern: "alert_receiver.*SpecType"
+    defaults: {}
+    notes:
+      - "spec.receiver REQUIRED: oneOf email, opsgenie, pagerduty, slack, sms, webhook"
+      - "Empty spec returns 400: Field spec.receiver should be not nil"
+      - "No server-applied defaults in spec"
+      - "CRUD-verified: POST with {email: {email_address: ...}} succeeds"
