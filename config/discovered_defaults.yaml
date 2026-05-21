@@ -1125,3 +1125,40 @@ resources:
       - "Empty spec returns 400: Field spec.receiver should be not nil"
       - "No server-applied defaults in spec"
       - "CRUD-verified: POST with {email: {email_address: ...}} succeeds"
+
+  k8s_cluster:
+    description: "Kubernetes cluster server-applied defaults (verified 2026-05-21)"
+    schema_pattern: "k8s_cluster.*SpecType"
+    defaults:
+      no_local_access: {}
+      no_global_access: {}
+      use_default_psp: {}
+      use_default_cluster_roles: {}
+      use_default_cluster_role_bindings: {}
+      no_cluster_wide_apps: {}
+      no_insecure_registries: {}
+      cluster_scoped_access_deny: {}
+      vk8s_namespace_access_deny: {}
+    notes:
+      - "Empty spec accepted — server applies all defaults"
+      - "CRUD-verified against staging API 2026-05-21"
+
+  network_firewall:
+    description: "Network firewall server-applied defaults (verified 2026-05-21)"
+    schema_pattern: "network_firewall.*SpecType"
+    defaults:
+      disable_network_policy: {}
+      disable_forward_proxy_policy: {}
+      disable_fast_acl: {}
+    notes:
+      - "Empty spec accepted — server disables all policy types by default"
+      - "CRUD-verified against staging API 2026-05-21"
+
+  enhanced_firewall_policy:
+    description: "Enhanced firewall policy server-applied defaults (verified 2026-05-21)"
+    schema_pattern: "enhanced_firewall_policy.*SpecType"
+    defaults:
+      allow_all: {}
+    notes:
+      - "Empty spec accepted — server defaults to allow_all"
+      - "CRUD-verified against staging API 2026-05-21"
