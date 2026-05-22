@@ -3,7 +3,18 @@
 # Called by the universal .pre-commit-config.yaml local-hooks entry
 set -euo pipefail
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Prefer the project venv python for dependencies (rich, pyyaml, etc.)
+if [ -x "${REPO_ROOT}/.venv/bin/python3" ]; then
+  PYTHON="${REPO_ROOT}/.venv/bin/python3"
+elif command -v python3 &>/dev/null; then
+  PYTHON="python3"
+else
+  echo "[local] python3 not found, skipping Python-based checks"
+  PYTHON=""
+fi
 
 # --- F5 XC API Enrichment Pipeline ---
 if [ -x scripts/hooks/pre-commit-pipeline.sh ]; then
@@ -13,16 +24,15 @@ fi
 
 # --- Config interdependency validation ---
 CONFIG_FILES=$(echo "$STAGED_FILES" | grep '^config/.*\.yaml$' || true)
-if [ -n "$CONFIG_FILES" ]; then
+if [ -n "$CONFIG_FILES" ] && [ -n "$PYTHON" ]; then
   echo "[local] Validating config interdependencies..."
-  python -m scripts.validate_configs 2>/dev/null || echo "[local] validate_configs failed or not configured"
+  $PYTHON -m scripts.validate_configs 2>/dev/null || echo "[local] validate_configs failed or not configured"
 fi
 
 # --- Curl example validation ---
-# Catch missing example_json before pushing (prevents CI failure in sync pipeline)
-if [ -n "$CONFIG_FILES" ]; then
+if [ -n "$CONFIG_FILES" ] && [ -n "$PYTHON" ]; then
   echo "[local] Validating curl examples (dry-run)..."
-  python scripts/validate_curl_examples.py --dry-run || {
+  $PYTHON scripts/validate_curl_examples.py --dry-run || {
     echo "[local] FAILED: curl validation. Add example_json to all resources in minimum_configs.yaml."
     exit 1
   }
