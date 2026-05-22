@@ -803,6 +803,34 @@ resources:
         -H "Content-Type: application/json" \
         -d @waf-policy.json
 
+    mutually_exclusive_groups:
+      - name: "enforcement_mode_choice"
+        fields: ["spec.monitoring", "spec.blocking"]
+        reason: "Server default is monitoring (no blocking). Use blocking: {} for production WAF protection."
+      - name: "detection_setting_choice"
+        fields: ["spec.default_detection_settings", "spec.detection_settings"]
+        reason: "Server applies default_detection_settings: {} when omitted"
+      - name: "allowed_response_codes_choice"
+        fields: ["spec.allow_all_response_codes", "spec.allowed_response_codes"]
+        reason: "Server applies allow_all_response_codes: {} when omitted"
+      - name: "bot_protection_choice"
+        fields: ["spec.default_bot_setting", "spec.bot_protection_setting"]
+        reason: "Server applies default_bot_setting: {} when omitted"
+      - name: "anonymization_setting"
+        fields: ["spec.default_anonymization", "spec.custom_anonymization", "spec.disable_anonymization"]
+        reason: "Server applies default_anonymization: {} when omitted"
+      - name: "blocking_page_choice"
+        fields: ["spec.use_default_blocking_page", "spec.blocking_page"]
+        reason: "Server applies use_default_blocking_page: {} when omitted"
+      - name: "enhance_with_ai_choice"
+        fields: ["spec.disable_ai_enhancements", "spec.enable_ai_enhancements"]
+        reason: "Server applies disable_ai_enhancements: {} when omitted"
+
+    notes:
+      - "CRUD-verified: POST with spec: {} succeeds — server applies all 7 defaults (verified 2026-05-19)"
+      - "Server defaults: monitoring:{}, default_detection_settings:{}, default_bot_setting:{}, allow_all_response_codes:{}, default_anonymization:{}, use_default_blocking_page:{}, disable_ai_enhancements:{}"
+      - "Recommended for production: use blocking:{} not monitoring:{} — monitoring provides no protection"
+
     cli:
       domain: "virtual"
       resource_name: "app_firewall"
@@ -1090,6 +1118,13 @@ resources:
       - "metadata.namespace"
       - "spec.burst_size"
       - "spec.committed_information_rate"
+    example_yaml: |
+      metadata:
+        name: example-rl
+        namespace: default
+      spec:
+        burst_size: 1
+        committed_information_rate: 1
     example_json: |
       {
         "metadata": {
@@ -1446,6 +1481,14 @@ resources:
         fields: ["spec.endpoint.any", "spec.endpoint.prefix_list", "spec.endpoint.inside_outside_network", "spec.endpoint.interface", "spec.endpoint.label_selector"]
         reason: "Choose endpoint matching strategy (REQUIRED)"
 
+    example_yaml: |
+      metadata:
+        name: example-np
+        namespace: default
+      spec:
+        endpoint:
+          any: {}
+
     example_json: |
       {
         "metadata": {
@@ -1542,6 +1585,14 @@ resources:
         fields: ["spec.allow_all", "spec.allow_list", "spec.deny_list", "spec.rule_list"]
         reason: "Choose rule type"
 
+    example_yaml: |
+      metadata:
+        name: example-fpp
+        namespace: default
+      spec:
+        drp_http_connect: {}
+        allow_all: {}
+
     example_json: |
       {
         "metadata": {
@@ -1584,6 +1635,14 @@ resources:
         reason: "Choose primary or secondary zone type (REQUIRED)"
 
     # NOTE: Requires system namespace. This example uses FQDN as name.
+    example_yaml: |
+      metadata:
+        name: example.com
+        namespace: system
+      spec:
+        domain: example.com
+        primary: {}
+
     example_json: |
       {
         "metadata": {
@@ -1629,6 +1688,21 @@ resources:
         reason: "Each rule requires client_choice oneOf: geo_location_set, ip_prefix_list, asn_list, asn_matcher, geo_location_label_selector"
 
     # NOTE: Requires system namespace. Pool reference must exist.
+    example_yaml: |
+      metadata:
+        name: example-dns-lb
+        namespace: system
+      spec:
+        rule_list:
+          rules:
+            - pool:
+                name: example-pool
+                namespace: system
+              score: 100
+              ip_prefix_list:
+                ip_prefixes:
+                  - "0.0.0.0/0"
+
     example_json: |
       {
         "metadata": {
@@ -1710,6 +1784,29 @@ resources:
       - field: "spec.azure_cred"
         validated: false
         reason: "azure_cred reference NOT validated at creation (200 on nonexistent)"
+
+    example_yaml: |
+      metadata:
+        name: example-azure-site
+        namespace: system
+      spec:
+        azure_region: eastus2
+        resource_group: my-resource-group
+        azure_cred:
+          name: my-azure-cred
+          namespace: system
+        vnet:
+          new_vnet:
+            name: my-vnet
+            primary_ipv4: "10.0.0.0/16"
+        ingress_gw:
+          azure_certified_hw: azure-byol-voltmesh
+          az_nodes:
+            - azure_az: "1"
+              local_subnet:
+                subnet_param:
+                  ipv4: "10.0.1.0/24"
+        ssh_key: "ssh-rsa AAAA... user@host"
 
     example_json: |
       {
@@ -1890,6 +1987,25 @@ resources:
         namespace: system
       spec: {}
 
+    example_json: |
+      {
+        "metadata": {
+          "name": "my-k8s-cluster",
+          "namespace": "system"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/k8s_clusters" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @k8s-cluster.json
+
+    cli:
+      domain: "container_services"
+      resource_name: "k8s_cluster"
+
     notes:
       - "Empty spec accepted — server applies all K8s defaults"
       - "Server defaults: no_local_access, no_global_access, use_default_psp, etc."
@@ -1912,6 +2028,25 @@ resources:
         namespace: system
       spec: {}
 
+    example_json: |
+      {
+        "metadata": {
+          "name": "my-network-firewall",
+          "namespace": "system"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/network_firewalls" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @network-firewall.json
+
+    cli:
+      domain: "network_security"
+      resource_name: "network_firewall"
+
     notes:
       - "Empty spec accepted — server defaults to disable_network_policy, disable_forward_proxy_policy, disable_fast_acl"
       - "CRUD-verified against staging API 2026-05-21"
@@ -1933,8 +2068,83 @@ resources:
         namespace: default
       spec: {}
 
+    example_json: |
+      {
+        "metadata": {
+          "name": "my-efp",
+          "namespace": "default"
+        },
+        "spec": {}
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/enhanced_firewall_policys" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @enhanced-firewall-policy.json
+
+    cli:
+      domain: "network_security"
+      resource_name: "enhanced_firewall_policy"
+
     notes:
       - "Empty spec accepted — server defaults to allow_all"
+      - "CRUD-verified against staging API 2026-05-21"
+
+  # ============================================================================
+  # Network Security - Fast ACLs
+  # ============================================================================
+
+  fast_acl:
+    description: "Fast ACL for IP-based access control at network edge"
+    domain: "network_security"
+    resource_type: "fast_acl"
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      # spec.site_choice is a REQUIRED oneOf (400: 'site_choice should be not nil')
+      # Variants: re_acl (RE-deployed), site_acl (site-specific)
+
+    mutually_exclusive_groups:
+      - name: "site_choice"
+        fields: ["spec.re_acl", "spec.site_acl"]
+        reason: "REQUIRED: Choose RE ACL (applies to Regional Edge) or Site ACL (applies to specific site)"
+
+    example_yaml: |
+      apiVersion: v1
+      kind: fast_acl
+      metadata:
+        name: my-fast-acl
+        namespace: system
+      spec:
+        re_acl: {}
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "my-fast-acl",
+          "namespace": "system"
+        },
+        "spec": {
+          "re_acl": {}
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/fast_acls" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @fast-acl.json
+
+    cli:
+      domain: "network_security"
+      resource_name: "fast_acl"
+
+    notes:
+      - "spec.site_choice REQUIRED: oneOf re_acl, site_acl (400: 'site_choice should be not nil')"
+      - "re_acl: {} — server applies all_public_vips:{}, fast_acl_rules:[] (verified 2026-05-21)"
+      - "site_acl requires site reference in site_acl.site"
       - "CRUD-verified against staging API 2026-05-21"
 
 # Field-level requirements for cross-resource patterns

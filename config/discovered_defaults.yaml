@@ -1162,3 +1162,24 @@ resources:
     notes:
       - "Empty spec accepted — server defaults to allow_all"
       - "CRUD-verified against staging API 2026-05-21"
+
+  # ============================================================================
+  # Network Security - Fast ACLs
+  # ============================================================================
+
+  fast_acl:
+    description: "Fast ACL server-applied defaults (verified 2026-05-21)"
+    schema_pattern: "fast_acl.*SpecType"
+    # spec.site_choice is REQUIRED — server rejects empty spec
+    # When re_acl: {} is specified, server applies these defaults:
+    nested:
+      re_acl:
+        defaults:
+          all_public_vips: {}
+          fast_acl_rules: []
+    oneof_recommended:
+      site_choice: "re_acl"
+    notes:
+      - "spec.site_choice REQUIRED — 400 if nil: 'site_choice should be not nil'"
+      - "re_acl: {} accepted — server applies all_public_vips:{} and fast_acl_rules:[]"
+      - "CRUD-verified against staging API 2026-05-21"
