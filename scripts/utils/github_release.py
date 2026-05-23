@@ -125,7 +125,7 @@ def get_latest_release(
         return release_data
 
     except requests.HTTPError as e:
-        if e.response.status_code == 404:
+        if e.response is not None and e.response.status_code == 404:
             raise ValueError(
                 f"No releases found for {repo_owner}/{repo_name}. "
                 "Repository may not exist or has no releases.",

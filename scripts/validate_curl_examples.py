@@ -38,12 +38,20 @@ from rich.table import Table
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
-from curl_validator import (
-    CurlExampleValidator,
-    ValidationReport,
-    generate_json_report,
-    generate_markdown_report,
-)
+try:
+    from scripts.utils.curl_validator import (
+        CurlExampleValidator,
+        ValidationReport,
+        generate_json_report,
+        generate_markdown_report,
+    )
+except ModuleNotFoundError:
+    from curl_validator import (  # type: ignore[import-not-found,no-redef,unused-ignore]
+        CurlExampleValidator,
+        ValidationReport,
+        generate_json_report,
+        generate_markdown_report,
+    )
 
 console = Console()
 

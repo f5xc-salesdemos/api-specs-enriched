@@ -25,8 +25,17 @@ from rich.table import Table
 
 # Import reporter infrastructure
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
-from lint_reporter import LintIssue, LintReporter, LintResult, LintStats
-from path_config import PathConfig
+try:
+    from scripts.utils.lint_reporter import LintIssue, LintReporter, LintResult, LintStats
+    from scripts.utils.path_config import PathConfig
+except ModuleNotFoundError:
+    from lint_reporter import (  # type: ignore[import-not-found,no-redef,unused-ignore]
+        LintIssue,
+        LintReporter,
+        LintResult,
+        LintStats,
+    )
+    from path_config import PathConfig  # type: ignore[import-not-found,no-redef,unused-ignore]
 
 console = Console()
 

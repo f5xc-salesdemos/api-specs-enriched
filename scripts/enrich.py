@@ -41,7 +41,6 @@ from scripts.utils import (
     MinimumConfigurationEnricher,
     NamespaceScopeEnricher,
     SchemaFixer,
-    TagGenerator,
     UniquenessEnricher,
 )
 from scripts.utils.json_writer import write_json_file
@@ -99,7 +98,6 @@ class EnrichmentStats:
     grammar_improved: int = 0
     branding_transformed: int = 0
     schemas_fixed: int = 0
-    operations_tagged: int = 0
     descriptions_generated: int = 0
     required_fields_extracted: int = 0
     validation_passed: int = 0
@@ -281,7 +279,6 @@ def enrich_spec_file(
         schema_fixer = SchemaFixer()
         field_metadata_enricher = FieldMetadataEnricher()
         minimum_configuration_enricher = MinimumConfigurationEnricher()
-        tag_generator = TagGenerator()
         description_validator = DescriptionValidator()
         consistency_validator = ConsistencyValidator()
         constraint_enricher = ConstraintEnricher(
@@ -353,10 +350,7 @@ def enrich_spec_file(
         # 6. Grammar improvements
         spec = grammar_improver.improve_spec(spec, target_fields)
 
-        # 7. Tag generation (assign tags to operations)
-        spec = tag_generator.generate_tags(spec)
-
-        # 8. Description validation and generation (auto-generate missing descriptions)
+        # 7. Description validation and generation (auto-generate missing descriptions)
         spec = description_validator.validate_and_generate(spec)
 
         # 9. Discovery enrichment (add x-discovered-* extensions)
@@ -398,7 +392,6 @@ def enrich_spec_file(
         deprecated_tier_stats = deprecated_tier_enricher.get_stats()
         branding_normalizer_stats = branding_normalizer.get_stats()
         schema_stats = schema_fixer.get_stats()
-        tag_stats = tag_generator.get_stats()
         desc_stats = description_validator.get_stats()
         consistency_stats = consistency_validator.get_stats()
         minimum_config_stats = minimum_configuration_enricher.get_stats()
@@ -419,8 +412,6 @@ def enrich_spec_file(
                 "xcs_transformations": branding_normalizer_stats.get("xcs_transformations", 0),
                 "glossary_terms_added": branding_normalizer_stats.get("glossary_terms_added", 0),
                 "schemas_fixed": schema_stats.get("fixes_applied", 0),
-                "operations_tagged": tag_stats.get("operations_tagged", 0),
-                "tags_generated": tag_stats.get("tags_generated", 0),
                 "descriptions_generated": desc_stats.get("operations_generated", 0),
                 "consistency_issues": consistency_stats.get("total_issues", 0),
                 "minimum_configs_added": minimum_config_stats.get("minimum_configs_added", 0),

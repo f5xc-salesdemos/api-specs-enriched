@@ -49,6 +49,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 import re
 import sys
@@ -95,7 +96,6 @@ from scripts.utils import (
     ResourceExamplesEnricher,
     SchemaFixer,
     SchemaOverrideEnricher,
-    TagGenerator,
     ValidationEnricher,
     ValidationExporter,
     categorize_spec,
@@ -129,6 +129,7 @@ from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
+logger = logging.getLogger(__name__)
 
 # Default configuration
 DEFAULT_CONFIG = {
@@ -174,7 +175,6 @@ class PipelineStats:
     enrichment_changes: int = 0
     normalization_changes: int = 0
     schemas_fixed: int = 0
-    operations_tagged: int = 0
     descriptions_generated: int = 0
     consistency_issues: int = 0
     minimum_configs_added: int = 0
@@ -242,7 +242,6 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     Returns (enriched_spec, stats_dict) where stats_dict contains:
         - field_count: number of text fields processed
         - schemas_fixed: number of schemas fixed by SchemaFixer
-        - operations_tagged: number of operations tagged
         - descriptions_generated: number of descriptions auto-generated
         - consistency_issues: number of consistency issues found
         - domains_normalized: number of domain names normalized (RFC 2606)
@@ -267,12 +266,28 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         use_language_tool=False,  # Disable for pipeline performance
     )
     schema_fixer = SchemaFixer()
-    tag_generator = TagGenerator()
     description_validator = DescriptionValidator()
     consistency_validator = ConsistencyValidator()
 
     # Count fields before
     field_count = _count_text_fields(spec, target_fields)
+
+    # Phase 1: Upstream validation (assert upstream-injected fields exist)
+    upstream_warnings = validate_upstream_spec(spec)
+    for warning in upstream_warnings:
+        logger.warning(warning)
+
+    # Fallback: assign tags to operations upstream left untagged
+    for path, path_item in spec.get("paths", {}).items():
+        if not isinstance(path_item, dict):
+            continue
+        # Derive tag from path prefix (e.g., /api/config/... -> config)
+        parts = [p for p in path.split("/") if p and p != "api" and not p.startswith("{")]
+        tag = parts[0] if parts else "other"
+        for method in ("get", "post", "put", "delete", "patch", "head", "options"):
+            op = path_item.get(method)
+            if isinstance(op, dict) and not op.get("tags"):
+                op["tags"] = [tag]
 
     # Apply enrichments in order:
     # 1. Branding transformations first (most specific)
@@ -288,7 +303,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = grammar_improver.improve_spec(spec, target_fields)
 
     # 5. Sanitize script tags in descriptions (prevent Spectral security warnings)
-    spec, _script_sanitize_count = _sanitize_script_tags(spec, target_fields)
+    spec, _ = _sanitize_script_tags(spec, target_fields)
 
     # 6. Normalize domain names (RFC 2606 compliance + lowercase hostnames)
     spec, domain_normalize_count = _normalize_domain_names(spec, target_fields)
@@ -297,11 +312,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = schema_fixer.fix_spec(spec)
     schema_stats = schema_fixer.get_stats()
 
-    # 8. Tag generation (assign tags to operations based on path patterns)
-    spec = tag_generator.generate_tags(spec)
-    tag_stats = tag_generator.get_stats()
-
-    # 9. Description validation (auto-generate missing descriptions)
+    # 8. Description validation (auto-generate missing descriptions)
     spec = description_validator.validate_and_generate(spec)
     desc_stats = description_validator.get_stats()
 
@@ -364,7 +375,6 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     return spec, {
         "field_count": field_count,
         "schemas_fixed": schema_stats.get("fixes_applied", 0),
-        "operations_tagged": tag_stats.get("operations_tagged", 0),
         "descriptions_generated": desc_stats.get("operations_generated", 0)
         + desc_stats.get("schemas_generated", 0),
         "consistency_issues": consistency_stats.get("total_issues", 0),
@@ -481,7 +491,6 @@ def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], 
         "orphan_request_bodies_inlined": 0,
         "empty_operations_removed": 0,
         "types_normalized": 0,
-        "invalid_examples_fixed": 0,
     }
 
     # 0. Remove properties that are siblings to $ref (OpenAPI compliance)
@@ -490,7 +499,7 @@ def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], 
 
     # 1. Fix orphan $refs
     if norm_config.get("fix_orphan_refs", True):
-        spec, count = _fix_orphan_refs(spec, norm_config)
+        spec, count = _fix_orphan_refs(spec)
         stats["orphan_refs_fixed"] = count
 
     # 2. Inline orphan requestBodies
@@ -508,15 +517,10 @@ def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], 
         spec, count = _normalize_types(spec)
         stats["types_normalized"] = count
 
-    # 5. Fix invalid example schemas
-    if norm_config.get("fix_invalid_examples", True):
-        spec, count = _fix_invalid_examples(spec)
-        stats["invalid_examples_fixed"] = count
-
     return spec, stats
 
 
-def _fix_orphan_refs(spec: dict[str, Any], _config: dict) -> tuple[dict[str, Any], int]:
+def _fix_orphan_refs(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
     """Fix orphan $ref references by creating missing components."""
     # Collect all $refs
     all_refs: set[str] = set()
@@ -693,59 +697,6 @@ def _normalize_types(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return normalize_recursive(spec), normalized_count
 
 
-def _fix_invalid_examples(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Fix example objects that lack required value or externalValue field.
-
-    According to OpenAPI 3.0, Example objects in media types must have either:
-    - value: Embedded example value
-    - externalValue: URL pointing to external example
-
-    This only fixes examples in media type content (e.g., requestBody/responses content),
-    NOT schema properties that happen to be named "examples".
-
-    Returns (modified_spec, fix_count).
-    """
-    fixed_count = 0
-
-    def fix_examples_in_content(obj: Any, in_content: bool = False) -> Any:
-        """Recursively fix examples only within content sections."""
-        nonlocal fixed_count
-
-        if isinstance(obj, dict):
-            result = {}
-            for key, value in obj.items():
-                # Track if we're inside a content section (requestBody/responses)
-                entering_content = key == "content" and isinstance(value, dict)
-
-                # Only fix examples when inside a content section
-                if key == "examples" and isinstance(value, dict) and in_content:
-                    fixed_examples = {}
-                    for example_name, example_value in value.items():
-                        # Example object must have value or externalValue
-                        if (
-                            isinstance(example_value, dict)
-                            and "value" not in example_value
-                            and "externalValue" not in example_value
-                        ):
-                            fixed_example = example_value.copy()
-                            fixed_example["value"] = {}
-                            fixed_examples[example_name] = fixed_example
-                            fixed_count += 1
-                        else:
-                            fixed_examples[example_name] = example_value
-                    result[key] = fixed_examples
-                else:
-                    result[key] = fix_examples_in_content(value, in_content or entering_content)
-            return result
-
-        if isinstance(obj, list):
-            return [fix_examples_in_content(item, in_content) for item in obj]
-
-        return obj
-
-    return fix_examples_in_content(spec), fixed_count
-
-
 def _normalize_domain_names(
     spec: dict[str, Any],
     target_fields: list[str],
@@ -845,6 +796,75 @@ def _normalize_domain_names(
     return normalize_recursive(spec), normalize_count
 
 
+# =============================================================================
+# UPSTREAM VALIDATION
+# =============================================================================
+
+
+def validate_upstream_spec(spec: dict[str, Any]) -> list[str]:
+    """Phase 1: Validate upstream-injected fields exist.
+
+    Returns a list of warning strings. Empty list means all checks passed.
+    Does NOT modify the spec — validation only.
+    """
+    warnings: list[str] = []
+
+    if "contact" not in spec.get("info", {}):
+        warnings.append("Upstream regression: info.contact is missing")
+
+    servers = spec.get("servers", [])
+    if not servers:
+        warnings.append("Upstream regression: servers array is missing or empty")
+
+    security_schemes = spec.get("components", {}).get("securitySchemes", {})
+    if not security_schemes:
+        warnings.append("Upstream regression: components.securitySchemes is missing")
+
+    if not spec.get("security"):
+        warnings.append("Upstream regression: global security array is missing")
+
+    paths = spec.get("paths", {})
+    ops_without_tags = []
+    seen_ids: dict[str, str] = {}
+    for path, path_item in paths.items():
+        if not isinstance(path_item, dict):
+            continue
+        for method in ("get", "post", "put", "delete", "patch", "head", "options"):
+            op = path_item.get(method)
+            if not isinstance(op, dict):
+                continue
+            if not op.get("tags"):
+                ops_without_tags.append(f"{method.upper()} {path}")
+            op_id = op.get("operationId", "")
+            if op_id:
+                if op_id in seen_ids:
+                    warnings.append(
+                        f"Upstream regression: duplicate operationId '{op_id}' "
+                        f"at {method.upper()} {path} and {seen_ids[op_id]}"
+                    )
+                seen_ids[op_id] = f"{method.upper()} {path}"
+
+    if ops_without_tags:
+        warnings.append(
+            f"Upstream regression: {len(ops_without_tags)} operations missing tags "
+            f"(first: {ops_without_tags[0]})"
+        )
+
+    def _has_script_tags(obj: Any) -> bool:
+        if isinstance(obj, str):
+            return "<script" in obj.lower()
+        if isinstance(obj, dict):
+            return any(_has_script_tags(v) for v in obj.values())
+        if isinstance(obj, list):
+            return any(_has_script_tags(item) for item in obj)
+        return False
+
+    if _has_script_tags(spec.get("info", {})):
+        warnings.append("Upstream regression: <script> tags found in info section")
+
+    return warnings
+
+
 def _sanitize_script_tags(
     spec: dict[str, Any],
     target_fields: list[str],
@@ -854,13 +874,6 @@ def _sanitize_script_tags(
     Spectral's no-script-tags-in-markdown rule flags descriptions containing
     <script> tags as a security warning. This function escapes them to HTML entities
     while preserving the documentation content.
-
-    Args:
-        spec: OpenAPI specification dictionary.
-        target_fields: List of field names to sanitize (e.g., description, summary).
-
-    Returns:
-        Tuple of (modified_spec, sanitize_count).
     """
     sanitize_count = 0
 
@@ -871,9 +884,7 @@ def _sanitize_script_tags(
             result = {}
             for key, value in obj.items():
                 if key in target_fields and isinstance(value, str):
-                    # Check if value contains script tags
                     if "<script" in value.lower():
-                        # Escape script tags to HTML entities
                         sanitized = re.sub(
                             r"<script",
                             "&lt;script",
@@ -1804,7 +1815,6 @@ def print_summary(stats: PipelineStats) -> None:
     table.add_row("Enrichment Changes", str(stats.enrichment_changes))
     table.add_row("Normalization Changes", str(stats.normalization_changes))
     table.add_row("Schemas Fixed", str(stats.schemas_fixed))
-    table.add_row("Operations Tagged", str(stats.operations_tagged))
     table.add_row("Descriptions Generated", str(stats.descriptions_generated))
     table.add_row("Consistency Issues", str(stats.consistency_issues))
     table.add_row("Minimum Configs Added", str(stats.minimum_configs_added))
@@ -1851,7 +1861,6 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "enrichment_changes": stats.enrichment_changes,
             "normalization_changes": stats.normalization_changes,
             "schemas_fixed": stats.schemas_fixed,
-            "operations_tagged": stats.operations_tagged,
             "descriptions_generated": stats.descriptions_generated,
             "consistency_issues": stats.consistency_issues,
             "minimum_configs_added": stats.minimum_configs_added,

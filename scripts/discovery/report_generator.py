@@ -9,21 +9,22 @@ Generates:
 """
 
 import json
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from scripts.utils.extension_constants import (
+    X_F5XC_API_URL,
+    X_F5XC_DISCOVERED_AT,
+    X_F5XC_RESPONSE_TIME_MS,
+)
+from scripts.utils.path_config import PathConfig
+from scripts.utils.report_base import BaseReporter
+from scripts.utils.server_variables_markdown import ServerVariablesMarkdownHelper
+
 from .diff_analyzer import DiffReport, DiffSeverity
 from .schema_inferrer import InferredSchema
-
-# Add utils to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "utils"))
-from extension_constants import X_F5XC_API_URL, X_F5XC_DISCOVERED_AT, X_F5XC_RESPONSE_TIME_MS
-from path_config import PathConfig
-from report_base import BaseReporter
-from server_variables_markdown import ServerVariablesMarkdownHelper
 
 
 @dataclass
@@ -102,7 +103,7 @@ class ReportGenerator(BaseReporter):
         self.pretty_print = pretty_print
         self.sv_helper = ServerVariablesMarkdownHelper()
 
-    def generate_all(self, session: DiscoverySession) -> dict[str, Path]:
+    def generate_all(self, session: DiscoverySession) -> dict[str, Path]:  # type: ignore[override]  # pylint: disable=arguments-differ
         """Generate all reports from discovery session.
 
         Args:
@@ -425,3 +426,23 @@ class ReportGenerator(BaseReporter):
                 type_name = diff.diff_type.value
                 counts[type_name] = counts.get(type_name, 0) + 1
         return counts
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert report to dictionary format.
+
+        Returns:
+            Dictionary representation of report data
+        """
+        return {
+            "title": self.title,
+            "description": self.description,
+            "generated_at": self.generated_at,
+        }
+
+    def to_markdown(self) -> str:
+        """Convert report to markdown format.
+
+        Returns:
+            Markdown-formatted string
+        """
+        return f"# {self.title}\n\n{self.description}\n\nGenerated at: {self.generated_at}\n"
