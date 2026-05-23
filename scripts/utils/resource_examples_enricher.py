@@ -179,6 +179,8 @@ class ExampleValidator:
         # Validate spec portion (skip metadata which may not be in schema)
         spec_data = example_data.get("spec", example_data)
 
+        assert jsonschema is not None  # guarded by _jsonschema_available check above
+
         try:
             # Build a resolver for $ref handling
             schema_store = {f"#/components/schemas/{name}": s for name, s in self.schemas.items()}

@@ -63,7 +63,7 @@ class GrammarImprover:
         self.trim_whitespace = trim_whitespace
         self.use_language_tool = use_language_tool and LANGUAGE_TOOL_AVAILABLE
 
-        self._tool = None
+        self._tool: Any = None
         if self.use_language_tool:
             self._init_language_tool()
 

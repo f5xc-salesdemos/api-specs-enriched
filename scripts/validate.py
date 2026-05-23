@@ -26,13 +26,22 @@ from rich.table import Table
 
 # Import reporter infrastructure
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
-from path_config import PathConfig
-from validation_reporter import (
-    EndpointResult,
-    SpecValidationResult,
-    ValidationReporter,
-    ValidationStats,
-)
+try:
+    from scripts.utils.path_config import PathConfig
+    from scripts.utils.validation_reporter import (
+        EndpointResult,
+        SpecValidationResult,
+        ValidationReporter,
+        ValidationStats,
+    )
+except ModuleNotFoundError:
+    from path_config import PathConfig  # type: ignore[import-not-found,no-redef,unused-ignore]
+    from validation_reporter import (  # type: ignore[import-not-found,no-redef,unused-ignore]
+        EndpointResult,
+        SpecValidationResult,
+        ValidationReporter,
+        ValidationStats,
+    )
 
 console = Console()
 

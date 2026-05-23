@@ -44,7 +44,13 @@ import httpx
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "discovery"))
-from rate_limiter import RateLimitConfig, RateLimiter
+try:
+    from scripts.discovery.rate_limiter import RateLimitConfig, RateLimiter
+except ModuleNotFoundError:
+    from rate_limiter import (  # type: ignore[import-not-found,no-redef,unused-ignore]
+        RateLimitConfig,
+        RateLimiter,
+    )
 
 logger = logging.getLogger(__name__)
 
