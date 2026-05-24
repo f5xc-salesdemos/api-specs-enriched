@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import copy
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +19,8 @@ from scripts.utils.extension_constants import X_F5XC_NAMESPACE_PROFILE
 
 @dataclass
 class NamespaceProfileStats:
+    """Tracks statistics during namespace profile enrichment."""
+
     specs_enriched: int = 0
     system_only: int = 0
     shared_only: int = 0
@@ -42,7 +44,7 @@ def _deep_merge(base: dict, override: dict) -> dict:
 class NamespaceProfileEnricher:
     """Enriches OpenAPI specs with x-f5xc-namespace-profile extension."""
 
-    def __init__(self, config_path: Path | None = None) -> None:
+    def __init__(self, config_path: Path | None = None) -> None:  # noqa: D107
         if config_path is None:
             config_path = Path("config/namespace_profile.yaml")
         self.config_path = config_path
@@ -51,7 +53,7 @@ class NamespaceProfileEnricher:
         self.stats = NamespaceProfileStats()
 
     def _load_config(self) -> None:
-        with open(self.config_path) as f:
+        with self.config_path.open() as f:
             self.config = yaml.safe_load(f)
 
     def get_profile_for_resource(self, resource_type: str) -> dict[str, Any]:
@@ -61,7 +63,7 @@ class NamespaceProfileEnricher:
 
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
-            lookup_without_views = lookup[len("views_"):]
+            lookup_without_views = lookup[len("views_") :]
             if lookup_without_views in resources:
                 lookup = lookup_without_views
 
@@ -136,19 +138,22 @@ class NamespaceProfileEnricher:
         """
         # Strip common suffixes
         name = schema_name
-        for suffix in ("Object", "CreateSpecType", "ReplaceSpecType",
-                       "GetSpecType", "StatusObject", "SpecType"):
+        for suffix in (
+            "Object",
+            "CreateSpecType",
+            "ReplaceSpecType",
+            "GetSpecType",
+            "StatusObject",
+            "SpecType",
+        ):
             if name.endswith(suffix):
                 name = name[: -len(suffix)]
                 break
 
         # Strip common prefixes
         for prefix in ("views",):
-            if name.startswith(prefix):
-                name = name[len(prefix):]
+            name = name.removeprefix(prefix)
 
-        # Convert to snake_case if PascalCase
-        import re
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         s2 = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1)
         return s2.lower().strip("_")
@@ -202,14 +207,13 @@ class NamespaceProfileEnricher:
         for path in paths:
             match = re.search(r"/namespaces/(?:\{namespace\}|system|shared)/([^/]+)/?$", path)
             if match:
-                resource = match.group(1)
-                resource = re.sub(r"s$", "", resource)
-                return resource
+                return re.sub(r"s$", "", match.group(1))
         return ""
 
     def get_stats(self) -> dict[str, Any]:
-        from dataclasses import asdict
+        """Return enrichment statistics as a dictionary."""
         return asdict(self.stats)
 
     def reset_stats(self) -> None:
+        """Reset all enrichment statistics to zero."""
         self.stats = NamespaceProfileStats()

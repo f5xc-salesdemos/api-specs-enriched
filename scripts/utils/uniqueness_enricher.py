@@ -173,7 +173,6 @@ class UniquenessEnricher:
             return profile
 
         if isinstance(profile, dict):
-            # Primary: recommendation.primary
             primary_ns = profile.get("recommendation", {}).get("primary", "")
             if primary_ns == "system":
                 return "system"

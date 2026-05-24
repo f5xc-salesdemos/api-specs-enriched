@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -13,7 +12,6 @@ from scripts.utils.namespace_profile_enricher import (
     NamespaceProfileEnricher,
     NamespaceProfileStats,
 )
-
 
 # -- Fixtures --
 
@@ -124,7 +122,9 @@ class TestConfigLoading:
         assert profile["constraint"]["allowed"] == ["custom", "default", "shared"]
         assert profile["recommendation"]["primary"] == "custom"
 
-    def test_shared_ref_resource_has_recommendation(self, enricher: NamespaceProfileEnricher) -> None:
+    def test_shared_ref_resource_has_recommendation(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
         profile = enricher.get_profile_for_resource("app_firewall")
         assert profile["recommendation"]["primary"] == "shared"
         assert profile["classification"]["multi_tenant_pattern"] == "shared-ref"
@@ -166,9 +166,13 @@ class TestProfileValidation:
         valid = enricher.config["valid_multi_tenant_patterns"]
         for name in enricher.config.get("resources", {}):
             profile = enricher.get_profile_for_resource(name)
-            assert profile["classification"]["multi_tenant_pattern"] in valid, f"{name} has invalid pattern"
+            assert profile["classification"]["multi_tenant_pattern"] in valid, (
+                f"{name} has invalid pattern"
+            )
 
-    def test_all_resources_have_valid_namespace_types(self, enricher: NamespaceProfileEnricher) -> None:
+    def test_all_resources_have_valid_namespace_types(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
         valid = enricher.config["valid_namespace_types"]
         for name in enricher.config.get("resources", {}):
             profile = enricher.get_profile_for_resource(name)
@@ -211,7 +215,9 @@ class TestResourceTypeExtraction:
 
 
 class TestSpecEnrichment:
-    def test_adds_profile_to_info(self, enricher: NamespaceProfileEnricher, sample_spec: dict) -> None:
+    def test_adds_profile_to_info(
+        self, enricher: NamespaceProfileEnricher, sample_spec: dict
+    ) -> None:
         result = enricher.enrich_spec(sample_spec)
         assert "x-f5xc-namespace-profile" in result["info"]
         profile = result["info"]["x-f5xc-namespace-profile"]
@@ -219,13 +225,17 @@ class TestSpecEnrichment:
         assert "recommendation" in profile
         assert "classification" in profile
 
-    def test_system_resource_gets_system_profile(self, enricher: NamespaceProfileEnricher, system_spec: dict) -> None:
+    def test_system_resource_gets_system_profile(
+        self, enricher: NamespaceProfileEnricher, system_spec: dict
+    ) -> None:
         result = enricher.enrich_spec(system_spec)
         profile = result["info"]["x-f5xc-namespace-profile"]
         assert profile["constraint"]["allowed"] == ["system"]
         assert profile["recommendation"]["primary"] == "system"
 
-    def test_shared_resource_gets_shared_profile(self, enricher: NamespaceProfileEnricher, shared_spec: dict) -> None:
+    def test_shared_resource_gets_shared_profile(
+        self, enricher: NamespaceProfileEnricher, shared_spec: dict
+    ) -> None:
         result = enricher.enrich_spec(shared_spec)
         profile = result["info"]["x-f5xc-namespace-profile"]
         assert profile["constraint"]["allowed"] == ["shared"]
@@ -233,7 +243,10 @@ class TestSpecEnrichment:
     def test_idempotent(self, enricher: NamespaceProfileEnricher, sample_spec: dict) -> None:
         result1 = enricher.enrich_spec(sample_spec)
         result2 = enricher.enrich_spec(copy.deepcopy(result1))
-        assert result1["info"]["x-f5xc-namespace-profile"] == result2["info"]["x-f5xc-namespace-profile"]
+        assert (
+            result1["info"]["x-f5xc-namespace-profile"]
+            == result2["info"]["x-f5xc-namespace-profile"]
+        )
 
     def test_removes_old_namespace_scope(self, enricher: NamespaceProfileEnricher) -> None:
         spec = {
@@ -248,7 +261,7 @@ class TestSpecEnrichment:
         assert "x-f5xc-namespace-profile" in result["info"]
 
     def test_preserves_existing_info_fields(self, enricher: NamespaceProfileEnricher) -> None:
-        spec = {
+        spec: dict[str, Any] = {
             "info": {
                 "title": "HTTP Loadbalancer API",
                 "description": "Existing description",
@@ -266,7 +279,9 @@ class TestSpecEnrichment:
         assert "info" in result
         assert "x-f5xc-namespace-profile" in result["info"]
 
-    def test_stats_updated(self, enricher: NamespaceProfileEnricher, sample_spec: dict, system_spec: dict) -> None:
+    def test_stats_updated(
+        self, enricher: NamespaceProfileEnricher, sample_spec: dict, system_spec: dict
+    ) -> None:
         enricher.enrich_spec(sample_spec)
         enricher.enrich_spec(system_spec)
         stats = enricher.get_stats()
@@ -279,16 +294,31 @@ class TestSpecEnrichment:
 
 
 SYSTEM_RESOURCES = [
-    "alert_policy", "aws_vpc_site", "azure_vnet_site", "gcp_vpc_site",
-    "fleet", "namespace", "role", "user", "certificate", "global_network",
-    "virtual_network", "k8s_cluster", "cloud_credentials", "token",
-    "views_aws_vpc_site", "views_azure_vnet_site",
+    "alert_policy",
+    "aws_vpc_site",
+    "azure_vnet_site",
+    "gcp_vpc_site",
+    "fleet",
+    "namespace",
+    "role",
+    "user",
+    "certificate",
+    "global_network",
+    "virtual_network",
+    "k8s_cluster",
+    "cloud_credentials",
+    "token",
+    "views_aws_vpc_site",
+    "views_azure_vnet_site",
 ]
 
 SHARED_ONLY_RESOURCES = ["namespace_role_binding"]
 
 SHARED_REF_RESOURCES = [
-    "app_firewall", "service_policy", "rate_limiter", "ip_prefix_set",
+    "app_firewall",
+    "service_policy",
+    "rate_limiter",
+    "ip_prefix_set",
     "waf_exclusion_policy",
 ]
 
@@ -310,12 +340,18 @@ def test_shared_only_resource_scope(enricher: NamespaceProfileEnricher, resource
 @pytest.mark.parametrize("resource_name", SHARED_REF_RESOURCES)
 def test_shared_ref_recommendation(enricher: NamespaceProfileEnricher, resource_name: str) -> None:
     profile = enricher.get_profile_for_resource(resource_name)
-    assert profile["recommendation"]["primary"] == "shared", f"{resource_name} should recommend shared"
-    assert "custom" in profile["constraint"]["allowed"] or "shared" in profile["constraint"]["allowed"]
+    assert profile["recommendation"]["primary"] == "shared", (
+        f"{resource_name} should recommend shared"
+    )
+    assert (
+        "custom" in profile["constraint"]["allowed"] or "shared" in profile["constraint"]["allowed"]
+    )
 
 
 @pytest.mark.parametrize("resource_name", TENANT_RESOURCES)
 def test_tenant_resource_scope(enricher: NamespaceProfileEnricher, resource_name: str) -> None:
     profile = enricher.get_profile_for_resource(resource_name)
     assert "custom" in profile["constraint"]["allowed"], f"{resource_name} should allow custom"
-    assert "system" not in profile["constraint"]["allowed"], f"{resource_name} should not allow system"
+    assert "system" not in profile["constraint"]["allowed"], (
+        f"{resource_name} should not allow system"
+    )

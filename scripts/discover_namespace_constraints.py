@@ -22,7 +22,6 @@ from typing import Any
 import requests
 import yaml
 
-
 NAMESPACE_TYPES_TO_TEST = ["system", "shared", "default"]
 
 
@@ -45,10 +44,10 @@ def list_resource_types_from_specs(specs_dir: Path) -> list[dict[str, str]]:
         print(f"Error: {index_path} not found", file=sys.stderr)
         sys.exit(1)
 
-    with open(index_path) as f:
+    with index_path.open() as f:
         index = json.load(f)
 
-    for _, domain_info in index.get("specifications", {}).items():
+    for domain_info in index.get("specifications", {}).values():
         for resource in domain_info.get("primary_resources", []):
             name = resource.get("name", "")
             api_paths = resource.get("api_paths", {})
@@ -86,7 +85,7 @@ def discover_all(specs_dir: Path) -> dict[str, Any]:
     print(f"Discovering namespace constraints for {len(resources)} resources...")
     for i, resource in enumerate(resources):
         name = resource["name"]
-        print(f"  [{i+1}/{len(resources)}] {name}", end=" ")
+        print(f"  [{i + 1}/{len(resources)}] {name}", end=" ")
         results[name] = {"allowed": [], "denied": []}
         for ns_type in NAMESPACE_TYPES_TO_TEST:
             probe = probe_namespace(base_url, headers, resource["list_path"], ns_type)
@@ -107,7 +106,7 @@ def discover_all(specs_dir: Path) -> dict[str, Any]:
 
 def diff_with_config(discovery: dict[str, Any], config_path: Path) -> list[str]:
     """Compare discovery results against current config and report differences."""
-    with open(config_path) as f:
+    with config_path.open() as f:
         config = yaml.safe_load(f)
 
     default_allowed = config["default_profile"]["constraint"]["allowed"]
@@ -126,8 +125,11 @@ def diff_with_config(discovery: dict[str, Any], config_path: Path) -> list[str]:
 
 
 def main() -> None:
+    """Run namespace constraint discovery and generate a report."""
     parser = argparse.ArgumentParser(description="Discover F5 XC namespace constraints")
-    parser.add_argument("--specs-dir", default="docs/specifications/api", help="Enriched specs directory")
+    parser.add_argument(
+        "--specs-dir", default="docs/specifications/api", help="Enriched specs directory"
+    )
     parser.add_argument("--output", default="discovery_report.yaml", help="Output report path")
     parser.add_argument("--diff", metavar="CONFIG", help="Diff discovery against config file")
     args = parser.parse_args()
@@ -135,7 +137,7 @@ def main() -> None:
     specs_dir = Path(args.specs_dir)
     results = discover_all(specs_dir)
 
-    with open(args.output, "w") as f:
+    with Path(args.output).open("w") as f:
         yaml.dump(results, f, default_flow_style=False, sort_keys=True)
     print(f"\nReport written to {args.output}")
 
