@@ -1154,3 +1154,18 @@ resource_constraint_overrides:
           confidence: 0.99
           category: "content"
           note: "Must be a valid URI (uri_ref). API rejects inline HTML despite the description example."
+
+  blindfold_secret_info:
+    schema_pattern: "BlindfoldSecretInfoType"
+    fields:
+      location:
+        type: "string"
+        constraints:
+          minLength: 4
+          maxLength: 131072
+          format: "uri"
+        metadata:
+          source: "manual-override"
+          confidence: 1.0
+          category: "content"
+          note: "Blindfold envelope encryption (AES-256-GCM + RSA-OAEP) of an RSA-2048 TLS private key produces ~3700 char string:/// URL. 128KB max secret size = ~175KB base64. Discovery reported 1024 which is incorrect."
