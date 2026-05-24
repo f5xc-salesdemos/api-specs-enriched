@@ -193,14 +193,14 @@ class TestResourceTypeExtraction:
         assert enricher._detect_resource_type(spec) == "aws_vpc_site"
 
     def test_from_paths(self, enricher: NamespaceProfileEnricher) -> None:
-        spec = {
+        spec: dict[str, Any] = {
             "info": {"title": "Unknown"},
             "paths": {"/api/config/namespaces/{namespace}/http_loadbalancers": {}},
         }
         assert enricher._detect_resource_type(spec) == "http_loadbalancer"
 
     def test_from_cli_domain(self, enricher: NamespaceProfileEnricher) -> None:
-        spec = {
+        spec: dict[str, Any] = {
             "info": {"title": "Unknown", "x-f5xc-cli-domain": "dns_zone"},
             "paths": {},
         }
@@ -249,7 +249,7 @@ class TestSpecEnrichment:
         )
 
     def test_removes_old_namespace_scope(self, enricher: NamespaceProfileEnricher) -> None:
-        spec = {
+        spec: dict[str, Any] = {
             "info": {
                 "title": "HTTP Loadbalancer API",
                 "x-f5xc-namespace-scope": "any",
@@ -274,7 +274,9 @@ class TestSpecEnrichment:
         assert result["info"]["x-f5xc-cli-domain"] == "loadbalancer"
 
     def test_creates_info_if_missing(self, enricher: NamespaceProfileEnricher) -> None:
-        spec = {"paths": {"/api/config/namespaces/{namespace}/http_loadbalancers": {}}}
+        spec: dict[str, Any] = {
+            "paths": {"/api/config/namespaces/{namespace}/http_loadbalancers": {}}
+        }
         result = enricher.enrich_spec(spec)
         assert "info" in result
         assert "x-f5xc-namespace-profile" in result["info"]
