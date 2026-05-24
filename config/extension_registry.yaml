@@ -143,13 +143,22 @@ schema_level:
       example_yaml: "YAML example configuration"
     migrated_from: "x-ves-minimum-configuration"
 
-  x-f5xc-namespace-scope:
-    type: string
-    enum: [namespace, system, tenant]
-    purpose: Scope level for resource operations
-    consumers: [cli, mcp]
-    example: "namespace"
-    migrated_from: "x-ves-namespace-scope"
+  x-f5xc-namespace-profile:
+    type: object
+    purpose: Rich namespace constraint, recommendation, and classification profile
+    consumers: [cli, mcp, ide, terraform]
+    example:
+      constraint:
+        allowed: ["custom", "default", "shared"]
+        enforced: true
+      recommendation:
+        primary: "custom"
+        alternatives: []
+        rationale: "Standard tenant resource"
+      classification:
+        category: "application"
+        multi_tenant_pattern: "per-tenant"
+    migrated_from: "x-f5xc-namespace-scope"
 
   x-f5xc-displayorder:
     type: integer

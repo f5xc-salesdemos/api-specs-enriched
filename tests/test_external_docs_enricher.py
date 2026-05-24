@@ -430,18 +430,21 @@ class TestIntegrationPatterns:
         assert X_F5XC_CLI_DOMAIN in result["info"]
         assert "x-f5xc-minimum-configuration" in result["info"]
 
-    def test_works_with_namespace_scope(self):
-        """Test compatibility with namespace scope enricher."""
+    def test_works_with_namespace_profile(self):
+        """Test compatibility with namespace profile enricher."""
         enricher = ExternalDocsEnricher()
-        # Simulate spec already enriched by NamespaceScopeEnricher
+        # Simulate spec already enriched by NamespaceProfileEnricher
         spec = {
             "info": {
                 "title": "Alert Policy API",
-                "x-f5xc-namespace-scope": "system",
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["system"]},
+                    "recommendation": {"default": "system"},
+                    "classification": {"multi_tenant_pattern": "system-only"},
+                },
             },
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
         assert "externalDocs" in result["info"]
-        assert "x-f5xc-namespace-scope" in result["info"]
-        assert result["info"]["x-f5xc-namespace-scope"] == "system"
+        assert "x-f5xc-namespace-profile" in result["info"]

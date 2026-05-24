@@ -23,7 +23,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_DOC_SECTION,
     X_F5XC_ENRICHED_VERSION,
     X_F5XC_MINIMUM_CONFIGURATION,
-    X_F5XC_NAMESPACE_SCOPE,
+    X_F5XC_NAMESPACE_PROFILE,
     X_F5XC_PREFIX,
     X_F5XC_PRIMARY_RESOURCES,
     X_F5XC_REQUIRED_FIELDS,
@@ -61,7 +61,7 @@ class TestExtensionConstants:
         [
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
-            X_F5XC_NAMESPACE_SCOPE,
+            X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,
             X_F5XC_DESCRIPTION,
             X_F5XC_DANGER_LEVEL,
@@ -88,7 +88,7 @@ class TestExtensionConstants:
         [
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
-            X_F5XC_NAMESPACE_SCOPE,
+            X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,
             X_F5XC_DESCRIPTION,
             X_F5XC_DANGER_LEVEL,
@@ -109,7 +109,7 @@ class TestExtensionConstants:
         [
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
-            X_F5XC_NAMESPACE_SCOPE,
+            X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,
             X_F5XC_DESCRIPTION,
             X_F5XC_DANGER_LEVEL,

@@ -7,7 +7,7 @@ This enricher adds uniqueness scope metadata to enable downstream tools
 API submission.
 
 Architecture:
-- Reads: x-f5xc-namespace-scope from spec.info (spec-level)
+- Reads: x-f5xc-namespace-profile from spec.info (spec-level, structured object)
 - Writes: x-f5xc-uniqueness to components.schemas (schema-level)
 - Hybrid pattern: Spec-level inference + Schema-level application
 
@@ -30,7 +30,7 @@ from typing import Any
 
 import yaml
 
-from .extension_constants import X_F5XC_NAMESPACE_SCOPE, X_F5XC_UNIQUENESS
+from .extension_constants import X_F5XC_NAMESPACE_PROFILE, X_F5XC_UNIQUENESS
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class UniquenessStats:
 class UniquenessEnricher:
     """Enrich OpenAPI schemas with uniqueness scope metadata.
 
-    Reads x-f5xc-namespace-scope from spec.info (spec-level).
+    Reads x-f5xc-namespace-profile from spec.info (spec-level, structured object).
     Writes x-f5xc-uniqueness to components.schemas (schema-level).
     """
 
@@ -113,8 +113,9 @@ class UniquenessEnricher:
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Enrich all schemas with uniqueness metadata.
 
-        1. Read namespace scope from spec.info["x-f5xc-namespace-scope"]
-        2. For each schema in components.schemas:
+        1. Read namespace profile from spec.info["x-f5xc-namespace-profile"]
+        2. Extract the recommended default namespace to derive scope
+        3. For each schema in components.schemas:
             - Skip if already has x-f5xc-uniqueness (idempotent)
             - Convert schema name to resource type (HTTPLoadBalancer → http_loadbalancer)
             - Check resource_overrides, else use namespace_scope_mapping
@@ -128,8 +129,10 @@ class UniquenessEnricher:
             Enriched specification
         """
         try:
-            # Get namespace scope from spec.info
-            namespace_scope = spec.get("info", {}).get(X_F5XC_NAMESPACE_SCOPE, "any")
+            # Get namespace scope from the structured namespace profile
+            namespace_scope = self._extract_scope_from_profile(
+                spec.get("info", {}).get(X_F5XC_NAMESPACE_PROFILE)
+            )
 
             # Enrich each schema
             schemas = spec.get("components", {}).get("schemas", {})
@@ -146,6 +149,47 @@ class UniquenessEnricher:
             )
 
         return spec
+
+    @staticmethod
+    def _extract_scope_from_profile(profile: Any) -> str:
+        """Extract a namespace scope string from the structured namespace profile.
+
+        The namespace profile is a structured object with constraint, recommendation,
+        and classification sections. This method extracts the effective scope by
+        checking the recommendation.primary field, falling back to the first allowed
+        namespace in constraint.allowed.
+
+        Args:
+            profile: The x-f5xc-namespace-profile value (dict or legacy string).
+
+        Returns:
+            One of "system", "shared", or "any".
+        """
+        if profile is None:
+            return "any"
+
+        # Legacy string support (backward compatibility)
+        if isinstance(profile, str):
+            return profile
+
+        if isinstance(profile, dict):
+            # Primary: recommendation.primary
+            primary_ns = profile.get("recommendation", {}).get("primary", "")
+            if primary_ns == "system":
+                return "system"
+            if primary_ns == "shared":
+                return "shared"
+
+            # Fallback: if only one allowed namespace in constraint.allowed
+            allowed = profile.get("constraint", {}).get("allowed", [])
+            if allowed == ["system"]:
+                return "system"
+            if allowed == ["shared"]:
+                return "shared"
+
+            return "any"
+
+        return "any"
 
     def _enrich_schema(
         self,

@@ -28,7 +28,7 @@ from .field_metadata_enricher import FieldMetadataEnricher
 from .grammar import GrammarImprover
 from .guided_workflow_enricher import GuidedWorkflowEnricher
 from .minimum_configuration_enricher import MinimumConfigurationEnricher
-from .namespace_scope_enricher import NamespaceScopeEnricher
+from .namespace_profile_enricher import NamespaceProfileEnricher
 from .operation_description_enricher import OperationDescriptionEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .property_description_short_enricher import PropertyDescriptionShortEnricher
@@ -76,7 +76,7 @@ __all__ = [
     "GrammarImprover",
     "GuidedWorkflowEnricher",
     "MinimumConfigurationEnricher",
-    "NamespaceScopeEnricher",
+    "NamespaceProfileEnricher",
     "OperationDescriptionEnricher",
     "OperationMetadataEnricher",
     "PropertyDescriptionShortEnricher",

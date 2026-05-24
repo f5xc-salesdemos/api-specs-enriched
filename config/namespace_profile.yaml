@@ -1,0 +1,1036 @@
+# Namespace profile configuration for F5 XC OpenAPI specifications.
+#
+# Defines technical constraints, recommendations, and classification
+# for each resource type's namespace placement.
+#
+# Used by NamespaceProfileEnricher to add x-f5xc-namespace-profile extension.
+#
+# Resources not listed use default_profile.
+
+default_profile:
+  constraint:
+    allowed: ["custom", "default", "shared"]
+    enforced: true
+  recommendation:
+    primary: "custom"
+    alternatives: []
+    rationale: "Standard tenant resource"
+  classification:
+    category: "application"
+    multi_tenant_pattern: "per-tenant"
+
+valid_namespace_types:
+  - system
+  - shared
+  - default
+  - custom
+
+valid_categories:
+  - infrastructure
+  - security
+  - networking
+  - application
+  - observability
+  - identity
+  - certificate
+
+valid_multi_tenant_patterns:
+  - none
+  - shared-ref
+  - per-tenant
+  - hybrid
+
+# Per-resource profile overrides (deep-merged with default_profile).
+# Only specify fields that differ from default_profile.
+resources:
+
+  # ── System-only: Site and infrastructure resources ──
+
+  aws_vpc_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  aws_tgw_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  azure_vnet_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  gcp_vpc_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  physical_k8s_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Physical site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  voltstack_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Voltstack site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  securemesh_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "SecureMesh site infrastructure managed at platform level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Fleet and cluster management ──
+
+  fleet:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Fleet management is platform-level orchestration"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  k8s_cluster:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Kubernetes cluster registration is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  virtual_k8s:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Virtual K8s provisioning is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  dc_cluster_group:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Data center cluster grouping is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  site_mesh_group:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Site mesh grouping is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  site_mesh:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Site mesh configuration is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Network infrastructure ──
+
+  global_network:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Global network spans across tenants at platform level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  virtual_network:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Virtual network is platform-level infrastructure"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  network_connector:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Network connectors link platform-level networks"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  network_interface:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Network interface configuration is platform-level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  interface:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Interface configuration is platform-level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  network_policy_rule:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Network policy rules are platform-level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  network_policy_set:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Network policy sets are platform-level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  tunnel:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Tunnel configuration is platform-level infrastructure"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  virtual_host:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Virtual host configuration is platform-level"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Identity and access management ──
+
+  user:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "User management is platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  role:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Role definitions are platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  service_credential:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Service credentials are platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  api_credential:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "API credentials are platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  api_credential_api_token:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "API token credentials are platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  token:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Token management is platform-level identity"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Certificate management ──
+
+  certificate:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Certificate management is platform-level"
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "none"
+
+  certificate_chain:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Certificate chain management is platform-level"
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Cloud and infrastructure ──
+
+  cloud_connect:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud connect is platform-level infrastructure"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  cloud_credentials:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud credentials are platform-level secrets"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  cloud_link:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud link is platform-level infrastructure"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  cloud_elastic_ip:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Cloud elastic IP is platform-level infrastructure"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: BGP and routing ──
+
+  bgp:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "BGP configuration is platform-level routing"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  bgp_asn_set:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "BGP ASN sets are platform-level routing"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  bgp_routing_policy:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "BGP routing policies are platform-level routing"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  route:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Route configuration is platform-level routing"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Tenant and system administration ──
+
+  tenant:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Tenant object is platform-level administration"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  tenant_settings:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Tenant settings are platform-level administration"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  namespace:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Namespace management is platform-level administration"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  virtual_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Virtual site is platform-level abstraction"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: App and monitoring ──
+
+  app_setting:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "App setting is platform-level configuration"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  app_type:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "App type definition is platform-level"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  alert_policy:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Alert policies are platform-level monitoring"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  alert_policy_set:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Alert policy sets are platform-level monitoring"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  alert_receiver:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Alert receivers are platform-level monitoring"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  global_log_receiver:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Global log receiver is platform-level observability"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  log_receiver:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Log receiver is platform-level observability"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Discovery, registration, protocol ──
+
+  discovery:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Service discovery is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  registration:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Site registration is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  protocol_inspection:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Protocol inspection is platform-level"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  secret:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Secret management is platform-level"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Labels and metadata ──
+
+  label:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Label management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  label_group:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Label group management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  known_label:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Known label management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  known_label_key:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Known label key management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Upgrade and software ──
+
+  upgrade_os:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "OS upgrade management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  software_version:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Software version management is platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Network security ──
+
+  fast_acl:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Fast ACL is platform-level network security"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  network_firewall:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Network firewall is platform-level security"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  subnet:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Subnet configuration is platform-level networking"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  tenant_configuration:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Tenant configuration is platform-level administration"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  advertise_policy:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Advertise policy is platform-level networking"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  api_definition:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "API definition management is platform-level"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: Views variants (mirror their base resource) ──
+
+  views_advertise_policy:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  views_aws_tgw_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  views_aws_vpc_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  views_azure_vnet_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  views_gcp_vpc_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  views_physical_k8s_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  views_voltstack_site:
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Views variant of system-scoped resource"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # ── Shared-only resources ──
+
+  namespace_role_binding:
+    constraint:
+      allowed: ["shared"]
+    recommendation:
+      primary: "shared"
+      rationale: "Access control binding for cross-namespace role assignment"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  # ── Shared-recommended: Security policies ──
+  # These CAN exist in custom namespaces but are RECOMMENDED in shared
+  # for cross-namespace reuse.
+
+  app_firewall:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Team-specific WAF policy with unique rules"
+      rationale: "Security policies benefit from centralized management in shared namespace"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  waf_exclusion_policy:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Team-specific WAF exclusion rules"
+      rationale: "WAF exclusion policies benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  service_policy:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Namespace-specific service policy"
+      rationale: "Service policies benefit from centralized management for cross-namespace reuse"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  sensitive_data_policy:
+    recommendation:
+      primary: "shared"
+      rationale: "Data loss prevention policies should be centrally managed"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  secret_policy:
+    recommendation:
+      primary: "shared"
+      rationale: "Secret access policies should be centrally managed"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  # ── Shared-recommended: Certificates and trust ──
+
+  trusted_ca_list:
+    recommendation:
+      primary: "shared"
+      rationale: "Trust anchors should be centralized for consistent TLS validation"
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "shared-ref"
+
+  crl:
+    recommendation:
+      primary: "shared"
+      rationale: "Certificate revocation lists should be centralized"
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "shared-ref"
+
+  # ── Shared-recommended: Rate limiting ──
+
+  rate_limiter:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Namespace-specific rate limit thresholds"
+      rationale: "Rate limiters benefit from centralized management for consistent enforcement"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  rate_limiter_policy:
+    recommendation:
+      primary: "shared"
+      rationale: "Rate limiter policies benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  # ── Shared-recommended: User identification and bot defense ──
+
+  user_identification:
+    recommendation:
+      primary: "shared"
+      rationale: "User identification should be consistent across namespaces"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  malicious_user_mitigation:
+    recommendation:
+      primary: "shared"
+      rationale: "Malicious user mitigation should be consistent across namespaces"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  bot_defense_app_infrastructure:
+    recommendation:
+      primary: "shared"
+      rationale: "Bot defense infrastructure should be centralized"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  # ── Shared-recommended: Network security objects ──
+
+  ip_prefix_set:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Namespace-specific IP allowlists"
+      rationale: "IP prefix sets benefit from centralized management for reuse"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  geo_location_set:
+    recommendation:
+      primary: "shared"
+      rationale: "Geo location sets are reusable across namespaces"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  data_type:
+    recommendation:
+      primary: "shared"
+      rationale: "Data type definitions benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  protocol_policer:
+    recommendation:
+      primary: "shared"
+      rationale: "Protocol policers benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  policer:
+    recommendation:
+      primary: "shared"
+      rationale: "Policers benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  forward_proxy_policy:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Namespace-specific proxy policy"
+      rationale: "Forward proxy policies benefit from centralized management"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  filter_set:
+    recommendation:
+      primary: "shared"
+      rationale: "Filter sets are reusable across namespaces"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  data_group:
+    recommendation:
+      primary: "shared"
+      rationale: "Data groups are reusable across namespaces"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
+
+  forwarding_class:
+    recommendation:
+      primary: "shared"
+      rationale: "Forwarding classes are reusable across namespaces"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "shared-ref"
+
+  # ── Per-tenant: Application workloads (default, explicitly classified) ──
+
+  http_loadbalancer:
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  tcp_loadbalancer:
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  origin_pool:
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  healthcheck:
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  waf:
+    recommendation:
+      primary: "shared"
+      alternatives:
+        - namespace_type: "custom"
+          use_case: "Team-specific WAF configuration"
+      rationale: "WAF objects benefit from centralized management for consistency"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "shared-ref"
