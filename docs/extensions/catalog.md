@@ -200,16 +200,16 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-minimum-configuration": {"required_fields": ["name"]}`
 - **Pass-through from upstream:** no
 
-### x-f5xc-namespace-scope
+### x-f5xc-namespace-profile
 
-- **Applied at:** schema
-- **Purpose:** Declares whether a resource is namespace-scoped, system-scoped, or global.
+- **Applied at:** info
+- **Purpose:** Provides namespace constraint, recommendation, and classification metadata for a resource.
 - **Consumers:** multiple
-- **Value type:** string
-- **Value schema:** `{"type": "string", "enum": ["namespaced", "system", "global"]}`
-- **Injected by:** scripts/utils/namespace_scope_enricher.py
-- **Driven by config:** config/namespace_scope.yaml
-- **Example:** `"x-f5xc-namespace-scope": "namespaced"`
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
+- **Injected by:** scripts/utils/namespace_profile_enricher.py
+- **Driven by config:** config/namespace_profile.yaml
+- **Example:** `"x-f5xc-namespace-profile": {"constraint": {"allowed": ["system", "shared", "user"]}, "recommendation": {"default": "shared"}, "classification": {"multi_tenant_pattern": "shared-ref"}}`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-displayorder

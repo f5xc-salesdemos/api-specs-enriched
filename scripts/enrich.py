@@ -39,7 +39,7 @@ from scripts.utils import (
     FieldMetadataEnricher,
     GrammarImprover,
     MinimumConfigurationEnricher,
-    NamespaceScopeEnricher,
+    NamespaceProfileEnricher,
     SchemaFixer,
     UniquenessEnricher,
 )
@@ -325,9 +325,9 @@ def enrich_spec_file(
         # 4.5. Minimum configuration enrichment (add x-f5xc-minimum-configuration)
         spec = minimum_configuration_enricher.enrich_spec(spec)
 
-        # 4.6. Namespace scope enrichment (add x-f5xc-namespace-scope)
-        namespace_scope_enricher = NamespaceScopeEnricher()
-        spec = namespace_scope_enricher.enrich_spec(spec)
+        # 4.6. Namespace profile enrichment (add x-f5xc-namespace-profile)
+        namespace_profile_enricher = NamespaceProfileEnricher()
+        spec = namespace_profile_enricher.enrich_spec(spec)
 
         # 4.6.5. Uniqueness enrichment (add x-f5xc-uniqueness derived from namespace scope)
         uniqueness_enricher = UniquenessEnricher()
@@ -395,7 +395,7 @@ def enrich_spec_file(
         desc_stats = description_validator.get_stats()
         consistency_stats = consistency_validator.get_stats()
         minimum_config_stats = minimum_configuration_enricher.get_stats()
-        namespace_scope_stats = namespace_scope_enricher.get_stats()
+        namespace_profile_stats = namespace_profile_enricher.get_stats()
         constraint_stats = constraint_enricher.get_stats()
 
         return EnrichmentResult(
@@ -415,7 +415,7 @@ def enrich_spec_file(
                 "descriptions_generated": desc_stats.get("operations_generated", 0),
                 "consistency_issues": consistency_stats.get("total_issues", 0),
                 "minimum_configs_added": minimum_config_stats.get("minimum_configs_added", 0),
-                "namespace_scopes_added": namespace_scope_stats.get("specs_enriched", 0),
+                "namespace_profiles_added": namespace_profile_stats.get("specs_enriched", 0),
                 "discovery_enrichments": discovery_enrichments,
                 "constraints_added": constraint_stats.get("constraints_added", 0),
                 "constraint_coverage": constraint_stats.get("coverage_percentage", 0),

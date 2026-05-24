@@ -41,7 +41,11 @@ def sample_spec():
     return {
         "info": {
             "title": "Test API",
-            "x-f5xc-namespace-scope": "any",
+            "x-f5xc-namespace-profile": {
+                "constraint": {"allowed": ["system", "shared", "custom"]},
+                "recommendation": {"primary": "custom", "rationale": "User namespace resource"},
+                "classification": {"multi_tenant_pattern": "tenant-isolated"},
+            },
         },
         "components": {
             "schemas": {
@@ -74,9 +78,15 @@ class TestNamespaceScopeMapping:
         assert lb_uniqueness["metadata"]["confidence"] == 0.95
 
     def test_namespace_scope_system_maps_to_platform(self, enricher):
-        """Test platform-scoped uniqueness (system → platform)"""
+        """Test platform-scoped uniqueness (system-only profile → platform)"""
         spec = {
-            "info": {"x-f5xc-namespace-scope": "system"},
+            "info": {
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["system"]},
+                    "recommendation": {"primary": "system", "rationale": "System resource"},
+                    "classification": {"multi_tenant_pattern": "system-only"},
+                },
+            },
             "components": {"schemas": {"APICredential": {"type": "object"}}},
         }
         result = enricher.enrich_spec(spec)
@@ -87,9 +97,15 @@ class TestNamespaceScopeMapping:
         assert uniqueness["metadata"]["confidence"] == 0.99
 
     def test_namespace_scope_shared_maps_to_namespace(self, enricher):
-        """Test shared namespace scope (shared → namespace)"""
+        """Test shared namespace scope (shared-only profile → namespace)"""
         spec = {
-            "info": {"x-f5xc-namespace-scope": "shared"},
+            "info": {
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["shared"]},
+                    "recommendation": {"primary": "shared", "rationale": "Shared resource"},
+                    "classification": {"multi_tenant_pattern": "shared-ref"},
+                },
+            },
             "components": {"schemas": {"SharedResource": {"type": "object"}}},
         }
         result = enricher.enrich_spec(spec)
@@ -207,7 +223,7 @@ class TestIdempotency:
     def test_idempotency_skips_enrichment(self, enricher):
         """Test that existing uniqueness metadata is not overwritten"""
         spec = {
-            "info": {"x-f5xc-namespace-scope": "any"},
+            "info": {"title": "Test"},
             "components": {
                 "schemas": {
                     "Resource": {
@@ -279,10 +295,10 @@ class TestStatistics:
 class TestEdgeCases:
     """Test edge cases and error handling"""
 
-    def test_missing_namespace_scope_defaults_to_any(self, enricher):
-        """Test behavior when namespace scope is missing (defaults to 'any')"""
+    def test_missing_namespace_profile_defaults_to_any(self, enricher):
+        """Test behavior when namespace profile is missing (defaults to 'any')"""
         spec = {
-            "info": {"title": "Test"},  # No x-f5xc-namespace-scope
+            "info": {"title": "Test"},  # No x-f5xc-namespace-profile
             "components": {"schemas": {"Resource": {"type": "object"}}},
         }
         result = enricher.enrich_spec(spec)
@@ -302,7 +318,14 @@ class TestEdgeCases:
     def test_spec_without_schemas(self, enricher):
         """Test spec without components.schemas"""
         spec = {
-            "info": {"title": "Test", "x-f5xc-namespace-scope": "any"},
+            "info": {
+                "title": "Test",
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["system", "shared", "custom"]},
+                    "recommendation": {"primary": "custom", "rationale": "User namespace resource"},
+                    "classification": {"multi_tenant_pattern": "tenant-isolated"},
+                },
+            },
         }
         enricher.enrich_spec(spec)
         assert enricher.stats.schemas_enriched == 0
@@ -310,7 +333,14 @@ class TestEdgeCases:
     def test_schema_without_components(self, enricher):
         """Test spec without components section"""
         spec = {
-            "info": {"title": "Test", "x-f5xc-namespace-scope": "any"},
+            "info": {
+                "title": "Test",
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["system", "shared", "custom"]},
+                    "recommendation": {"primary": "custom", "rationale": "User namespace resource"},
+                    "classification": {"multi_tenant_pattern": "tenant-isolated"},
+                },
+            },
         }
         enricher.enrich_spec(spec)
         assert enricher.stats.schemas_enriched == 0

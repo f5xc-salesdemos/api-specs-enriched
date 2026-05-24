@@ -45,7 +45,7 @@ X_F5XC_ACRONYMS = "x-f5xc-acronyms"
 # =============================================================================
 
 X_F5XC_MINIMUM_CONFIGURATION = "x-f5xc-minimum-configuration"
-X_F5XC_NAMESPACE_SCOPE = "x-f5xc-namespace-scope"
+X_F5XC_NAMESPACE_PROFILE = "x-f5xc-namespace-profile"
 X_F5XC_DISPLAYORDER = "x-f5xc-displayorder"
 X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
@@ -156,7 +156,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_ACRONYMS,
         # Schema-level
         X_F5XC_MINIMUM_CONFIGURATION,
-        X_F5XC_NAMESPACE_SCOPE,
+        X_F5XC_NAMESPACE_PROFILE,
         X_F5XC_DISPLAYORDER,
         X_F5XC_TERRAFORM_RESOURCE,
         X_F5XC_DISPLAY_NAME,
