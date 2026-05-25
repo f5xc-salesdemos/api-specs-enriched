@@ -408,8 +408,12 @@ def enrich_spec_file(
                     "values_transformed",
                     0,
                 ),
-                "xks_transformations": branding_normalizer_stats.get("xks_transformations", 0),
-                "xcs_transformations": branding_normalizer_stats.get("xcs_transformations", 0),
+                "managed_k8s_transformations": branding_normalizer_stats.get(
+                    "managed_k8s_transformations", 0
+                ),
+                "virtual_k8s_transformations": branding_normalizer_stats.get(
+                    "virtual_k8s_transformations", 0
+                ),
                 "glossary_terms_added": branding_normalizer_stats.get("glossary_terms_added", 0),
                 "schemas_fixed": schema_stats.get("fixes_applied", 0),
                 "descriptions_generated": desc_stats.get("operations_generated", 0),
