@@ -4,14 +4,15 @@
 """Automated branding transformations for API specification text fields.
 
 Applies consistent F5 branding by replacing legacy Volterra references
-and industry-standard terminology (XCKS/XCCS) for Kubernetes offerings.
+and normalizing product names to current F5 Distributed Cloud API names.
 Fully automated - no manual intervention required.
 
 Branding Strategy:
-    - XCKS (XC Kubernetes Service) = AppStack/VoltStack (comparable to AWS EKS, Azure AKS, GCP GKE)
-    - XCCS (XC Container Services) = Virtual Kubernetes (comparable to AWS ECS, Azure Container Services)
+    - AppStack/VoltStack → Managed Kubernetes (current API name)
+    - vK8s → Virtual Kubernetes (current API name)
+    - No invented acronyms — use product names as they appear in the current API.
 
-Version: v3.0.0 - Uses x-f5xc-* namespace constants
+Version: v4.0.0 - Removes XCKS/XCCS, uses current API product names
 """
 
 import re
@@ -29,8 +30,8 @@ class BrandingStats:
     """Statistics from branding transformations."""
 
     legacy_terms_replaced: int = 0
-    xks_transformations: int = 0
-    xcs_transformations: int = 0
+    managed_k8s_transformations: int = 0
+    virtual_k8s_transformations: int = 0
     glossary_terms_added: int = 0
     files_processed: int = 0
     transformations_by_type: dict[str, int] = field(default_factory=dict)
@@ -39,8 +40,8 @@ class BrandingStats:
         """Convert stats to dictionary."""
         return {
             "legacy_terms_replaced": self.legacy_terms_replaced,
-            "xks_transformations": self.xks_transformations,
-            "xcs_transformations": self.xcs_transformations,
+            "managed_k8s_transformations": self.managed_k8s_transformations,
+            "virtual_k8s_transformations": self.virtual_k8s_transformations,
             "glossary_terms_added": self.glossary_terms_added,
             "files_processed": self.files_processed,
             "transformations_by_type": self.transformations_by_type,
@@ -398,11 +399,11 @@ class BrandingValidator:
 
 
 class BrandingNormalizer:
-    """Normalizes F5 XC Kubernetes terminology to industry-standard naming.
+    """Normalizes F5 XC product terminology to current API names.
 
-    Transforms legacy marketing terms to customer-friendly, industry-aligned names:
-    - AppStack/VoltStack → F5 XC Managed Kubernetes (XCKS) - like AWS EKS, Azure AKS
-    - Virtual Kubernetes → F5 XC Container Services (XCCS) - like AWS ECS
+    Transforms legacy Volterra-era terms to current F5 Distributed Cloud names:
+    - AppStack/VoltStack → Managed Kubernetes
+    - vK8s → Virtual Kubernetes
 
     Configuration-driven from config/branding.yaml.
     """
@@ -448,61 +449,49 @@ class BrandingNormalizer:
             self._use_default_config()
 
     def _use_default_config(self) -> None:
-        """Use built-in default XCKS/XCCS branding rules."""
+        """Use built-in default branding rules with current API product names."""
         self.canonical = {
             "managed_kubernetes": {
-                "long_form": "F5 XC Managed Kubernetes",
-                "short_form": "XCKS",
-                "full_acronym": "XC Kubernetes Service",
+                "long_form": "Managed Kubernetes",
                 "legacy_names": ["AppStack", "VoltStack", "voltstack_site"],
                 "comparable_to": ["AWS EKS", "Azure AKS", "Google GKE"],
             },
-            "container_services": {
-                "long_form": "F5 XC Container Services",
-                "short_form": "XCCS",
-                "full_acronym": "XC Container Services",
-                "legacy_names": ["Virtual Kubernetes", "vK8s", "virtual_k8s"],
+            "virtual_kubernetes": {
+                "long_form": "Virtual Kubernetes",
+                "legacy_names": ["vK8s", "virtual_k8s"],
                 "comparable_to": ["AWS ECS", "Azure Container Services", "Cloud Run"],
             },
         }
 
         self.transformations = [
             {
-                "pattern": r"\bVirtual Kubernetes\b",
-                "replacement": "F5 XC Container Services (XCCS)",
-                "context": ["info.description", "operation.description", "schema.description"],
-                "case_sensitive": False,
-            },
-            {
                 "pattern": r"\bvK8s\b",
-                "replacement": "XCCS",
-                "context": ["info.description", "operation.description"],
+                "replacement": "Virtual Kubernetes",
+                "context": ["info.description", "operation.description", "schema.description"],
                 "case_sensitive": True,
             },
             {
                 "pattern": r"\bAppStack\b",
-                "replacement": "F5 XC Managed Kubernetes (XCKS)",
+                "replacement": "Managed Kubernetes",
                 "context": ["info.description", "operation.description", "schema.description"],
                 "case_sensitive": False,
             },
             {
                 "pattern": r"\bVoltStack\b",
-                "replacement": "F5 XC Managed Kubernetes (XCKS)",
+                "replacement": "Managed Kubernetes",
                 "context": ["info.description", "operation.description", "schema.description"],
                 "case_sensitive": False,
             },
         ]
 
         self.glossary = {
-            "XCKS": {
-                "term": "XC Kubernetes Service",
-                "definition": "F5's enterprise managed Kubernetes offering (comparable to AWS EKS, Azure AKS)",
-                "legacy": "Formerly known as AppStack",
+            "CE": {
+                "term": "Customer Edge",
+                "definition": "F5 XC edge deployment infrastructure for distributed applications",
             },
-            "XCCS": {
-                "term": "XC Container Services",
-                "definition": "F5's multi-tenant container orchestration service (comparable to AWS ECS)",
-                "legacy": "Formerly known as Virtual Kubernetes (vK8s)",
+            "RE": {
+                "term": "Regional Edge",
+                "definition": "F5 XC globally distributed edge network infrastructure",
             },
         }
 
@@ -523,8 +512,12 @@ class BrandingNormalizer:
             try:
                 pattern = re.compile(pattern_str, flags)
                 # Determine transformation type for stats tracking
-                trans_type = (
-                    "xcs" if "XCCS" in replacement else "xks" if "XCKS" in replacement else "other"
+                trans_type = rule.get("type") or (
+                    "virtual_k8s"
+                    if "Virtual Kubernetes" in replacement
+                    else "managed_k8s"
+                    if "Managed Kubernetes" in replacement
+                    else "other"
                 )
                 self._compiled_patterns.append((pattern, replacement, context, trans_type))
             except re.error:
@@ -532,7 +525,7 @@ class BrandingNormalizer:
                 continue
 
     def normalize_text(self, text: str, field_context: str = "") -> str:
-        """Apply XCKS/XCCS terminology normalization to text.
+        """Apply product name normalization to text.
 
         Args:
             text: Input text with legacy terminology.
@@ -549,8 +542,32 @@ class BrandingNormalizer:
         for pattern, replacement, contexts, trans_type in self._compiled_patterns:
             # Check if this transformation applies to the current context
             if contexts and field_context:
-                # Check if any context pattern matches the field path
-                matches_context = any(ctx in field_context for ctx in contexts)
+                # Check if any context pattern matches the field path.
+                # Supports substring match (e.g. "info.description" in "info.description")
+                # and semantic suffix match (e.g. "schema.description" matches any path
+                # ending in ".description" that passes through a schemas node).
+                def _matches(ctx: str, path: str) -> bool:
+                    if ctx in path:
+                        return True
+                    ctx_parts = ctx.split(".")
+                    path_parts = path.split(".")
+                    if ctx_parts[-1] == path_parts[-1]:
+                        ancestor_key = ctx_parts[0] if len(ctx_parts) > 1 else ""
+                        if ancestor_key == "operation":
+                            http_methods = {
+                                "get",
+                                "post",
+                                "put",
+                                "delete",
+                                "patch",
+                                "options",
+                                "head",
+                            }
+                            return any(p in http_methods for p in path_parts[:-1])
+                        return not ancestor_key or any(ancestor_key in p for p in path_parts[:-1])
+                    return False
+
+                matches_context = any(_matches(ctx, field_context) for ctx in contexts)
                 if not matches_context:
                     continue
 
@@ -559,10 +576,10 @@ class BrandingNormalizer:
                 new_result = pattern.sub(replacement, result)
                 if new_result != result:
                     # Track statistics
-                    if trans_type == "xcs":
-                        self.stats.xcs_transformations += 1
-                    elif trans_type == "xks":
-                        self.stats.xks_transformations += 1
+                    if trans_type == "virtual_k8s":
+                        self.stats.virtual_k8s_transformations += 1
+                    elif trans_type == "managed_k8s":
+                        self.stats.managed_k8s_transformations += 1
 
                     self.stats.transformations_by_type[trans_type] = (
                         self.stats.transformations_by_type.get(trans_type, 0) + 1
@@ -576,7 +593,7 @@ class BrandingNormalizer:
         spec: dict[str, Any],
         target_fields: list[str] | None = None,
     ) -> dict[str, Any]:
-        """Apply XCKS/XCCS terminology normalization to an OpenAPI specification.
+        """Apply product name normalization to an OpenAPI specification.
 
         Args:
             spec: OpenAPI specification dictionary.
