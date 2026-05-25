@@ -89,6 +89,7 @@ from scripts.utils import (
     GrammarImprover,
     GuidedWorkflowEnricher,
     MinimumConfigurationEnricher,
+    NamespaceProfileEnricher,
     OperationDescriptionEnricher,
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
@@ -362,6 +363,9 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = readonly_enricher.enrich_spec(spec)
     readonly_stats = readonly_enricher.get_stats()
 
+    # Note: Namespace profile enrichment runs in merge_specs_by_domain() since
+    # the pipeline merges individual specs into domain files and creates new info sections.
+
     # Note: Server-applied default value enrichment runs in merge_specs_by_domain() (Issue #449)
     # because it requires merged schemas - individual specs don't have the full resource schemas.
 
@@ -408,6 +412,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
         "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
         "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
+        # Note: namespace_profiles_added stats tracked in merge_specs_by_domain()
         # Note: best_practices, guided_workflows, and server_defaults stats tracked
         # in merge_specs_by_domain() since they require merged schemas
     }
@@ -1154,6 +1159,7 @@ def merge_specs_by_domain(
         "server_defaults_added": 0,
         "conflicts_with_added": 0,
         "schema_overrides_applied": 0,
+        "namespace_profiles_added": 0,
     }
 
     # Load description enricher for domain-specific descriptions
@@ -1163,6 +1169,7 @@ def merge_specs_by_domain(
     # These run after merging when domain is known
     best_practices_enricher = BestPracticesEnricher()
     guided_workflow_enricher = GuidedWorkflowEnricher()
+    namespace_profile_enricher_domain = NamespaceProfileEnricher()
 
     # Load enrichers that require merged schemas (Issue #449)
     # Server-applied defaults need the full merged schema to match patterns
@@ -1366,6 +1373,12 @@ def merge_specs_by_domain(
         stats.setdefault("constrained_fields_added", 0)
         stats["constrained_fields_added"] += cf_stats.get("constraints_applied", 0)
         constrained_fields_enricher.reset_stats()
+
+        # Namespace profiles: add x-f5xc-namespace-profile to info + per-schema
+        merged_spec = namespace_profile_enricher_domain.enrich_spec(merged_spec)
+        np_stats = namespace_profile_enricher_domain.get_stats()
+        stats["namespace_profiles_added"] += np_stats.get("specs_enriched", 0)
+        namespace_profile_enricher_domain.reset_stats()
 
         # Final cleanup: strip any $ref siblings introduced by enrichers
         merged_spec, _ = _remove_ref_siblings(merged_spec)
