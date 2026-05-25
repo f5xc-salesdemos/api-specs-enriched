@@ -47,11 +47,19 @@ def list_resource_types_from_specs(specs_dir: Path) -> list[dict[str, str]]:
     with index_path.open() as f:
         index = json.load(f)
 
-    for domain_info in index.get("specifications", {}).values():
-        for resource in domain_info.get("primary_resources", []):
+    specs = index.get("specifications", [])
+    if isinstance(specs, dict):
+        specs = specs.values()
+    for domain_info in specs:
+        for resource in domain_info.get("x-f5xc-primary-resources", []):
             name = resource.get("name", "")
-            api_paths = resource.get("api_paths", {})
-            list_path = api_paths.get("list", "")
+            api_paths = resource.get("api_paths", [])
+            if isinstance(api_paths, dict):
+                list_path = api_paths.get("list", "")
+            elif isinstance(api_paths, list) and api_paths:
+                list_path = api_paths[0]
+            else:
+                list_path = ""
             if name and list_path:
                 resources.append({"name": name, "list_path": list_path})
     return resources
