@@ -118,16 +118,31 @@ class NamespaceProfileEnricher:
             if not isinstance(schema_obj, dict):
                 continue
 
-            # Derive resource type from schema name
-            resource_type = self._schema_name_to_resource_type(schema_name)
+            resource_type = self._match_schema_to_resource(schema_name, resources)
 
-            # Check if this resource has its own config override
-            if resource_type in resources:
+            if resource_type:
                 schema_profile = self.get_profile_for_resource(resource_type)
             else:
                 schema_profile = default_profile
 
             schema_obj[X_F5XC_NAMESPACE_PROFILE] = schema_profile
+
+    def _match_schema_to_resource(self, schema_name: str, resources: dict[str, Any]) -> str | None:
+        """Match a schema name to a config resource key.
+
+        Tries exact match first, then longest-prefix match against known
+        resource names to handle schema names like 'api_definitionAPInventoryReq'.
+        """
+        full_type = self._schema_name_to_resource_type(schema_name)
+        if full_type in resources:
+            return full_type
+
+        snake = self._schema_name_to_resource_type(schema_name)
+        best_match = ""
+        for resource_name in resources:
+            if snake.startswith(resource_name) and len(resource_name) > len(best_match):
+                best_match = resource_name
+        return best_match or None
 
     @staticmethod
     def _schema_name_to_resource_type(schema_name: str) -> str:
