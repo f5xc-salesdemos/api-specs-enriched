@@ -64,6 +64,25 @@
         "Batch related operations when possible",
         "Cache read-only responses appropriately"
       ]
+    },
+    "x-f5xc-namespace-profile": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      }
     }
   },
   "servers": [
@@ -3577,7 +3596,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/ioschema_empties\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "ioschemaObjectRefType": {
         "type": "object",
@@ -3603,7 +3641,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.989418+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296189+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3615,7 +3653,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679329+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800754+00:00"
           },
           "name": {
             "type": "string",
@@ -3648,7 +3686,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.989501+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296217+00:00"
               },
               "deterministic": true
             },
@@ -3660,7 +3698,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679356+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800766+00:00"
           },
           "namespace": {
             "type": "string",
@@ -3691,7 +3729,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.989560+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296232+00:00"
               },
               "deterministic": true
             },
@@ -3703,7 +3741,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679380+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800777+00:00"
           },
           "tenant": {
             "type": "string",
@@ -3722,7 +3760,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.989632+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296247+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3735,7 +3773,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679406+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800787+00:00"
           },
           "uid": {
             "type": "string",
@@ -3754,7 +3792,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.989691+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296258+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3768,7 +3806,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679434+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800799+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -3787,7 +3825,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"tenant\": \"value\",\n    \"uid\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/ioschema_object_ref_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "protobufAny": {
         "type": "object",
@@ -3806,7 +3863,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.989747+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296275+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3829,7 +3886,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.989790+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296289+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3840,7 +3897,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679471+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800814+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -3856,7 +3913,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"type_url\": \"value\",\n    \"value\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/protobuf_anies\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverAuthToken": {
         "type": "object",
@@ -3890,7 +3966,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"token\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_auth_tokens\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "users"
+        "x-f5xc-cli-domain": "users",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverAzureBlobConfig": {
         "type": "object",
@@ -3973,7 +4068,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.989927+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296343+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3998,7 +4093,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"batch\": \"value\",\n    \"compression\": \"value\",\n    \"connection_string\": \"value\",\n    \"container_name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_azure_blob_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverBatchOptionType": {
         "type": "object",
@@ -4139,7 +4253,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990042+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296379+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4169,7 +4283,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"default_timeout_seconds\": \"value\",\n    \"max_bytes\": \"value\",\n    \"max_bytes_disabled\": \"value\",\n    \"max_events\": \"value\",\n    \"max_events_disabled\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_batch_option_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverCompressionType": {
         "type": "object",
@@ -4224,7 +4357,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"gzip_compression\": \"value\",\n    \"no_compression\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_compression_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverCreateRequest": {
         "type": "object",
@@ -4273,7 +4425,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverCreateResponse": {
         "type": "object",
@@ -4334,7 +4505,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"system_metadata\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverCreateSpecType": {
         "type": "object",
@@ -4410,7 +4600,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990177+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296422+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4521,7 +4711,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"azure_receiver\": \"value\",\n    \"datadog_receiver\": \"value\",\n    \"dataset_type\": \"value\",\n    \"gcp_bucket_receiver\": \"value\",\n    \"http_receiver\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverDatadogConfig": {
         "type": "object",
@@ -4592,7 +4801,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-05-24T23:05:49.990250+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296446+00:00"
               },
               "deterministic": true
             },
@@ -4644,7 +4853,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990296+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296461+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4690,7 +4899,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"batch\": \"value\",\n    \"compression\": \"value\",\n    \"datadog_api_key\": \"value\",\n    \"endpoint\": \"value\",\n    \"no_tls\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_datadog_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverDeleteRequest": {
         "type": "object",
@@ -4742,7 +4970,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990347+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296479+00:00"
               },
               "deterministic": true
             },
@@ -4754,7 +4982,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679802+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800941+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4784,7 +5012,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990383+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296493+00:00"
               },
               "deterministic": true
             },
@@ -4796,7 +5024,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679827+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.800951+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -4811,7 +5039,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"fail_if_referred\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverGCPBucketConfig": {
         "type": "object",
@@ -4865,7 +5112,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990484+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296529+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4917,7 +5164,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"batch\": \"value\",\n    \"bucket\": \"value\",\n    \"compression\": \"value\",\n    \"gcp_cred\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_g_c_p_bucket_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverGetResponse": {
         "type": "object",
@@ -5049,7 +5315,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.679949+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801001+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -5084,7 +5350,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"create_form\": \"value\",\n    \"deleted_referred_objects\": \"value\",\n    \"disabled_referred_objects\": \"value\",\n    \"referring_objects\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverGetSpecType": {
         "type": "object",
@@ -5160,7 +5445,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990669+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296588+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5194,7 +5479,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990723+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296605+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5221,7 +5506,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990777+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296623+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5290,7 +5575,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990830+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296641+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5324,7 +5609,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.990882+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296659+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5397,7 +5682,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"azure_receiver\": \"value\",\n    \"datadog_receiver\": \"value\",\n    \"dataset_type\": \"value\",\n    \"delivery_status\": \"value\",\n    \"frequency_seconds\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receivers\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverHTTPConfig": {
         "type": "object",
@@ -5529,7 +5833,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.990970+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296693+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5573,7 +5877,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"auth_basic\": \"value\",\n    \"auth_none\": \"value\",\n    \"auth_token\": \"value\",\n    \"batch\": \"value\",\n    \"compression\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_h_t_t_p_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverHttpAuthBasic": {
         "type": "object",
@@ -5618,7 +5941,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991051+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296723+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5641,7 +5964,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"password\": \"value\",\n    \"user_name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_http_auth_basics\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverListResponse": {
         "type": "object",
@@ -5685,7 +6027,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-24T23:05:49.991114+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296743+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5707,7 +6049,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"errors\": \"value\",\n    \"items\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_list_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverListResponseItem": {
         "type": "object",
@@ -5747,7 +6108,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-24T23:05:49.991182+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296767+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5758,7 +6119,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680209+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801120+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -5845,7 +6206,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991236+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296786+00:00"
               },
               "deterministic": true
             },
@@ -5857,7 +6218,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680270+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801148+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5886,7 +6247,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991273+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296799+00:00"
               },
               "deterministic": true
             },
@@ -5898,7 +6259,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680296+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801159+00:00"
           },
           "owner_view": {
             "allOf": [
@@ -5958,7 +6319,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.991338+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296820+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5970,7 +6331,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680348+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801180+00:00"
           },
           "uid": {
             "type": "string",
@@ -5987,7 +6348,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.991371+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296831+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6000,7 +6361,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680377+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801191+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of receiver is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -6027,7 +6388,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"annotations\": \"value\",\n    \"description\": \"value\",\n    \"disabled\": \"value\",\n    \"get_spec\": \"value\",\n    \"labels\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_list_response_items\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverReplaceRequest": {
         "type": "object",
@@ -6076,7 +6456,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_replace_requests\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverReplaceResponse": {
         "type": "object",
@@ -6089,7 +6488,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_replace_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverReplaceSpecType": {
         "type": "object",
@@ -6165,7 +6583,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991464+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296865+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6277,7 +6695,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"azure_receiver\": \"value\",\n    \"datadog_receiver\": \"value\",\n    \"dataset_type\": \"value\",\n    \"gcp_bucket_receiver\": \"value\",\n    \"http_receiver\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_replace_spec_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverS3Config": {
         "type": "object",
@@ -6323,7 +6760,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.991533+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296888+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6378,7 +6815,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991629+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296923+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6417,7 +6854,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"aws_cred\": \"value\",\n    \"aws_region\": \"value\",\n    \"batch\": \"value\",\n    \"bucket\": \"value\",\n    \"compression\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_s3_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverSplunkConfig": {
         "type": "object",
@@ -6480,7 +6936,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-05-24T23:05:49.991689+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296942+00:00"
               },
               "deterministic": true
             },
@@ -6554,7 +7010,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"batch\": \"value\",\n    \"compression\": \"value\",\n    \"endpoint\": \"value\",\n    \"no_tls\": \"value\",\n    \"splunk_hec_token\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_splunk_configs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverStatusObject": {
         "type": "object",
@@ -6621,7 +7096,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"conditions\": \"value\",\n    \"object_refs\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_status_objects\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverTLSClientConfigType": {
         "type": "object",
@@ -6663,7 +7157,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991832+00:00"
+                "validatedAt": "2026-05-25T00:10:49.296994+00:00"
               },
               "deterministic": true
             },
@@ -6700,7 +7194,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"certificate\": \"value\",\n    \"key_url\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_t_l_s_client_config_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "receiverTLSConfigType": {
         "type": "object",
@@ -6858,7 +7371,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.991946+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297031+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6890,7 +7403,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"disable_verify_certificate\": \"value\",\n    \"disable_verify_hostname\": \"value\",\n    \"enable_verify_certificate\": \"value\",\n    \"enable_verify_hostname\": \"value\",\n    \"mtls_disabled\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/receiver_t_l_s_config_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "certificates"
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaBlindfoldSecretInfoType": {
         "type": "object",
@@ -6917,7 +7449,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992002+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297048+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6958,7 +7490,7 @@
                 "confidence": 1.0,
                 "category": "content",
                 "note": "Blindfold envelope encryption (AES-256-GCM + RSA-OAEP) of an RSA-2048 TLS private key produces ~3700 char string:/// URL. 128KB max secret size = ~175KB base64. Discovery reported 1024 which is incorrect.",
-                "validatedAt": "2026-05-24T23:05:49.992052+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297069+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6969,7 +7501,7 @@
             },
             "minLength": 4,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680719+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801319+00:00"
           },
           "store_provider": {
             "type": "string",
@@ -6988,7 +7520,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992140+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297088+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7012,7 +7544,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"decryption_provider\": \"value\",\n    \"location\": \"value\",\n    \"store_provider\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_blindfold_secret_info_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaClearSecretInfoType": {
         "type": "object",
@@ -7039,7 +7590,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992187+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297102+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7050,7 +7601,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680755+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801334+00:00"
           },
           "url": {
             "type": "string",
@@ -7088,7 +7639,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992260+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297130+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -7115,7 +7666,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"provider\": \"value\",\n    \"url\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_clear_secret_info_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaConditionType": {
         "type": "object",
@@ -7145,7 +7715,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-05-24T23:05:49.992299+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297143+00:00"
               },
               "deterministic": true
             },
@@ -7171,7 +7741,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992351+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297158+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7198,7 +7768,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992395+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297172+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7209,7 +7779,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680808+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801356+00:00"
           },
           "service_name": {
             "type": "string",
@@ -7226,7 +7796,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992443+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297187+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7259,7 +7829,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992489+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297200+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7270,7 +7840,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680842+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801370+00:00"
           },
           "type": {
             "type": "string",
@@ -7295,7 +7865,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992529+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297213+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7323,7 +7893,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"hostname\": \"value\",\n    \"last_update_time\": \"value\",\n    \"reason\": \"value\",\n    \"service_name\": \"value\",\n    \"status\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_condition_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaErrorCode": {
         "type": "string",
@@ -7353,7 +7942,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_error_codes\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaErrorType": {
         "type": "object",
@@ -7403,7 +8011,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.992580+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297228+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7427,7 +8035,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"code\": \"value\",\n    \"error_obj\": \"value\",\n    \"message\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_error_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaInitializerType": {
         "type": "object",
@@ -7465,7 +8092,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992617+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297242+00:00"
               },
               "deterministic": true
             },
@@ -7477,7 +8104,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680905+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801395+00:00"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -7491,7 +8118,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_initializer_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaInitializersType": {
         "type": "object",
@@ -7543,7 +8189,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"pending\": \"value\",\n    \"result\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_initializers_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaObjectCreateMetaType": {
         "type": "object",
@@ -7605,7 +8270,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992735+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297281+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -7620,7 +8285,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.680961+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801417+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -7690,7 +8355,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992782+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297298+00:00"
               },
               "deterministic": true
             },
@@ -7702,7 +8367,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681004+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801435+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7733,7 +8398,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992816+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297310+00:00"
               },
               "deterministic": true
             },
@@ -7745,7 +8410,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681031+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801446+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
@@ -7764,7 +8429,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"annotations\": \"value\",\n    \"description\": \"value\",\n    \"disable\": \"value\",\n    \"labels\": \"value\",\n    \"name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_objects\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaObjectGetMetaType": {
         "type": "object",
@@ -7827,7 +8511,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992907+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297341+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -7842,7 +8526,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681079+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801460+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -7914,7 +8598,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992952+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297357+00:00"
               },
               "deterministic": true
             },
@@ -7926,7 +8610,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681122+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801478+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7957,7 +8641,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.992985+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297369+00:00"
               },
               "deterministic": true
             },
@@ -7969,7 +8653,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681147+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801488+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
@@ -7988,7 +8672,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"annotations\": \"value\",\n    \"description\": \"value\",\n    \"disable\": \"value\",\n    \"labels\": \"value\",\n    \"name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_objects\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaObjectReplaceMetaType": {
         "type": "object",
@@ -8051,7 +8754,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.993088+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297401+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8066,7 +8769,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681186+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801504+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8136,7 +8839,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.993135+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297418+00:00"
               },
               "deterministic": true
             },
@@ -8148,7 +8851,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681230+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801521+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8179,7 +8882,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.993168+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297430+00:00"
               },
               "deterministic": true
             },
@@ -8191,7 +8894,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681253+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801532+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
@@ -8210,7 +8913,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"annotations\": \"value\",\n    \"description\": \"value\",\n    \"disable\": \"value\",\n    \"labels\": \"value\",\n    \"name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_object_replace_meta_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaSecretEncodingType": {
         "type": "string",
@@ -8231,7 +8953,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_secret_encoding_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaSecretType": {
         "type": "object",
@@ -8286,7 +9027,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"blindfold_secret_info\": \"value\",\n    \"clear_secret_info\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_secret_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaStatusMetaType": {
         "type": "object",
@@ -8312,7 +9072,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993231+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297448+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8340,7 +9100,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993280+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297462+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8368,7 +9128,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993327+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297477+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8407,7 +9167,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993376+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297492+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8434,7 +9194,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993407+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297502+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8447,7 +9207,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681346+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801568+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -8463,7 +9223,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993449+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297514+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8507,7 +9267,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"creation_timestamp\": \"value\",\n    \"creator_class\": \"value\",\n    \"creator_id\": \"value\",\n    \"publish\": \"value\",\n    \"status_id\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_status_meta_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaStatusPublishType": {
         "type": "string",
@@ -8530,7 +9309,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_status_publish_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaStatusType": {
         "type": "object",
@@ -8572,7 +9370,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993508+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297533+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8583,7 +9381,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681398+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801589+00:00"
           },
           "status": {
             "type": "string",
@@ -8601,7 +9399,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993550+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297545+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8612,7 +9410,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681422+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801600+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -8628,7 +9426,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"code\": \"value\",\n    \"reason\": \"value\",\n    \"status\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_status_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaSystemObjectGetMetaType": {
         "type": "object",
@@ -8654,7 +9471,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993605+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297561+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8681,7 +9498,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993655+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297577+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8708,7 +9525,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993702+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297591+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8736,7 +9553,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993755+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297606+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8812,7 +9629,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993835+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297628+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8871,7 +9688,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993895+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297646+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8883,7 +9700,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681536+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801645+00:00"
           },
           "uid": {
             "type": "string",
@@ -8902,7 +9719,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993925+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297656+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8915,7 +9732,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681561+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801656+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -8941,7 +9758,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"creation_timestamp\": \"value\",\n    \"creator_class\": \"value\",\n    \"creator_id\": \"value\",\n    \"deletion_timestamp\": \"value\",\n    \"finalizers\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_system_objects\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaViewRefType": {
         "type": "object",
@@ -8965,7 +9801,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.993964+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297668+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8976,7 +9812,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681586+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801667+00:00"
           },
           "name": {
             "type": "string",
@@ -9009,7 +9845,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.993999+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297679+00:00"
               },
               "deterministic": true
             },
@@ -9021,7 +9857,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681611+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801677+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9052,7 +9888,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.994032+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297691+00:00"
               },
               "deterministic": true
             },
@@ -9064,7 +9900,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681637+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801688+00:00"
           },
           "uid": {
             "type": "string",
@@ -9081,7 +9917,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:49.994062+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297701+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9094,7 +9930,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681664+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801699+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -9111,7 +9947,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"uid\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_view_ref_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaviewsObjectRefType": {
         "type": "object",
@@ -9163,7 +10018,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.994163+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297727+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -9213,7 +10068,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.994228+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297750+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -9228,7 +10083,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681703+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801714+00:00"
           },
           "tenant": {
             "type": "string",
@@ -9257,7 +10112,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:49.994299+00:00"
+                "validatedAt": "2026-05-25T00:10:49.297775+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9270,7 +10125,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.681728+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.801725+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",
@@ -9287,7 +10142,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"tenant\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schemaviews_object_ref_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryDataPoint": {
         "type": "object",
@@ -9318,7 +10192,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-05-24T23:05:54.847797+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691097+00:00"
               },
               "deterministic": true
             },
@@ -9344,7 +10218,7 @@
             "maxLength": 15,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815319+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865656+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -9358,7 +10232,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"timestamp\": \"value\",\n    \"value\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_data_points\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryDataSet": {
         "type": "object",
@@ -9384,7 +10277,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-24T23:05:54.847926+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691127+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9395,7 +10288,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815352+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865669+00:00"
           },
           "id": {
             "type": "string",
@@ -9414,7 +10307,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.847983+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691138+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9453,7 +10346,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.848040+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691153+00:00"
               },
               "deterministic": true
             },
@@ -9465,7 +10358,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815387+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865683+00:00"
           },
           "status": {
             "type": "string",
@@ -9483,7 +10376,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848122+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691166+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9494,7 +10387,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815411+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865694+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -9510,7 +10403,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"description\": \"value\",\n    \"id\": \"value\",\n    \"name\": \"value\",\n    \"status\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_data_sets\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryEventsReason": {
         "type": "object",
@@ -9534,7 +10446,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848171+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691181+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9587,7 +10499,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848247+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691204+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9598,7 +10510,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815465+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865715+00:00"
           }
         },
         "x-f5xc-description-short": "Message object representing events reason.",
@@ -9615,7 +10527,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"category\": \"value\",\n    \"eventsCount\": \"value\",\n    \"eventsPercentage\": \"value\",\n    \"reason\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_events_reasons\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryFeature": {
         "type": "object",
@@ -9639,7 +10570,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848298+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691220+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9666,7 +10597,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-24T23:05:54.848356+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691239+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9677,7 +10608,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815501+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865729+00:00"
           },
           "feature_name": {
             "type": "string",
@@ -9693,7 +10624,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848410+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691255+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9731,7 +10662,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848456+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691269+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9772,7 +10703,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"data_format\": \"value\",\n    \"description\": \"value\",\n    \"feature_name\": \"value\",\n    \"is_new_field\": \"value\",\n    \"notes\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_features\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryFlowLabel": {
         "type": "object",
@@ -9796,7 +10746,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848509+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691284+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9819,7 +10769,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848552+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691298+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9842,7 +10792,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"flowLabel\": \"value\",\n    \"platform\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_flow_labels\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryGetDataDictionaryResponse": {
         "type": "object",
@@ -9879,7 +10848,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"feature_list\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_deliveries\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryGetDataSetsResponse": {
         "type": "object",
@@ -9915,7 +10903,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"dataSets\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_deliveries\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryLineChartData": {
         "type": "object",
@@ -9940,7 +10947,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848640+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691325+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9978,7 +10985,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"granularity\": \"value\",\n    \"series\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_line_chart_datas\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryListDataSetsResponse": {
         "type": "object",
@@ -10014,7 +11040,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"dataset_list\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_list_data_sets_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryListFlowLabelsResponse": {
         "type": "object",
@@ -10049,7 +11094,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"flowLabels\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_list_flow_labels_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryLoadExecutiveSummaryRequest": {
         "type": "object",
@@ -10102,7 +11166,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848774+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691366+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10140,7 +11204,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.848812+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691380+00:00"
               },
               "deterministic": true
             },
@@ -10152,7 +11216,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815666+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865792+00:00"
           },
           "platform": {
             "type": "string",
@@ -10170,7 +11234,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848856+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691393+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10195,7 +11259,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.848904+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691411+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10227,7 +11291,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-05-24T23:05:54.848956+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691427+00:00"
               },
               "deterministic": true
             },
@@ -10256,7 +11320,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"anomalousScorePercentile\": \"value\",\n    \"flowLabels\": \"value\",\n    \"granularity\": \"value\",\n    \"namespace\": \"value\",\n    \"platform\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_load_executive_summary_requests\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryLoadExecutiveSummaryResponse": {
         "type": "object",
@@ -10323,7 +11406,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"eventsReasons\": \"value\",\n    \"lineChartData\": \"value\",\n    \"summary\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_load_executive_summary_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliverySeries": {
         "type": "object",
@@ -10378,7 +11480,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849030+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691452+00:00"
               },
               "deterministic": true
             },
@@ -10390,7 +11492,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815754+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865833+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -10404,7 +11506,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"data\": \"value\",\n    \"name\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_serieses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliverySummaryPanel": {
         "type": "object",
@@ -10570,7 +11691,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"anomalousDevices\": \"value\",\n    \"anomalousDevicesPercentage\": \"value\",\n    \"anomalousMaxScore\": \"value\",\n    \"anomalousMinScore\": \"value\",\n    \"anomalousPercentage\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_summary_panels\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryTestReceiverRequest": {
         "type": "object",
@@ -10602,7 +11742,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849254+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691521+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10647,7 +11787,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849292+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691536+00:00"
               },
               "deterministic": true
             },
@@ -10659,7 +11799,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815883+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865885+00:00"
           }
         },
         "x-f5xc-description-short": "Request to test receiver & destination sink.",
@@ -10674,7 +11814,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"id\": \"value\",\n    \"namespace\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_test_receiver_requests\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryTestReceiverResponse": {
         "type": "object",
@@ -10699,7 +11858,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849336+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691553+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10725,7 +11884,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815923+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865900+00:00"
           }
         },
         "x-f5xc-description-short": "Response for the Receiver test request; empty because the only returned information is error message.",
@@ -10741,7 +11900,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"message\": \"value\",\n    \"status\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_test_receiver_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryTestReceiverStatusType": {
         "type": "string",
@@ -10764,7 +11942,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_delivery_test_receiver_status_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryUpdateReceiverStatusRequest": {
         "type": "object",
@@ -10796,7 +11993,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849375+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691566+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10834,7 +12031,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849411+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691580+00:00"
               },
               "deterministic": true
             },
@@ -10846,7 +12043,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.815961+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865915+00:00"
           },
           "type": {
             "allOf": [
@@ -10874,7 +12071,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"id\": \"value\",\n    \"namespace\": \"value\",\n    \"type\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_deliveries\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "data_deliveryUpdateReceiverStatusResponse": {
         "type": "object",
@@ -10900,7 +12116,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849448+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691594+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10926,7 +12142,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849497+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691611+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10952,7 +12168,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849540+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691624+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10963,7 +12179,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.816017+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865936+00:00"
           }
         },
         "x-f5xc-description-short": "Payload about status of receiver status result.",
@@ -10979,7 +12195,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"id\": \"value\",\n    \"receiver_name\": \"value\",\n    \"status\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/data_deliveries\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "namespaceSuggestValuesReq": {
         "type": "object",
@@ -11011,7 +12246,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849626+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691657+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11045,7 +12280,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849707+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691684+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11083,7 +12318,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-05-24T23:05:54.849743+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691697+00:00"
               },
               "deterministic": true
             },
@@ -11095,7 +12330,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.816071+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865954+00:00"
           },
           "request_body": {
             "allOf": [
@@ -11124,7 +12359,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"field_path\": \"value\",\n    \"match_value\": \"value\",\n    \"namespace\": \"value\",\n    \"request_body\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/namespace_suggest_values_reqs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "tenant_and_identity"
+        "x-f5xc-cli-domain": "tenant_and_identity",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "namespaceSuggestValuesResp": {
         "type": "object",
@@ -11151,7 +12405,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-05-24T23:05:54.849785+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691714+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11172,7 +12426,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"items\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/namespace_suggest_values_resps\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "tenant_and_identity"
+        "x-f5xc-cli-domain": "tenant_and_identity",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "namespaceSuggestedItem": {
         "type": "object",
@@ -11200,7 +12473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-05-24T23:05:54.849844+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691733+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11211,7 +12484,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.816119+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865972+00:00"
           },
           "ref_value": {
             "allOf": [
@@ -11242,7 +12515,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849894+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691748+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11271,7 +12544,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849935+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691761+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11282,7 +12555,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.816159+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.865989+00:00"
           },
           "value": {
             "type": "string",
@@ -11298,7 +12571,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-05-24T23:05:54.849975+00:00"
+                "validatedAt": "2026-05-25T00:10:50.691774+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11309,7 +12582,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-05-24T23:20:03.816184+00:00"
+            "x-reconciled-at": "2026-05-25T00:15:15.866000+00:00"
           }
         },
         "x-f5xc-description-short": "Tuple with a suggested value and it's description.",
@@ -11327,7 +12600,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"description\": \"value\",\n    \"ref_value\": \"value\",\n    \"str_value\": \"value\",\n    \"title\": \"value\",\n    \"value\": \"value\"\n  }\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/namespace_suggested_items\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "tenant_and_identity"
+        "x-f5xc-cli-domain": "tenant_and_identity",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "schemaEmpty": {
         "type": "object",
@@ -11343,7 +12635,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/schema_empties\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "other"
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "shapedata_deliveryStatusType": {
         "type": "string",
@@ -11365,7 +12676,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/shapedata_delivery_status_types\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "cdn"
+        "x-f5xc-cli-domain": "cdn",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "subscriptionSubscribeRequest": {
         "type": "object",
@@ -11382,7 +12712,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/subscription_subscribe_requests\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "billing_and_usage"
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "subscriptionSubscribeResponse": {
         "type": "object",
@@ -11399,7 +12748,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/subscription_subscribe_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "billing_and_usage"
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "subscriptionUnsubscribeRequest": {
         "type": "object",
@@ -11416,7 +12784,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/subscription_unsubscribe_requests\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "billing_and_usage"
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       },
       "subscriptionUnsubscribeResponse": {
         "type": "object",
@@ -11433,7 +12820,26 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}",
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/subscription_unsubscribe_responses\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
-        "x-f5xc-cli-domain": "billing_and_usage"
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
       }
     },
     "responses": {},
