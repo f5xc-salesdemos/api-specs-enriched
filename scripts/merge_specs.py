@@ -47,6 +47,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_UPSTREAM_TIMESTAMP,
     X_F5XC_USE_CASES,
 )
+from scripts.utils.external_docs_enricher import ExternalDocsEnricher
 from scripts.utils.json_writer import write_json_file
 from scripts.utils.server_variables import ServerVariableHelper
 from scripts.utils.version_calculator import get_version_from_tags
@@ -376,6 +377,10 @@ def merge_specs_by_domain(
 
             # Add spec-level domain metadata (idempotent)
             add_domain_metadata_to_spec(merged, domain)
+
+            # Rewrite upstream API reference links to our published site
+            external_docs_enricher = ExternalDocsEnricher()
+            external_docs_enricher.enrich_spec(merged, filename=f"{domain}.json")
 
             # Save domain-specific merged spec
             output_path = output_dir / f"{domain}.json"

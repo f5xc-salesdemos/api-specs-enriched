@@ -448,3 +448,123 @@ class TestIntegrationPatterns:
         result = enricher.enrich_spec(spec)
         assert "externalDocs" in result["info"]
         assert "x-f5xc-namespace-profile" in result["info"]
+
+
+class TestApiReferenceRewrite:
+    """Test operation-level externalDocs URL rewriting."""
+
+    OLD_PREFIX = "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/"
+    NEW_BASE = "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference"
+
+    def _make_spec(self, op_url: str, domain: str = "shape") -> dict:
+        """Build a minimal spec with one operation-level externalDocs."""
+        return {
+            "info": {"title": "Test API", X_F5XC_CLI_DOMAIN: domain},
+            "paths": {
+                "/api/test": {
+                    "get": {
+                        "summary": "List items",
+                        "externalDocs": {"url": op_url},
+                    },
+                },
+            },
+        }
+
+    def test_rewrites_matching_url(self):
+        """Test that upstream API reference URLs are rewritten."""
+        enricher = ExternalDocsEnricher()
+        spec = self._make_spec(
+            f"{self.OLD_PREFIX}ves-io-schema-shape-api-list",
+        )
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        url = result["paths"]["/api/test"]["get"]["externalDocs"]["url"]
+        assert url == f"{self.NEW_BASE}/shape/"
+        assert enricher.stats.api_links_rewritten == 1
+
+    def test_leaves_non_matching_url_untouched(self):
+        """Test that non-API-ref URLs are not rewritten."""
+        enricher = ExternalDocsEnricher()
+        original_url = "https://example.com/custom-docs"
+        spec = self._make_spec(original_url)
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        url = result["paths"]["/api/test"]["get"]["externalDocs"]["url"]
+        assert url == original_url
+        assert enricher.stats.api_links_rewritten == 0
+
+    def test_leaves_howto_docs_untouched(self):
+        """Test that how-to guide URLs are not rewritten."""
+        enricher = ExternalDocsEnricher()
+        howto_url = "https://docs.cloud.f5.com/docs/how-to/app-security/waf"
+        spec = self._make_spec(howto_url)
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        url = result["paths"]["/api/test"]["get"]["externalDocs"]["url"]
+        assert url == howto_url
+
+    def test_rewrites_multiple_operations(self):
+        """Test that all matching operations in a spec are rewritten."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {"title": "Test API", X_F5XC_CLI_DOMAIN: "dns"},
+            "paths": {
+                "/api/dns/zones": {
+                    "get": {
+                        "externalDocs": {
+                            "url": f"{self.OLD_PREFIX}ves-io-schema-dns-zone-api-list",
+                        },
+                    },
+                    "post": {
+                        "externalDocs": {
+                            "url": f"{self.OLD_PREFIX}ves-io-schema-dns-zone-api-create",
+                        },
+                    },
+                },
+                "/api/dns/zones/{{name}}": {
+                    "get": {
+                        "externalDocs": {
+                            "url": f"{self.OLD_PREFIX}ves-io-schema-dns-zone-api-get",
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec, filename="dns.json")
+        expected = f"{self.NEW_BASE}/dns/"
+        assert result["paths"]["/api/dns/zones"]["get"]["externalDocs"]["url"] == expected
+        assert result["paths"]["/api/dns/zones"]["post"]["externalDocs"]["url"] == expected
+        assert result["paths"]["/api/dns/zones/{{name}}"]["get"]["externalDocs"]["url"] == expected
+        assert enricher.stats.api_links_rewritten == 3
+
+    def test_handles_operations_without_external_docs(self):
+        """Test that operations without externalDocs are handled gracefully."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {"title": "Test API", X_F5XC_CLI_DOMAIN: "shape"},
+            "paths": {
+                "/api/test": {
+                    "get": {"summary": "No externalDocs here"},
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        assert "externalDocs" not in result["paths"]["/api/test"]["get"]
+        assert enricher.stats.api_links_rewritten == 0
+
+    def test_uses_detected_domain_for_new_url(self):
+        """Test that the rewritten URL uses the correct detected domain."""
+        enricher = ExternalDocsEnricher()
+        spec = self._make_spec(
+            f"{self.OLD_PREFIX}ves-io-schema-virtual-host-api-list",
+            domain="virtual",
+        )
+        result = enricher.enrich_spec(spec)
+        url = result["paths"]["/api/test"]["get"]["externalDocs"]["url"]
+        assert url == f"{self.NEW_BASE}/virtual/"
+
+    def test_stats_in_to_dict(self):
+        """Test that api_links_rewritten appears in stats dict."""
+        enricher = ExternalDocsEnricher()
+        spec = self._make_spec(f"{self.OLD_PREFIX}ves-io-schema-shape-api-list")
+        enricher.enrich_spec(spec, filename="shape.json")
+        stats = enricher.get_stats()
+        assert "api_links_rewritten" in stats
+        assert stats["api_links_rewritten"] == 1
