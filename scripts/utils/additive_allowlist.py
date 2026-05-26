@@ -137,6 +137,9 @@ def _is_values_changed_additive(
         return True
     if _under_x_extension(pointer):
         return True
+    parent = _parent_key(pointer)
+    if parent in _FREE_TEXT_KEYS:
+        return True
     return _is_additive_dict_rewrite(pointer, before, after)
 
 
