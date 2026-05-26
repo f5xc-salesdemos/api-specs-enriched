@@ -70,6 +70,8 @@ def generate_domain_mdx(domain: str, title: str, description: str) -> str:
     """
     viewer_path = f"/specifications/api/viewer/{domain}.html"
     spec_path = f"/specifications/api/{domain}.json"
+    # Relative path from api-reference/{domain}/ to specifications/api/viewer/
+    viewer_path_relative = f"../../specifications/api/viewer/{domain}.html"
 
     return f"""---
 title: "{title}"
@@ -86,7 +88,7 @@ import {{ LinkCard }} from '@astrojs/starlight/components';
 </div>
 
 <iframe
-    src="{viewer_path}"
+    src="{viewer_path_relative}"
     style="width: 100%; height: 80vh; border: none; border-radius: 0.5rem;"
     title="{title} API Reference"
 />

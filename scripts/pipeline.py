@@ -85,6 +85,7 @@ from scripts.utils import (
     DescriptionValidator,
     DiscoveryEnricher,
     ErrorResolutionEnricher,
+    ExternalDocsEnricher,
     FieldDescriptionEnricher,
     GrammarImprover,
     GuidedWorkflowEnricher,
@@ -1321,6 +1322,10 @@ def merge_specs_by_domain(
 
         # Add spec-level domain metadata (idempotent)
         add_domain_metadata_to_spec(merged_spec, domain)
+
+        # Rewrite upstream API reference links to our published site
+        external_docs_enricher = ExternalDocsEnricher()
+        external_docs_enricher.enrich_spec(merged_spec, filename=f"{domain}.json")
 
         # Apply domain-specific enrichments now that domain is known (Issue #314)
         # Best practices: common errors, security notes, performance tips

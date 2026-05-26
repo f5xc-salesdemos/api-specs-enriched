@@ -33,6 +33,7 @@ class ExternalDocsStats:
     docs_added: int = 0
     already_had_docs: int = 0
     used_default: int = 0
+    api_links_rewritten: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -42,6 +43,7 @@ class ExternalDocsStats:
             "docs_added": self.docs_added,
             "already_had_docs": self.already_had_docs,
             "used_default": self.used_default,
+            "api_links_rewritten": self.api_links_rewritten,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -70,6 +72,8 @@ class ExternalDocsEnricher:
         self.config: dict[str, Any] = {}
         self.domain_docs: dict[str, dict[str, str]] = {}
         self.default_docs: dict[str, str] = {}
+        self.api_reference_base_url: str = ""
+        self.api_reference_old_prefix: str = ""
         self.stats = ExternalDocsStats()
 
         self._load_config()
@@ -101,8 +105,18 @@ class ExternalDocsEnricher:
                             ),
                         }
 
+                self.api_reference_base_url = self.config.get("api_reference_base_url", "")
+                rewrite = self.config.get("api_reference_rewrite", {})
+                self.api_reference_old_prefix = rewrite.get("old_prefix", "")
+
                 logger.info("Loaded external_docs config from %s", self.config_path)
                 logger.info("Found %d domain documentation mappings", len(self.domain_docs))
+                if self.api_reference_base_url and self.api_reference_old_prefix:
+                    logger.info(
+                        "API reference rewrite enabled: %s -> %s/{domain}/",
+                        self.api_reference_old_prefix,
+                        self.api_reference_base_url,
+                    )
 
         except FileNotFoundError:
             logger.warning("Configuration file not found: %s", self.config_path)
@@ -156,6 +170,8 @@ class ExternalDocsEnricher:
                 external_docs["url"],
             )
 
+            self._rewrite_operation_docs(spec, domain)
+
         except Exception as e:
             logger.exception("Error enriching spec with external docs")
             self.stats.errors.append(
@@ -167,6 +183,36 @@ class ExternalDocsEnricher:
             )
 
         return spec
+
+    def _rewrite_operation_docs(self, spec: dict[str, Any], domain: str) -> None:
+        """Rewrite upstream API reference URLs in operation-level externalDocs.
+
+        Walks all paths.{path}.{method}.externalDocs.url fields and replaces
+        upstream docs.cloud.f5.com API reference links with our published site.
+
+        Args:
+            spec: OpenAPI specification dictionary (modified in place)
+            domain: Detected domain slug for constructing the new URL
+        """
+        if not self.api_reference_base_url or not self.api_reference_old_prefix:
+            return
+
+        new_url = f"{self.api_reference_base_url}/{domain}/"
+        paths = spec.get("paths", {})
+
+        for path_ops in paths.values():
+            if not isinstance(path_ops, dict):
+                continue
+            for op in path_ops.values():
+                if not isinstance(op, dict):
+                    continue
+                ext_docs = op.get("externalDocs")
+                if not isinstance(ext_docs, dict):
+                    continue
+                url = ext_docs.get("url", "")
+                if url.startswith(self.api_reference_old_prefix):
+                    ext_docs["url"] = new_url
+                    self.stats.api_links_rewritten += 1
 
     def _detect_domain(self, spec: dict[str, Any], filename: str | None = None) -> str:
         """Detect domain from filename or spec metadata.
