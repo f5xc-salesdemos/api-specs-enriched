@@ -138,6 +138,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-api-url": "https://f5-amer-ent.console.ves.volterra.io"`
 - **Pass-through from upstream:** no
 
+### x-f5xc-api-reference-url
+
+- **Applied at:** info
+- **Purpose:** URL to the hosted API reference documentation page for this domain.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "uri"}`
+- **Injected by:** scripts/utils/external_docs_enricher.py
+- **Driven by config:** none (derived from domain name)
+- **Example:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info

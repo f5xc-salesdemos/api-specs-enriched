@@ -20,7 +20,7 @@ from typing import Any
 import yaml
 
 from scripts.utils.domain_categorizer import categorize_spec
-from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
+from scripts.utils.extension_constants import X_F5XC_API_REFERENCE_URL, X_F5XC_CLI_DOMAIN
 
 logger = logging.getLogger(__name__)
 
@@ -149,11 +149,11 @@ class ExternalDocsEnricher:
             if "externalDocs" in info:
                 self.stats.already_had_docs += 1
                 self.stats.specs_enriched += 1
-                if "x-f5xc-api-reference-url" not in info:
+                if X_F5XC_API_REFERENCE_URL not in info:
                     domain = self._detect_domain(spec, filename)
                     api_ref_url = self._get_api_reference_url(domain)
                     if api_ref_url:
-                        spec["info"]["x-f5xc-api-reference-url"] = api_ref_url
+                        spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
                 return spec
 
             # Detect domain from filename or spec
@@ -167,7 +167,7 @@ class ExternalDocsEnricher:
 
             api_ref_url = self._get_api_reference_url(domain)
             if api_ref_url:
-                spec["info"]["x-f5xc-api-reference-url"] = api_ref_url
+                spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
 
             # Update stats
             self.stats.specs_enriched += 1

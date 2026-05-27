@@ -307,7 +307,7 @@ help:
 	@echo "  enrich         Apply branding, acronyms, grammar"
 	@echo "  normalize      Fix orphan refs, clean operations"
 	@echo "  merge          Combine specs by domain"
-	@echo "  api-viewer     Generate Scalar API viewer pages"
+	@echo "  api-viewer     Generate API catalog page and plugin config"
 	@echo "  lint           Validate specs with Spectral OpenAPI linter"
 	@echo "  test           Run the pytest suite"
 	@echo "  validate       Test with live API (needs credentials)"

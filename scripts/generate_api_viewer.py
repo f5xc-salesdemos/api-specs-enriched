@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 
-"""Generate Scalar API viewer pages and Starlight MDX wrappers.
+"""Generate API catalog page and starlight-openapi plugin configuration.
 
 Reads docs/specifications/api/index.json and generates:
-    - docs/specifications/api/viewer/{domain}.html  (standalone Scalar viewers)
-    - docs/api-reference/{domain}.mdx               (Starlight iframe wrappers)
-    - docs/api-reference/index.mdx                  (catalog landing page)
+    - docs/api-reference/index.mdx        (catalog landing page)
+    - docs/openapi-specs-config.json       (starlight-openapi plugin config)
 
 Usage:
     python -m scripts.generate_api_viewer
@@ -19,93 +18,42 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-# Pinned Scalar CDN version for reproducible builds
-SCALAR_CDN_VERSION = "1.44.16"
-SCALAR_CDN_URL = f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{SCALAR_CDN_VERSION}"
-
 SPEC_DIR = Path("docs/specifications/api")
-VIEWER_DIR = SPEC_DIR / "viewer"
 MDX_DIR = Path("docs/api-reference")
 INDEX_JSON = SPEC_DIR / "index.json"
+OPENAPI_CONFIG_PATH = Path("docs/openapi-specs-config.json")
 
 
-def generate_viewer_html(domain: str, title: str) -> str:
-    """Generate a standalone Scalar API viewer HTML page."""
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} - API Reference</title>
-    <style>
-        body {{ margin: 0; padding: 0; }}
-    </style>
-</head>
-<body>
-    <div id="app"></div>
-    <script src="{SCALAR_CDN_URL}"></script>
-    <script>
-        Scalar.createApiReference('#app', {{
-            url: '../{domain}.json',
-            theme: 'kepler',
-            darkMode: true,
-            defaultOpenAllTags: false,
-            hideDownloadButton: false,
-        }});
-    </script>
-</body>
-</html>
-"""
-
-
-def generate_domain_mdx(domain: str, title: str, description: str) -> str:
-    """Generate a Starlight MDX wrapper page for a domain viewer.
-
-    Uses an iframe embedding the standalone Scalar HTML viewer rather than the
-    inline React component. The React component (ScalarApiViewerWrapper.astro)
-    uses client:only="react" which cannot be statically prerendered — this
-    causes the starlight-llms-txt plugin to crash when generating llms-full.txt.
-    Iframes have no SSR dependency and render identically in the browser.
-    See: docs-control#424 (fix starlight-llms-txt to pass exclude in llms-full.txt.ts)
-    """
-    viewer_path = f"/specifications/api/viewer/{domain}.html"
-    spec_path = f"/specifications/api/{domain}.json"
-    # Relative path from api-reference/{domain}/ to specifications/api/viewer/
-    viewer_path_relative = f"../../specifications/api/viewer/{domain}.html"
-
-    return f"""---
-title: "{title}"
-description: "{description}"
-tableOfContents: false
----
-
-import {{ LinkCard }} from '@astrojs/starlight/components';
-
-<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-    <LinkCard title="Back to API Catalog" href="/api-reference/" />
-    <LinkCard title="Full Screen" href="{viewer_path}" />
-    <LinkCard title="Download Spec" href="{spec_path}" />
-</div>
-
-<iframe
-    src="{viewer_path_relative}"
-    style="width: 100%; height: 80vh; border: none; border-radius: 0.5rem;"
-    title="{title} API Reference"
-/>
-"""
+def generate_openapi_specs_config(specs: list[dict]) -> str:
+    """Generate the starlight-openapi plugin configuration JSON."""
+    config = []
+    for spec in specs:
+        domain = spec["domain"]
+        title = spec["title"]
+        if spec.get("path_count", 0) == 0:
+            continue
+        config.append(
+            {
+                "base": f"api-reference/{domain}",
+                "schema": f"public/specifications/api/{domain}.json",
+                "sidebar": {
+                    "label": title,
+                    "collapsed": True,
+                },
+            },
+        )
+    return json.dumps(config, indent=2) + "\n"
 
 
 def generate_catalog_mdx(
     specs: list[dict],
 ) -> str:
     """Generate the API Reference catalog landing page."""
-    # Group specs by category
     categories: dict[str, list[dict]] = defaultdict(list)
     for spec in specs:
         cat = spec.get("x-f5xc-category", "Other")
         categories[cat].append(spec)
 
-    # Desired category display order
     category_order = [
         "Security",
         "Networking",
@@ -126,7 +74,7 @@ def generate_catalog_mdx(
         for spec in domain_list:
             domain = spec["domain"]
             title = spec["title"]
-            icon = spec.get("x-f5xc-icon", "📄")
+            icon = spec.get("x-f5xc-icon", "")
             short_desc = spec.get("x-f5xc-description-short", "")
             complexity = spec.get("x-f5xc-complexity", "")
             path_count = spec.get("path_count", 0)
@@ -154,7 +102,7 @@ def generate_catalog_mdx(
 
     return f"""---
 title: API Reference
-description: Interactive API documentation for F5 Distributed Cloud services
+description: API documentation for F5 Distributed Cloud services
 tableOfContents: false
 sidebar:
     order: 0
@@ -162,16 +110,15 @@ sidebar:
 
 import {{ CardGrid, LinkCard }} from '@astrojs/starlight/components';
 
-Explore the F5 Distributed Cloud API with interactive documentation powered by
-[Scalar](https://scalar.com). Each domain includes a **Try It** console for
-testing API calls directly from your browser.
+Explore the F5 Distributed Cloud API documentation. Each domain includes
+endpoint details, request and response schemas, and code examples.
 
 {all_sections}
 """
 
 
 def main() -> int:
-    """Generate all viewer and MDX files."""
+    """Generate catalog page and plugin configuration."""
     if not INDEX_JSON.exists():
         print(f"Error: {INDEX_JSON} not found. Run 'make pipeline' first.")
         return 1
@@ -184,39 +131,24 @@ def main() -> int:
         print("Error: No specifications found in index.json")
         return 1
 
-    # Create output directories
-    VIEWER_DIR.mkdir(parents=True, exist_ok=True)
     MDX_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Remove stale files from previous runs (domains may be added/removed)
+    # Remove stale domain MDX wrappers from previous iframe-based approach
     valid_domains = {spec["domain"] for spec in specs}
-    for stale in VIEWER_DIR.glob("*.html"):
-        if stale.stem not in valid_domains:
-            stale.unlink()
     for stale in MDX_DIR.glob("*.mdx"):
         if stale.stem != "index" and stale.stem not in valid_domains:
             stale.unlink()
-
-    # Generate standalone HTML viewers + MDX wrappers per domain
-    for spec in specs:
-        domain = spec["domain"]
-        title = spec["title"]
-        description = spec.get("x-f5xc-description-short", title)
-
-        # Standalone Scalar viewer
-        html_path = VIEWER_DIR / f"{domain}.html"
-        html_path.write_text(generate_viewer_html(domain, title))
-
-        # Starlight MDX wrapper
-        mdx_path = MDX_DIR / f"{domain}.mdx"
-        mdx_path.write_text(generate_domain_mdx(domain, title, description))
 
     # Generate catalog landing page
     catalog_path = MDX_DIR / "index.mdx"
     catalog_path.write_text(generate_catalog_mdx(specs))
 
-    print(f"Generated {len(specs)} viewer pages in {VIEWER_DIR}")
-    print(f"Generated {len(specs)} MDX wrappers + catalog in {MDX_DIR}")
+    # Generate starlight-openapi plugin configuration
+    config_content = generate_openapi_specs_config(specs)
+    OPENAPI_CONFIG_PATH.write_text(config_content)
+
+    print(f"Generated catalog page at {catalog_path}")
+    print(f"Generated OpenAPI specs config at {OPENAPI_CONFIG_PATH}")
     return 0
 
 
