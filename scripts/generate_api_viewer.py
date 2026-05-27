@@ -121,7 +121,9 @@ endpoint details, request and response schemas, and code examples.
 
 def _escape_mdx(text: str) -> str:
     """Escape characters that break MDX rendering."""
-    return text.replace("<", "&lt;").replace(">", "&gt;").replace("{", "&#123;").replace("}", "&#125;")
+    return (
+        text.replace("<", "&lt;").replace(">", "&gt;").replace("{", "&#123;").replace("}", "&#125;")
+    )
 
 
 def generate_domain_summary(spec: dict) -> str:
@@ -170,8 +172,7 @@ def generate_domain_summary(spec: dict) -> str:
     resources_block = ""
     if resources:
         items = "\n".join(
-            f"- **{_escape_mdx(r.get('name', ''))}**: "
-            f"{_escape_mdx(r.get('description', ''))}"
+            f"- **{_escape_mdx(r.get('name', ''))}**: {_escape_mdx(r.get('description', ''))}"
             for r in resources
         )
         resources_block = f"## Primary Resources\n\n{items}"
