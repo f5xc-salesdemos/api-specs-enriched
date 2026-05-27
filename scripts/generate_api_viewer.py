@@ -18,6 +18,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+HTTP_METHODS = ("get", "post", "put", "delete", "patch", "head", "options", "trace")
+
 SPEC_DIR = Path("docs/specifications/api")
 MDX_DIR = Path("docs/api-reference")
 INDEX_JSON = SPEC_DIR / "index.json"
@@ -117,6 +119,98 @@ endpoint details, request and response schemas, and code examples.
 """
 
 
+def _escape_mdx(text: str) -> str:
+    """Escape characters that break MDX rendering."""
+    return text.replace("<", "&lt;").replace(">", "&gt;").replace("{", "&#123;").replace("}", "&#125;")
+
+
+def generate_domain_summary(spec: dict) -> str:
+    """Generate a per-domain summary MDX page for llms-txt indexing."""
+    domain = spec["domain"]
+    title = spec["title"]
+    icon = spec.get("x-f5xc-icon", "")
+    short_desc = spec.get("x-f5xc-description-short", "")
+    medium_desc = spec.get("x-f5xc-description-medium", "")
+    category = spec.get("x-f5xc-category", "Other")
+    complexity = spec.get("x-f5xc-complexity", "")
+    tier = spec.get("x-f5xc-requires-tier", "")
+    path_count = spec.get("path_count", 0)
+    schema_count = spec.get("schema_count", 0)
+    use_cases = spec.get("x-f5xc-use-cases", [])
+    related = spec.get("x-f5xc-related-domains", [])
+    resources = spec.get("x-f5xc-primary-resources", [])
+
+    spec_file = SPEC_DIR / f"{domain}.json"
+    rows: list[str] = []
+    if spec_file.exists():
+        with spec_file.open() as f:
+            full_spec = json.load(f)
+        for path, methods in full_spec.get("paths", {}).items():
+            for method, details in methods.items():
+                if method not in HTTP_METHODS:
+                    continue
+                summary = _escape_mdx(
+                    details.get("summary", details.get("operationId", "")),
+                )
+                escaped_path = _escape_mdx(path)
+                rows.append(
+                    f"| {method.upper()} | `{escaped_path}` | {summary} |",
+                )
+
+    endpoints_table = ""
+    if rows:
+        header = "| Method | Path | Description |\n|--------|------|-------------|"
+        endpoints_table = f"## Endpoints\n\n{header}\n" + "\n".join(rows)
+
+    use_cases_block = ""
+    if use_cases:
+        items = "\n".join(f"- {_escape_mdx(uc)}" for uc in use_cases)
+        use_cases_block = f"## Use Cases\n\n{items}"
+
+    resources_block = ""
+    if resources:
+        items = "\n".join(
+            f"- **{_escape_mdx(r.get('name', ''))}**: "
+            f"{_escape_mdx(r.get('description', ''))}"
+            for r in resources
+        )
+        resources_block = f"## Primary Resources\n\n{items}"
+
+    related_block = ""
+    if related:
+        links = ", ".join(f"`{r}`" for r in related)
+        related_block = f"**Related domains**: {links}"
+
+    description_line = medium_desc or short_desc or title
+
+    return f"""---
+title: "{icon} {title} API"
+description: "{_escape_mdx(short_desc or title)}"
+sidebar:
+    hidden: true
+---
+
+{_escape_mdx(description_line)}
+
+- **Category**: {category}
+- **Complexity**: {complexity}
+- **Paths**: {path_count} | **Schemas**: {schema_count}
+- **Tier**: {tier}
+{f"- {related_block}" if related_block else ""}
+
+{use_cases_block}
+
+{resources_block}
+
+{endpoints_table}
+
+## Links
+
+- [Interactive API Reference](./{domain}/)
+- [OpenAPI Specification JSON](../specifications/api/{domain}.json)
+"""
+
+
 def main() -> int:
     """Generate catalog page and plugin configuration."""
     if not INDEX_JSON.exists():
@@ -133,21 +227,31 @@ def main() -> int:
 
     MDX_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Remove stale domain MDX wrappers from previous iframe-based approach
-    valid_domains = {spec["domain"] for spec in specs}
+    # Remove stale generated MDX files
+    valid_stems = {"index"} | {f"{s['domain']}-api" for s in specs}
     for stale in MDX_DIR.glob("*.mdx"):
-        if stale.stem != "index" and stale.stem not in valid_domains:
+        if stale.stem not in valid_stems:
             stale.unlink()
 
     # Generate catalog landing page
     catalog_path = MDX_DIR / "index.mdx"
     catalog_path.write_text(generate_catalog_mdx(specs))
 
+    # Generate per-domain summary pages for llms-txt indexing
+    summary_count = 0
+    for spec in specs:
+        if spec.get("path_count", 0) == 0:
+            continue
+        summary_path = MDX_DIR / f"{spec['domain']}-api.mdx"
+        summary_path.write_text(generate_domain_summary(spec))
+        summary_count += 1
+
     # Generate starlight-openapi plugin configuration
     config_content = generate_openapi_specs_config(specs)
     OPENAPI_CONFIG_PATH.write_text(config_content)
 
     print(f"Generated catalog page at {catalog_path}")
+    print(f"Generated {summary_count} domain summary pages")
     print(f"Generated OpenAPI specs config at {OPENAPI_CONFIG_PATH}")
     return 0
 
