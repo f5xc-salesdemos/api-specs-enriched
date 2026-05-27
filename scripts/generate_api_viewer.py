@@ -121,6 +121,11 @@ endpoint details, request and response schemas, and code examples.
 
 UPSTREAM_TYPOS = {
     "Con" + "nnect": "Connect",
+    "Subsci" + "ption": "Subscription",
+    "Insatn" + "ce": "Instance",
+    "avaialab" + "le": "available",
+    "Sou" + "ce": "Source",
+    "pro" + "xys": "proxies",
 }
 
 
