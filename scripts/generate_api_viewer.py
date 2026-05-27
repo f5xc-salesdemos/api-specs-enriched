@@ -92,7 +92,7 @@ def generate_catalog_mdx(
             cards.append(
                 f'  <LinkCard title="{icon} {title}{badge}" '
                 f'description="{description_line} — {stats_line}" '
-                f'href="/api-reference/{domain}/" />',
+                f'href="./{domain}/" />',
             )
 
         cards_block = "\n".join(cards)
