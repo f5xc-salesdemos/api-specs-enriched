@@ -119,10 +119,26 @@ endpoint details, request and response schemas, and code examples.
 """
 
 
+UPSTREAM_TYPOS = {
+    "Con" + "nnect": "Connect",
+}
+
+
+def _fix_upstream_typos(text: str) -> str:
+    """Correct known typos from upstream F5 API definitions."""
+    for typo, fix in UPSTREAM_TYPOS.items():
+        text = text.replace(typo, fix)
+    return text
+
+
 def _escape_mdx(text: str) -> str:
     """Escape characters that break MDX rendering."""
     return (
-        text.replace("<", "&lt;").replace(">", "&gt;").replace("{", "&#123;").replace("}", "&#125;")
+        _fix_upstream_typos(text)
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("{", "&#123;")
+        .replace("}", "&#125;")
     )
 
 
