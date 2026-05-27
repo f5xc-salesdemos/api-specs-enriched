@@ -568,3 +568,102 @@ class TestApiReferenceRewrite:
         stats = enricher.get_stats()
         assert "api_links_rewritten" in stats
         assert stats["api_links_rewritten"] == 1
+
+
+class TestApiReferenceUrlField:
+    """Test x-f5xc-api-reference-url extension field generation."""
+
+    NEW_BASE = "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference"
+
+    def test_api_reference_url_set_on_enrichment(self):
+        """Test that x-f5xc-api-reference-url is added during enrichment."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {"title": "Shape API", X_F5XC_CLI_DOMAIN: "shape"},
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        assert "x-f5xc-api-reference-url" in result["info"]
+        assert result["info"]["x-f5xc-api-reference-url"] == f"{self.NEW_BASE}/shape/"
+
+    def test_api_reference_url_follows_domain_pattern(self):
+        """Test that the URL uses {base}/{domain}/ pattern."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {"title": "DNS API", X_F5XC_CLI_DOMAIN: "dns"},
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec)
+        url = result["info"]["x-f5xc-api-reference-url"]
+        assert url.startswith(self.NEW_BASE)
+        assert url.endswith("/dns/")
+
+    def test_api_reference_url_set_on_idempotent_enrichment(self):
+        """Test that x-f5xc-api-reference-url is added even when externalDocs already exists."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {
+                "title": "Virtual API",
+                X_F5XC_CLI_DOMAIN: "virtual",
+                "externalDocs": {
+                    "url": "https://docs.cloud.f5.com/docs/how-to/app-networking/http-load-balancer",
+                    "description": "Existing docs",
+                },
+            },
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec)
+        assert "x-f5xc-api-reference-url" in result["info"]
+        assert result["info"]["x-f5xc-api-reference-url"] == f"{self.NEW_BASE}/virtual/"
+        assert enricher.stats.already_had_docs == 1
+
+    def test_api_reference_url_not_overwritten_on_re_enrichment(self):
+        """Test idempotency: existing x-f5xc-api-reference-url is preserved."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {
+                "title": "WAF API",
+                X_F5XC_CLI_DOMAIN: "waf",
+                "externalDocs": {
+                    "url": "https://docs.cloud.f5.com/docs/how-to/app-security/web-app-firewall",
+                    "description": "WAF docs",
+                },
+                "x-f5xc-api-reference-url": f"{self.NEW_BASE}/waf/",
+            },
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec)
+        assert result["info"]["x-f5xc-api-reference-url"] == f"{self.NEW_BASE}/waf/"
+
+    @pytest.mark.parametrize(
+        ("domain", "expected_suffix"),
+        [
+            ("blindfold", "/blindfold/"),
+            ("virtual", "/virtual/"),
+            ("waf", "/waf/"),
+            ("dns", "/dns/"),
+            ("shape", "/shape/"),
+            ("cdn", "/cdn/"),
+        ],
+    )
+    def test_api_reference_url_per_domain(self, domain: str, expected_suffix: str):
+        """Test API reference URL generation for multiple domains."""
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {"title": f"{domain.title()} API", X_F5XC_CLI_DOMAIN: domain},
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec)
+        url = result["info"]["x-f5xc-api-reference-url"]
+        assert url == f"{self.NEW_BASE}{expected_suffix}"
+
+    def test_api_reference_url_not_set_without_base_url(self):
+        """Test that field is not set when api_reference_base_url is empty."""
+        enricher = ExternalDocsEnricher()
+        enricher.api_reference_base_url = ""
+        spec = {
+            "info": {"title": "Test API", X_F5XC_CLI_DOMAIN: "shape"},
+            "paths": {},
+        }
+        result = enricher.enrich_spec(spec, filename="shape.json")
+        assert "x-f5xc-api-reference-url" not in result["info"]
