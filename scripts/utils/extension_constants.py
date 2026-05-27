@@ -33,6 +33,7 @@ X_F5XC_ENRICHED_VERSION = "x-f5xc-enriched-version"
 X_F5XC_GLOSSARY = "x-f5xc-glossary"
 X_F5XC_DISCOVERED_AT = "x-f5xc-discovered-at"
 X_F5XC_API_URL = "x-f5xc-api-url"
+X_F5XC_API_REFERENCE_URL = "x-f5xc-api-reference-url"
 X_F5XC_RESPONSE_TIME_MS = "x-f5xc-response-time-ms"
 
 # Domain-level extensions for operational knowledge (Issue #314)
@@ -149,6 +150,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_GLOSSARY,
         X_F5XC_DISCOVERED_AT,
         X_F5XC_API_URL,
+        X_F5XC_API_REFERENCE_URL,
         X_F5XC_RESPONSE_TIME_MS,
         # Domain-level (Issue #314)
         X_F5XC_BEST_PRACTICES,
