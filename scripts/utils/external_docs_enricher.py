@@ -149,6 +149,11 @@ class ExternalDocsEnricher:
             if "externalDocs" in info:
                 self.stats.already_had_docs += 1
                 self.stats.specs_enriched += 1
+                if "x-f5xc-api-reference-url" not in info:
+                    domain = self._detect_domain(spec, filename)
+                    api_ref_url = self._get_api_reference_url(domain)
+                    if api_ref_url:
+                        spec["info"]["x-f5xc-api-reference-url"] = api_ref_url
                 return spec
 
             # Detect domain from filename or spec
@@ -159,6 +164,10 @@ class ExternalDocsEnricher:
             if "info" not in spec:
                 spec["info"] = {}
             spec["info"]["externalDocs"] = external_docs
+
+            api_ref_url = self._get_api_reference_url(domain)
+            if api_ref_url:
+                spec["info"]["x-f5xc-api-reference-url"] = api_ref_url
 
             # Update stats
             self.stats.specs_enriched += 1
@@ -183,6 +192,19 @@ class ExternalDocsEnricher:
             )
 
         return spec
+
+    def _get_api_reference_url(self, domain: str) -> str | None:
+        """Build the API reference URL for a domain.
+
+        Args:
+            domain: Domain slug (e.g. 'blindfold', 'virtual')
+
+        Returns:
+            Full API reference URL, or None if base URL is not configured.
+        """
+        if self.api_reference_base_url:
+            return f"{self.api_reference_base_url}/{domain}/"
+        return None
 
     def _rewrite_operation_docs(self, spec: dict[str, Any], domain: str) -> None:
         """Rewrite upstream API reference URLs in operation-level externalDocs.
