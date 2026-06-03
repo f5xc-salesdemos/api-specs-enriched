@@ -34,7 +34,7 @@ RESOURCE_ENDPOINTS: dict[str, str] = {
     "http_loadbalancer": "http_loadbalancers",
     "tcp_loadbalancer": "tcp_loadbalancers",
     "app_firewall": "app_firewalls",
-    "service_policy": "service_policies",
+    "service_policy": "service_policys",
 }
 
 DOMAIN_MAP: dict[str, str] = {
