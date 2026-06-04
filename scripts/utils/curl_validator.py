@@ -525,6 +525,42 @@ class CurlExampleValidator:
         if resource_config.get("no_metadata_namespace"):
             config_data.get("metadata", {}).pop("namespace", None)
 
+        # Create prerequisite resources (e.g. origin_pool for tcp_loadbalancer)
+        # prereq_cleanup maps prereq_type -> (delete_url)
+        prereq_names: dict[str, str] = {}
+        prereq_cleanup: list[str] = []
+        prerequisites = resource_config.get("prerequisites", {})
+        for prereq_type, prereq_config in prerequisites.items():
+            prereq_uuid = self._generate_test_name().split("-")[-1]
+            prereq_name = f"{self.test_prefix}-pre-{prereq_type[:8]}-{prereq_uuid}"
+            prereq_ns = prereq_config.get("namespace", self.namespace)
+            raw_payload = prereq_config.get("payload_template", "{}")
+            prereq_payload = json.loads(
+                raw_payload.replace("{{prereq_name}}", prereq_name).replace("{{namespace}}", prereq_ns)
+            )
+            api_paths_cfg = self.config.get("api_paths", {})
+            prereq_path_cfg = api_paths_cfg.get(prereq_type, {})
+            if prereq_path_cfg.get("collection"):
+                prereq_collection = prereq_path_cfg["collection"].format(namespace=prereq_ns, name="")
+            else:
+                prereq_collection = f"/api/config/namespaces/{prereq_ns}/{prereq_type}s"
+            prereq_url = f"{self.api_url}{prereq_collection}"
+            status, _, _ = await self._execute_request(client, "POST", prereq_url, prereq_payload)
+            if status not in [200, 201]:
+                result.errors.append(f"Prerequisite {prereq_type} creation failed: status {status}")
+                result.duration_ms = (time.monotonic() - start) * 1000
+                return result
+            prereq_names[prereq_config.get("name_var", prereq_type)] = prereq_name
+            prereq_cleanup.append(f"{prereq_url}/{prereq_name}")
+
+        # Substitute {{VAR_NAME}} placeholders in config_data with prerequisite names
+        if prereq_names:
+            config_str = json.dumps(config_data)
+            for var_name, pname in prereq_names.items():
+                config_str = config_str.replace("{{" + var_name + "}}", pname)
+                config_str = config_str.replace("{{" + var_name + "_NS}}", self.namespace)
+            config_data = json.loads(config_str)
+
         # 1. CREATE
         if "create" not in skip_ops:
             create_result = await self._create(client, resource_type, config_data)
@@ -585,6 +621,10 @@ class CurlExampleValidator:
 
                 if not verify_result.success:
                     result.errors.append(f"VERIFY DELETE failed: {verify_result.error}")
+
+        # Clean up prerequisite resources (best-effort, regardless of test outcome)
+        for delete_url in prereq_cleanup:
+            await self._execute_request(client, "DELETE", delete_url)
 
         result.duration_ms = (time.monotonic() - start) * 1000
         return result
