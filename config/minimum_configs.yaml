@@ -612,7 +612,10 @@ resources:
     description: "TCP load balancer for non-HTTP protocols"
     domain: "virtual"
     resource_type: "loadbalancer"
-    skip_curl_test: true  # requires pre-existing origin pool; validate_curl_examples.py tests each resource independently
+    prerequisites:
+      origin_pool:
+        name_var: PREREQ_POOL
+        payload_template: '{"metadata":{"name":"{{prereq_name}}","namespace":"{{namespace}}"},"spec":{"origin_servers":[{"public_ip":{"ip":"10.0.0.1"},"labels":{}}],"port":80,"no_tls":{},"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}'
 
     # Minimum required fields (verified via live API)
     # The absolute minimum is: metadata.name + metadata.namespace + spec.listen_port
@@ -682,7 +685,7 @@ resources:
         "spec": {
           "listen_port": 80,
           "do_not_advertise": {},
-          "origin_pools_weights": [{"pool": {"namespace": "default", "name": "backend-pool"}}]
+          "origin_pools_weights": [{"pool": {"namespace": "{{PREREQ_POOL_NS}}", "name": "{{PREREQ_POOL}}"}, "weight": 1}]
         }
       }
 
