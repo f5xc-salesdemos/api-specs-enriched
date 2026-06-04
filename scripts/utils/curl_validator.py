@@ -514,6 +514,10 @@ class CurlExampleValidator:
             result.errors.append(str(e))
             return result
 
+        # Some top-level resources (namespace) reject metadata.namespace — remove it
+        if resource_config.get("no_metadata_namespace"):
+            config_data.get("metadata", {}).pop("namespace", None)
+
         # 1. CREATE
         if "create" not in skip_ops:
             create_result = await self._create(client, resource_type, config_data)
