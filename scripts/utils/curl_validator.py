@@ -9,6 +9,7 @@ operations against the live API to ensure examples work as documented.
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import logging
 
@@ -17,11 +18,21 @@ import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
 import yaml
+
+try:
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.x509.oid import NameOID
+
+    _CRYPTO_AVAILABLE = True
+except ImportError:
+    _CRYPTO_AVAILABLE = False
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "discovery"))
 try:
@@ -287,6 +298,34 @@ class CurlExampleValidator:
 
         return config.get("resources", {})
 
+    def _generate_cert_b64(self, cn: str = "curl-test.example.com") -> tuple[str, str]:
+        """Generate a self-signed cert+key, return (cert_b64, key_b64)."""
+        if not _CRYPTO_AVAILABLE:
+            msg = "cryptography package required for cert_generator prerequisites"
+            raise RuntimeError(msg)
+        key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        subject = issuer = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, cn)])
+        now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        cert = (
+            x509.CertificateBuilder()
+            .subject_name(subject)
+            .issuer_name(issuer)
+            .public_key(key.public_key())
+            .serial_number(x509.random_serial_number())
+            .not_valid_before(now)
+            .not_valid_after(now + timedelta(days=365))
+            .sign(key, hashes.SHA256())
+        )
+        cert_b64 = base64.b64encode(cert.public_bytes(serialization.Encoding.PEM)).decode()
+        key_b64 = base64.b64encode(
+            key.private_bytes(
+                serialization.Encoding.PEM,
+                serialization.PrivateFormat.TraditionalOpenSSL,
+                serialization.NoEncryption(),
+            )
+        ).decode()
+        return cert_b64, key_b64
+
     def _parse_example_json(self, example_json: str, test_name: str) -> dict:
         """Parse example JSON and inject test name.
 
@@ -534,6 +573,17 @@ class CurlExampleValidator:
             prereq_uuid = self._generate_test_name().rsplit("-", maxsplit=1)[-1]
             prereq_name = f"{self.test_prefix}-pre-{prereq_type[:8]}-{prereq_uuid}"
             prereq_ns = prereq_config.get("namespace", self.namespace)
+
+            # Special case: cert_generator creates a self-signed cert (no API call)
+            if prereq_type == "cert_generator":
+                try:
+                    cert_b64, key_b64 = self._generate_cert_b64()
+                    prereq_names[prereq_config.get("cert_var", "CERT_B64")] = cert_b64
+                    prereq_names[prereq_config.get("key_var", "KEY_B64")] = key_b64
+                except RuntimeError as e:
+                    result.errors.append(str(e))
+                continue
+
             raw_payload = prereq_config.get("payload_template", "{}")
             prereq_payload = json.loads(
                 raw_payload.replace("{{prereq_name}}", prereq_name).replace(

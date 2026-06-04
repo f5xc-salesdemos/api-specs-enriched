@@ -944,7 +944,10 @@ resources:
     description: "TLS certificate for securing HTTPS endpoints and connections"
     domain: "certificates"
     resource_type: "certificate"
-    skip_curl_test: true  # requires real PEM-encoded cert+key data; placeholder BASE64 values are rejected
+    prerequisites:
+      cert_generator:
+        cert_var: CERT_B64
+        key_var: KEY_B64
 
     required_fields:
       - "metadata.name"
@@ -978,10 +981,10 @@ resources:
           "namespace": "default"
         },
         "spec": {
-          "certificate_url": "string:///BASE64_ENCODED_CERTIFICATE",
+          "certificate_url": "string:///{{CERT_B64}}",
           "private_key": {
             "clear_secret_info": {
-              "url": "string:///BASE64_ENCODED_PRIVATE_KEY",
+              "url": "string:///{{KEY_B64}}",
               "provider": ""
             }
           }
