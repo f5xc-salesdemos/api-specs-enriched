@@ -531,7 +531,7 @@ class CurlExampleValidator:
         prereq_cleanup: list[str] = []
         prerequisites = resource_config.get("prerequisites", {})
         for prereq_type, prereq_config in prerequisites.items():
-            prereq_uuid = self._generate_test_name().split("-")[-1]
+            prereq_uuid = self._generate_test_name().rsplit("-", maxsplit=1)[-1]
             prereq_name = f"{self.test_prefix}-pre-{prereq_type[:8]}-{prereq_uuid}"
             prereq_ns = prereq_config.get("namespace", self.namespace)
             raw_payload = prereq_config.get("payload_template", "{}")
