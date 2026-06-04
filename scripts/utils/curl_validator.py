@@ -440,8 +440,15 @@ class CurlExampleValidator:
         """Execute DELETE operation."""
         start = time.monotonic()
 
-        url = f"{self.api_url}{self._get_api_path(resource_type, include_name=True, name=name)}"
-        status, body, error = await self._execute_request(client, "DELETE", url)
+        api_paths = self.config.get("api_paths", {})
+        resource_path_config = api_paths.get(resource_type, {})
+        delete_method = resource_path_config.get("delete_method", "DELETE")
+        if "delete_path" in resource_path_config:
+            path = resource_path_config["delete_path"].format(namespace=self.namespace, name=name)
+            url = f"{self.api_url}{path}"
+        else:
+            url = f"{self.api_url}{self._get_api_path(resource_type, include_name=True, name=name)}"
+        status, body, error = await self._execute_request(client, delete_method, url)
 
         expected = self.config.get("expected_status", {}).get("delete", [200, 202, 204])
         success = status in expected
