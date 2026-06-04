@@ -486,7 +486,7 @@ class CurlExampleValidator:
             duration_ms=(time.monotonic() - start) * 1000,
         )
 
-    async def validate_resource(
+    async def validate_resource(  # noqa: PLR0911
         self,
         client: httpx.AsyncClient,
         resource_type: str,
@@ -536,22 +536,30 @@ class CurlExampleValidator:
             prereq_ns = prereq_config.get("namespace", self.namespace)
             raw_payload = prereq_config.get("payload_template", "{}")
             prereq_payload = json.loads(
-                raw_payload.replace("{{prereq_name}}", prereq_name).replace("{{namespace}}", prereq_ns)
+                raw_payload.replace("{{prereq_name}}", prereq_name).replace(
+                    "{{namespace}}", prereq_ns
+                )
             )
             api_paths_cfg = self.config.get("api_paths", {})
             prereq_path_cfg = api_paths_cfg.get(prereq_type, {})
             if prereq_path_cfg.get("collection"):
-                prereq_collection = prereq_path_cfg["collection"].format(namespace=prereq_ns, name="")
+                prereq_collection = prereq_path_cfg["collection"].format(
+                    namespace=prereq_ns, name=""
+                )
             else:
                 prereq_collection = f"/api/config/namespaces/{prereq_ns}/{prereq_type}s"
             prereq_url = f"{self.api_url}{prereq_collection}"
             status, _, _ = await self._execute_request(client, "POST", prereq_url, prereq_payload)
             if status not in [200, 201]:
                 result.errors.append(f"Prerequisite {prereq_type} creation failed: status {status}")
-                result.duration_ms = (time.monotonic() - start) * 1000
-                return result
-            prereq_names[prereq_config.get("name_var", prereq_type)] = prereq_name
-            prereq_cleanup.append(f"{prereq_url}/{prereq_name}")
+            else:
+                prereq_names[prereq_config.get("name_var", prereq_type)] = prereq_name
+                prereq_cleanup.append(f"{prereq_url}/{prereq_name}")
+
+        # Abort if any prerequisite failed
+        if result.errors:
+            result.duration_ms = (time.monotonic() - start) * 1000
+            return result
 
         # Substitute {{VAR_NAME}} placeholders in config_data with prerequisite names
         if prereq_names:
