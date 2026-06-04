@@ -612,6 +612,7 @@ resources:
     description: "TCP load balancer for non-HTTP protocols"
     domain: "virtual"
     resource_type: "loadbalancer"
+    skip_curl_test: true  # requires pre-existing origin pool; validate_curl_examples.py tests each resource independently
 
     # Minimum required fields (verified via live API)
     # The absolute minimum is: metadata.name + metadata.namespace + spec.listen_port
@@ -940,6 +941,7 @@ resources:
     description: "TLS certificate for securing HTTPS endpoints and connections"
     domain: "certificates"
     resource_type: "certificate"
+    skip_curl_test: true  # requires real PEM-encoded cert+key data; placeholder BASE64 values are rejected
 
     required_fields:
       - "metadata.name"
@@ -1623,6 +1625,7 @@ resources:
     description: "DNS zone for domain management and record configuration"
     domain: "dns"
     resource_type: "zone"
+    skip_curl_test: true  # zone name must be an FQDN the account owns; auto-generated test names are rejected
 
     required_fields:
       - "metadata.name"  # MUST be a valid FQDN
@@ -1673,6 +1676,7 @@ resources:
     description: "DNS-based load balancer for geolocation and health-aware DNS responses"
     domain: "dns"
     resource_type: "loadbalancer"
+    skip_curl_test: true  # requires pre-existing dns_pool; rules must reference a valid pool name
 
     required_fields:
       - "metadata.name"
@@ -1740,6 +1744,7 @@ resources:
     description: "Azure Virtual Network CE site for deploying F5 XC nodes in Azure"
     domain: "cloud_infrastructure"
     resource_type: "site"
+    skip_curl_test: true  # requires real Azure credentials, resource group, and subscription
     # NOTE: requires system namespace
 
     required_fields:
