@@ -1852,6 +1852,87 @@ resources:
       - "Server defaults: no_worker_nodes:{}, block_all_services:{}, logs_streaming_disabled:{}"
 
   # ============================================================================
+  # SMSv2 - Secure Mesh Site v2
+  # ============================================================================
+
+  securemesh_site_v2:
+    description: "Secure Mesh Site v2 for multi-cloud CE deployments (Azure, AWS, GCP, bare-metal, etc.)"
+    domain: "cloud_infrastructure"
+    resource_type: "site"
+    # NOTE: requires system namespace (enforced by x-f5xc-namespace-profile)
+    # NOTE: provider_choice (azure/aws/gcp/etc.) is REQUIRED at runtime despite schema saying optional
+    # NOTE: nodes self-register after site creation — no azure_cred prerequisite needed for API object
+
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"  # must be "system"
+      - "spec.provider_choice"  # one of: azure, aws, gcp, baremetal, equinix, kvm, nutanix, oci, openstack, vmware
+
+    mutually_exclusive_groups:
+      - name: "provider_choice"
+        fields: ["spec.azure", "spec.aws", "spec.gcp", "spec.baremetal", "spec.equinix", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openstack", "spec.vmware"]
+        reason: "Choose exactly one cloud provider"
+      - name: "node_ha_choice"
+        fields: ["spec.disable_ha", "spec.enable_ha"]
+        reason: "HA enabled or disabled"
+      - name: "blocked_services_choice"
+        fields: ["spec.block_all_services", "spec.blocked_services"]
+        reason: "Block all or specific services"
+      - name: "network_policy_choice"
+        fields: ["spec.active_enhanced_firewall_policies", "spec.no_network_policy"]
+        reason: "Network policy or none"
+      - name: "forward_proxy_choice"
+        fields: ["spec.active_forward_proxy_policies", "spec.no_forward_proxy"]
+        reason: "Forward proxy or none"
+      - name: "enterprise_proxy_choice"
+        fields: ["spec.custom_proxy", "spec.f5_proxy"]
+        reason: "Proxy type"
+      - name: "proxy_bypass_choice"
+        fields: ["spec.custom_proxy_bypass", "spec.no_proxy_bypass"]
+        reason: "Proxy bypass or none"
+      - name: "logs_receiver_choice"
+        fields: ["spec.log_receiver", "spec.logs_streaming_disabled"]
+        reason: "Log receiver or disabled"
+      - name: "s2s_connectivity_sli_choice"
+        fields: ["spec.dc_cluster_group_sli", "spec.no_s2s_connectivity_sli"]
+        reason: "S2S connectivity SLI"
+      - name: "s2s_connectivity_slo_choice"
+        fields: ["spec.dc_cluster_group_slo", "spec.no_s2s_connectivity_slo", "spec.site_mesh_group_on_slo"]
+        reason: "S2S connectivity SLO"
+      - name: "url_categorization_choice"
+        fields: ["spec.disable_url_categorization", "spec.enable_url_categorization"]
+        reason: "URL categorization"
+      - name: "management_network_choice"
+        fields: ["spec.disable_management_network", "spec.enable_management_network"]
+        reason: "Management network"
+
+    example_json: |
+      {
+        "metadata": {
+          "name": "example-smsv2",
+          "namespace": "system"
+        },
+        "spec": {
+          "azure": {
+            "not_managed": {
+              "node_list": []
+            }
+          },
+          "disable_ha": {},
+          "no_network_policy": {},
+          "no_forward_proxy": {},
+          "logs_streaming_disabled": {},
+          "block_all_services": {}
+        }
+      }
+
+    example_curl: |
+      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/securemesh_site_v2s" \
+        -H "Authorization: APIToken $F5XC_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{"metadata":{"name":"example-smsv2","namespace":"system"},"spec":{"azure":{"not_managed":{"node_list":[]}},"disable_ha":{},"no_network_policy":{},"no_forward_proxy":{},"logs_streaming_disabled":{},"block_all_services":{}}}'
+
+  # ============================================================================
   # Identity - Namespace
   # ============================================================================
 
