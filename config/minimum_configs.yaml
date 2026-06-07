@@ -1932,6 +1932,44 @@ resources:
         -H "Content-Type: application/json" \
         -d '{"metadata":{"name":"example-smsv2","namespace":"system"},"spec":{"azure":{"not_managed":{"node_list":[]}},"disable_ha":{},"no_network_policy":{},"no_forward_proxy":{},"logs_streaming_disabled":{},"block_all_services":{}}}'
 
+    # -------------------------------------------------------------------------
+    # CE Registration API — quirks required for deterministic automation
+    # Discovered via live testing 2026-06-07. These are NOT in the OpenAPI spec.
+    # -------------------------------------------------------------------------
+    registration_api_facts:
+
+      # Token UID (goes into VPM config.yaml Token: field)
+      # GET /api/register/namespaces/system/tokens/{name}
+      # UID is at system_metadata.uid — NOT top-level uid, NOT spec.uid
+      token_uid_path: "system_metadata.uid"
+
+      # Registration list endpoint returns null specs — cannot parse cluster/state from list
+      # GET /api/register/namespaces/system/registrations
+      # Returns: {name: "r-{uuid}", spec: null, metadata: null, ...}
+      # To find a registration by site name: iterate names, GET each individually
+      # GET /api/register/namespaces/system/registrations/{name}
+      # cluster_name: spec.cluster_name or spec.passport.cluster_name
+      registration_list_null_spec: true
+      registration_name_format: "r-{uuid}"
+      registration_cluster_name_path: "spec.cluster_name or spec.passport.cluster_name"
+
+      # Registration state is NOT at spec.state (always empty string)
+      # Actual state is at: object.status.current_state
+      # Values: WAITING_FOR_REGISTRATION, ADMITTED, ONLINE, PROVISIONING
+      registration_state_path: "object.status.current_state"
+
+      # Approve endpoint uses SINGULAR /registration/ not plural /registrations/
+      # CORRECT:  POST /api/register/namespaces/system/registration/{name}/approve
+      # WRONG:    POST /api/register/namespaces/system/registrations/{name}/approve  (404)
+      # Two-call flow: first body with state=PENDING, then state=APPROVED
+      approve_url_pattern: "/api/register/namespaces/system/registration/{name}/approve"
+      approve_two_call_flow: "state=PENDING first, then state=APPROVED"
+
+      # Timing (Azure canadaeast, Standard_D4_v3)
+      registration_appears_minutes: "8-20"
+      admitted_after_approve_minutes: "~1"
+      online_after_admitted_minutes: "10-60"
+
   # ============================================================================
   # Identity - Namespace
   # ============================================================================
