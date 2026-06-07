@@ -1932,6 +1932,173 @@ resources:
         -H "Content-Type: application/json" \
         -d '{"metadata":{"name":"example-smsv2","namespace":"system"},"spec":{"azure":{"not_managed":{"node_list":[]}},"disable_ha":{},"no_network_policy":{},"no_forward_proxy":{},"logs_streaming_disabled":{},"block_all_services":{}}}'
 
+    # -------------------------------------------------------------------------
+    # CE Registration API — quirks required for deterministic automation
+    # Discovered via live testing 2026-06-07. These are NOT in the OpenAPI spec.
+    # -------------------------------------------------------------------------
+    registration_api_facts:
+
+      # Token UID (goes into VPM config.yaml Token: field)
+      # GET /api/register/namespaces/system/tokens/{name}
+      # UID is at system_metadata.uid — NOT top-level uid, NOT spec.uid
+      token_uid_path: "system_metadata.uid"
+
+      # Registration list endpoint returns null specs — cannot parse cluster/state from list
+      # GET /api/register/namespaces/system/registrations
+      # Returns: {name: "r-{uuid}", spec: null, metadata: null, ...}
+      # To find a registration by site name: iterate names, GET each individually
+      # GET /api/register/namespaces/system/registrations/{name}
+      # cluster_name: spec.cluster_name or spec.passport.cluster_name
+      registration_list_null_spec: true
+      registration_name_format: "r-{uuid}"
+      registration_cluster_name_path: "spec.cluster_name or spec.passport.cluster_name"
+
+      # Registration state is NOT at spec.state (always empty string)
+      # Actual state is at: object.status.current_state
+      # Values: WAITING_FOR_REGISTRATION, ADMITTED, ONLINE, PROVISIONING
+      registration_state_path: "object.status.current_state"
+
+      # Approve endpoint uses SINGULAR /registration/ not plural /registrations/
+      # CORRECT:  POST /api/register/namespaces/system/registration/{name}/approve
+      # WRONG:    POST /api/register/namespaces/system/registrations/{name}/approve  (404)
+      # Two-call flow: first body with state=PENDING, then state=APPROVED
+      approve_url_pattern: "/api/register/namespaces/system/registration/{name}/approve"
+      approve_two_call_flow: "state=PENDING first, then state=APPROVED"
+
+      # Timing (Azure canadaeast, Standard_D4_v3)
+      registration_appears_minutes: "8-20"
+      admitted_after_approve_minutes: "~1"
+      online_after_admitted_minutes: "10-60"
+
+    # -------------------------------------------------------------------------
+    # Option examples — all 23 oneOf group options with exact API payloads
+    # Source of truth for xcsh payload construction. Verified live 2026-06-07.
+    # -------------------------------------------------------------------------
+    option_examples:
+
+      # Group 1: node_ha
+      disable_ha:
+        spec_override: {"disable_ha": {}}
+        description: "Disable HA (default, single-node CE)"
+      enable_ha:
+        spec_override: {"enable_ha": {}}
+        description: "Enable HA for multi-node CE cluster"
+
+      # Group 2: blocked_services
+      block_all_services:
+        spec_override: {"block_all_services": {}}
+        description: "Block all managed services on CE"
+      blocked_services:
+        spec_override: {"blocked_services": {"service_list": [{"service": "HTTP"}]}}
+        description: "Block specific services (HTTP, HTTPS, TCP, etc.)"
+
+      # Group 3: network_policy
+      no_network_policy:
+        spec_override: {"no_network_policy": {}}
+        description: "No network policy applied"
+      active_enhanced_firewall_policies:
+        spec_override: {"active_enhanced_firewall_policies": {"active_enhanced_firewall_policies": [{"name": "POLICY_NAME", "namespace": "NAMESPACE"}]}}
+        description: "Apply enhanced firewall policy — reference by name+namespace"
+        prerequisites:
+          enhanced_firewall_policy:
+            api_path: "enhanced_firewall_policys"
+            namespace: "user_namespace"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{}}'
+
+      # Group 4: forward_proxy
+      no_forward_proxy:
+        spec_override: {"no_forward_proxy": {}}
+        description: "No forward proxy"
+      active_forward_proxy_policies:
+        spec_override: {"active_forward_proxy_policies": {"active_forward_proxy_policies": [{"name": "POLICY_NAME", "namespace": "NAMESPACE"}]}}
+        description: "Apply forward proxy policy — reference by name+namespace"
+        prerequisites:
+          forward_proxy_policy:
+            api_path: "forward_proxy_policys"
+            namespace: "user_namespace"
+            # drp_http_connect REQUIRED — without it API returns 400
+            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"drp_http_connect":{},"allow_all":{}}}'
+
+      # Group 5: enterprise_proxy
+      f5_proxy:
+        spec_override: {"f5_proxy": {}}
+        description: "Use F5-managed proxy (default)"
+      custom_proxy:
+        spec_override: {"custom_proxy": {"http_proxy": "http://proxy.example.com:8080", "https_proxy": "http://proxy.example.com:8080"}}
+        description: "Custom HTTP/HTTPS proxy URL"
+
+      # Group 6: proxy_bypass
+      no_proxy_bypass:
+        spec_override: {"no_proxy_bypass": {}}
+        description: "No proxy bypass"
+      custom_proxy_bypass:
+        spec_override: {"custom_proxy_bypass": {"bypass_list": ["10.0.0.0/8", "192.168.0.0/16"]}}
+        description: "CIDRs to bypass proxy"
+
+      # Group 7: logs_receiver
+      logs_streaming_disabled:
+        spec_override: {"logs_streaming_disabled": {}}
+        description: "Disable log streaming (default)"
+      log_receiver:
+        spec_override: {"log_receiver": {"name": "RECEIVER_NAME", "namespace": "NAMESPACE"}}
+        description: "Send logs to a global_log_receiver — reference by name+namespace"
+        prerequisites:
+          global_log_receiver:
+            api_path: "global_log_receivers"
+            namespace: "user_namespace"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"request_logs":{},"http_receiver":{"uri":"http://logs.example.com:8080/logs","no_tls":{},"disable_authentication":{}}}}'
+
+      # Group 8: s2s_connectivity_sli
+      no_s2s_connectivity_sli:
+        spec_override: {"no_s2s_connectivity_sli": {}}
+        description: "No site-to-site connectivity on SLI (default)"
+      dc_cluster_group_sli:
+        spec_override: {"dc_cluster_group_sli": {"name": "DC_CLUSTER_GROUP_NAME", "namespace": "system"}}
+        description: "DC cluster group on SLI — MUST be in system namespace"
+        prerequisites:
+          dc_cluster_group:
+            api_path: "dc_cluster_groups"
+            namespace: "system"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"system"},"spec":{}}'
+
+      # Group 9+10: s2s_connectivity_slo (three options — mutually exclusive)
+      no_s2s_connectivity_slo:
+        spec_override: {"no_s2s_connectivity_slo": {}}
+        description: "No site-to-site connectivity on SLO (default)"
+      dc_cluster_group_slo:
+        spec_override: {"dc_cluster_group_slo": {"name": "DC_CLUSTER_GROUP_NAME", "namespace": "system"}}
+        description: "DC cluster group on SLO — MUST be in system namespace"
+        prerequisites:
+          dc_cluster_group:
+            api_path: "dc_cluster_groups"
+            namespace: "system"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"system"},"spec":{}}'
+      site_mesh_group_on_slo:
+        spec_override: {"site_mesh_group_on_slo": {"name": "SITE_MESH_GROUP_NAME", "namespace": "system"}}
+        description: "Join a site mesh group on SLO — MUST be in system namespace"
+        prerequisites:
+          site_mesh_group:
+            api_path: "site_mesh_groups"
+            namespace: "system"
+            # bfd_disabled REQUIRED — empty spec returns 400. Full_mesh + tunnel_type required.
+            payload: '{"metadata":{"name":"{{name}}","namespace":"system"},"spec":{"type":"SITE_MESH_GROUP_TYPE_FULL_MESH","tunnel_type":"SITE_TO_SITE_TUNNEL_IPSEC","full_mesh":{"data_plane_mesh":{}},"bfd_disabled":{}}}'
+
+      # Group 11: url_categorization
+      disable_url_categorization:
+        spec_override: {"disable_url_categorization": {}}
+        description: "Disable URL categorization (default)"
+      enable_url_categorization:
+        spec_override: {"enable_url_categorization": {}}
+        description: "Enable URL categorization"
+
+      # Group 12: management_network
+      disable_management_network:
+        spec_override: {"disable_management_network": {}}
+        description: "Disable management network (default)"
+      enable_management_network:
+        spec_override: {"enable_management_network": {}}
+        description: "Enable management network"
+
   # ============================================================================
   # Identity - Namespace
   # ============================================================================
