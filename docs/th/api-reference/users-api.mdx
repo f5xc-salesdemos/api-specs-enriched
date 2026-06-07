@@ -1,0 +1,54 @@
+---
+title: "\U0001F465 Users API"
+description: 'โทเค็นบัญชี, ป้ายกำกับ, และการกำหนดค่า cloud-init'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 3c986acf344c
+  translator: machine
+---
+
+ข้อมูลรับรองสำหรับการลงทะเบียนไซต์พร้อมการหมดอายุอัตโนมัติ คีย์อนุกรมวิธานกำหนดการจัดหมวดหมู่ที่อนุญาต ในขณะที่แท็กที่ได้มาโดยอัตโนมัติจะถูกนำไปใช้แบบไดนามิก
+
+- **หมวดหมู่**: Platform
+- **ความซับซ้อน**: simple
+- **เส้นทาง**: 13 | **สคีมา**: 50
+- **ระดับ**: Standard
+- **โดเมนที่เกี่ยวข้อง**: `system`, `admin`
+
+## กรณีการใช้งาน
+
+- จัดการบัญชีผู้ใช้และโทเค็น
+- กำหนดค่าการระบุตัวตนผู้ใช้
+- จัดการการตั้งค่าและค่ากำหนดของผู้ใช้
+- กำหนดค่าป้ายกำกับโดยนัยและป้ายกำกับที่รู้จัก
+
+## ทรัพยากรหลัก
+
+- **user**: บัญชีผู้ใช้สำหรับการเข้าถึงแพลตฟอร์ม
+- **user_role**: บทบาทผู้ใช้สำหรับการจัดการสิทธิ์
+- **namespace_role**: บทบาทระดับ namespace สำหรับสิทธิ์แบบละเอียด
+
+## ปลายทาง
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/system/implicit_labels` | ดึงป้ายกำกับโดยนัย |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/create` | สร้าง |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/delete` | ลบ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_labels` | ดึงข้อมูล |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/create` | สร้าง |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/delete` | ลบ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_label_keys` | ดึงข้อมูล |
+| GET | `/api/register/namespaces/system/get-cloud-init-config` | ดึงการกำหนดค่า Cloud Init |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens` | สร้างโทเค็น |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens/&#123;metadata.name&#125;` | แทนที่โทเค็น |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens` | แสดงรายการโทเค็น |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | ดึงโทเค็น |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | ลบโทเค็น |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;/state` | ตั้งค่าสถานะโทเค็น |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./users/)
+- [ข้อมูลจำเพาะ OpenAPI รูปแบบ JSON](../specifications/api/users.json)

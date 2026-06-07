@@ -1,0 +1,192 @@
+---
+title: "\U0001F30D Sites API"
+description: 云和边缘节点部署。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9a648b423e6f
+  translator: machine
+---
+
+AWS、Azure、GCP VPC 与中转网关的集成。基于标签的选择，用于跨区域的策略应用。
+
+- **类别**：基础设施
+- **复杂度**：高级
+- **路径数**：133 | **Schema 数**：1015
+- **层级**：标准版
+- **相关领域**：`cloud_infrastructure`、`customer_edge`、`managed_kubernetes`
+
+## 使用场景
+
+- 跨云提供商（AWS、Azure、GCP）部署 F5 XC
+- 管理 XCKS（托管 Kubernetes）站点部署（前称 AppStack）
+- 部署 Secure Mesh 站点以实现以网络为中心的边缘部署
+- 将外部 Kubernetes 集群作为客户边缘集成
+- 配置 AWS VPC、Azure VNet 和 GCP VPC 站点
+- 管理虚拟站点和站点策略
+
+## 主要资源
+
+- **site**：用于边缘服务的物理或云部署位置
+- **virtual_site**：使用标签选择器对站点进行逻辑分组
+- **site_mesh_group**：多个站点之间的网格连接配置
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites` | 创建 AWS TGW 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites/&#123;metadata.name&#125;` | 替换 AWS TGW 站点。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_tgw_info` | 配置 TGW 信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vip_info` | 配置 AWS TGW 站点 VIP 信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpc_ip_prefixes` | 配置 VPC IP 前缀。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpn_tunnels` | 配置 VPN 隧道。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/validate_config` | 验证 AWS TGW 配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites` | 列出 AWS TGW 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | 获取 AWS TGW 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | 删除 AWS TGW 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites` | 创建 AWS VPC 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites/&#123;metadata.name&#125;` | 替换 AWS VPC 站点。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_cloud_site_info` | 配置 AWS VPC 站点信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_vip_info` | 配置 AWS VPC 站点 VIP 信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/storage/set_vpc_k8s_hostnames` | 配置 VPC K8s 主机名。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/validate_config` | 验证 AWS VPC 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites` | 列出 AWS VPC 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | 获取 AWS VPC 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | 删除 AWS VPC 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites` | 创建 App Stack 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites/&#123;metadata.name&#125;` | 替换 App Stack 站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites` | 列出 App Stack 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | 获取 App Stack 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | 删除 App Stack 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites` | 创建 Azure VNet 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites/&#123;metadata.name&#125;` | 替换 Azure VNet 站点。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_cloud_site_info` | 配置 Azure VNet 站点信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_vip_info` | 配置 Azure VNet 站点 VIP 信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/validate_config` | 验证 Azure VNet 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites` | 列出 Azure VNet 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | 获取 Azure VNet 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | 删除 Azure VNet 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites` | 创建 GCP VPC 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites/&#123;metadata.name&#125;` | 替换 GCP VPC 站点。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/set_cloud_site_info` | 配置 GCP VPC 站点信息。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/validate_config` | 验证 GCP VPC 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites` | 列出 GCP VPC 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | 获取 GCP VPC 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | 删除 GCP VPC 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites` | 创建 Secure Mesh 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites/&#123;metadata.name&#125;` | 替换 Secure Mesh 站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | 列出 Secure Mesh 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | 获取 Secure Mesh 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | 删除 Secure Mesh 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | 创建 Secure Mesh 站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | 替换 Secure Mesh 站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | 列出 Secure Mesh 站点配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | 获取 Secure Mesh 站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | 删除 Secure Mesh 站点配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters` | 创建配置规范。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters/&#123;metadata.name&#125;` | 替换配置规范。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters` | 列出 K8s 集群。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | 获取配置规范。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | 删除 K8s 集群。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | 防火墙日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | 防火墙日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | 平台事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | 平台事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | 外部连接器日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | K8s 审计日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | K8s 审计日志聚合查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | K8s 事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events/aggregation` | K8s 事件聚合查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 审计日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 审计日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s 事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s 事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| POST | `/api/web/namespaces/system/revoke/global-kubeconfigs` | 吊销全局 Kubeconfig。 |
+| POST | `/api/data/namespaces/system/site/&#123;name&#125;/status` | 检查站点是否存在。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/configmaps` | ConfigMap 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/endpoints` | Endpoints 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces` | Namespace 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/configmaps` | ConfigMap 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/endpoints` | Endpoints 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/persistentvolumeclaims` | PersistentVolumeClaim 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/pods` | Pod 列表 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/secrets` | Secret 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/services` | Service 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/nodes` | Namespace 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumeclaims` | PersistentVolumeClaim 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumes` | PersistentVolume 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/pods` | Pod 列表 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/secrets` | Secret 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/services` | Service 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/daemonsets` | DaemonSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/deployments` | Deployment 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/daemonsets` | DaemonSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/deployments` | Deployment 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/replicasets` | ReplicaSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/statefulsets` | StatefulSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/replicasets` | ReplicaSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/statefulsets` | StatefulSet 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/jobs` | Job 列表 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/namespaces/&#123;namespace&#125;/jobs` | Job 列表 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/cronjobs` | CronJob 列表。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/namespaces/&#123;namespace&#125;/cronjobs` | CronJob 列表。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/pods/metrics` | Pod 指标。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances 指标。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/pods/metrics` | Pod 指标。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances 指标。 |
+| GET | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | 列出全局 Kube 配置。 |
+| POST | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | 创建全局 Kube 配置。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/sites/&#123;metadata.name&#125;` | 替换站点。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/site/&#123;name&#125;/state` | 设置站点状态。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/status/metrics` | 站点状态指标。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites` | 列出站点 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;` | 获取站点 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfig` | 创建 K8s 集群本地 Kube 配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfigs` | 列出本地 Kube 配置。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | 升级操作系统。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | 升级软件。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | 全局网络列表。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | 网段列表。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | 站点图查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | 站点边查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | 站点节点查询。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | 接口列表。 |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | 数据中心集群拓扑。 |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | 数据中心集群组摘要。 |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | 获取网络路由表。 |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | 获取路由表。 |
+| GET | `/api/data/namespaces/system/topology/site/&#123;name&#125;/networks` | 获取站点网络。 |
+| POST | `/api/data/namespaces/system/topology/site/&#123;site&#125;` | 站点拓扑。 |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | 站点网格拓扑。 |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | 站点网格组摘要。 |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | 获取 TGW 路由表。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | 创建虚拟 Kubernetes。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | 替换虚拟 Kubernetes。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_k8s/pvc/metrics` | PVC 指标。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | 列出虚拟 Kubernetes。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | 获取虚拟 Kubernetes。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | 删除虚拟 Kubernetes。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites` | 创建虚拟站点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites/&#123;metadata.name&#125;` | 替换虚拟站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites` | 列出虚拟站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 获取虚拟站点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 删除虚拟站点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;/selectees` | 获取被选对象。 |
+
+## 链接
+
+- [交互式 API 参考](./sites/)
+- [OpenAPI 规范 JSON](../specifications/api/sites.json)

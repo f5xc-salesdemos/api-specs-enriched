@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: Autoritative Zonen und Datensatzverwaltung.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+Namensauflösung mit Zonentransfers und Gesundheitsprüfungen. Datensatztypen und Delegierungsunterstützung.
+
+- **Kategorie**: Netzwerk
+- **Komplexität**: Fortgeschritten
+- **Pfade**: 49 | **Schemas**: 285
+- **Stufe**: Standard
+- **Verwandte Domänen**: `virtual`, `network`
+
+## Anwendungsfälle
+
+- DNS-Lastverteilung konfigurieren
+- DNS-Zonen und Domänen verwalten
+- DNS-Compliance-Richtlinien konfigurieren
+- Ressourcendatensatzgruppen (RRSets) verwalten
+
+## Primäre Ressourcen
+
+- **dns_zone**: Autoritative DNS-Zone mit Datensatzverwaltungsfunktionen
+- **dns_domain**: DNS-Domänendelegierung und Konfigurationseinstellungen
+- **dns_load_balancer**: DNS-basierte Verkehrsverteilung mit geografischem Routing und Failover
+
+## Endpunkte
+
+| Methode | Pfad | Beschreibung |
+|---------|------|--------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | DNS-Compliance-Prüfungen erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | DNS-Compliance-Prüfungen ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | DNS-Compliance-Prüfungen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | DNS-Compliance-Prüfungen abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | DNS-Compliance-Prüfungen löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | DNS-Proxy erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | DNS-Proxy ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | DNS-Proxy auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | DNS-Proxy abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | DNS-Proxy löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | DNS-Domäne erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | DNS-Domäne ersetzen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | DNS-Domäne verifizieren. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | DNS-Domänen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | DNS-Domäne abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | DNS-Domäne löschen. |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | Werte vorschlagen. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | DNS-Load-Balancer erstellen. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | DNS-Load-Balancer ersetzen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | DNS-Load-Balancer auflisten. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | DNS-Load-Balancer-Gesundheitsstatus auflisten. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | DNS-Load-Balancer-Pool-Mitglieder-Gesundheitsstatus auflisten. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | DNS-Load-Balancer-Pool-Gesundheitsstatus. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | DNS-Load-Balancer-Pool-Mitglied-Gesundheitsstatusänderungsereignisse. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | DNS-Load-Balancer abrufen. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | DNS-Load-Balancer löschen. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | DNS-Load-Balancer-Gesundheitsstatus. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | DNS-Load-Balancer-Gesundheitsprüfung erstellen. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | DNS-Load-Balancer-Gesundheitsprüfung ersetzen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | DNS-Load-Balancer-Gesundheitsprüfungen auflisten. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | DNS-Load-Balancer-Gesundheitsprüfung abrufen. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | DNS-Load-Balancer-Gesundheitsprüfung löschen. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | DNS-Load-Balancer-Pool erstellen. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | DNS-Load-Balancer-Pool ersetzen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | DNS-Load-Balancer-Pool auflisten. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | DNS-Load-Balancer-Pool abrufen. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | DNS-Load-Balancer-Pool löschen. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | Von DNSDomain klonen. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | F5 Cloud Services DNS-Zone importieren. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | DNS-Zone importieren. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | BIND-Dateien importieren. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | BIND-Dateien validieren. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | DNS-Zone erstellen. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | DNS-Zone ersetzen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | Lokale Zonendatei abrufen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | Remote-Zonendatei abrufen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | Zonendatei exportieren. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | DNS-Zonen auflisten. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | DNS-Zonen-Metriken. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | DNS-Zonen-Anforderungsprotokolle abrufen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | DNS-Zone abrufen. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | DNS-Zone löschen. |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | Erstellen |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | Abrufen |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | Löschen |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | Ersetzen |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | DNS-Verwaltung abonnieren. |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | DNS-Verwaltung abbestellen. |
+
+## Links
+
+- [Interaktive API-Referenz](./dns/)
+- [OpenAPI-Spezifikation JSON](../specifications/api/dns.json)

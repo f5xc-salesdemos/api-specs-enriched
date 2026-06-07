@@ -1,0 +1,516 @@
+---
+title: HTTP LoadBalancer の拡張
+description: HTTP ロードバランサースキーマのエンリッチメントメタデータ
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+HTTP ロードバランサースキーマのエンリッチメントメタデータです。拡張の定義については [OpenAPI 拡張](../development/#openapi-extensions) を参照してください。
+
+## エンリッチされたスキーマ
+
+### パターン
+
+`viewshttp_loadbalancer.*SpecType` に一致するすべてのスキーマがエンリッチメントを受けます：
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## 最小構成メタデータ
+
+`x-f5xc-minimum-configuration` 拡張は、最小限の有効な HTTP ロードバランサーを作成するための包括的な CLI メタデータを提供します。
+
+### 必須フィールド
+
+| フィールド | 制約 | 説明 |
+|-------|-----------|-------------|
+| `metadata.name` | DNS ラベル形式: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | リソース名 |
+| `metadata.namespace` | DNS ラベル形式 | 名前空間 |
+| `spec.domains` | 配列、min_items: 1 | サービスを提供するドメイン |
+
+### ロードバランサータイプ（OneOf 必須）
+
+以下のロードバランサータイプのいずれかを指定する必要があります：
+
+| バリアント | 説明 |
+|---------|-------------|
+| `spec.http` | HTTP のみ |
+| `spec.https` | 手動証明書付き HTTPS |
+| `spec.https_auto_cert` | 自動証明書付き HTTPS |
+| `spec.http_https` | HTTP と HTTPS の両方 |
+
+**注意**: ロードバランサータイプの OneOf グループは以下のように呼ばれます：
+- 設定ファイルでは `lb_type`（`config/minimum_configs.yaml` の短縮形）
+- OpenAPI スペックネイティブ拡張では `loadbalancer_type`（ネイティブフィールド名）
+
+**API スキーマリファレンス**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### 最小限の有効な構成
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## サーバー適用デフォルト
+
+`x-f5xc-server-default: true` でマークされたフィールドは、リクエストから省略された場合に F5 XC API サーバーによって `default` 値が適用されます。HTTP ロードバランサーには多数のサーバー適用デフォルトがあります。これは、ほとんどのセキュリティ機能やプロトコルオプションがデフォルトで無効または安全な状態になっているためです。
+
+### HTTPS Auto-Cert デフォルト
+
+`https_auto_cert` が指定された場合、省略されたフィールドに対してサーバーは以下のデフォルトを適用します：
+
+| フィールド | デフォルト値 | タイプ | 説明 |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS リスニングポート |
+| `http_redirect` | `false` | boolean | HTTP から HTTPS へのリダイレクト |
+| `add_hsts` | `false` | boolean | HTTP Strict Transport Security ヘッダー |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ と強力な暗号化 |
+| `no_mtls` | `{}` | object | 相互 TLS 無効 |
+| `default_header` | `{}` | object | デフォルトのサーバー名ヘッダー処理 |
+| `enable_path_normalize` | `{}` | object | パス正規化有効 |
+| `default_loadbalancer` | `{}` | object | デフォルトのロードバランサー設定 |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | レガシーヘッダー変換 |
+| `connection_idle_timeout` | `120000` | integer | 接続アイドルタイムアウト（ミリ秒、2分） |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 および HTTP/2 有効 |
+| `coalescing_options.default_coalescing` | `{}` | object | デフォルトの HTTP/2 接続コアレッシング |
+
+### セキュリティ機能のデフォルト
+
+省略された場合、すべてのセキュリティ機能はデフォルトで無効になります：
+
+| フィールド | デフォルト値 | 説明 |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | Web アプリケーションファイアウォール無効 |
+| `disable_bot_defense` | `{}` | ボット防御無効 |
+| `disable_rate_limit` | `{}` | レート制限無効 |
+| `disable_api_discovery` | `{}` | API ディスカバリー無効 |
+| `disable_api_testing` | `{}` | API テスト無効 |
+| `disable_api_definition` | `{}` | API 定義無効 |
+| `disable_malware_protection` | `{}` | マルウェア保護無効 |
+| `disable_client_side_defense` | `{}` | クライアントサイド防御無効 |
+| `disable_ip_reputation` | `{}` | IP レピュテーション無効 |
+| `disable_threat_mesh` | `{}` | スレットメッシュ無効 |
+| `disable_malicious_user_detection` | `{}` | 悪意のあるユーザー検出無効 |
+
+### DDoS およびアクセス制御のデフォルト
+
+| フィールド | デフォルト値 | 説明 |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | DDoS トラフィックをブロック（デフォルトの緩和アクション） |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | デフォルトの RPS しきい値を使用 |
+| `l7_ddos_protection.clientside_action_none` | `{}` | クライアントサイド DDoS 検証なし |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | DDoS ポリシー参照なし |
+| `no_challenge` | `{}` | クライアントチャレンジなし |
+| `user_id_client_ip` | `{}` | クライアント IP でユーザーを識別 |
+| `disable_trust_client_ip_headers` | `{}` | クライアント IP ヘッダーを信頼しない |
+
+### その他のサーバー適用デフォルト
+
+| フィールド | デフォルト値 | タイプ | 説明 |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | パブリックデフォルト VIP でアドバタイズ |
+| `round_robin` | `{}` | object | ラウンドロビン負荷分散アルゴリズム |
+| `add_location` | `true` | boolean | レスポンスにロケーションヘッダーを追加 |
+| `system_default_timeouts` | `{}` | object | システムデフォルトタイムアウトを使用 |
+| `service_policies_from_namespace` | `{}` | object | 名前空間からサービスポリシーを継承 |
+| `default_sensitive_data_policy` | `{}` | object | デフォルトの機密データポリシーを使用 |
+
+## 相互排他フィールドグループ
+
+`x-f5xc-conflicts-with` でマークされたフィールドは OneOf パターンを示します。各グループから 1 つのフィールドのみを指定できます。
+
+### コア構成グループ
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | ロードバランサープロトコルタイプ |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | ロードバランサーのアドバタイズ方法 |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | トラフィック分散アルゴリズム |
+
+### HTTPS 構成グループ（10 グループ）
+
+#### TLS 構成
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS セキュリティレベル |
+| `mtls` | `no_mtls`, `use_mtls` | 相互 TLS の有効化または無効化 |
+
+#### プロトコルとヘッダー
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP プロトコルバージョン |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP ヘッダー変換タイプ |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | サーバー名ヘッダー処理 |
+
+#### 接続管理
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | パス正規化の有効化または無効化 |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | デフォルトまたは非デフォルトのロードバランサー |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 接続コアレッシングオプション |
+
+### セキュリティ機能グループ（11 グループ）
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | Web アプリケーションファイアウォール |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | ボット検出と緩和 |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | レート制限 |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API ディスカバリー |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API テスト |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API 定義 |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | マルウェア保護 |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | クライアントサイド防御 |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP レピュテーション |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | スレットメッシュ |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | 悪意のあるユーザー検出 |
+
+### DDoS 保護グループ（4 グループ）
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS 緩和アクション |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | 毎秒リクエスト数しきい値 |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | クライアントサイド DDoS 検証アクション |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS ポリシー参照またはなし |
+
+### その他の設定グループ（6 グループ）
+
+| グループ名 | フィールド | 説明 |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | ボット検出用のクライアントチャレンジタイプ |
+| `user_identification` | `user_id_client_ip`, `user_identification` | ユーザー識別方法 |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | クライアント IP ヘッダーを信頼するかどうか |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | システムデフォルトまたはカスタムタイムアウトを使用 |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | 名前空間からのサービスポリシーまたはアクティブリスト |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | デフォルトまたはカスタムの機密データポリシーを使用 |
+
+## OneOf バリアントの推奨（将来の拡張）
+
+**ステータス**: http_loadbalancer スキーマにはまだ適用されていません。
+
+ヘルスチェックには OneOf グループで最も一般的な選択肢を示す `x-f5xc-recommended-oneof-variant` が含まれていますが、http_loadbalancer には現在この拡張がありません。
+
+### ヘルスチェックとの比較
+
+**ヘルスチェック**（実装済み）：
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP ロードバランサー**（未実装）：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # 推奨される lb_type バリアントを示す予定
+```
+
+### 将来の実装
+
+http_loadbalancer にこの拡張を追加するには：
+1. F5 XC コンソールのデフォルト選択を確認する（例：UI でどの lb_type が事前選択されているか）
+2. `config/discovered_defaults.yaml` に設定を追加する
+3. エンリッチメントパイプラインを再実行して拡張を適用する
+
+**追加時の想定構造**：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # 例 - 検証が必要
+```
+
+この拡張により、ダウンストリームツールがユーザーに構成オプションを提示する際に、最も一般的に使用されるバリアントを事前選択できるようになります。
+
+## 制約メタデータ
+
+`x-f5xc-constraints` でマークされたフィールドには、API 分析から発見されたバリデーション制約が含まれています。
+
+### 配列の制約
+
+| フィールド | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### 整数の制約
+
+| フィールド | 最小値 | 最大値 | デフォルト | 説明 |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS ポート番号 |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | 接続アイドルタイムアウト（ミリ秒、1秒〜1時間） |
+
+### 列挙型の制約
+
+| フィールド | 値 | デフォルト | 説明 |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS セキュリティレベル |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP ヘッダー変換 |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP プロトコルバージョン |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 接続コアレッシング |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | 負荷分散アルゴリズム |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | レイヤー 7 DDoS 緩和アクション |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | DDoS 検出用 RPS しきい値 |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | クライアントサイド DDoS 検証 |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | クライアントチャレンジタイプ |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | ロードバランサーのアドバタイズ |
+
+## ガイドワークフロー統合
+
+エンリッチメントパイプラインは、スペックレベルで `x-f5xc-guided-workflows` メタデータを追加します。これらのワークフローは、AI アシスタントや CLI ツールが使用するステップバイステップのデプロイメントガイダンスを提供します。
+
+### HTTP ロードバランサーのデプロイ
+
+バックエンドオリジンプール付きの完全に構成された HTTP ロードバランサーを作成するための 5 ステップのワークフローです（`config/guided_workflows.yaml` で定義）：
+
+| ステップ | アクション | リソース | 必須フィールド | オプション |
+|------|--------|----------|-----------------|----------|
+| 1 | オリジンプールの作成 | `origin_pool` | `name`, `origin_servers`, `port` | いいえ |
+| 2 | ヘルスチェックの構成 | `healthcheck` | `name`, `http_health_check` | はい |
+| 3 | ヘルスチェックのアタッチ | - | - | はい |
+| 4 | HTTP ロードバランサーの作成 | `http_loadbalancer` | `name`, `domains`, `http.port` | いいえ |
+| 5 | デプロイメントの検証 | - | - | いいえ |
+
+**前提条件**: ターゲットテナントに有効な名前空間があること、バックエンドアプリケーションが IP または DNS で到達可能であること、SSL 証明書（HTTPS の場合はオプション）。
+
+### TLS 付き HTTPS ロードバランサーのデプロイ
+
+SSL/TLS ターミネーション付き HTTPS ロードバランサーを作成するための 7 ステップのワークフローです：
+
+| ステップ | アクション | リソース | 必須フィールド | オプション |
+|------|--------|----------|-----------------|----------|
+| 1 | SSL 証明書のアップロード | `certificate` | `name`, `certificate_chain`, `private_key` | いいえ |
+| 2 | オリジンプールの作成 | `origin_pool` | `name`, `origin_servers` | いいえ |
+| 3 | ヘルスチェックの構成 | `healthcheck` | - | はい |
+| 4 | WAF ポリシーの構成 | `app_firewall` | - | はい |
+| 5 | HTTPS ロードバランサーの作成 | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | いいえ |
+| 6 | WAF ポリシーのアタッチ | - | - | はい |
+| 7 | HTTPS デプロイメントの検証 | - | - | いいえ |
+
+**前提条件**: ターゲットテナントに有効な名前空間があること、SSL 証明書と秘密鍵、バックエンドアプリケーションが到達可能であること。
+
+### ワークフローの利用
+
+ダウンストリームツールはこれらのワークフローを使用して、マルチステップのデプロイメントをユーザーにガイドします：
+
+- **xcsh CLI**: ワークフローをインタラクティブなガイドコマンドとして表示（例：`xcsh deploy http-lb`）
+- **VS Code 拡張機能**: サイドバーパネルにワークフローステップを進捗追跡付きで表示
+- **AI アシスタント**: ワークフローステップを順次実行し、各リソースを作成して依存関係を検証
+
+## OpenAPI 拡張リファレンス
+
+これらのベンダー拡張は、F5 XC 固有のメタデータを伝えるために標準の OpenAPI スキーマに追加されます。
+
+### x-f5xc-cli-domain
+
+**タイプ**: `string`
+
+CLI やツールの整理のためのドメイン分類を示します。
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**タイプ**: `object`
+
+最小限の有効な構成を作成するための包括的なメタデータを提供します。以下を含みます：
+- 説明
+- 制約付きの必須フィールド
+- 相互排他グループ
+- 構成例（YAML、JSON）
+- curl コマンド例
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**タイプ**: `boolean`
+
+`true` の場合、付随する `default` 値が F5 XC API サーバーによって適用されることを示します。この拡張が付いたフィールドは API リクエストから安全に省略できます — サーバーが自動的にデフォルトを適用します。
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**タイプ**: `array of strings`
+
+現在のフィールドと相互排他的なフィールド名をリストし、OneOf パターンを示します。
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**タイプ**: `object`
+
+配列サイズ制限、整数範囲、一意性要件、および検出メタデータを含むバリデーション制約を提供します。
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short および x-f5xc-description-medium
+
+**タイプ**: `string`
+
+さまざまなユースケース向けに代替の説明の長さを提供します：
+- `x-f5xc-description-short`: 最大 60 文字（CLI カラム、バッジ）
+- `x-f5xc-description-medium`: 最大 150 文字（ツールチップ、要約）
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**タイプ**: `any`（フィールドタイプに一致）
+
+ドキュメントやツール向けに具体的なフィールド例を提供します。
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**タイプ**: `array of strings`
+
+フラグを使用してコンテキスト固有の要件を示します：`minimum_config`、`create`、`update`、`read`。
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## データアクセス
+
+### OpenAPI 仕様
+
+| ファイル | 内容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | エンリッチメント付きのすべての http_loadbalancer スキーマ |
+| `docs/specifications/api/openapi.json` | すべてのスキーマを含むマージされた仕様 |
+
+### 設定ファイル
+
+| ファイル | 目的 |
+|------|---------|
+| `config/minimum_configs.yaml` | 最小構成メタデータのソース |
+| `config/constraint_patterns.yaml` | 制約パターンの定義 |
+| `config/guided_workflows.yaml` | ガイドワークフローステップの定義 |
+| `config/domain_descriptions.yaml` | ドメインレベルの説明メタデータ |
+
+### エンリッチされたスキーマ
+
+- `viewshttp_loadbalancerCreateSpecType` - 作成操作スキーマ
+- `viewshttp_loadbalancerReplaceSpecType` - 更新操作スキーマ
+- `viewshttp_loadbalancerGetSpecType` - 読み取り操作スキーマ
+
+## 関連ドキュメント
+
+- [開発ガイド - OpenAPI 拡張](../development/#openapi-extensions) - 拡張の定義と使用方法
+- [ヘルスチェックの拡張](./healthcheck-enhancements/) - ヘルスチェックスキーマのエンリッチメント（`x-f5xc-recommended-oneof-variant` を含む）
+- [オリジンプールの拡張](./originpool-enhancements/) - オリジンプールスキーマのエンリッチメント
+- [制約メタデータガイド](../constraint-metadata/) - 詳細な制約バリデーションドキュメント
+
+## 変更履歴
+
+| バージョン | 日付 | 変更内容 |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | サーバー適用デフォルト、ガイドワークフロー統合、および最小構成セクションの拡張を追加 |
+| 2.0.45 | 2026-01-20 | http_loadbalancer エンリッチメントドキュメントの初版 |

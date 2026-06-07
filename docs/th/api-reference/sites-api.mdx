@@ -1,0 +1,192 @@
+---
+title: "\U0001F30D Sites API"
+description: การปรับใช้บนคลาวด์และ Edge Node
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9a648b423e6f
+  translator: machine
+---
+
+การรวม AWS, Azure, GCP VPC เข้ากับ Transit Gateway การเลือกตาม Label สำหรับการใช้นโยบายข้ามภูมิภาค
+
+- **หมวดหมู่**: โครงสร้างพื้นฐาน
+- **ความซับซ้อน**: ขั้นสูง
+- **Paths**: 133 | **Schemas**: 1015
+- **ระดับ**: Standard
+- **โดเมนที่เกี่ยวข้อง**: `cloud_infrastructure`, `customer_edge`, `managed_kubernetes`
+
+## กรณีการใช้งาน
+
+- ปรับใช้ F5 XC ข้ามผู้ให้บริการคลาวด์ (AWS, Azure, GCP)
+- จัดการการปรับใช้ไซต์ XCKS (Managed Kubernetes) (เดิมชื่อ AppStack)
+- ปรับใช้ไซต์ Secure Mesh สำหรับการปรับใช้ Edge ที่เน้นเครือข่าย
+- รวม Kubernetes Cluster ภายนอกเป็น Customer Edge
+- กำหนดค่าไซต์ AWS VPC, Azure VNet และ GCP VPC
+- จัดการ Virtual Site และนโยบายไซต์
+
+## ทรัพยากรหลัก
+
+- **site**: ตำแหน่งการปรับใช้ทางกายภาพหรือบนคลาวด์สำหรับบริการ Edge
+- **virtual_site**: การจัดกลุ่มไซต์แบบลอจิคัลโดยใช้ Label Selector
+- **site_mesh_group**: การกำหนดค่าการเชื่อมต่อ Mesh ระหว่างหลายไซต์
+
+## Endpoints
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites` | สร้างไซต์ AWS TGW |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ AWS TGW |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_tgw_info` | กำหนดค่าข้อมูล TGW |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vip_info` | กำหนดค่าข้อมูล VIP ของไซต์ AWS TGW |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpc_ip_prefixes` | กำหนดค่า VPC IP Prefix |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpn_tunnels` | กำหนดค่า VPN Tunnel |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/validate_config` | ตรวจสอบการกำหนดค่า AWS TGW |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites` | แสดงรายการการกำหนดค่าไซต์ AWS TGW |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | GET ไซต์ AWS TGW |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ AWS TGW |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites` | สร้างไซต์ AWS VPC |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ AWS VPC |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_cloud_site_info` | กำหนดค่าข้อมูลไซต์ AWS VPC |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_vip_info` | กำหนดค่าข้อมูล VIP ของไซต์ AWS VPC |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/storage/set_vpc_k8s_hostnames` | กำหนดค่า VPC K8s Hostname |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/validate_config` | ตรวจสอบการกำหนดค่าไซต์ AWS VPC |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites` | แสดงรายการการกำหนดค่าไซต์ AWS VPC |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | GET ไซต์ AWS VPC |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ AWS VPC |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites` | สร้างไซต์ App Stack |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ App Stack |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites` | แสดงรายการการกำหนดค่าไซต์ App Stack |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | GET ไซต์ App Stack |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ App Stack |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites` | สร้างไซต์ Azure VNet |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ Azure VNet |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_cloud_site_info` | กำหนดค่าข้อมูลไซต์ Azure VNet |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_vip_info` | กำหนดค่าข้อมูล VIP ของไซต์ Azure VNet |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/validate_config` | ตรวจสอบการกำหนดค่าไซต์ Azure VNet |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites` | แสดงรายการการกำหนดค่าไซต์ Azure VNet |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | GET ไซต์ Azure VNet |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ Azure VNet |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites` | สร้างไซต์ GCP VPC |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ GCP VPC |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/set_cloud_site_info` | กำหนดค่าข้อมูลไซต์ GCP VPC |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/validate_config` | ตรวจสอบการกำหนดค่าไซต์ GCP VPC |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites` | แสดงรายการการกำหนดค่าไซต์ GCP VPC |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | GET ไซต์ GCP VPC |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ GCP VPC |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites` | สร้างไซต์ Secure Mesh |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites/&#123;metadata.name&#125;` | แทนที่ไซต์ Secure Mesh |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | แสดงรายการการกำหนดค่าไซต์ Secure Mesh |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | GET ไซต์ Secure Mesh |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ Secure Mesh |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | สร้างไซต์ Secure Mesh |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | แทนที่ไซต์ Secure Mesh |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | แสดงรายการการกำหนดค่าไซต์ Secure Mesh |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | GET ไซต์ Secure Mesh |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | DELETE การกำหนดค่าไซต์ Secure Mesh |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters` | สร้าง Configuration Specification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters` | แสดงรายการ K8s Cluster |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | GET Configuration Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | DELETE K8s Cluster |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | คิวรี Firewall Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | คิวรีการรวม Firewall Log |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | คิวรี Scroll ของ Firewall Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | คิวรี Scroll ของ Firewall Log |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | คิวรี Scroll ของ K8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | คิวรี Scroll ของ K8s Audit Log |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | คิวรี Scroll ของ K8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | คิวรี Scroll ของ K8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | คิวรี Platform Event |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | คิวรีการรวม Platform Event |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | คิวรี Scroll ของ Platform Event |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | คิวรี Scroll ของ Platform Event |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | คิวรี Log ของ External Connector |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | คิวรี K8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | คิวรีการรวม K8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | คิวรี K8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events/aggregation` | คิวรีการรวม K8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | คิวรี VK8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | คิวรีการรวม VK8s Audit Log |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | คิวรี Scroll ของ VK8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | คิวรี Scroll ของ VK8s Audit Log |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | คิวรี VK8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | คิวรีการรวม VK8s Events |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | คิวรี Scroll ของ VK8s Events |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | คิวรี Scroll ของ VK8s Events |
+| POST | `/api/web/namespaces/system/revoke/global-kubeconfigs` | เพิกถอน Global Kubeconfig |
+| POST | `/api/data/namespaces/system/site/&#123;name&#125;/status` | ตรวจสอบว่าไซต์มีอยู่หรือไม่ |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/configmaps` | รายการ ConfigMap |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/endpoints` | รายการ Endpoints |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces` | รายการ Namespace |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/configmaps` | รายการ ConfigMap |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/endpoints` | รายการ Endpoints |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/persistentvolumeclaims` | รายการ PersistentVolumeClaim |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/pods` | รายการ Pod |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/secrets` | รายการ Secret |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/services` | รายการ Service |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/nodes` | รายการ Namespace |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumeclaims` | รายการ PersistentVolumeClaim |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumes` | รายการ PersistentVolume |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/pods` | รายการ Pod |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/secrets` | รายการ Secret |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/services` | รายการ Service |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/daemonsets` | รายการ DaemonSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/deployments` | รายการ Deployment |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/daemonsets` | รายการ DaemonSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/deployments` | รายการ Deployment |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/replicasets` | รายการ ReplicaSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/statefulsets` | รายการ StatefulSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/replicasets` | รายการ ReplicaSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/statefulsets` | รายการ StatefulSet |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/jobs` | รายการ Job |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/namespaces/&#123;namespace&#125;/jobs` | รายการ Job |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/cronjobs` | รายการ CronJob |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/namespaces/&#123;namespace&#125;/cronjobs` | รายการ CronJob |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/pods/metrics` | เมตริก Pods |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/virtualmachineinstances/metrics` | เมตริก VirtualMachineInstances |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/pods/metrics` | เมตริก Pods |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/virtualmachineinstances/metrics` | เมตริก VirtualMachineInstances |
+| GET | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | แสดงรายการ Global Kube Config |
+| POST | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | สร้าง Global Kube Config |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/sites/&#123;metadata.name&#125;` | แทนที่ไซต์ |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/site/&#123;name&#125;/state` | กำหนดสถานะไซต์ |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/status/metrics` | เมตริกสถานะไซต์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites` | แสดงรายการไซต์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;` | GET ไซต์ |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfig` | สร้าง Local Kube Config ของ K8s Cluster |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfigs` | แสดงรายการ Local Kube Config |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | อัปเกรด OS |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | อัปเกรด SW |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | รายการ Global Network |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | รายการ Segment |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | คิวรี Site Graph |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | คิวรี Site Edge |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | คิวรี Site Node |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | รายการ Interface |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | โทโพโลยี DC Cluster |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | สรุป DC Cluster Groups |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | GET ตาราง Route ของเครือข่าย |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | GET ตาราง Route |
+| GET | `/api/data/namespaces/system/topology/site/&#123;name&#125;/networks` | GET เครือข่ายของไซต์ |
+| POST | `/api/data/namespaces/system/topology/site/&#123;site&#125;` | โทโพโลยีไซต์ |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | โทโพโลยี Site Mesh |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | สรุป Site Mesh Groups |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | GET ตาราง Route ของ TGW |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | สร้าง Virtual Kubernetes |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | แทนที่ Virtual Kubernetes |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_k8s/pvc/metrics` | เมตริก PVC |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | แสดงรายการ Virtual Kubernetes |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | GET Virtual Kubernetes |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | DELETE Virtual Kubernetes |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites` | สร้าง Virtual Site |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites/&#123;metadata.name&#125;` | แทนที่ Virtual Site |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites` | แสดงรายการ Virtual Site |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | GET Virtual Site |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | DELETE Virtual Site |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;/selectees` | GET Selectees |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./sites/)
+- [ไฟล์ข้อกำหนด OpenAPI JSON](../specifications/api/sites.json)

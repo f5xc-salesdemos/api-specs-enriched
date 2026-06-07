@@ -1,0 +1,272 @@
+---
+title: "\U0001FAAA テナントおよびアイデンティティ API"
+description: ユーザープロファイル、セッション、OTP 設定。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 90c322c43087
+  translator: machine
+---
+
+アカウントビュー設定と管理者アラートチャネル。ワンタイムパスワードのリセット、プロビジョニングフロー、アクティブ接続の監視。
+
+- **カテゴリ**: Platform
+- **複雑度**: advanced
+- **パス数**: 183 | **スキーマ数**: 511
+- **ティア**: Standard
+- **関連ドメイン**: `users`, `authentication`, `system`
+
+## ユースケース
+
+- ユーザープロファイルと通知設定の管理
+- セッション制御と OTP 設定の構成
+- アイデンティティ管理操作の処理
+- 初期ユーザーアクセスリクエストの処理
+
+## 主要リソース
+
+- **user_profile**: 個人設定を含むユーザープロファイル
+- **session**: 認証状態のためのユーザーセッション
+- **otp_policy**: 多要素認証のための OTP ポリシー
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | サポートテナントアクセスの取得。 |
+| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | サポートテナントアクセスの更新。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | 許可テナントの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | 許可テナントの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | 許可テナントの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | 許可テナントの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | 許可テナントの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | 認証の作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | 認証の置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | 認証の一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | 認証の取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | 認証の削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | 認可サーバーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | 認可サーバーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | 認可サーバーの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | 認可サーバーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | 認可サーバーの削除。 |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | 認可サーバーの更新。 |
+| GET | `/api/web/namespaces/system/partner-management/child_tenants` | 子テナントの一覧。 |
+| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | 子テナントの移行。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports` | 子テナントで作成されたすべてのサポートチケットの一覧。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | 子テナントでのカスタマーサポートチケットの作成。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | 子テナントのカスタマーサポートチケットの取得。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | 子テナントのカスタマーサポートチケットのクローズ。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | 子テナントのカスタマーサポートチケットへのコメント追加。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | 子テナントのチケットのエスカレーション。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | 子テナントのチケットの優先度変更。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | 子テナントのクローズ済みカスタマーサポートチケットの再オープン。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | 子テナント。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | 子テナントの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | 子テナントの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | 子テナントの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | 子テナントの削除。 |
+| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | 指定された子テナントマネージャーの子テナント一覧。 |
+| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | CTM 子テナントの移行。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | 子テナントマネージャー。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | 子テナントマネージャーの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | 子テナントマネージャーの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | 子テナントマネージャーの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | 子テナントマネージャーの削除。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 添付ファイルの取得。 |
+| POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | クラウドネットワークの検出。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | 連絡先の作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | 連絡先の置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | 連絡先の一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | 連絡先の取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | 連絡先の削除。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports` | マネージドテナントのチケット一覧。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | マネージドテナントでのカスタマーサポートチケットの作成。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | マネージドテナントのカスタマーサポートチケットの取得。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | マネージドテナントのカスタマーサポートチケットのクローズ。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | マネージドテナントのカスタマーサポートチケットへのコメント追加。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | マネージドテナントのチケットのエスカレーション。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | マネージドテナントのチケットの優先度。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | マネージドテナントのクローズ済みカスタマーサポートチケットの再オープン。 |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | ユーザー別マネージドテナント一覧の取得。 |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | マネージドテナント一覧の取得。 |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | サポート操作のためのユーザー別マネージドテナント一覧。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | マネージドテナントの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | マネージドテナントの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | マネージドテナントの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | マネージドテナントの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | マネージドテナントの削除。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 添付ファイルの取得。 |
+| GET | `/api/web/namespaces` | ネームスペースの一覧。 |
+| POST | `/api/web/namespaces` | ネームスペースの作成。 |
+| POST | `/api/config/namespaces/system/all_application_inventory` | 全アプリケーションオブジェクトインベントリ。 |
+| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | WAF フィルター付き全アプリケーションオブジェクトインベントリ。 |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | 全ネームスペースの API エンドポイント統計の取得。 |
+| POST | `/api/web/namespaces/system/evaluate-api-access` | API アクセスの評価。 |
+| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | バッチ API アクセスの評価。 |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | ユーザーロールの検索。 |
+| POST | `/api/config/namespaces/system/networking_inventory` | ネットワーキングオブジェクトインベントリ。 |
+| POST | `/api/cloud-data/namespaces/system/suggest-values` | 値の提案。 |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | パブリックでのアドバタイズ許可の更新。 |
+| POST | `/api/config/namespaces/system/validate_rules` | ルールの検証。 |
+| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | ネームスペースの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | アクティブアラートポリシーの取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | アクティブアラートポリシーの設定。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | アクティブネットワークポリシーの取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | アクティブネットワークポリシーの設定。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | アクティブサービスポリシーの取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | アクティブサービスポリシーの設定。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | ネームスペースの API エンドポイント統計の取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | アプリケーションオブジェクトインベントリ。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | インターネット VIP 用 FastACL の取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | インターネット VIP 用 FastACL の設定。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | 値の提案。 |
+| GET | `/api/web/namespaces/&#123;name&#125;` | ネームスペースの取得。 |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | カスケード削除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | ネームスペースロールの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | ネームスペースロールの取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | 動的データ。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | RBAC ポリシーの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | RBAC ポリシーの取得。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | カスタムロール一覧。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | カスタムロール作成。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | カスタムロール取得。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | カスタムロール置換。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | ロールの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | ロールの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | ロールの一覧 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | ロールの取得 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | ロールの削除。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | 取得 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | 削除 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | 一覧 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | 作成 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 取得 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 置換 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 置換 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | 削除 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC マッパーの取得。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC マッパーの更新。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | OIDC プロバイダー SCIM 統合の更新。 |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | 州の一覧。 |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | 都市の一覧。 |
+| GET | `/no_auth/countries/&#123;prefix&#125;` | 国の一覧。 |
+| POST | `/no_auth/login/validate_registration` | 登録の検証。 |
+| POST | `/no_auth/send_password_email` | パスワードメールの送信。 |
+| GET | `/no_auth/signup/&#123;name&#125;` | サインアップの読み取り。 |
+| POST | `/no_auth/validate_contact` | 連絡先の検証。 |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | 州の一覧。 |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | 都市の一覧。 |
+| GET | `/api/web/custom/countries/&#123;prefix&#125;` | 国の一覧。 |
+| GET | `/api/scim/namespaces/system/v2/Groups` | フィルターに基づくグループの一覧。 |
+| POST | `/api/scim/namespaces/system/v2/Groups` | ユーザー付きグループの作成。 |
+| GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID に基づくグループの一覧。 |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID に基づくグループの削除。 |
+| PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID に基づくグループの置換。 |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID に基づくグループのパッチ。 |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | サポートされるリソースタイプの取得。 |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | サポートされるリソースタイプの取得。 |
+| GET | `/api/scim/namespaces/system/v2/Schemas` | スキーマ |
+| GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | ID によるスキーマ。 |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | サービスプロバイダー設定の一覧。 |
+| GET | `/api/scim/namespaces/system/v2/Users` | 全ユーザーの取得。 |
+| POST | `/api/scim/namespaces/system/v2/Users` | ロール割り当て付きユーザーの作成。 |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID によるユーザーの取得。 |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID によるユーザーの削除。 |
+| PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ユーザーおよびロール割り当ての更新。 |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ユーザーのパッチ。 |
+| GET | `/no_auth/cname/lookup` | CNAME の検索。 |
+| GET | `/no_auth/tenant/idm/settings/password_policy` | パスワードポリシーの取得。 |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | ドメインオーナーの割り当て。 |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | ドメインオーナーの割り当て解除。 |
+| GET | `/api/web/namespaces/system/tenant/idm/events/last_login` | 最終ログインマップの取得。 |
+| GET | `/api/web/namespaces/system/tenant/idm/events/login` | ログインイベントの取得。 |
+| POST | `/api/web/namespaces/system/tenant/idm/events/login_in_time` | 時間枠内のログインイベントの取得。 |
+| GET | `/api/web/namespaces/system/tenant/idm/settings` | IDM 設定の取得。 |
+| PUT | `/api/web/namespaces/system/tenant/idm/settings` | IDM 設定の更新。 |
+| GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | 非アクティブユーザーの一覧。 |
+| GET | `/api/web/namespaces/system/tenant/lookup` | CNAME の検索。 |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | テナントの削除。 |
+| GET | `/api/web/namespaces/system/tenant/settings` | テナント設定。 |
+| PUT | `/api/web/namespaces/system/tenant/settings` | テナント設定。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | テナントレベル OTP の無効化。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | テナントレベル OTP の有効化。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | テナントファビコン。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | テナントプロファイル画像。 |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | テナントプロファイル画像の削除。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | テナントプロファイル画像の更新。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | テナントロゴ。 |
+| GET | `/api/web/namespaces/system/tenant/support-info` | サポート情報。 |
+| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | テナントエスカレーションドキュメント。 |
+| PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | テナントの無効化。 |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | テナントファビコン。 |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | テナントプロファイル画像。 |
+| GET | `/api/config/tenants/&#123;tenant&#125;/summary` | サマリー |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | テナント設定の作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | テナント設定の置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | テナント設定の一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | テナント設定の取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | テナント設定の削除。 |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | 委任アクセスアドオンサービスのサブスクライブ。 |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | 委任アクセスアドオンサービスのサブスクライブ解除。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | テナントプロファイルの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | テナントプロファイルの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | テナントプロファイルの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | テナントプロファイルの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | テナントプロファイルの削除。 |
+| POST | `/api/web/custom/idm/user/sync` | ユーザーの同期 |
+| PUT | `/api/web/custom/namespaces/system/users/group_add` | ユーザーをグループに追加。 |
+| PUT | `/api/web/custom/namespaces/system/users/group_remove` | ユーザーをグループから削除。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | 利用規約の承諾。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | ユーザーへのロール割り当て。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | パスワードメールの送信。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | 利用規約の取得 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | ユーザーおよびロール割り当ての取得。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | ロール割り当て付きユーザーの作成。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | ユーザーおよびロール割り当ての更新。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | ユーザーおよびロール割り当ての更新。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | ユーザーおよび関連オブジェクトの削除。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | ユーザー詳細の取得。 |
+| POST | `/api/web/custom/password/admin_reset` | 管理者によるパスワードリセット。 |
+| POST | `/api/web/custom/password/reset` | パスワードのリセット。 |
+| GET | `/api/web/custom/namespaces/system/user_groups` | テナントの全ユーザーグループの取得。 |
+| POST | `/api/web/custom/namespaces/system/user_groups` | ユーザーグループの作成。 |
+| POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | 削除のための分析。 |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | グループ ID を指定してグループの全詳細を取得。 |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | グループ ID を指定してグループを削除。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | ユーザーグループのフィールド / アクセス / 関連付けの置換。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | ユーザーグループへのロール割り当て。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | ユーザーグループからのロール削除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | ユーザーグループの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | ユーザーグループの取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | ユーザー識別の作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | ユーザー識別の置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | ユーザー識別の一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | ユーザー識別の取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | ユーザー識別の削除。 |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | 管理者通知設定の取得。 |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | 管理者通知設定の更新。 |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | 管理者通知設定の解除。 |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | 統合通知設定の取得。 |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | 統合通知設定の更新。 |
+| GET | `/api/web/namespaces/system/user/notifications` | 通知設定の取得。 |
+| PUT | `/api/web/namespaces/system/user/notifications` | 通知設定の更新。 |
+| PUT | `/api/web/namespaces/system/user/notifications/unset` | 通知設定の解除。 |
+| PUT | `/api/web/namespaces/system/user/otp/admin_reset` | 管理者による OTP デバイスのリセット。 |
+| GET | `/api/web/namespaces/system/user/sessions` | ユーザーセッションの取得。 |
+| GET | `/api/web/namespaces/system/user/settings` | 取得 |
+| PUT | `/api/web/namespaces/system/user/settings` | 更新 |
+| PUT | `/api/web/namespaces/system/user/settings/idm/disable` | IDM でのユーザー無効化。 |
+| PUT | `/api/web/namespaces/system/user/settings/idm/enable` | IDM でのユーザー有効化。 |
+| GET | `/api/web/namespaces/system/user/settings/image` | ユーザープロファイル画像の取得。 |
+| DELETE | `/api/web/namespaces/system/user/settings/image` | ユーザー画像の削除。 |
+| PUT | `/api/web/namespaces/system/user/settings/image` | ユーザー画像の更新。 |
+| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | 初期アクセスのリクエスト。 |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | 表示設定の取得。 |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | 表示設定の設定。 |
+| GET | `/api/config/namespaces/system/was/user_token` | Web アプリスキャンサービスユーザートークンの取得。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./tenant_and_identity/)
+- [OpenAPI 仕様 JSON](../specifications/api/tenant_and_identity.json)

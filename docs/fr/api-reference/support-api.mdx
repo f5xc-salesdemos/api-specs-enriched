@@ -1,0 +1,96 @@
+---
+title: "\U0001F3AB Support API"
+description: 'Tickets, escalades et diagnostics réseau.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 91ad994f8afb
+  translator: machine
+---
+
+Cycle de vie des incidents avec commentaires, changements de sévérité et suivi de résolution. Capture de paquets pour l'analyse des connexions.
+
+- **Catégorie** : Opérations
+- **Complexité** : modérée
+- **Chemins** : 53 | **Schémas** : 167
+- **Niveau** : Standard
+- **Domaines associés** : `statistics`, `observability`
+
+## Cas d'utilisation
+
+- Soumettre et gérer les tickets de support
+- Suivre les demandes de support client
+- Accéder à la documentation de support opérationnel
+
+## Ressources principales
+
+- **support_case** : Cas de support pour le suivi et la résolution des incidents
+- **alert** : Alerte système pour les notifications opérationnelles
+- **audit_log** : Journal d'audit pour la conformité et le suivi de sécurité
+
+## Points de terminaison
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | Resynchroniser la CRL. |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | Liste des tickets de support créés pour un tenant enfant. |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | Demande de vérification d'exonération fiscale. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | Créer un support client. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | Lister tous les tickets du tenant. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | Fermer un ticket de support client. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | Ajouter un commentaire à un ticket de support client. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | Escalader un ticket. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | Changer la priorité d'un ticket. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | Rouvrir un ticket de support client fermé. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | Lister le support client. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | Obtenir le support client. |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | Obtenir la pièce jointe. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | Vérifier la collecte d'informations de débogage. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | Diagnostic |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | Télécharger la collecte d'informations de débogage. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | Santé |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | Changer le mot de passe. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | Démarrer la collecte d'informations de débogage. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | Lister les services F5XC. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | Statut |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | Exécuter |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | Journal d'exécution |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | Exécuter en tant qu'utilisateur |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | Ping de l'hôte |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | Redémarrer le nœud. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | Journal |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | Redémarrage progressif. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | Afficher les baux DHCP. |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | Autoriser le SSH F5. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | Obtenir la configuration LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | Mettre à jour la configuration LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | Déconnecter. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | Afficher les informations LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | Récupérer le dump |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | Lister les captures Tcpdump. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | Arrêter le Tcpdump. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | Projets JIRA et types d'incidents. |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | Valider le système de suivi des tickets. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | Créer un système de suivi des tickets. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | Remplacer le système de suivi des tickets. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | Lister les systèmes de suivi des tickets. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | Obtenir le système de suivi des tickets. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | Supprimer le système de suivi des tickets. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | Obtenir la configuration USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | Mettre à jour la configuration USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | Lister les périphériques USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | Lister les règles d'activation USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | Ajouter des règles d'activation USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | Supprimer les règles d'activation USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | Obtenir la configuration WIFI. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | Mettre à jour la configuration WIFI. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | Déconnecter. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | Afficher les informations WIFI. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | Lister les réseaux WIFI. |
+
+## Liens
+
+- [Référence API interactive](./support/)
+- [Spécification OpenAPI JSON](../specifications/api/support.json)

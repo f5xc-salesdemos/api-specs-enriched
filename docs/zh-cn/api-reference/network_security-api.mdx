@@ -1,0 +1,115 @@
+---
+title: "\U0001F512 网络安全 API"
+description: NAT 策略、防火墙和网段连接。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: adf43856d55c
+  translator: machine
+---
+
+基于源、目标或协议做出路由决策的防火墙规则。网段隔离用于隔离工作负载，而出站代理则管控访问权限。
+
+- **类别**：安全
+- **复杂度**：高级
+- **路径数**：62 | **模式数**：386
+- **层级**：高级
+- **相关领域**：`virtual`、`api`、`network`
+
+## 用例
+
+- 配置网络防火墙和 ACL 策略
+- 管理 NAT 策略和端口转发
+- 配置基于策略的路由
+- 定义网络分段和策略
+- 配置正向代理策略
+
+## 主要资源
+
+- **network_policy**：用于流量过滤的网络安全策略
+- **forward_proxy_policy**：用于出站流量控制的正向代理策略
+- **network_firewall**：用于第 3/4 层流量保护的网络防火墙
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | 创建正向代理策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | 替换正向代理策略。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | 正向代理策略命中数。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | 列出已配置的正向代理策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | 获取正向代理策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | 删除已配置的正向代理策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | 创建网络策略视图。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | 替换网络策略视图。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | 网络策略命中数。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | 列出已配置的网络策略视图。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | 获取网络策略视图。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | 删除已配置的网络策略视图。 |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | 列表 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | 创建快速 ACL。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | 替换快速 ACL。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | 快速 ACL 命中数。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | 列出快速 ACL。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | 获取快速 ACL。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | 删除快速 ACL。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | 创建快速 ACL 规则。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | 替换快速 ACL 规则。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | 列出快速 ACL 规则。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | 获取快速 ACL 规则。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | 删除快速 ACL 规则。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | 创建规格。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | 替换规格。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | 列出过滤器集。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | 查找一个或多个上下文键的过滤器集。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | 获取规格。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | 删除过滤器集。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | 创建 NAT 策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | 替换 NAT 策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | 列出 NAT 策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | 获取 NAT 策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | 删除 NAT 策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | 创建网络防火墙。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | 替换网络防火墙。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | 列出网络防火墙。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | 获取网络防火墙。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | 删除网络防火墙。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | 创建网络策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | 替换网络策略。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | 网络策略命中数。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | 列出网络策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | 获取网络策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | 删除网络策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | 创建网络策略规则。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | 替换网络策略规则。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | 列出网络策略规则。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | 获取网络策略规则。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | 删除网络策略规则。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | 列出网络策略集。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | 获取网络策略集。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | 创建基于策略的路由。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | 替换基于策略的路由。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | 列出基于策略的路由。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | 获取基于策略的路由。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | 删除基于策略的路由。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | 创建网段。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | 替换网段。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | 列出网段。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | 网段 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | 获取网段。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | 删除网段。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | 替换网段连接器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | 列出网段连接器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | 获取网段连接器。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | 创建服务策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | 替换服务策略。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | 服务策略命中数。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | 服务策略延迟。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | 列出服务策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | 获取服务策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | 删除服务策略。 |
+
+## 链接
+
+- [交互式 API 参考](./network_security/)
+- [OpenAPI 规范 JSON](../specifications/api/network_security.json)

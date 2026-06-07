@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA Marketplace API"
+description: 附加服務、連接器與 TPM 政策。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+第三方 GRE 和 IPSec 隧道佈建，支援 DPD 計時器。跨命名空間的共享資源分配，具備圖塊放置控制功能。
+
+- **類別**：Platform
+- **複雜度**：moderate
+- **路徑**：36 | **結構描述**：183
+- **層級**：Advanced
+- **相關領域**：`bigip`、`admin`
+
+## 使用案例
+
+- 存取第三方整合與附加元件
+- 管理市集擴充功能
+- 設定 Terraform 與外部整合
+- 管理 TPM 政策
+
+## 主要資源
+
+- **marketplace_item**：服務目錄的市集項目
+- **subscription**：服務權限的訂閱
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | 取得附加服務詳細資訊。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | 附加服務啟用狀態。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | 所有附加服務啟用狀態。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | 列出附加服務。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | 取得附加服務。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | 建立附加訂閱。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | 取代附加訂閱。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | 列出附加訂閱。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | 取得附加訂閱。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | 刪除附加訂閱。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | 建立 Central Manager 實例。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | 取代 Central Manager 實例。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | 列出 Central Manager 實例。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | 取得 Central Manager 實例。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | 刪除 Central Manager 實例。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | 建立 external_connector 組態。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | 取代 external_connector 組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | 列出外部連接器組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | 取得 external_connector 組態。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | 刪除外部連接器組態。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | 列出導覽圖塊。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | 取得導覽圖塊。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | 註冊新的 AWS 帳戶。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | AWS 帳戶註冊。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | 列出方案 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | 取得方案 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | 取代第三方應用程式。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | 取得第三方應用程式的安全組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | 列出第三方應用程式。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | 取得第三方應用程式。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | 產生權杖。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | 取得檢視的內部物件。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | 強制刪除檢視。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | 對檢視執行 Terraform 動作。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | 取得檢視的 Terraform 參數。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | 取得檢視的 Terraform 狀態。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | XC SaaS 註冊。 |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | 取得註冊詳細資訊。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | 傳送註冊電子郵件。 |
+
+## 連結
+
+- [互動式 API 參考文件](./marketplace/)
+- [OpenAPI 規格 JSON](../specifications/api/marketplace.json)

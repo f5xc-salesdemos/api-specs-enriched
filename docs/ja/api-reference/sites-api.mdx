@@ -1,0 +1,192 @@
+---
+title: "\U0001F30D Sites API"
+description: クラウドおよびエッジノードのデプロイメント。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9a648b423e6f
+  translator: machine
+---
+
+AWS、Azure、GCP VPC とトランジットゲートウェイの統合。リージョン間のポリシー適用のためのラベルベースの選択。
+
+- **カテゴリ**: インフラストラクチャ
+- **複雑度**: 上級
+- **パス数**: 133 | **スキーマ数**: 1015
+- **ティア**: Standard
+- **関連ドメイン**: `cloud_infrastructure`, `customer_edge`, `managed_kubernetes`
+
+## ユースケース
+
+- クラウドプロバイダー（AWS、Azure、GCP）全体に F5 XC をデプロイ
+- XCKS（マネージド Kubernetes）サイトのデプロイメントを管理（旧 AppStack）
+- ネットワーキングに特化したエッジデプロイメント向けに Secure Mesh サイトをデプロイ
+- 外部 Kubernetes クラスターをカスタマーエッジとして統合
+- AWS VPC、Azure VNet、GCP VPC サイトを設定
+- 仮想サイトとサイトポリシーを管理
+
+## 主要リソース
+
+- **site**: エッジサービス向けの物理またはクラウドデプロイメントロケーション
+- **virtual_site**: ラベルセレクターを使用したサイトの論理グルーピング
+- **site_mesh_group**: 複数サイト間のメッシュ接続設定
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites` | AWS TGW サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites/&#123;metadata.name&#125;` | AWS TGW サイトを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_tgw_info` | TGW 情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vip_info` | AWS TGW サイト VIP 情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpc_ip_prefixes` | VPC IP プレフィックスを設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpn_tunnels` | VPN トンネルを設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/validate_config` | AWS TGW 設定を検証。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites` | AWS TGW サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | AWS TGW サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | AWS TGW サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites` | AWS VPC サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites/&#123;metadata.name&#125;` | AWS VPC サイトを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_cloud_site_info` | AWS VPC サイト情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_vip_info` | AWS VPC サイト VIP 情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/storage/set_vpc_k8s_hostnames` | VPC K8s ホスト名を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/validate_config` | AWS VPC サイト設定を検証。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites` | AWS VPC サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | AWS VPC サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | AWS VPC サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites` | App Stack サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites/&#123;metadata.name&#125;` | App Stack サイトを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites` | App Stack サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | App Stack サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | App Stack サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites` | Azure VNet サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites/&#123;metadata.name&#125;` | Azure VNet サイトを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_cloud_site_info` | Azure VNet サイト情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_vip_info` | Azure VNet サイト VIP 情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/validate_config` | Azure VNet サイト設定を検証。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites` | Azure VNet サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Azure VNet サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Azure VNet サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites` | GCP VPC サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites/&#123;metadata.name&#125;` | GCP VPC サイトを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/set_cloud_site_info` | GCP VPC サイト情報を設定。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/validate_config` | GCP VPC サイト設定を検証。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites` | GCP VPC サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | GCP VPC サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | GCP VPC サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites` | Secure Mesh サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites/&#123;metadata.name&#125;` | Secure Mesh サイトを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | Secure Mesh サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Secure Mesh サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Secure Mesh サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | Secure Mesh サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | Secure Mesh サイトを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | Secure Mesh サイト設定を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Secure Mesh サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Secure Mesh サイト設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters` | 構成仕様を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters/&#123;metadata.name&#125;` | 構成仕様を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters` | K8s クラスターを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | 構成仕様を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | K8s クラスターを削除。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | ファイアウォールログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | ファイアウォールログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 監査ログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s イベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s イベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | プラットフォームイベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | プラットフォームイベント集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | 外部コネクタログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | K8s 監査ログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | K8s 監査ログ集計クエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | K8s イベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events/aggregation` | K8s イベント集計クエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 監査ログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 監査ログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s イベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s イベント集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s イベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s イベントスクロールクエリ。 |
+| POST | `/api/web/namespaces/system/revoke/global-kubeconfigs` | グローバル Kubeconfig を失効。 |
+| POST | `/api/data/namespaces/system/site/&#123;name&#125;/status` | サイトの存在を確認。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/configmaps` | ConfigMap 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/endpoints` | Endpoints 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces` | Namespace 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/configmaps` | ConfigMap 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/endpoints` | Endpoints 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/persistentvolumeclaims` | PersistentVolumeClaim 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/pods` | Pod 一覧 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/secrets` | Secret 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/services` | Service 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/nodes` | Namespace 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumeclaims` | PersistentVolumeClaim 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumes` | PersistentVolume 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/pods` | Pod 一覧 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/secrets` | Secret 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/services` | Service 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/daemonsets` | DaemonSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/deployments` | Deployment 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/daemonsets` | DaemonSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/deployments` | Deployment 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/replicasets` | ReplicaSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/statefulsets` | StatefulSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/replicasets` | ReplicaSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/statefulsets` | StatefulSet 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/jobs` | Job 一覧 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/namespaces/&#123;namespace&#125;/jobs` | Job 一覧 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/cronjobs` | CronJob 一覧。 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/namespaces/&#123;namespace&#125;/cronjobs` | CronJob 一覧。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/pods/metrics` | Pod メトリクス。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances メトリクス。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/pods/metrics` | Pod メトリクス。 |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances メトリクス。 |
+| GET | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | グローバル Kube Config を一覧表示。 |
+| POST | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | グローバル Kube Config を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/sites/&#123;metadata.name&#125;` | サイトを置換。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/site/&#123;name&#125;/state` | サイト状態を設定。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/status/metrics` | サイトステータスメトリクス。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites` | サイトを一覧表示 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;` | サイトを取得 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfig` | K8s クラスターローカル Kube Config を作成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfigs` | ローカル Kube Config を一覧表示。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | OS をアップグレード。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | SW をアップグレード。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | グローバルネットワーク一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | セグメント一覧。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | サイトグラフクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | サイトエッジクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | サイトノードクエリ。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | インターフェース一覧。 |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DC クラスタートポロジー。 |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DC クラスターグループサマリー。 |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | ネットワークルートテーブルを取得。 |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | ルートテーブルを取得。 |
+| GET | `/api/data/namespaces/system/topology/site/&#123;name&#125;/networks` | サイトネットワークを取得。 |
+| POST | `/api/data/namespaces/system/topology/site/&#123;site&#125;` | サイトトポロジー。 |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | サイトメッシュトポロジー。 |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | サイトメッシュグループサマリー。 |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | TGW ルートテーブルを取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | Virtual Kubernetes を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | Virtual Kubernetes を置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_k8s/pvc/metrics` | PVC メトリクス。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | Virtual Kubernetes を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites` | 仮想サイトを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites/&#123;metadata.name&#125;` | 仮想サイトを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites` | 仮想サイトを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 仮想サイトを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 仮想サイトを削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;/selectees` | 選択対象を取得。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./sites/)
+- [OpenAPI 仕様 JSON](../specifications/api/sites.json)

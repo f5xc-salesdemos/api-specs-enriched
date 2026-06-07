@@ -1,0 +1,115 @@
+---
+title: "\U0001F512 Network Security API"
+description: 'NAT नीतियाँ, फ़ायरवॉल, और सेगमेंट कनेक्शन।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: adf43856d55c
+  translator: machine
+---
+
+स्रोत, गंतव्य, या प्रोटोकॉल के आधार पर रूटिंग निर्णयों के साथ फ़ायरवॉल नियम। सेगमेंटेशन वर्कलोड को अलग करता है जबकि आउटबाउंड प्रॉक्सी एक्सेस को नियंत्रित करते हैं।
+
+- **श्रेणी**: सुरक्षा
+- **जटिलता**: उन्नत
+- **पथ**: 62 | **स्कीमा**: 386
+- **स्तर**: उन्नत
+- **संबंधित डोमेन**: `virtual`, `api`, `network`
+
+## उपयोग के मामले
+
+- नेटवर्क फ़ायरवॉल और ACL नीतियाँ कॉन्फ़िगर करें
+- NAT नीतियाँ और पोर्ट फ़ॉरवर्डिंग प्रबंधित करें
+- नीति-आधारित रूटिंग कॉन्फ़िगर करें
+- नेटवर्क सेगमेंट और नीतियाँ परिभाषित करें
+- फ़ॉरवर्ड प्रॉक्सी नीतियाँ कॉन्फ़िगर करें
+
+## प्राथमिक संसाधन
+
+- **network_policy**: ट्रैफ़िक फ़िल्टरिंग के लिए नेटवर्क सुरक्षा नीति
+- **forward_proxy_policy**: आउटबाउंड ट्रैफ़िक नियंत्रण के लिए फ़ॉरवर्ड प्रॉक्सी नीति
+- **network_firewall**: लेयर 3/4 ट्रैफ़िक सुरक्षा के लिए नेटवर्क फ़ायरवॉल
+
+## एंडपॉइंट
+
+| मेथड | पथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | फ़ॉरवर्ड प्रॉक्सी नीति बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | फ़ॉरवर्ड प्रॉक्सी नीति बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | फ़ॉरवर्ड प्रॉक्सी नीति हिट्स। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | फ़ॉरवर्ड प्रॉक्सी नीति कॉन्फ़िगर की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | फ़ॉरवर्ड प्रॉक्सी नीति प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | फ़ॉरवर्ड प्रॉक्सी नीति कॉन्फ़िगर हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | नेटवर्क नीति व्यू बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | नेटवर्क नीति व्यू बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | नेटवर्क नीति हिट्स। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | नेटवर्क नीति व्यू कॉन्फ़िगर की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | नेटवर्क नीति व्यू प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | नेटवर्क नीति व्यू कॉन्फ़िगर हटाएँ। |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | सूची |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | Fast ACL बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | Fast ACL बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Fast ACL हिट्स। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | Fast ACL की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Fast ACL प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Fast ACL हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | Fast ACL नियम बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | Fast ACL नियम बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | Fast ACL नियम की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Fast ACL नियम प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Fast ACL नियम हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | स्पेसिफिकेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | स्पेसिफिकेशन बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | फ़िल्टर सेट की सूची। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | 1 या अधिक संदर्भ कुंजियों के लिए फ़िल्टर सेट खोजें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | स्पेसिफिकेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | फ़िल्टर सेट हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | NAT नीति बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | NAT नीति बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | NAT नीति की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | NAT नीति प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | NAT नीति हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | नेटवर्क फ़ायरवॉल बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | नेटवर्क फ़ायरवॉल बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | नेटवर्क फ़ायरवॉल की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | नेटवर्क फ़ायरवॉल प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | नेटवर्क फ़ायरवॉल हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | नेटवर्क नीति बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | नेटवर्क नीति बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | नेटवर्क नीति हिट्स। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | नेटवर्क नीति की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | नेटवर्क नीति प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | नेटवर्क नीति हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | नेटवर्क नीति नियम बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | नेटवर्क नीति नियम बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | नेटवर्क नीति नियम की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | नेटवर्क नीति नियम प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | नेटवर्क नीति नियम हटाएँ। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | नेटवर्क नीति सेट की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | नेटवर्क नीति सेट प्राप्त करें। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | नीति आधारित रूटिंग बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | नीति आधारित रूटिंग बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | नीति आधारित रूटिंग की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | नीति आधारित रूटिंग प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | नीति आधारित रूटिंग हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | सेगमेंट बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | सेगमेंट बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | सेगमेंट की सूची। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | सेगमेंट |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | सेगमेंट प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | सेगमेंट हटाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | सेगमेंट कनेक्टर बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | सेगमेंट कनेक्टर की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | सेगमेंट कनेक्टर प्राप्त करें। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | सर्विस नीति बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | सर्विस नीति बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | सर्विस नीति हिट्स। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | सर्विस नीति लेटेंसी। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | सर्विस नीति की सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | सर्विस नीति प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | सर्विस नीति हटाएँ। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./network_security/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/network_security.json)

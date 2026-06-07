@@ -1,0 +1,272 @@
+---
+title: "\U0001FAAA Mandanten- und Identitäts-API"
+description: 'Benutzerprofile, Sitzungen und OTP-Einstellungen.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 90c322c43087
+  translator: machine
+---
+
+Kontoanzeige-Konfigurationen und Admin-Benachrichtigungskanäle. Einmalpasswort-Zurücksetzungen, Bereitstellungsabläufe und aktive Verbindungsüberwachung.
+
+- **Kategorie**: Plattform
+- **Komplexität**: Fortgeschritten
+- **Pfade**: 183 | **Schemas**: 511
+- **Stufe**: Standard
+- **Verwandte Domänen**: `users`, `authentication`, `system`
+
+## Anwendungsfälle
+
+- Benutzerprofile und Benachrichtigungseinstellungen verwalten
+- Sitzungssteuerungen und OTP-Einstellungen konfigurieren
+- Identitätsverwaltungsoperationen durchführen
+- Erstmalige Benutzerzugriffsanfragen verarbeiten
+
+## Primäre Ressourcen
+
+- **user_profile**: Benutzerprofil mit persönlichen Einstellungen
+- **session**: Benutzersitzung für den Authentifizierungsstatus
+- **otp_policy**: OTP-Richtlinie für Multi-Faktor-Authentifizierung
+
+## Endpunkte
+
+| Methode | Pfad | Beschreibung |
+|---------|------|--------------|
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | Support-Mandantenzugriff abrufen. |
+| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | Support-Mandantenzugriff aktualisieren. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | Erlaubten Mandanten erstellen. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | Erlaubten Mandanten ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | Erlaubte Mandanten auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | Erlaubten Mandanten abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | Erlaubten Mandanten löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | Authentifizierung erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | Authentifizierung ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | Authentifizierungen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | Authentifizierung abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | Authentifizierung löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | Autorisierungsserver erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | Autorisierungsserver ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | Autorisierungsserver auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | Autorisierungsserver abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | Autorisierungsserver löschen. |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | Autorisierungsserver aktualisieren. |
+| GET | `/api/web/namespaces/system/partner-management/child_tenants` | Liste der Untermandanten. |
+| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | Untermandanten migrieren. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports` | Alle im Untermandanten erstellten Support-Tickets auflisten. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | Kundensupport-Ticket im Untermandanten erstellen. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | Kundensupport-Ticket im Untermandanten abrufen. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | Kundensupport-Ticket im Untermandanten schließen. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | Kommentar zu einem Kundensupport-Ticket im Untermandanten hinzufügen. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | Ticket im Untermandanten eskalieren. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | Priorität eines Tickets im Untermandanten ändern. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | Geschlossenes Kundensupport-Ticket im Untermandanten erneut öffnen. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | Untermandant. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | Untermandant ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | Untermandanten auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | Untermandant abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | Untermandant löschen. |
+| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | Untermandanten für einen gegebenen Untermandanten-Manager auflisten. |
+| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | CTM-Untermandanten migrieren. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | Untermandanten-Manager. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | Untermandanten-Manager ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | Untermandanten-Manager auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | Untermandanten-Manager abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | Untermandanten-Manager löschen. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | Anhang abrufen. |
+| POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | Cloud-Netzwerke ermitteln. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | Kontakt erstellen. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | Kontakt ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | Kontakte auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | Kontakt abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | Kontakt löschen. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports` | Tickets des verwalteten Mandanten auflisten. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | Kundensupport-Ticket im verwalteten Mandanten erstellen. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | Kundensupport-Ticket im verwalteten Mandanten abrufen. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | Kundensupport-Ticket im verwalteten Mandanten schließen. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | Kommentar zu einem Kundensupport-Ticket im verwalteten Mandanten hinzufügen. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | Ticket im verwalteten Mandanten eskalieren. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | Priorität eines Tickets im verwalteten Mandanten. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | Geschlossenes Kundensupport-Ticket im verwalteten Mandanten erneut öffnen. |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | Liste der verwalteten Mandanten nach Benutzer abrufen. |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | Liste der verwalteten Mandanten abrufen. |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | Liste der verwalteten Mandanten nach Benutzer für Support-Operationen. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | Verwalteten Mandanten erstellen. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | Verwalteten Mandanten ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | Verwaltete Mandanten auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | Verwalteten Mandanten abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | Verwalteten Mandanten löschen. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | Anhang abrufen. |
+| GET | `/api/web/namespaces` | Namespaces auflisten. |
+| POST | `/api/web/namespaces` | Namespace erstellen. |
+| POST | `/api/config/namespaces/system/all_application_inventory` | Inventar aller Anwendungsobjekte. |
+| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | Inventar aller Anwendungsobjekte mit WAF-Filtern. |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | API-Endpunkt-Statistiken für alle Namespaces abrufen. |
+| POST | `/api/web/namespaces/system/evaluate-api-access` | API-Zugriff auswerten. |
+| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | Batch-API-Zugriff auswerten. |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | Benutzerrollen nachschlagen. |
+| POST | `/api/config/namespaces/system/networking_inventory` | Netzwerkobjekte-Inventar. |
+| POST | `/api/cloud-data/namespaces/system/suggest-values` | Werte vorschlagen. |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | Erlaubnis für öffentliche Bewerbung aktualisieren. |
+| POST | `/api/config/namespaces/system/validate_rules` | Regeln validieren. |
+| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | Namespace ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | Aktive Alarmrichtlinien abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | Aktive Alarmrichtlinien festlegen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | Aktive Netzwerkrichtlinien abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | Aktive Netzwerkrichtlinien festlegen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | Aktive Dienstrichtlinien abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | Aktive Dienstrichtlinien festlegen. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | API-Endpunkt-Statistiken für Namespace abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | Anwendungsobjekte-Inventar. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | FastACLs für Internet-VIPs abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | FastACLs für Internet-VIPs festlegen. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | Werte vorschlagen. |
+| GET | `/api/web/namespaces/&#123;name&#125;` | Namespace abrufen. |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | Kaskadenlöschung. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | Namespace-Rollen auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | Namespace-Rolle abrufen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | Dynamische Daten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | RBAC-Richtlinien auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | RBAC-Richtlinie abrufen. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Benutzerdefinierte Rollen auflisten. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Benutzerdefinierte Rolle erstellen. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Benutzerdefinierte Rolle abrufen. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Benutzerdefinierte Rolle ersetzen. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | Rolle erstellen. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | Rolle ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | Rollen auflisten |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Rolle abrufen |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Rolle löschen. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | Abrufen |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | Löschen |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | Auflisten |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | Erstellen |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Abrufen |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Ersetzen |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Ersetzen |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | Löschen |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC-Mapper abrufen. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC-Mapper aktualisieren. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | OIDC-Provider-SCIM-Integration aktualisieren. |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | Bundesländer/Staaten auflisten. |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | Städte auflisten. |
+| GET | `/no_auth/countries/&#123;prefix&#125;` | Länder auflisten. |
+| POST | `/no_auth/login/validate_registration` | Registrierung validieren. |
+| POST | `/no_auth/send_password_email` | Passwort-E-Mail senden. |
+| GET | `/no_auth/signup/&#123;name&#125;` | Registrierung lesen. |
+| POST | `/no_auth/validate_contact` | Kontakt validieren. |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | Bundesländer/Staaten auflisten. |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | Städte auflisten. |
+| GET | `/api/web/custom/countries/&#123;prefix&#125;` | Länder auflisten. |
+| GET | `/api/scim/namespaces/system/v2/Groups` | Gruppen basierend auf Filtern auflisten. |
+| POST | `/api/scim/namespaces/system/v2/Groups` | Gruppe mit Benutzern erstellen. |
+| GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Gruppe basierend auf ID auflisten. |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Gruppe basierend auf ID löschen. |
+| PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Gruppe basierend auf ID ersetzen. |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Gruppe basierend auf ID patchen. |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | Unterstützte Ressourcentypen abrufen. |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | Unterstützte Ressourcentypen abrufen. |
+| GET | `/api/scim/namespaces/system/v2/Schemas` | Schemas |
+| GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | Schemas nach ID. |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | Dienstanbieter-Konfigurationen auflisten. |
+| GET | `/api/scim/namespaces/system/v2/Users` | Alle Benutzer abrufen. |
+| POST | `/api/scim/namespaces/system/v2/Users` | Benutzer mit Rollenzuweisung erstellen. |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | Benutzer mit ID abrufen. |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | Benutzer nach ID löschen. |
+| PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | Benutzer und Rollenzuweisungen aktualisieren. |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | Benutzer patchen. |
+| GET | `/no_auth/cname/lookup` | CNAME nachschlagen. |
+| GET | `/no_auth/tenant/idm/settings/password_policy` | Passwortrichtlinie abrufen. |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | Domänenbesitzer zuweisen. |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | Domänenbesitzer-Zuweisung aufheben. |
+| GET | `/api/web/namespaces/system/tenant/idm/events/last_login` | Letzte-Anmeldung-Zuordnung abrufen. |
+| GET | `/api/web/namespaces/system/tenant/idm/events/login` | Anmeldeereignisse abrufen. |
+| POST | `/api/web/namespaces/system/tenant/idm/events/login_in_time` | Anmeldeereignisse im Zeitraum abrufen. |
+| GET | `/api/web/namespaces/system/tenant/idm/settings` | IDM-Einstellungen abrufen. |
+| PUT | `/api/web/namespaces/system/tenant/idm/settings` | IDM-Einstellungen aktualisieren. |
+| GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | Inaktive Benutzer auflisten. |
+| GET | `/api/web/namespaces/system/tenant/lookup` | CNAME nachschlagen. |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | Mandanten löschen. |
+| GET | `/api/web/namespaces/system/tenant/settings` | Mandanteneinstellungen. |
+| PUT | `/api/web/namespaces/system/tenant/settings` | Mandanteneinstellungen. |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | OTP auf Mandantenebene deaktivieren. |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | OTP auf Mandantenebene aktivieren. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | Mandanten-Favicon. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | Mandanten-Profilbild. |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | Mandanten-Profilbild löschen. |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | Mandanten-Profilbild aktualisieren. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | Mandanten-Logo. |
+| GET | `/api/web/namespaces/system/tenant/support-info` | Support-Informationen. |
+| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | Mandanten-Eskalationsdokument. |
+| PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | Mandanten deaktivieren. |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | Mandanten-Favicon. |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | Mandanten-Profilbild. |
+| GET | `/api/config/tenants/&#123;tenant&#125;/summary` | Zusammenfassung |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | Mandantenkonfiguration erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | Mandantenkonfiguration ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | Mandantenkonfigurationen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | Mandantenkonfiguration abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | Mandantenkonfiguration löschen. |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | Delegierten Zugriffs-Zusatzdienst abonnieren. |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | Delegierten Zugriffs-Zusatzdienst abbestellen. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | Mandantenprofil erstellen. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | Mandantenprofil ersetzen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | Mandantenprofile auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | Mandantenprofil abrufen. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | Mandantenprofil löschen. |
+| POST | `/api/web/custom/idm/user/sync` | Benutzer synchronisieren |
+| PUT | `/api/web/custom/namespaces/system/users/group_add` | Benutzer zu Gruppen hinzufügen. |
+| PUT | `/api/web/custom/namespaces/system/users/group_remove` | Benutzer aus Gruppen entfernen. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | AGB akzeptieren. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | Rolle einem Benutzer zuweisen. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | Passwort-E-Mail senden. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | AGB abrufen |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Benutzer und Rollenzuweisungen abrufen. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Benutzer mit Rollenzuweisung erstellen. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Benutzer und Rollenzuweisungen aktualisieren. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | Benutzer und Rollenzuweisungen aktualisieren. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | Benutzer und zugehörige Objekte löschen. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | Benutzerdetails abrufen. |
+| POST | `/api/web/custom/password/admin_reset` | Passwort durch Administrator zurücksetzen. |
+| POST | `/api/web/custom/password/reset` | Passwort zurücksetzen. |
+| GET | `/api/web/custom/namespaces/system/user_groups` | Alle Benutzergruppen für den Mandanten abrufen. |
+| POST | `/api/web/custom/namespaces/system/user_groups` | Benutzergruppe erstellen. |
+| POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | Für Löschung analysieren. |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | Alle Details für eine Gruppe anhand der Gruppen-ID abrufen. |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | Gruppe anhand der Gruppen-ID löschen. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | Felder / Zugriffsrechte / Zuordnungen der Benutzergruppe ersetzen. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | Rolle einer Benutzergruppe zuweisen. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | Rolle von einer Benutzergruppe entfernen. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | Benutzergruppen auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | Benutzergruppe abrufen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | Benutzeridentifikation erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | Benutzeridentifikation ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | Benutzeridentifikationen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | Benutzeridentifikation abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | Benutzeridentifikation löschen. |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | Admin-Benachrichtigungseinstellungen abrufen. |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | Admin-Benachrichtigungseinstellungen aktualisieren. |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | Admin-Benachrichtigungseinstellung zurücksetzen. |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | Kombinierte Benachrichtigungseinstellungen abrufen. |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | Kombinierte Benachrichtigungseinstellungen aktualisieren. |
+| GET | `/api/web/namespaces/system/user/notifications` | Benachrichtigungseinstellungen abrufen. |
+| PUT | `/api/web/namespaces/system/user/notifications` | Benachrichtigungseinstellungen aktualisieren. |
+| PUT | `/api/web/namespaces/system/user/notifications/unset` | Benachrichtigungseinstellung zurücksetzen. |
+| PUT | `/api/web/namespaces/system/user/otp/admin_reset` | OTP-Gerät durch Administrator zurücksetzen. |
+| GET | `/api/web/namespaces/system/user/sessions` | Benutzersitzungen abrufen. |
+| GET | `/api/web/namespaces/system/user/settings` | Abrufen |
+| PUT | `/api/web/namespaces/system/user/settings` | Aktualisieren |
+| PUT | `/api/web/namespaces/system/user/settings/idm/disable` | Benutzer in IDM deaktivieren. |
+| PUT | `/api/web/namespaces/system/user/settings/idm/enable` | Benutzer in IDM aktivieren. |
+| GET | `/api/web/namespaces/system/user/settings/image` | Benutzerprofilbild abrufen. |
+| DELETE | `/api/web/namespaces/system/user/settings/image` | Benutzerbild löschen. |
+| PUT | `/api/web/namespaces/system/user/settings/image` | Benutzerbild aktualisieren. |
+| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | Erstmaligen Zugriff anfordern. |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | Ansichtseinstellung abrufen. |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | Ansichtseinstellung festlegen. |
+| GET | `/api/config/namespaces/system/was/user_token` | Web-App-Scanning-Dienst-Benutzertoken abrufen. |
+
+## Links
+
+- [Interaktive API-Referenz](./tenant_and_identity/)
+- [OpenAPI-Spezifikation JSON](../specifications/api/tenant_and_identity.json)

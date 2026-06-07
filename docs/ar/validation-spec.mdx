@@ -1,0 +1,318 @@
+---
+title: مواصفات التحقق
+description: بنية ومحتويات مواصفات التحقق
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+يصف هذا المستند بنية ومحتويات مواصفات التحقق المنشورة بواسطة مشروع api-specs-enriched.
+
+## نظرة عامة
+
+تجمع مواصفات التحقق قيود التحقق من واجهة برمجة التطبيقات والقيم الافتراضية وبيانات التكوين الوصفية في ملف JSON واحد. يتم إنشاء هذه المواصفات من مواصفات OpenAPI المُثرية ويتم نشرها إلى جانبها.
+
+**موقع النشر**: `docs/specifications/api/validation.json`
+
+## بنية المواصفات
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## الأقسام
+
+### required_fields
+
+تحدد الحقول المطلوبة لكل نوع عملية لكل مورد.
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+تحدد القيم المسموح بها للحقول المقيدة.
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+القيم الافتراضية للتحقق على مستوى النوع والقواعد المبنية على الأنماط.
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+قواعد التحقق المبنية على أنماط أسماء الحقول مع درجات الثقة.
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+جميع القيم الافتراضية منظمة حسب نوع المورد في بنية موحدة.
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### فئات القيم الافتراضية
+
+| الفئة | الوصف | المصدر |
+|----------|-------------|--------|
+| `server_applied` | القيم التي تطبقها واجهة برمجة التطبيقات عند حذف الحقول | اختبار واجهة برمجة التطبيقات المباشر |
+| `recommended` | القيم المعبأة مسبقاً في وحدة تحكم F5 XC على الويب | تحليل واجهة المستخدم |
+| `advanced_options` | القيم الافتراضية المتداخلة ضمن كائنات advanced_options | اكتشاف واجهة برمجة التطبيقات |
+| `oneof_choices` | اختيارات متغير OneOf الافتراضية | سلوك واجهة برمجة التطبيقات |
+| `oneof_recommended` | متغيرات OneOf الموصى بها | القيم الافتراضية لوحدة التحكم |
+| `nested_recommended` | القيم الموصى بها للمخططات المتداخلة | تحليل واجهة المستخدم |
+| `ui_vs_server` | الحالات التي تختلف فيها القيم الافتراضية لواجهة المستخدم عن القيم الافتراضية لواجهة برمجة التطبيقات | التحليل المقارن |
+
+### conditional_requirements
+
+الحقول المتعارضة والتبعيات الشرطية.
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+الحد الأدنى من التكوينات القابلة للتشغيل مع أمثلة عملية.
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## تعيين امتدادات OpenAPI
+
+تدمج مواصفات OpenAPI المُثرية بيانات التحقق الوصفية باستخدام هذه الامتدادات:
+
+| الامتداد | الغرض | الموقع |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | الحقول المطلوبة حسب السياق | خصائص المخطط |
+| `x-f5xc-server-default` | تعليم القيم الافتراضية المطبقة من الخادم | خصائص المخطط |
+| `x-f5xc-recommended-value` | القيمة الافتراضية الموصى بها | خصائص المخطط |
+| `x-f5xc-recommended-oneof-variant` | متغير OneOf الموصى به | تعريفات المخطط |
+| `x-f5xc-conditions` | المتطلبات الشرطية | خصائص المخطط |
+| `x-f5xc-minimum-configuration` | أمثلة الحد الأدنى من التكوين | تعريفات المخطط |
+| `x-f5xc-validation` | القيود المستخلصة من الاكتشاف | خصائص المخطط |
+
+## الوصول إلى البيانات
+
+### روابط النشر
+
+| المصدر | الرابط |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### المسار المحلي
+
+بعد تشغيل خط الأنابيب: `docs/specifications/api/validation.json`
+
+## إدارة الإصدارات
+
+تتبع مواصفات التحقق نظام الإصدارات الدلالية في حقل `version`:
+
+| نوع التغيير | زيادة الإصدار | مثال |
+|-------------|--------------|---------|
+| تغييرات هيكلية جذرية | رئيسي | إعادة تسمية الحقول، إزالة الأقسام |
+| قواعد تحقق أو موارد جديدة | ثانوي | قيم افتراضية لموارد جديدة |
+| إصلاح الأخطاء أو تحديث الأوصاف | تصحيحي | تصحيح الأخطاء المطبعية |
+
+## أولوية التوفيق
+
+عندما توفر مصادر متعددة قيوداً، تكون أولوية التوفيق كالتالي:
+
+1. **القائمة** - القيود الموجودة في مواصفات OpenAPI الأصلية (الأولوية الأعلى)
+2. **المكتشفة** - القيود من اكتشاف واجهة برمجة التطبيقات المباشر
+3. **المستنتجة** - القيود من مطابقة الأنماط (الأولوية الأدنى)
+
+## الوثائق ذات الصلة
+
+- [تحسينات فحص السلامة](./Enhancements/healthcheck-enhancements/) - إثراءات مخطط فحص السلامة
+- [تحسينات مجمع الأصل](./Enhancements/originpool-enhancements/) - إثراءات مخطط مجمع الأصل
+- [CLAUDE.md](../../CLAUDE.md) - تعليمات مساعد الذكاء الاصطناعي
+- [DEVELOPMENT.md](./development/) - دليل المطور
+
+## سجل التغييرات
+
+| الإصدار | التاريخ | التغييرات |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | أُعيدت كتابته كمرجع API خالص؛ أُضيفت فئتا oneof_recommended و nested_recommended |
+| 2.1.0 | 2026-01-18 | بنية قيم افتراضية موحدة تستبدل الأقسام المجزأة |
+| 2.0.0 | 2026-01-15 | مواصفات التحقق الأولية |

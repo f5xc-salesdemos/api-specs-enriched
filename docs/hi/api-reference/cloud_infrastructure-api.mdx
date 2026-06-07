@@ -1,0 +1,76 @@
+---
+title: ☁️ Cloud Infrastructure API
+description: 'AWS, Azure, GCP कनेक्टर्स और VPC अटैचमेंट्स।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: ff903a0f3c99
+  translator: machine
+---
+
+गेटवे पीयरिंग और नेटवर्क पाथ कॉन्फ़िगरेशन के साथ मल्टी-क्लाउड प्रदाता कनेक्शन। क्रेडेंशियल वॉल्ट एकीकरण और सबनेट एन्यूमरेशन।
+
+- **श्रेणी**: Infrastructure
+- **जटिलता**: मध्यम
+- **पाथ**: 31 | **स्कीमा**: 208
+- **टियर**: Standard
+- **संबंधित डोमेन**: `sites`, `customer_edge`
+
+## उपयोग के मामले
+
+- क्लाउड प्रदाताओं (AWS, Azure, GCP) से कनेक्ट करें
+- क्लाउड क्रेडेंशियल्स और प्रमाणीकरण प्रबंधित करें
+- क्लाउड कनेक्टिविटी और इलास्टिक प्रोविज़निंग कॉन्फ़िगर करें
+- क्लाउड रीजन को लिंक और प्रबंधित करें
+
+## प्राथमिक संसाधन
+
+- **aws_vpc_site**: एज नोड प्रोविज़निंग के साथ AWS VPC साइट डिप्लॉयमेंट
+- **azure_vnet_site**: एज नोड प्रोविज़निंग के साथ Azure VNet साइट डिप्लॉयमेंट
+- **gcp_vpc_site**: एज नोड प्रोविज़निंग के साथ Google Cloud VPC साइट डिप्लॉयमेंट
+- **cloud_credentials**: साइट डिप्लॉयमेंट के लिए क्लाउड प्रदाता प्रमाणीकरण क्रेडेंशियल्स
+
+## एंडपॉइंट्स
+
+| विधि | पाथ | विवरण |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | प्रमाणित हार्डवेयर सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | प्रमाणित हार्डवेयर प्राप्त करें। |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | VPC अटैचमेंट पुनः लागू करें। |
+| POST | `/api/data/namespaces/system/cloud_connects/metrics` | सभी Cloud Connect मेट्रिक्स। |
+| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | सभी Cloud Connect सेगमेंट मेट्रिक्स। |
+| POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | Cloud Connect मेट्रिक्स। |
+| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | Cloud Connect VPC डिस्कवरी। |
+| POST | `/api/config/namespaces/system/edge_credentials` | Cloud क्रेडेंशियल। |
+| GET | `/api/config/namespaces/system/edge_list` | एज सूची |
+| POST | `/api/data/namespaces/system/top/cloud_connects` | शीर्ष Cloud Connect। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | Cloud Connect बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | Cloud Connect बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | Cloud Connect सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | Cloud Connect प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | Cloud Connect हटाएं। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | Cloud Credentials बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | Cloud Credentials बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | Cloud Credentials सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | Cloud Credentials प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | Cloud Credentials हटाएं। |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | Cloud Elastic IP बलपूर्वक हटाएं। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | Cloud Elastic IP बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | Cloud Elastic IP बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | Cloud Elastic IP सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | Cloud Elastic IP प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | Cloud Elastic IP हटाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | Cloud Region बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | Cloud Region सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | Cloud Region प्राप्त करें। |
+| POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | CloudLink |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | CloudLink बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | CloudLink बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | CloudLink सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | CloudLink प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | CloudLink हटाएं। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./cloud_infrastructure/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/cloud_infrastructure.json)

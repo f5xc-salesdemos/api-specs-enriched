@@ -1,0 +1,56 @@
+---
+title: "\U0001F4E6 Container Services API"
+description: Containerized workloads และ virtual Kubernetes clusters.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09062506475b
+  translator: machine
+---
+
+การจัดการ Pod โดยไม่ต้องมีความซับซ้อนของคลัสเตอร์เต็มรูปแบบ การรันที่ Edge site, การบังคับใช้โควตา และโปรไฟล์คอมพิวต์มาตรฐานสำหรับแอปพลิเคชันแบบกระจาย
+
+- **หมวดหมู่**: โครงสร้างพื้นฐาน
+- **ความซับซ้อน**: ปานกลาง
+- **Paths**: 13 | **Schemas**: 159
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `managed_kubernetes`, `sites`, `service_mesh`
+
+## กรณีการใช้งาน
+
+- ปรับใช้ XCCS (Container Services) namespaces สำหรับ workloads แบบ multi-tenant
+- จัดการ container workloads ด้วยการจัดการแบบง่าย
+- กำหนดค่าการปรับใช้ edge container แบบกระจาย
+- รันแอปพลิเคชันแบบ containerized โดยไม่ต้องมีความซับซ้อนของ K8s เต็มรูปแบบ
+
+## ทรัพยากรหลัก
+
+- **virtual_k8s**: Virtual Kubernetes namespace สำหรับ container workloads
+- **workload**: การกำหนดค่าการปรับใช้ container workload
+- **pod_security_policy**: นโยบายความปลอดภัยของ Pod สำหรับข้อจำกัดของ container runtime
+
+## Endpoints
+
+| Method | Path | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | สร้าง Virtual Kubernetes |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | แทนที่ Virtual Kubernetes |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | แสดงรายการ Virtual Kubernetes |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | ดึงข้อมูล Virtual Kubernetes |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | ลบ Virtual Kubernetes |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads` | สร้าง Workload |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads/&#123;metadata.name&#125;` | แทนที่ Workload |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads` | แสดงรายการ Workload |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/workloads/usage` | เมตริกการใช้งาน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ดึงข้อมูล Workload |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ลบ Workload |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors` | สร้าง Workload Flavor |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors/&#123;metadata.name&#125;` | แทนที่ Flavor |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors` | แสดงรายการ Workload Flavor |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ดึงข้อมูล Workload Flavor |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ลบ Workload Flavor |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./container_services/)
+- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/container_services.json)

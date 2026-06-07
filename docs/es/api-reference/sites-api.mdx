@@ -1,0 +1,192 @@
+---
+title: "\U0001F30D API de Sitios"
+description: Despliegues en la nube y en nodos edge.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9a648b423e6f
+  translator: machine
+---
+
+Integración de AWS, Azure, GCP VPC con transit gateways. Selección basada en etiquetas para la aplicación de políticas entre regiones.
+
+- **Categoría**: Infraestructura
+- **Complejidad**: avanzada
+- **Rutas**: 133 | **Esquemas**: 1015
+- **Nivel**: Estándar
+- **Dominios relacionados**: `cloud_infrastructure`, `customer_edge`, `managed_kubernetes`
+
+## Casos de Uso
+
+- Desplegar F5 XC en múltiples proveedores de nube (AWS, Azure, GCP)
+- Gestionar despliegues de sitios XCKS (Managed Kubernetes) (anteriormente AppStack)
+- Desplegar sitios Secure Mesh para despliegues edge enfocados en redes
+- Integrar clústeres Kubernetes externos como Customer Edge
+- Configurar sitios AWS VPC, Azure VNet y GCP VPC
+- Gestionar sitios virtuales y políticas de sitios
+
+## Recursos Principales
+
+- **site**: Ubicación de despliegue física o en la nube para servicios edge
+- **virtual_site**: Agrupación lógica de sitios mediante selectores de etiquetas
+- **site_mesh_group**: Configuración de conectividad mesh entre múltiples sitios
+
+## Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites` | Crear sitio AWS TGW. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites/&#123;metadata.name&#125;` | Reemplazar sitio AWS TGW. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_tgw_info` | Configurar información de TGW. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vip_info` | Configurar información VIP del sitio AWS TGW. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpc_ip_prefixes` | Configurar prefijos IP de VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpn_tunnels` | Configurar túneles VPN. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/validate_config` | Validar configuración de AWS TGW. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites` | Listar configuración de sitio AWS TGW. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | Obtener sitio AWS TGW. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | Eliminar configuración de sitio AWS TGW. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites` | Crear sitio AWS VPC. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites/&#123;metadata.name&#125;` | Reemplazar sitio AWS VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_cloud_site_info` | Configurar información del sitio AWS VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_vip_info` | Configurar información VIP del sitio AWS VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/storage/set_vpc_k8s_hostnames` | Configurar nombres de host K8s de VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/validate_config` | Validar configuración del sitio AWS VPC. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites` | Listar configuración de sitio AWS VPC. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | Obtener sitio AWS VPC. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | Eliminar configuración de sitio AWS VPC. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites` | Crear sitio App Stack. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites/&#123;metadata.name&#125;` | Reemplazar sitio App Stack. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites` | Listar configuración de sitio App Stack. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | Obtener sitio App Stack. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | Eliminar configuración de sitio App Stack. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites` | Crear sitio Azure VNet. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites/&#123;metadata.name&#125;` | Reemplazar sitio Azure VNet. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_cloud_site_info` | Configurar información del sitio Azure VNet. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_vip_info` | Configurar información VIP del sitio Azure VNet. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/validate_config` | Validar configuración del sitio Azure VNet. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites` | Listar configuración de sitio Azure VNet. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Obtener sitio Azure VNet. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Eliminar configuración de sitio Azure VNet. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites` | Crear sitio GCP VPC. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites/&#123;metadata.name&#125;` | Reemplazar sitio GCP VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/set_cloud_site_info` | Configurar información del sitio GCP VPC. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/validate_config` | Validar configuración del sitio GCP VPC. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites` | Listar configuración de sitio GCP VPC. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | Obtener sitio GCP VPC. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | Eliminar configuración de sitio GCP VPC. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites` | Crear sitio Secure Mesh. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites/&#123;metadata.name&#125;` | Reemplazar sitio Secure Mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | Listar configuración de sitio Secure Mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Obtener sitio Secure Mesh. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Eliminar configuración de sitio Secure Mesh. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | Crear sitio Secure Mesh. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | Reemplazar sitio Secure Mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | Listar configuración de sitio Secure Mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Obtener sitio Secure Mesh. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Eliminar configuración de sitio Secure Mesh. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters` | Crear especificación de configuración. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters/&#123;metadata.name&#125;` | Reemplazar especificación de configuración. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters` | Listar clúster K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | Obtener especificación de configuración. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | Eliminar clúster K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | Consulta de registros de firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | Consulta de agregación de registros de firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de desplazamiento de registros de firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de desplazamiento de registros de firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría K8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de desplazamiento de eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de desplazamiento de eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | Consulta de eventos de plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Consulta de agregación de eventos de plataforma. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de desplazamiento de eventos de plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de desplazamiento de eventos de plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | Consulta de registros de conector externo. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | Consulta de registros de auditoría K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | Consulta de agregación de registros de auditoría K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | Consulta de eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events/aggregation` | Consulta de agregación de eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | Consulta de registros de auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | Consulta de agregación de registros de auditoría VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | Consulta de eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | Consulta de agregación de eventos VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de desplazamiento de eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de desplazamiento de eventos VK8s. |
+| POST | `/api/web/namespaces/system/revoke/global-kubeconfigs` | Revocar Kubeconfig global. |
+| POST | `/api/data/namespaces/system/site/&#123;name&#125;/status` | Verificar existencia del sitio. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/configmaps` | Lista de ConfigMap. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/endpoints` | Lista de Endpoints. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces` | Lista de Namespace. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/configmaps` | Lista de ConfigMap. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/endpoints` | Lista de Endpoints. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/persistentvolumeclaims` | Lista de PersistentVolumeClaim. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/pods` | Lista de Pod |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/secrets` | Lista de Secret. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/services` | Lista de Service. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/nodes` | Lista de Namespace. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumeclaims` | Lista de PersistentVolumeClaim. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumes` | Lista de PersistentVolume. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/pods` | Lista de Pod |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/secrets` | Lista de Secret. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/services` | Lista de Service. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/daemonsets` | Lista de DaemonSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/deployments` | Lista de Deployment. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/daemonsets` | Lista de DaemonSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/deployments` | Lista de Deployment. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/replicasets` | Lista de ReplicaSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/statefulsets` | Lista de StatefulSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/replicasets` | Lista de ReplicaSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/statefulsets` | Lista de StatefulSet. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/jobs` | Lista de Job |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/namespaces/&#123;namespace&#125;/jobs` | Lista de Job |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/cronjobs` | Lista de CronJob. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/namespaces/&#123;namespace&#125;/cronjobs` | Lista de CronJob. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/pods/metrics` | Métricas de Pods. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/virtualmachineinstances/metrics` | Métricas de VirtualMachineInstances. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/pods/metrics` | Métricas de Pods. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/virtualmachineinstances/metrics` | Métricas de VirtualMachineInstances. |
+| GET | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | Listar Kube Configs globales. |
+| POST | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | Crear Kube Config global. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/sites/&#123;metadata.name&#125;` | Reemplazar sitio. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/site/&#123;name&#125;/state` | Establecer estado del sitio. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/status/metrics` | Métricas de estado del sitio. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites` | Listar sitio |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;` | Obtener sitio |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfig` | Crear Kube Config local del clúster K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfigs` | Listar Kube Configs locales. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | Actualizar SO. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | Actualizar SW. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | Lista de redes globales. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | Lista de segmentos. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | Consulta de grafo del sitio. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | Consulta de arista del sitio. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | Consulta de nodo del sitio. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | Lista de interfaces. |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | Topología de clúster DC. |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | Resumen de grupos de clúster DC. |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | Obtener tablas de rutas de red. |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | Obtener tabla de rutas. |
+| GET | `/api/data/namespaces/system/topology/site/&#123;name&#125;/networks` | Obtener redes del sitio. |
+| POST | `/api/data/namespaces/system/topology/site/&#123;site&#125;` | Topología del sitio. |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | Topología de Site Mesh. |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | Resumen de grupos Site Mesh. |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | Obtener tablas de rutas de TGW. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | Crear Kubernetes virtual. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | Reemplazar Kubernetes virtual. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_k8s/pvc/metrics` | Métricas de PVC. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | Listar Kubernetes virtual. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Obtener Kubernetes virtual. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Eliminar Kubernetes virtual. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites` | Crear sitio virtual. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites/&#123;metadata.name&#125;` | Reemplazar sitio virtual. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites` | Listar sitio virtual. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | Obtener sitio virtual. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | Eliminar sitio virtual. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;/selectees` | Obtener seleccionados. |
+
+## Enlaces
+
+- [Referencia interactiva de la API](./sites/)
+- [JSON de especificación OpenAPI](../specifications/api/sites.json)

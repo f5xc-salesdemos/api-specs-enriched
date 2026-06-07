@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 Statistics API"
+description: 'अलर्ट, लॉग, फ्लो एनालिटिक्स, और रिपोर्टिंग।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+रिसीवर इंटीग्रेशन के साथ अलर्टिंग पॉलिसीज़। लॉग एग्रीगेशन, टोपोलॉजी व्यू, और साइट हेल्थ ट्रैकिंग।
+
+- **श्रेणी**: ऑपरेशंस
+- **जटिलता**: उन्नत
+- **पाथ**: 77 | **स्कीमा**: 575
+- **टियर**: स्टैंडर्ड
+- **संबंधित डोमेन**: `observability`, `support`
+
+## उपयोग के मामले
+
+- फ्लो स्टैटिस्टिक्स और एनालिटिक्स एक्सेस करें
+- अलर्ट और अलर्टिंग पॉलिसीज़ प्रबंधित करें
+- लॉग और लॉग रिसीवर देखें
+- रिपोर्ट और ग्राफ जनरेट करें
+- टोपोलॉजी और सर्विस डिस्कवरी ट्रैक करें
+- साइट्स पर स्थिति मॉनिटर करें
+
+## प्राथमिक संसाधन
+
+- **dashboard**: मेट्रिक्स विज़ुअलाइज़ेशन के लिए डैशबोर्ड
+- **saved_query**: मेट्रिक्स और लॉग विश्लेषण के लिए सेव की गई क्वेरी
+
+## एंडपॉइंट
+
+| मेथड | पाथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | अलर्ट पॉलिसी बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | अलर्ट पॉलिसी बदलें। |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | अलर्ट पॉलिसी मैच प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | अलर्ट पॉलिसी सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | अलर्ट पॉलिसी प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | अलर्ट पॉलिसी हटाएं। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | अलर्ट रिसीवर बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | अलर्ट रिसीवर बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | अलर्ट रिसीवर सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | अलर्ट रिसीवर प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | अलर्ट रिसीवर हटाएं। |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | अलर्ट रिसीवर पुष्टि करें। |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | अलर्ट रिसीवर टेस्ट करें। |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | अलर्ट रिसीवर सत्यापित करें। |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | अलर्ट प्राप्त करें। |
+| PUT | `/api/web/namespaces/system/catalogs` | सूची |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | विशिष्ट प्रकार की खोजी गई सेवाएं सूचीबद्ध करें। |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | खोजी गई सेवाएं सूचीबद्ध करें। |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | खोजी गई सेवा ऑब्जेक्ट प्राप्त करें। |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | HTTP/HTTPS लोड बैलेंसर बनाएं। |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | TCP लोड बैलेंसर बनाएं। |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | सभी वर्कस्पेस में विज़िबिलिटी अक्षम करें। |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | सभी वर्कस्पेस में विज़िबिलिटी सक्षम करें। |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | मान सुझाएं। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | फ्लो एनोमली सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | फ्लो एनोमली प्राप्त करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | मैचिंग फ्लो दिखाएं। |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | फ्लो कलेक्शन सब्सक्राइब करें। |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | फ्लो कलेक्शन की सब्सक्रिप्शन स्थिति जांचें। |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | फ्लो कलेक्शन अनसब्सक्राइब करें। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | ग्लोबल लॉग रिसीवर बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | ग्लोबल लॉग रिसीवर बदलें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | ग्लोबल लॉग रिसीवर स्थिति। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | ग्लोबल लॉग रिसीवर सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | ग्लोबल लॉग रिसीवर प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | ग्लोबल लॉग रिसीवर हटाएं। |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | ग्लोबल लॉग रिसीवर टेस्ट करें। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | लॉग रिसीवर बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | लॉग रिसीवर बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | लॉग रिसीवर सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | लॉग रिसीवर प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | लॉग रिसीवर हटाएं। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | लॉग रिसीवर टेस्ट करें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | फायरवॉल लॉग क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | फायरवॉल लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | फायरवॉल लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | फायरवॉल लॉग स्क्रॉल क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | प्लेटफ़ॉर्म इवेंट क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | प्लेटफ़ॉर्म इवेंट एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | प्लेटफ़ॉर्म इवेंट स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | प्लेटफ़ॉर्म इवेंट स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s ऑडिट लॉग क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s ऑडिट लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s इवेंट्स क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s इवेंट्स एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s इवेंट्स स्क्रॉल क्वेरी। |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | रिपोर्ट प्राप्त करें। |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | रिपोर्ट डाउनलोड करें। |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | रिपोर्ट कॉन्फ़िगरेशन बनाएं। |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | रिपोर्ट कॉन्फ़िगरेशन बदलें। |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | रिपोर्ट कॉन्फ़िगरेशन सूचीबद्ध करें। |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | रिपोर्ट इतिहास सूचीबद्ध करें। |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | बॉट डिफेंस रिपोर्ट इतिहास सूचीबद्ध करें। |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | Waap रिपोर्ट इतिहास सूचीबद्ध करें। |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | रिपोर्ट कॉन्फ़िगरेशन प्राप्त करें। |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | रिपोर्ट कॉन्फ़िगरेशन हटाएं। |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | अभी रिपोर्ट जनरेट करें। |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | सभी नेमस्पेस सर्विस ग्राफ क्वेरी। |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DC क्लस्टर टोपोलॉजी। |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DC क्लस्टर ग्रुप्स सारांश। |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | नेटवर्क रूट टेबल प्राप्त करें। |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | रूट टेबल प्राप्त करें। |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | साइट मेश टोपोलॉजी। |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | साइट मेश ग्रुप्स सारांश। |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | TGW रूट टेबल प्राप्त करें। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | L3l4 एप्लिकेशन ट्रैफ़िक क्वेरी। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | L3l4 मिटिगेशन ट्रैफ़िक क्वेरी। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | L3l4 नेटवर्क ट्रैफ़िक क्वेरी। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | L3l4 ज़ोन ट्रैफ़िक क्वेरी। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | L3l4 इवेंट काउंट। |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | L3l4 टॉप टॉकर्स क्वेरी। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./statistics/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/statistics.json)

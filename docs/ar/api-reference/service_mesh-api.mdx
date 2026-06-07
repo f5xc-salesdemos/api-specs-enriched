@@ -1,0 +1,84 @@
+---
+title: "\U0001F578️ Service Mesh API"
+description: توجيه الخدمات المصغرة وتكوين السايدكار.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: d33734c26c6d
+  translator: machine
+---
+
+تعريفات أنواع التطبيقات مع الاكتشاف وتحليل المخطط المُتعلَّم. استنتاج أنماط حركة المرور للتعامل الذكي مع الطلبات.
+
+- **الفئة**: البنية التحتية
+- **التعقيد**: متقدم
+- **المسارات**: 38 | **المخططات**: 247
+- **المستوى**: متقدم
+- **النطاقات ذات الصلة**: `managed_kubernetes`، `container_services`، `virtual`
+
+## حالات الاستخدام
+
+- تكوين اتصال شبكة الخدمات المصغرة
+- إدارة اكتشاف نقاط النهاية والتوجيه
+- تكوين خدمات NFV
+- تحديد إعدادات التطبيقات وأنواعها
+
+## الموارد الأساسية
+
+- **endpoint**: نقطة نهاية شبكة الخدمات المصغرة لتوجيه حركة المرور
+- **origin_pool**: مجموعة خوادم خلفية لتوزيع حركة مرور موازن الحمل
+- **service_discovery**: تكوين اكتشاف الخدمات لنقاط النهاية الديناميكية
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | إنشاء إعداد التطبيق. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | استبدال إعداد التطبيق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | سرد إعدادات التطبيق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | الحصول على إعداد التطبيق. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | حذف إعداد التطبيق. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | الحصول على حالة المستخدمين المشبوهين. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | إنشاء نوع التطبيق. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | استبدال نوع التطبيق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | سرد أنواع التطبيق. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | الحصول على المخطط المُتعلَّم لكل نقطة نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | الحصول على PDF |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | الحصول على نقاط نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | الحصول على مواصفات Swagger لنوع التطبيق. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | إزالة التجاوز. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | إضافة تجاوز. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | الحصول على التجاوز. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | الحصول على PDF لنقطة نهاية API الخاصة بالخدمة. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | الحصول على نقاط نهاية API الخاصة بالخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | الحصول على نوع التطبيق. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | حذف نوع التطبيق. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | إنشاء نقطة نهاية. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | استبدال نقطة نهاية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | سرد نقاط النهاية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | الحصول على نقطة نهاية. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | حذف نقطة نهاية. |
+| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | حذف خدمة NFV بالقوة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services` | إنشاء خدمة NFV. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services/&#123;metadata.name&#125;` | استبدال خدمة NFV. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services` | سرد خدمات NFV. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/nfv_services/metrics` | المقاييس |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | الحصول على خدمة NFV. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | حذف خدمة NFV. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | إنشاء مجموعة شبكة الموقع. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | استبدال مجموعة شبكة الموقع. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | سرد مجموعات شبكة الموقع. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | الحصول على مجموعة شبكة الموقع. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | حذف مجموعة شبكة الموقع. |
+| POST | `/api/maurice/software_os_version` | الحصول على نظام التشغيل بناءً على SW_VERSION. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | إنشاء شبكة افتراضية. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | استبدال شبكة افتراضية. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | عدادات SID. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | سرد الشبكات الافتراضية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | الحصول على شبكة افتراضية. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | حذف شبكة افتراضية. |
+
+## الروابط
+
+- [مرجع API التفاعلي](./service_mesh/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/service_mesh.json)

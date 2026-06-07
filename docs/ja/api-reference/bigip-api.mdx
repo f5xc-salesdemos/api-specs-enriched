@@ -1,0 +1,74 @@
+---
+title: "\U0001F3E2 Bigip API"
+description: iRules、データグループ、およびAPM統合。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 13c43eb010b3
+  translator: machine
+---
+
+iRuleスクリプトとデータグループ同期によるレガシーデバイスオーケストレーション。仮想サーバーバインディングとメトリクス収集。
+
+- **カテゴリ**: Platform
+- **複雑度**: advanced
+- **パス数**: 29 | **スキーマ数**: 238
+- **ティア**: Advanced
+- **関連ドメイン**: `marketplace`
+
+## ユースケース
+
+- BigIP F5アプライアンスの管理
+- iRuleスクリプトの設定
+- データグループの管理
+- BigIP CNEの統合
+
+## 主要リソース
+
+- **bigip_pool**: ロードバランシング統合用のBIG-IPプール
+- **bigip_device**: BIG-IPデバイスの登録と管理
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms` | APMサービスを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms/&#123;metadata.name&#125;` | APMサービスを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/apms` | BIG-IP APM as a Serviceの一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/apms/&#123;name&#125;` | APMサービスを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/apms/&#123;name&#125;` | BIG-IP APM as a Serviceを削除。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/bigip/apm/metrics` | メトリクス |
+| POST | `/api/bigipconnector/namespaces/&#123;metadata.namespace&#125;/bigip_irules` | 仕様。 |
+| PUT | `/api/bigipconnector/namespaces/&#123;metadata.namespace&#125;/bigip_irules/&#123;metadata.name&#125;` | 仕様。 |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/bigip_irules` | BIG-IP iRule as a Serviceの一覧取得。 |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/bigip_irules/&#123;name&#125;` | 仕様。 |
+| DELETE | `/api/bigipconnector/namespaces/&#123;namespace&#125;/bigip_irules/&#123;name&#125;` | BIG-IP iRule as a Serviceを削除。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_virtual_servers/&#123;metadata.name&#125;` | BIG-IP仮想サーバーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers` | BIG-IP仮想サーバーの一覧取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers/get_security_config` | BIG-IPロードバランサーのセキュリティ設定を取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers/&#123;name&#125;` | BIG-IP仮想サーバーを取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/application_profiless` | アプリケーションプロファイルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/application_profiless/&#123;metadata.name&#125;` | アプリケーションプロファイルを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/application_profiless` | アプリケーションプロファイル設定の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/application_profiless/&#123;name&#125;` | アプリケーションプロファイルを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/application_profiless/&#123;name&#125;` | アプリケーションプロファイル設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_http_proxies` | BIG-IP HTTPプロキシを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_http_proxies/&#123;metadata.name&#125;` | BIG-IP HTTPプロキシを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies` | BIG-IP HTTPプロキシ設定の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies/&#123;name&#125;` | BIG-IP HTTPプロキシを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies/&#123;name&#125;` | BIG-IP HTTPプロキシ設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/irules` | iRuleを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/irules/&#123;metadata.name&#125;` | iRuleを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/irules` | iRule設定の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/irules/&#123;name&#125;` | iRuleを取得 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/irules/&#123;name&#125;` | iRule設定を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/data_groups` | データグループを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/data_groups/&#123;metadata.name&#125;` | データグループを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/data_groups` | データグループの一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/data_groups/&#123;name&#125;` | データグループを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/data_groups/&#123;name&#125;` | データグループを削除。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./bigip/)
+- [OpenAPI仕様JSON](../specifications/api/bigip.json)

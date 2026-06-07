@@ -1,0 +1,532 @@
+---
+title: 约束元数据系统
+description: 用于确定性 AI 生成和验证的综合约束元数据
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**目的**：用于确定性 AI 生成、CLI 验证和 Terraform schema 强制执行的综合约束元数据。
+
+**扩展名**：`x-f5xc-constraints`
+**版本**：3.3.0
+**状态**：生产环境
+**使用方**：AI 助手、CLI 工具、Terraform 提供程序、IDE 扩展、API 验证器
+
+---
+
+## 目录
+
+1. [概述](#overview)
+2. [扩展结构](#extension-structure)
+3. [约束类型](#constraint-types)
+4. [自然语言描述](#natural-language-descriptions)
+5. [验证示例](#validation-examples)
+6. [置信度分数](#confidence-scores)
+7. [发现集成](#discovery-integration)
+8. [工具集成指南](#tool-integration-guide)
+
+---
+
+## 概述
+
+`x-f5xc-constraints` 扩展提供关于字段验证约束的确定性知识，支持以下功能：
+
+- **AI 助手**：无需用户输入约束详情即可生成有效配置
+- **CLI 工具**：提供准确的输入提示、验证和错误消息
+- **Terraform**：在计划阶段而非应用阶段强制执行约束
+- **IDE 扩展**：实时验证和自动补全建议
+- **API 验证器**：提交前验证以减少 API 错误
+
+### 覆盖率统计
+
+- 所有 F5 XC API 规范中包含 **9,851 条约束**
+- **50 多种模式类型**（字符串、数组、数值）
+- 高优先级字段（名称、端口、标识符）的置信度达 **95%**
+- **三级协调**：EXISTING > DISCOVERY > INFERRED
+
+---
+
+## 扩展结构
+
+### 顶层字段
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 说明 |
+|-------|------|-------------|
+| `constraintType` | string | 数据类型（string、array、number、object） |
+| `deterministic` | boolean | 高置信度标志（confidence >= 0.9），用于 AI 生成 |
+| `category` | string | 约束类别，用于分组和报告 |
+| *(约束键)* | various | 特定类型的约束键，扁平化置于顶层（例如 `minLength`、`maxItems`、`minimum`） |
+| `metadata` | object | 来源追踪、置信度、验证时间戳 |
+
+---
+
+## 约束类型
+
+### 字符串约束
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### 支持的格式
+
+| 格式 | 说明 | 示例 |
+|--------|-------------|---------|
+| `dns-label` | RFC 1123 DNS 标签（1-63 字符） | `my-service` |
+| `fqdn` | 完全限定域名 | `api.example.com` |
+| `email` | RFC 5322 电子邮件地址 | `user@example.com` |
+| `url` | RFC 3986 URI/URL | `https://example.com/api` |
+| `ipv4` | IPv4 地址 | `192.168.1.1` |
+| `ipv6` | IPv6 地址 | `2001:db8::1` |
+| `uuid` | RFC 4122 UUID | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | ISO 8601 时间戳 | `2026-01-19T12:00:00Z` |
+| `date` | ISO 8601 日期 | `2026-01-19` |
+| `time` | ISO 8601 时间 | `12:00:00` |
+| `json` | JSON 字符串（可解析） | `{"key": "value"}` |
+| `yaml` | YAML 字符串（可解析） | `key: value` |
+| `base64` | Base64 编码字符串 | `SGVsbG8gV29ybGQ=` |
+| `hex` | 十六进制字符串 | `48656c6c6f` |
+| `mac-address` | MAC 地址 | `00:1A:2B:3C:4D:5E` |
+| `phone` | E.164 电话号码 | `+1-555-123-4567` |
+
+### 数组约束
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### 数值约束
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## 自然语言描述
+
+### 字符串格式约束
+
+**DNS 标签** (`format: "dns-label"`)：
+- DNS 标签名称必须为 1-63 个小写字母数字字符
+- 允许使用连字符，但不能在开头/结尾处使用（RFC 1123）
+- 示例：`my-service`、`api-gateway`、`lb-prod-01`
+
+**电子邮件地址** (`format: "email"`)：
+- 电子邮件地址必须符合 RFC 5322 规范
+- 最大 254 个字符
+- 示例：`admin@example.com`、`api+webhook@service.io`
+
+**完全限定域名** (`format: "fqdn"`)：
+- 完全限定域名必须为 1-253 个字符
+- 由点分隔的 DNS 标签组成
+- 示例：`api.example.com`、`service.production.internal`
+
+**URL** (`format: "url"`)：
+- URL 必须是符合 RFC 3986 的有效 URI
+- 必须包含协议（http/https）
+- 示例：`https://api.example.com/v1`、`http://localhost:8080`
+
+**IPv4 地址** (`format: "ipv4"`)：
+- IPv4 地址必须采用点分十进制表示法
+- 示例：`192.168.1.1`、`10.0.0.1`
+
+**UUID** (`format: "uuid"`)：
+- UUID 必须遵循 RFC 4122 格式
+- 示例：`550e8400-e29b-41d4-a716-446655440000`
+
+**时间戳** (`format: "date-time"`)：
+- 时间戳必须采用 ISO 8601 格式
+- 示例：`2026-01-19T12:00:00Z`、`2026-01-19T12:00:00+00:00`
+
+### 数值约束
+
+**端口号**：
+- 端口号必须为 1 到 65535 之间的整数
+- 标准端口：80（HTTP）、443（HTTPS）、22（SSH）
+
+**VLAN ID**：
+- VLAN ID 必须为 1 到 4094 之间的整数（802.1Q 标准）
+
+**超时时间**：
+- 超时时间必须为 1-3600 秒（最长 1 小时）
+
+### 数组约束
+
+**源站池**：
+- 源站池数组至少需要 1 个元素，最多 50 个元素
+- 每个元素必须唯一
+
+**标签**：
+- 标签数组允许 0-100 个元素
+- 元素无需唯一
+
+---
+
+## 验证示例
+
+### 示例 1：DNS 标签名称验证
+
+**约束**：
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**无效值**：
+- ❌ `My-Service`（不允许大写字母）
+- ❌ `-my-service`（开头为连字符）
+- ❌ `my-service-`（结尾为连字符）
+- ❌ `my_service`（不允许下划线）
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（过长）
+
+### 示例 2：端口号验证
+
+**约束**：
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `80`（HTTP）
+- ✅ `443`（HTTPS）
+- ✅ `8080`（常用的 HTTP 替代端口）
+- ✅ `65535`（最大端口号）
+
+**无效值**：
+- ❌ `0`（低于最小值）
+- ❌ `65536`（超过最大值）
+- ❌ `-1`（负数）
+- ❌ `"80"`（字符串，非数字）
+
+### 示例 3：数组大小验证
+
+**约束**：
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `["origin-1"]`（1 个元素）
+- ✅ `["origin-1", "origin-2", "origin-3"]`（3 个元素，全部唯一）
+
+**无效值**：
+- ❌ `[]`（低于最小数量）
+- ❌ `["origin-1", "origin-1"]`（元素重复）
+- ❌ `[包含 51 个元素的数组]`（超过最大数量）
+
+---
+
+## 置信度分数
+
+### 分数解释
+
+| 范围 | 解释 | 用途 |
+|-------|----------------|-------|
+| 0.90-1.00 | **高置信度** | 启用确定性标志，用于 AI 生成 |
+| 0.70-0.89 | **中置信度** | 建议性，推荐用户确认 |
+| 0.50-0.69 | **低置信度** | 仅供参考，需要用户验证 |
+| < 0.50 | **极低** | 不包含在约束中 |
+
+### 确定性标志
+
+当满足以下条件时，`deterministic` 布尔标志会被设置：
+- 置信度分数 >= 0.9
+- 模式已通过发现数据验证，或
+- 模式匹配已确立的标准（RFC、ISO 等）
+
+**在 AI 生成中的用法**：
+```python
+if constraint.get("deterministic"):
+    # 自动生成值，无需询问用户
+    value = generate_from_pattern(constraint)
+else:
+    # 提供约束提示并询问用户输入
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## 发现集成
+
+### 来源优先级
+
+约束使用三级优先级进行协调：
+
+1. **EXISTING**（置信度：1.0）
+   - 在原始 OpenAPI 规范中明确设置
+   - 永不被覆盖
+
+2. **DISCOVERY**（置信度：0.99）
+   - 从实时 F5 XC API 响应中提取
+   - 包含来自 x-ves-validation-rules 的验证规则
+   - 覆盖推断的约束
+
+3. **INFERRED**（置信度：0.50-0.95）
+   - 通过字段名称模式匹配
+   - 最低优先级，被发现或明确约束覆盖
+
+### 发现数据来源
+
+发现约束从以下来源提取：
+
+1. **x-ves-validation-rules**：F5 原生验证扩展
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **错误目录**：指示约束违规的 API 错误消息
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **响应验证**：展示有效值的成功 API 响应
+   - 观察到的值范围
+   - 实际格式模式
+
+---
+
+## 工具集成指南
+
+### AI 助手集成
+
+**生成有效的资源名称**：
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # 询问用户名称
+        return prompt_user("Enter resource name: ")
+
+    # 自动生成
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # 生成匹配模式的有效名称
+    return generate_dns_label(max_length=max_len)
+```
+
+### CLI 工具集成
+
+**提供输入验证**：
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # 检查长度（约束键位于顶层）
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # 检查模式
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### Terraform 提供程序集成
+
+**Schema 生成**：
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // 约束键位于顶层（没有嵌套的 "string" 包装器）
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### IDE 扩展集成
+
+**自动补全和验证**：
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // 添加格式特定的补全项
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // 添加验证提示
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## 附录：约束模式目录
+
+### 高置信度模式（0.95-0.99）
+
+| 模式 | 字段名正则表达式 | 约束类型 | 示例 |
+|---------|------------------|-----------------|---------|
+| DNS 标签 | `\bname$` | 字符串（1-63 字符，dns-label） | `my-service` |
+| 命名空间 | `\bnamespace$` | 字符串（1-63 字符，dns-label） | `production` |
+| 端口 | `\bport$` | 数值（1-65535） | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | 数值（1-4094） | `100` |
+| UUID | `\buuid$` | 字符串（36 字符，uuid 格式） | `550e8400-...` |
+| 电子邮件 | `\bemail$` | 字符串（最大 254 字符，email） | `user@example.com` |
+| 时间戳 | `\b(timestamp\|created_at\|updated_at)$` | 字符串（ISO 8601） | `2026-01-19T12:00:00Z` |
+
+### 中置信度模式（0.80-0.94）
+
+| 模式 | 字段名正则表达式 | 约束类型 | 示例 |
+|---------|------------------|-----------------|---------|
+| 用户名 | `\b(user\|username)$` | 字符串（1-64 字符，字母数字） | `admin` |
+| 显示名称 | `\b(display_?)?name$` | 字符串（1-256 字符，自由文本） | `My Service` |
+| 描述 | `\b(comment\|description\|note)$` | 字符串（最大 4096 字符） | `Service description` |
+| 路径 | `\bpath$` | 字符串（最大 2048 字符） | `/api/v1/resources` |
+
+---
+
+## 支持与反馈
+
+- **问题反馈**：请在 https://github.com/f5xc-salesdemos/api-specs-enriched/issues 报告约束准确性问题
+- **文档**：完整 API 文档请访问 https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **MCP 集成**：请参阅 `f5xc-api-mcp` 仓库了解 MCP 服务器集成示例
+
+---
+
+**版本**：3.3.0
+**最后更新**：2026-01-19
+**已协调约束数**：9,851
+**模式覆盖率**：50 多种类型

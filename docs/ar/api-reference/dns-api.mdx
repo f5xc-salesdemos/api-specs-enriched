@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: إدارة المناطق الموثوقة والسجلات.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+تحليل الأسماء مع عمليات نقل المناطق وفحوصات السلامة. دعم أنواع السجلات والتفويض.
+
+- **الفئة**: الشبكات
+- **التعقيد**: متقدم
+- **المسارات**: 49 | **المخططات**: 285
+- **المستوى**: قياسي
+- **النطاقات ذات الصلة**: `virtual`، `network`
+
+## حالات الاستخدام
+
+- تكوين موازنة حمل DNS
+- إدارة مناطق ونطاقات DNS
+- تكوين سياسات امتثال DNS
+- إدارة مجموعات سجلات الموارد (RRSets)
+
+## الموارد الرئيسية
+
+- **dns_zone**: منطقة DNS موثوقة مع إمكانيات إدارة السجلات
+- **dns_domain**: تفويض نطاق DNS وإعدادات التكوين
+- **dns_load_balancer**: توزيع حركة المرور المبني على DNS مع التوجيه الجغرافي وتجاوز الفشل
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | إنشاء فحوصات امتثال DNS. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | استبدال فحوصات امتثال DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | قائمة تكوين فحوصات امتثال DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | الحصول على فحوصات امتثال DNS. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | حذف تكوين فحوصات امتثال DNS. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | إنشاء وكيل DNS. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | استبدال وكيل DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | قائمة تكوين وكيل DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | الحصول على وكيل DNS. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | حذف تكوين وكيل DNS. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | إنشاء نطاق DNS. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | استبدال نطاق DNS. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | التحقق من نطاق DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | قائمة نطاقات DNS. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | الحصول على نطاق DNS. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | حذف نطاق DNS. |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | اقتراح القيم. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | إنشاء موازن حمل DNS. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | استبدال موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | قائمة موازنات حمل DNS. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | قائمة حالة سلامة موازن حمل DNS. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | قائمة حالة سلامة أعضاء مجمع موازن حمل DNS. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | حالة سلامة مجمع موازن حمل DNS. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | أحداث تغيير حالة سلامة عضو مجمع موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | الحصول على موازن حمل DNS. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | حذف موازن حمل DNS. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | حالة سلامة موازن حمل DNS. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | إنشاء فحص سلامة موازن حمل DNS. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | استبدال فحص سلامة موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | قائمة فحوصات سلامة موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | الحصول على فحص سلامة موازن حمل DNS. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | حذف فحص سلامة موازن حمل DNS. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | إنشاء مجمع موازن حمل DNS. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | استبدال مجمع موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | قائمة مجمعات موازن حمل DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | الحصول على مجمع موازن حمل DNS. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | حذف مجمع موازن حمل DNS. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | استنساخ من DNSDomain. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | استيراد منطقة DNS لخدمات F5 السحابية. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | استيراد منطقة DNS. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | استيراد ملفات BIND. |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | التحقق من صحة ملفات BIND. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | إنشاء منطقة DNS. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | استبدال منطقة DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | الحصول على ملف المنطقة المحلية. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | الحصول على ملف المنطقة البعيدة. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | تصدير ملف المنطقة. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | قائمة مناطق DNS. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | مقاييس منطقة DNS. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | الحصول على سجلات طلبات منطقة DNS. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | الحصول على منطقة DNS. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | حذف منطقة DNS. |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | إنشاء |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | الحصول |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | حذف |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | استبدال |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | الاشتراك في إدارة DNS. |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | إلغاء الاشتراك في إدارة DNS. |
+
+## الروابط
+
+- [مرجع API التفاعلي](./dns/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/dns.json)

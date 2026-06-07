@@ -1,0 +1,521 @@
+---
+title: Entwicklungsleitfaden
+description: Entwicklungsworkflow für die F5 XC API Enrichment Pipeline
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+Dieser Leitfaden beschreibt den Entwicklungsworkflow für die F5 XC API Enrichment Pipeline.
+
+## Schnellstart
+
+### Ersteinrichtung
+
+```bash
+# Repository klonen
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# Virtuelle Umgebung erstellen und Abhängigkeiten installieren
+make install
+
+# Pre-commit-Hooks installieren
+make pre-commit-install
+
+# Spezifikationen herunterladen und Pipeline ausführen
+make build
+
+# Dokumentation lokal anzeigen
+make serve
+```
+
+### Tägliche Entwicklung
+
+```bash
+# Schneller Neuaufbau (verwendet gecachte Spezifikationen)
+make rebuild
+
+# Alle Qualitätsprüfungen ausführen
+make pre-commit-run
+
+# Dokumentation anzeigen
+make serve
+```
+
+## Architekturübersicht
+
+### Zwei-Ordner-Design
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### Pipeline-Ablauf
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### Verzeichnisstruktur
+
+| Verzeichnis | Zweck | Git-Status |
+|-----------|---------|------------|
+| `specs/original/` | F5-Quellspezifikationen | Gitignored |
+| `specs/discovered/` | API-Discovery-Ausgabe | Verfolgt (openapi.json, session.json) |
+| `docs/specifications/api/` | Generierte Domain-Spezifikationen | Gitignored |
+| `scripts/` | Python-Pipeline-Skripte | Verfolgt |
+| `config/` | Pipeline-Konfiguration | Verfolgt |
+| `reports/` | Generierte Berichte | Gitignored |
+
+## Workflow-Muster
+
+### 1. Discovery-Workflow
+
+**Voraussetzungen**:
+- VPN-Verbindung zur F5 XC-Umgebung
+- Gültige API-Anmeldedaten
+
+```bash
+# Anmeldedaten setzen
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# Discovery ausführen
+make discover
+
+# Ergebnisse anzeigen
+jq '.statistics' specs/discovered/session.json
+
+# Für CI/CD committen
+make push-discovery
+```
+
+**Discovery erfasst**:
+- Tatsächlich erforderliche/optionale Felder
+- Enum-Werte aus Live-Antworten
+- Standardwerte
+- Pattern-Validierungen
+- Antwortbeispiele
+
+### 2. Release-Workflow
+
+Releases werden automatisiert:
+
+1. Täglicher Zeitplan (6 Uhr UTC) oder Push auf Main löst den Workflow aus
+2. ETag-Prüfung ermittelt, ob sich die F5-Spezifikationen geändert haben
+3. Pipeline verarbeitet und reichert Spezifikationen an
+4. Version wird aus Git-Tags berechnet: `git describe --tags --abbrev=0`
+5. Direkter Commit + Tag wird erstellt (kein Versionsbump-PR)
+6. GitHub Release wird mit Changelog erstellt
+7. Dokumentation wird auf GitHub Pages bereitgestellt
+
+**Regeln für Versionsbumps**:
+
+| Bedingung | Bump-Typ | Beispiel |
+|-----------|-----------|---------|
+| `[major]` im Commit | Major | 1.0.0 → 2.0.0 |
+| `BREAKING CHANGE` im Commit | Major | 1.0.0 → 2.0.0 |
+| Neue Domain-Spezifikation hinzugefügt | Minor | 1.0.0 → 1.1.0 |
+| Jede andere Änderung | Patch | 1.0.0 → 1.0.1 |
+
+### 3. Entwicklungsworkflow
+
+```bash
+# Feature-Branch erstellen
+git checkout -b feature/my-change
+
+# Änderungen an Konfiguration oder Skripten vornehmen
+
+# Lokal testen
+make pipeline
+make lint
+
+# Committen (Pre-commit-Hooks werden automatisch ausgeführt)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# Pushen und PR erstellen
+git push -u origin feature/my-change
+gh pr create
+```
+
+## Discovery im Detail
+
+### Was ist Discovery?
+
+Discovery erkundet die Live-F5-XC-API, um Folgendes zu finden:
+
+- **Undokumentierte Einschränkungen**: Erforderliche Felder, die in OpenAPI nicht markiert sind
+- **Tatsächliche Enum-Werte**: Reale Werte, die in der Produktion beobachtet werden
+- **Standardverhalten**: Vom Server angewendete Werte, wenn Felder ausgelassen werden
+- **Antwortmuster**: Tatsächliche Datenstrukturen
+
+### Discovery-Konfiguration
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### Discovery-Erweiterungen
+
+Discovery fügt `x-discovered-*`-Erweiterungen zu den Spezifikationen hinzu:
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### Bericht zur Einschränkungsanalyse
+
+```bash
+make constraint-report
+# Ausgabe: reports/constraint-analysis.md
+```
+
+## Release-Prozess
+
+### Inhalt des Release-Pakets
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # Master-kombinierte Spezifikation
+├── openapi.yaml       # YAML-Format
+├── domains/           # Einzelne Domain-Spezifikationen
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # Metadaten
+├── CHANGELOG.md       # Release-Hinweise
+└── README.md          # Nutzungsanweisungen
+```
+
+### Manueller Workflow-Trigger
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## Konfigurationsleitfaden
+
+### Enrichment-Konfiguration
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### Normalisierungskonfiguration
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Spectral-Linting-Regeln
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## OpenAPI-Erweiterungen
+
+Die Enrichment-Pipeline verwendet Vendor-Erweiterungen, um Validierungs- und Standardwert-Metadaten einzubetten.
+
+### Erweiterungskategorien
+
+| Erweiterung | Bedeutung | Auswirkung |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | Der F5 XC API-Server wendet diesen Wert an, wenn das Feld ausgelassen wird | Feld ist optional; das Auslassen erzeugt das dokumentierte Standardverhalten |
+| `x-f5xc-recommended-value` | Die F5 XC-Webkonsole füllt diesen Wert für neue Ressourcen vorab aus | Feld hat keinen Server-Standard, aber dieser Wert repräsentiert eine typische Konfiguration |
+| `x-f5xc-recommended-oneof-variant` | Die F5 XC-Konsole wählt diese OneOf-Variante vor | Identifiziert die typische Wahl, wenn mehrere sich gegenseitig ausschließende Optionen existieren |
+| `x-f5xc-conflicts-with` | Listet andere Eigenschaften auf, die nicht zusammen mit diesem Feld verwendet werden können | Eigenschaft ist Teil einer OneOf-Gruppe; nur eine der in Konflikt stehenden Eigenschaften kann angegeben werden |
+
+### Erweiterungen für erforderliche Felder
+
+| Erweiterung | Quelle | Zweck |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | Originale F5 XC-Spezifikation | Feld erfordert einen nicht-leeren/nicht-null Wert |
+| `x-f5xc-required-for` | Enrichment-Pipeline | Kontextspezifischer Pflichtfeld-Status |
+
+**x-f5xc-required-for-Kontexte**:
+- `create`: Erforderlich beim Erstellen der Ressource
+- `update`: Erforderlich beim Aktualisieren der Ressource
+- `minimum_config`: Erforderlich für eine minimal funktionsfähige Konfiguration
+
+### Standardwert- und OneOf-Erweiterungen
+
+| Erweiterung | Zweck |
+|-----------|---------|
+| `x-f5xc-server-default: true` | Markiert serverseitig angewendete Standards |
+| `x-f5xc-recommended-value` | Vorab ausgefüllter Wert der F5 XC-Konsole |
+| `x-f5xc-recommended-oneof-variant` | Empfohlene OneOf-Variante |
+| `x-f5xc-conflicts-with` | Gegenseitiger Ausschluss mit anderen OneOf-Eigenschaften |
+
+#### x-f5xc-server-default
+
+**Typ**: `boolean`
+
+Wenn `true`, gibt dies an, dass der zugehörige `default`-Wert vom F5 XC API-Server erzwungen wird. Felder mit dieser Erweiterung können sicher aus API-Anfragen weggelassen werden — der Server wendet den Standard automatisch an.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**Typ**: `any` (entspricht dem Feldtyp)
+
+Gibt einen Wert an, den die F5 XC-Webkonsole als vorab ausgefüllten Standard verwendet. Dieser Wert wird nicht serverseitig erzwungen, repräsentiert aber die typische Ausgangskonfiguration für neue Ressourcen, die über die Konsole erstellt werden.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**Typ**: `object` (Zuordnung von Gruppenname zu Variantenname)
+
+Für Schemas mit sich gegenseitig ausschließenden Feldgruppen wird identifiziert, welche Variante die Standard- oder häufigste Wahl ist. Der Schlüssel ist der OneOf-Gruppenname und der Wert ist der empfohlene Varianten-Feldname.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**Typ**: `array` von Strings
+
+**Hinzugefügt**: v3.2.0 (Issue #494)
+
+Deklariert gegenseitige Ausschlussbeziehungen zwischen OneOf-Gruppenmitgliedern. Automatisch abgeleitet aus `x-ves-oneof-field-*`-Erweiterungen. Dies ermöglicht nachgelagerten Tools (Terraform, CLI, MCP), Konflikte auf Schema-Ebene statt zur Laufzeit zu validieren.
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**Anwendungsfälle**:
+- Terraform-Provider können Validierungsregeln generieren
+- CLI-Tools können vor widersprüchlichen Feldkombinationen warnen
+- KI-Assistenten können korrekte OneOf-Konfigurationen generieren
+- IDE-Erweiterungen können konfliktbewusste Autovervollständigung bieten
+
+**Quelle**: Automatisch abgeleitet aus nativen F5 `x-ves-oneof-field-*`-Erweiterungen während der Pipeline-Anreicherung.
+
+### Auswirkungen der Validierungsregeln
+
+Der Enricher untersucht `x-ves-validation-rules`, um den Pflichtfeld-Status abzuleiten:
+
+| Regel | Auswirkung |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | Feld ist erforderlich |
+| `ves.io.schema.rules.uint32.gte: N` | Wenn N >= 1 und kein Server-Standard, ist das Feld erforderlich |
+| `ves.io.schema.rules.repeated.min_items: N` | Wenn N >= 1, erfordert das Array mindestens N Elemente |
+| `ves.io.schema.rules.string.min_bytes: N` | Wenn N >= 1, erfordert der String mindestens N Bytes |
+
+### Ressourcen mit serverseitig angewendeten Standards
+
+Einige Ressourcen akzeptieren leere Spezifikationen, da der Server Standards anwendet:
+
+| Ressource | Serverseitig angewendete Standards |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, Standard `api_groups` |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, verschachtelte http_health_check-Standards |
+
+Für diese Ressourcen kann `x-f5xc-required-for.create` `false` sein, auch wenn `x-ves-required` `true` ist.
+
+### Standardwert-Muster
+
+| Muster | Typ | Beispiel |
+|---------|------|---------|
+| `\{\}` | Leeres Objekt (Auswahlselektion) | `monitoring: \{\}` |
+| `[]` | Leeres Array | `expected_status_codes: []` |
+| `0` | Numerisch | `jitter: 0` |
+| `""` | String | `expected_response: ""` |
+| `false` | Boolean | `use_http2: false` |
+
+### Entdeckte Standards hinzufügen
+
+1. Ressource in F5 XC mit minimaler Spezifikation über die API erstellen
+2. Ressource zurücklesen, um serverseitig angewendete Werte zu sehen
+3. Standards in `config/discovered_defaults.yaml` dokumentieren
+4. Pipeline ausführen: `make pipeline`
+5. Verifizieren mit: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## Fehlerbehebung
+
+### Pre-commit dauert zu lange
+
+Die Pipeline wird bei jedem Commit ausgeführt, um Konsistenz sicherzustellen. Für Work-in-Progress-Commits:
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# Vor dem endgültigen Commit ausführen: make pre-commit-run
+```
+
+### Discovery schlägt fehl
+
+```bash
+# VPN prüfen
+ping your-tenant.console.ves.volterra.io
+
+# Anmeldedaten prüfen
+echo $F5XC_API_TOKEN | head -c 10
+
+# API-URL-Format prüfen
+echo $F5XC_API_URL
+# Format: https://tenant.console.ves.volterra.io/api
+```
+
+### Lint-Fehler bei generierten Spezifikationen
+
+```bash
+# Lint-Bericht prüfen
+cat reports/lint-report.json | jq '.errors'
+```
+
+Beheben Sie Probleme in der Enrichment-/Normalisierungskonfiguration, nicht in den Ausgabedateien.
+
+### Versionssystem
+
+Die Version wird aus Git-Tags abgeleitet (z. B. `v2.0.38`), wodurch Race Conditions eliminiert werden, die bei gleichzeitigen PRs zu Merge-Konflikten geführt haben.
+
+```python
+# Version wird dynamisch aus Git-Tags berechnet
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### Fehlende Spezifikationen nach dem Klonen
+
+Generierte Spezifikationen sind gitignored:
+
+```bash
+make build  # Lädt herunter und generiert alles
+```
+
+### Große Datei blockiert
+
+Ausnahme in `.pre-commit-config.yaml` hinzufügen:
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## Kurzreferenz
+
+### Make-Targets
+
+| Target | Beschreibung |
+|--------|-------------|
+| `make build` | Vollständiger Build (Download + Pipeline) |
+| `make rebuild` | Schneller Neuaufbau (Download überspringen) |
+| `make download` | Spezifikationen herunterladen (ETag-gecacht) |
+| `make download-force` | Download erzwingen |
+| `make pipeline` | Enrichment-Pipeline ausführen |
+| `make lint` | Spectral-Linting |
+| `make serve` | Lokaler Dokumentationsserver |
+| `make discover` | API-Discovery (VPN erforderlich) |
+| `make push-discovery` | Discovery-Daten committen |
+| `make clean` | Generierte Dateien entfernen |
+| `make pre-commit-run` | Alle Qualitätsprüfungen ausführen |
+
+### Umgebungsvariablen
+
+| Variable | Zweck |
+|----------|---------|
+| `F5XC_API_URL` | F5 XC Tenant-API-URL |
+| `F5XC_API_TOKEN` | API-Authentifizierungstoken |
+
+### Wichtige Dateien
+
+| Datei | Zweck |
+|------|---------|
+| `.etag` | Zuletzt heruntergeladener ETag |
+| `CHANGELOG.md` | Automatisch generiertes Changelog |
+| `config/enrichment.yaml` | Enrichment-Regeln |
+| `config/normalization.yaml` | Normalisierungsregeln |
+| `config/discovery.yaml` | Discovery-Einstellungen |
+| `config/spectral.yaml` | Linting-Regeln |
+| `scripts/utils/version_calculator.py` | Tag-basierte Versionsberechnung |
+
+**Hinweis**: Die Version wird aus Git-Tags abgeleitet (z. B. `v2.0.38`), nicht aus einer `.version`-Datei.

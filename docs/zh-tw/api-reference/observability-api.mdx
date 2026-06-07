@@ -1,0 +1,106 @@
+---
+title: "\U0001F4CA Observability API"
+description: 合成健康檢查與 DNS 解析驗證。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 6a6373e33031
+  translator: machine
+---
+
+具備延遲測量的 HTTP 可用性探測。憑證到期警報與全域狀態儀表板，用於基礎架構健康監控。
+
+- **類別**：營運
+- **複雜度**：中等
+- **路徑數**：56 | **結構描述**：196
+- **層級**：標準
+- **相關領域**：`statistics`、`support`
+
+## 使用案例
+
+- 設定合成監控
+- 定義監控與測試策略
+- 管理可觀測性儀表板
+
+## 主要資源
+
+- **log_receiver**：用於集中式日誌收集的日誌接收器
+- **metrics_receiver**：用於集中式指標收集的指標接收器
+- **alert_policy**：用於監控與通知的警報策略
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| GET | `/api/data/namespaces/system/all_ns_alerts` | 取得警報。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | 取得警報。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | 取得警報歷史記錄。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | 警報歷史記錄彙總。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | 警報歷史記錄捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | 警報歷史記錄捲動查詢。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | 建立 DNS 監控器。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | 取代 DNS 監控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | 取得已篩選的 DNS 監控器列表。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | 列出 DNS 監控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | 取得 DNS 監控器。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | 刪除 DNS 監控器。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | 建立 HTTP 監控器。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | 更新 HTTP 監控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | 取得已篩選的 HTTP 監控器列表。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | 列出 HTTP 監控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | 取得 HTTP 監控器。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | 刪除 HTTP 監控器。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | 存取日誌查詢 V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | 存取日誌彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | 存取日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | 存取日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | 稽核日誌查詢 V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | 稽核日誌彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 稽核日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 稽核日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | 防火牆日誌查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | 防火牆日誌彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火牆日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火牆日誌捲動查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 稽核日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 稽核日誌捲動查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | 平台事件查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | 平台事件彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 稽核日誌查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 稽核日誌彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 稽核日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 稽核日誌捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s 事件查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s 事件彙總查詢。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件捲動查詢。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件捲動查詢。 |
+| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | 訂閱可觀測性服務。 |
+| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | 取消訂閱可觀測性合成監控。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | 取得憑證報告詳情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | 取得憑證摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | 取得 DNS 監控器摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | 取得 DNS 監控器健康狀態。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | 取得全域歷史記錄。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | 取得全域摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | 取得合成監控健康檢查。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | 取得 HTTP 監控器詳情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | 取得 HTTP 監控器摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | 取得 HTTP 監控器健康狀態。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | 取得指標查詢資料。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | 取得監控器事件。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | 取得監控器歷史記錄。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | 取得記錄類型摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | 取得來源摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | 建議值。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | 取得 TLS 報告詳情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | 取得 TLS 報告摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | 取得 TLS 摘要。 |
+
+## 連結
+
+- [互動式 API 參考文件](./observability/)
+- [OpenAPI 規格 JSON](../specifications/api/observability.json)

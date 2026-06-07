@@ -1,0 +1,54 @@
+---
+title: "\U0001F465 用户 API"
+description: 账户令牌、标签和 cloud-init 配置。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 3c986acf344c
+  translator: machine
+---
+
+具有自动过期功能的站点注册凭证。分类键定义允许的分类方式，而自动派生的标签则动态应用。
+
+- **类别**: 平台
+- **复杂度**: 简单
+- **路径数**: 13 | **模式数**: 50
+- **层级**: 标准
+- **相关领域**: `system`, `admin`
+
+## 使用场景
+
+- 管理用户账户和令牌
+- 配置用户身份标识
+- 管理用户设置和偏好
+- 配置隐式标签和已知标签
+
+## 主要资源
+
+- **user**: 用于平台访问的用户账户
+- **user_role**: 用于权限管理的用户角色
+- **namespace_role**: 命名空间范围的角色，用于细粒度权限控制
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/system/implicit_labels` | 获取隐式标签。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/create` | 创建 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/delete` | 删除 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_labels` | 获取 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/create` | 创建 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/delete` | 删除 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_label_keys` | 获取 |
+| GET | `/api/register/namespaces/system/get-cloud-init-config` | 获取 Cloud Init 配置。 |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens` | 创建令牌。 |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens/&#123;metadata.name&#125;` | 替换令牌。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens` | 列出令牌。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | 获取令牌 |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | 删除令牌。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;/state` | 设置令牌状态。 |
+
+## 链接
+
+- [交互式 API 参考](./users/)
+- [OpenAPI 规范 JSON](../specifications/api/users.json)

@@ -1,0 +1,521 @@
+---
+title: Development Guide
+description: ขั้นตอนการพัฒนาสำหรับ F5 XC API Enrichment Pipeline
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+คู่มือนี้อธิบายขั้นตอนการพัฒนาสำหรับ F5 XC API Enrichment Pipeline
+
+## เริ่มต้นอย่างรวดเร็ว
+
+### การตั้งค่าครั้งแรก
+
+```bash
+# Clone the repository
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# Create virtual environment and install dependencies
+make install
+
+# Install pre-commit hooks
+make pre-commit-install
+
+# Download specs and run pipeline
+make build
+
+# Preview documentation locally
+make serve
+```
+
+### การพัฒนาประจำวัน
+
+```bash
+# Quick rebuild (uses cached specs)
+make rebuild
+
+# Run all quality checks
+make pre-commit-run
+
+# Preview documentation
+make serve
+```
+
+## ภาพรวมสถาปัตยกรรม
+
+### การออกแบบแบบสองโฟลเดอร์
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### ลำดับการทำงานของ Pipeline
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### โครงสร้างไดเรกทอรี
+
+| ไดเรกทอรี | วัตถุประสงค์ | สถานะ Git |
+|-----------|---------|------------|
+| `specs/original/` | สเปคต้นทางจาก F5 | Gitignored |
+| `specs/discovered/` | ผลลัพธ์จากการค้นหา API | Tracked (openapi.json, session.json) |
+| `docs/specifications/api/` | สเปคโดเมนที่สร้างขึ้น | Gitignored |
+| `scripts/` | สคริปต์ Python สำหรับ pipeline | Tracked |
+| `config/` | การกำหนดค่า pipeline | Tracked |
+| `reports/` | รายงานที่สร้างขึ้น | Gitignored |
+
+## รูปแบบขั้นตอนการทำงาน
+
+### 1. ขั้นตอนการค้นหา (Discovery)
+
+**ข้อกำหนดเบื้องต้น**:
+- การเชื่อมต่อ VPN ไปยังสภาพแวดล้อม F5 XC
+- ข้อมูลรับรอง API ที่ถูกต้อง
+
+```bash
+# Set credentials
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# Run discovery
+make discover
+
+# View results
+jq '.statistics' specs/discovered/session.json
+
+# Commit for CI/CD
+make push-discovery
+```
+
+**การค้นหาจะจับข้อมูลดังนี้**:
+- ฟิลด์ที่จำเป็น/ไม่จำเป็นตามจริง
+- ค่า enum จากการตอบกลับจริง
+- ค่าเริ่มต้น
+- การตรวจสอบ pattern
+- ตัวอย่างการตอบกลับ
+
+### 2. ขั้นตอนการปล่อยเวอร์ชัน (Release)
+
+การปล่อยเวอร์ชันเป็นไปโดยอัตโนมัติ:
+
+1. กำหนดเวลารายวัน (6 AM UTC) หรือการ push ไปยัง main จะทริกเกอร์ workflow
+2. การตรวจสอบ ETag จะกำหนดว่าสเปค F5 มีการเปลี่ยนแปลงหรือไม่
+3. Pipeline ประมวลผลและเสริมคุณภาพสเปค
+4. เวอร์ชันคำนวณจาก git tags: `git describe --tags --abbrev=0`
+5. สร้าง direct commit + tag (ไม่มี PR สำหรับ version bump)
+6. สร้าง GitHub Release พร้อม changelog
+7. เอกสารถูก deploy ไปยัง GitHub Pages
+
+**กฎการเพิ่มเวอร์ชัน**:
+
+| เงื่อนไข | ประเภทการเพิ่ม | ตัวอย่าง |
+|-----------|-----------|---------|
+| `[major]` ใน commit | Major | 1.0.0 → 2.0.0 |
+| `BREAKING CHANGE` ใน commit | Major | 1.0.0 → 2.0.0 |
+| มีสเปคโดเมนใหม่เพิ่มเข้ามา | Minor | 1.0.0 → 1.1.0 |
+| การเปลี่ยนแปลงอื่นๆ | Patch | 1.0.0 → 1.0.1 |
+
+### 3. ขั้นตอนการพัฒนา
+
+```bash
+# Create feature branch
+git checkout -b feature/my-change
+
+# Make changes to config or scripts
+
+# Test locally
+make pipeline
+make lint
+
+# Commit (pre-commit hooks run automatically)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# Push and create PR
+git push -u origin feature/my-change
+gh pr create
+```
+
+## เจาะลึกการค้นหา (Discovery)
+
+### การค้นหาคืออะไร?
+
+การค้นหาจะสำรวจ F5 XC API ที่ทำงานจริงเพื่อค้นหา:
+
+- **ข้อจำกัดที่ไม่มีเอกสาร**: ฟิลด์ที่จำเป็นแต่ไม่ได้ระบุไว้ใน OpenAPI
+- **ค่า enum ตามจริง**: ค่าจริงที่พบในระบบ production
+- **พฤติกรรมค่าเริ่มต้น**: ค่าที่เซิร์ฟเวอร์กำหนดเมื่อฟิลด์ถูกละเว้น
+- **รูปแบบการตอบกลับ**: รูปร่างข้อมูลตามจริง
+
+### การกำหนดค่าการค้นหา
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### ส่วนขยายจากการค้นหา
+
+การค้นหาจะเพิ่มส่วนขยาย `x-discovered-*` ลงในสเปค:
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### รายงานการวิเคราะห์ข้อจำกัด
+
+```bash
+make constraint-report
+# Output: reports/constraint-analysis.md
+```
+
+## กระบวนการปล่อยเวอร์ชัน
+
+### เนื้อหาแพ็กเกจปล่อยเวอร์ชัน
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # Master combined spec
+├── openapi.yaml       # YAML format
+├── domains/           # Individual domain specs
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # Metadata
+├── CHANGELOG.md       # Release notes
+└── README.md          # Usage instructions
+```
+
+### การทริกเกอร์ Workflow ด้วยตนเอง
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## คู่มือการกำหนดค่า
+
+### การกำหนดค่าการเสริมคุณภาพ (Enrichment)
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### การกำหนดค่าการทำให้เป็นมาตรฐาน (Normalization)
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### กฎการ Lint ด้วย Spectral
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## ส่วนขยาย OpenAPI
+
+Pipeline การเสริมคุณภาพใช้ส่วนขยาย vendor เพื่อฝังเมตาดาต้าการตรวจสอบความถูกต้องและค่าเริ่มต้น
+
+### หมวดหมู่ส่วนขยาย
+
+| ส่วนขยาย | ความหมาย | นัยสำคัญ |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | เซิร์ฟเวอร์ F5 XC API จะกำหนดค่านี้เมื่อฟิลด์ถูกละเว้น | ฟิลด์เป็นทางเลือก; การละเว้นจะให้พฤติกรรมค่าเริ่มต้นตามที่ระบุไว้ |
+| `x-f5xc-recommended-value` | คอนโซลเว็บ F5 XC จะเติมค่านี้ล่วงหน้าสำหรับทรัพยากรใหม่ | ฟิลด์ไม่มีค่าเริ่มต้นจากเซิร์ฟเวอร์แต่ค่านี้แสดงถึงการกำหนดค่าทั่วไป |
+| `x-f5xc-recommended-oneof-variant` | คอนโซล F5 XC จะเลือกตัวเลือก OneOf นี้ล่วงหน้า | ระบุตัวเลือกทั่วไปเมื่อมีตัวเลือกที่เป็นเอกสิทธิ์ร่วมกันหลายตัว |
+| `x-f5xc-conflicts-with` | แสดงรายการคุณสมบัติอื่นที่ไม่สามารถใช้ร่วมกับฟิลด์นี้ได้ | คุณสมบัตินี้เป็นส่วนหนึ่งของกลุ่ม OneOf; สามารถระบุได้เพียงหนึ่งในคุณสมบัติที่ขัดแย้งกัน |
+
+### ส่วนขยายฟิลด์ที่จำเป็น
+
+| ส่วนขยาย | แหล่งที่มา | วัตถุประสงค์ |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | สเปคต้นฉบับ F5 XC | ฟิลด์ต้องมีค่าที่ไม่เป็นศูนย์/ไม่ว่างเปล่า |
+| `x-f5xc-required-for` | Pipeline การเสริมคุณภาพ | สถานะจำเป็นตามบริบท |
+
+**บริบทของ x-f5xc-required-for**:
+- `create`: จำเป็นเมื่อสร้างทรัพยากร
+- `update`: จำเป็นเมื่ออัปเดตทรัพยากร
+- `minimum_config`: จำเป็นสำหรับการกำหนดค่าขั้นต่ำที่ใช้งานได้
+
+### ส่วนขยายค่าเริ่มต้นและ OneOf
+
+| ส่วนขยาย | วัตถุประสงค์ |
+|-----------|---------|
+| `x-f5xc-server-default: true` | ระบุค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด |
+| `x-f5xc-recommended-value` | ค่าที่คอนโซล F5 XC เติมล่วงหน้า |
+| `x-f5xc-recommended-oneof-variant` | ตัวเลือก OneOf ที่แนะนำ |
+| `x-f5xc-conflicts-with` | ความเป็นเอกสิทธิ์ร่วมกับคุณสมบัติ OneOf อื่น |
+
+#### x-f5xc-server-default
+
+**ประเภท**: `boolean`
+
+เมื่อเป็น `true` แสดงว่าค่า `default` ที่แนบมาจะถูกบังคับใช้โดยเซิร์ฟเวอร์ F5 XC API ฟิลด์ที่มีส่วนขยายนี้สามารถละเว้นจากคำขอ API ได้อย่างปลอดภัย — เซิร์ฟเวอร์จะกำหนดค่าเริ่มต้นโดยอัตโนมัติ
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**ประเภท**: `any` (ตรงกับประเภทของฟิลด์)
+
+ระบุค่าที่คอนโซลเว็บ F5 XC ใช้เป็นค่าเริ่มต้นที่เติมล่วงหน้า ค่านี้ไม่ได้ถูกบังคับใช้โดยเซิร์ฟเวอร์แต่แสดงถึงการกำหนดค่าเริ่มต้นทั่วไปสำหรับทรัพยากรใหม่ที่สร้างผ่านคอนโซล
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**ประเภท**: `object` (แผนที่ของชื่อกลุ่มไปยังชื่อตัวเลือก)
+
+สำหรับสคีมาที่มีกลุ่มฟิลด์ที่เป็นเอกสิทธิ์ร่วมกัน ระบุว่าตัวเลือกใดเป็นค่าเริ่มต้นหรือเป็นตัวเลือกที่พบบ่อยที่สุด คีย์คือชื่อกลุ่ม OneOf และค่าคือชื่อฟิลด์ตัวเลือกที่แนะนำ
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**ประเภท**: `array` ของ strings
+
+**เพิ่มเมื่อ**: v3.2.0 (Issue #494)
+
+ประกาศความสัมพันธ์ความเป็นเอกสิทธิ์ร่วมกันระหว่างสมาชิกกลุ่ม OneOf ถูกสร้างโดยอัตโนมัติจากส่วนขยาย `x-ves-oneof-field-*` สิ่งนี้ช่วยให้เครื่องมือปลายทาง (Terraform, CLI, MCP) สามารถตรวจสอบความขัดแย้งในระดับสคีมาแทนที่จะเป็น runtime
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**กรณีใช้งาน**:
+- ผู้ให้บริการ Terraform สามารถสร้างกฎการตรวจสอบ
+- เครื่องมือ CLI สามารถเตือนเกี่ยวกับการรวมฟิลด์ที่ขัดแย้งกัน
+- ผู้ช่วย AI สามารถสร้างการกำหนดค่า OneOf ที่ถูกต้อง
+- ส่วนขยาย IDE สามารถให้การเติมอัตโนมัติที่ตระหนักถึงความขัดแย้ง
+
+**แหล่งที่มา**: สร้างโดยอัตโนมัติจากส่วนขยาย `x-ves-oneof-field-*` ดั้งเดิมของ F5 ระหว่างการเสริมคุณภาพ pipeline
+
+### นัยสำคัญของกฎการตรวจสอบ
+
+ตัวเสริมคุณภาพจะตรวจสอบ `x-ves-validation-rules` เพื่ออนุมานสถานะจำเป็น:
+
+| กฎ | นัยสำคัญ |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | ฟิลด์เป็นฟิลด์จำเป็น |
+| `ves.io.schema.rules.uint32.gte: N` | หาก N >= 1 และไม่มีค่าเริ่มต้นจากเซิร์ฟเวอร์ ฟิลด์เป็นฟิลด์จำเป็น |
+| `ves.io.schema.rules.repeated.min_items: N` | หาก N >= 1 อาร์เรย์ต้องมีอย่างน้อย N รายการ |
+| `ves.io.schema.rules.string.min_bytes: N` | หาก N >= 1 สตริงต้องมีอย่างน้อย N ไบต์ |
+
+### ทรัพยากรที่มีค่าเริ่มต้นจากเซิร์ฟเวอร์
+
+ทรัพยากรบางอย่างรับสเปคว่างได้เนื่องจากเซิร์ฟเวอร์จะกำหนดค่าเริ่มต้น:
+
+| ทรัพยากร | ค่าเริ่มต้นจากเซิร์ฟเวอร์ |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, default `api_groups` |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, ค่าเริ่มต้น http_health_check ซ้อน |
+
+สำหรับทรัพยากรเหล่านี้ `x-f5xc-required-for.create` อาจเป็น `false` แม้ว่า `x-ves-required` จะเป็น `true`
+
+### รูปแบบค่าเริ่มต้น
+
+| รูปแบบ | ประเภท | ตัวอย่าง |
+|---------|------|---------|
+| `\{\}` | อ็อบเจกต์ว่าง (การเลือกตัวเลือก) | `monitoring: \{\}` |
+| `[]` | อาร์เรย์ว่าง | `expected_status_codes: []` |
+| `0` | ตัวเลข | `jitter: 0` |
+| `""` | สตริง | `expected_response: ""` |
+| `false` | บูลีน | `use_http2: false` |
+
+### การเพิ่มค่าเริ่มต้นที่ค้นพบ
+
+1. สร้างทรัพยากรใน F5 XC ด้วยสเปคขั้นต่ำผ่าน API
+2. อ่านทรัพยากรกลับเพื่อดูค่าที่เซิร์ฟเวอร์กำหนด
+3. บันทึกค่าเริ่มต้นใน `config/discovered_defaults.yaml`
+4. รัน pipeline: `make pipeline`
+5. ตรวจสอบด้วย: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## การแก้ไขปัญหา
+
+### Pre-commit ใช้เวลานานเกินไป
+
+Pipeline จะทำงานทุกครั้งที่ commit เพื่อให้แน่ใจว่ามีความสอดคล้อง สำหรับ commit ที่ยังอยู่ระหว่างดำเนินการ:
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# Run before final commit: make pre-commit-run
+```
+
+### การค้นหาล้มเหลว
+
+```bash
+# Check VPN
+ping your-tenant.console.ves.volterra.io
+
+# Check credentials
+echo $F5XC_API_TOKEN | head -c 10
+
+# Check API URL format
+echo $F5XC_API_URL
+# Format: https://tenant.console.ves.volterra.io/api
+```
+
+### ข้อผิดพลาด Lint บนสเปคที่สร้างขึ้น
+
+```bash
+# Check lint report
+cat reports/lint-report.json | jq '.errors'
+```
+
+แก้ไขปัญหาในการกำหนดค่า enrichment/normalization ไม่ใช่ในไฟล์ผลลัพธ์
+
+### ระบบเวอร์ชัน
+
+เวอร์ชันถูกคำนวณจาก git tags (เช่น `v2.0.38`) ซึ่งกำจัด race conditions ที่ทำให้เกิด merge conflicts บน PR ที่ทำงานพร้อมกัน
+
+```python
+# Version is calculated dynamically from git tags
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### สเปคหายไปหลังจาก Clone
+
+สเปคที่สร้างขึ้นถูก gitignore:
+
+```bash
+make build  # Downloads and generates everything
+```
+
+### ไฟล์ขนาดใหญ่ถูกบล็อก
+
+เพิ่มข้อยกเว้นใน `.pre-commit-config.yaml`:
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## อ้างอิงด่วน
+
+### เป้าหมาย Make
+
+| เป้าหมาย | คำอธิบาย |
+|--------|-------------|
+| `make build` | บิลด์เต็มรูปแบบ (ดาวน์โหลด + pipeline) |
+| `make rebuild` | บิลด์ด่วน (ข้ามการดาวน์โหลด) |
+| `make download` | ดาวน์โหลดสเปค (แคช ETag) |
+| `make download-force` | บังคับดาวน์โหลด |
+| `make pipeline` | รัน pipeline การเสริมคุณภาพ |
+| `make lint` | Lint ด้วย Spectral |
+| `make serve` | เซิร์ฟเวอร์เอกสารในเครื่อง |
+| `make discover` | ค้นหา API (ต้องใช้ VPN) |
+| `make push-discovery` | Commit ข้อมูลการค้นหา |
+| `make clean` | ลบไฟล์ที่สร้างขึ้น |
+| `make pre-commit-run` | รันการตรวจสอบคุณภาพทั้งหมด |
+
+### ตัวแปรสภาพแวดล้อม
+
+| ตัวแปร | วัตถุประสงค์ |
+|----------|---------|
+| `F5XC_API_URL` | URL ของ F5 XC tenant API |
+| `F5XC_API_TOKEN` | โทเค็นการยืนยันตัวตน API |
+
+### ไฟล์สำคัญ
+
+| ไฟล์ | วัตถุประสงค์ |
+|------|---------|
+| `.etag` | ETag ที่ดาวน์โหลดล่าสุด |
+| `CHANGELOG.md` | Changelog ที่สร้างอัตโนมัติ |
+| `config/enrichment.yaml` | กฎการเสริมคุณภาพ |
+| `config/normalization.yaml` | กฎการทำให้เป็นมาตรฐาน |
+| `config/discovery.yaml` | การตั้งค่าการค้นหา |
+| `config/spectral.yaml` | กฎการ lint |
+| `scripts/utils/version_calculator.py` | การคำนวณเวอร์ชันจาก tag |
+
+**หมายเหตุ**: เวอร์ชันถูกคำนวณจาก git tags (เช่น `v2.0.38`) ไม่ใช่จากไฟล์ `.version`

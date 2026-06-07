@@ -1,0 +1,521 @@
+---
+title: Guide de développement
+description: Flux de travail de développement pour le pipeline d'enrichissement d'API F5 XC
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+Ce guide décrit le flux de travail de développement pour le pipeline d'enrichissement d'API F5 XC.
+
+## Démarrage rapide
+
+### Configuration initiale
+
+```bash
+# Clone the repository
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# Create virtual environment and install dependencies
+make install
+
+# Install pre-commit hooks
+make pre-commit-install
+
+# Download specs and run pipeline
+make build
+
+# Preview documentation locally
+make serve
+```
+
+### Développement quotidien
+
+```bash
+# Quick rebuild (uses cached specs)
+make rebuild
+
+# Run all quality checks
+make pre-commit-run
+
+# Preview documentation
+make serve
+```
+
+## Vue d'ensemble de l'architecture
+
+### Conception à deux dossiers
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### Flux du pipeline
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### Structure des répertoires
+
+| Répertoire | Objectif | Statut Git |
+|-----------|---------|------------|
+| `specs/original/` | Spécifications source F5 | Ignoré par Git |
+| `specs/discovered/` | Sortie de la découverte d'API | Suivi (openapi.json, session.json) |
+| `docs/specifications/api/` | Spécifications de domaine générées | Ignoré par Git |
+| `scripts/` | Scripts Python du pipeline | Suivi |
+| `config/` | Configuration du pipeline | Suivi |
+| `reports/` | Rapports générés | Ignoré par Git |
+
+## Modèles de flux de travail
+
+### 1. Flux de travail de découverte
+
+**Prérequis** :
+- Connexion VPN à l'environnement F5 XC
+- Identifiants API valides
+
+```bash
+# Set credentials
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# Run discovery
+make discover
+
+# View results
+jq '.statistics' specs/discovered/session.json
+
+# Commit for CI/CD
+make push-discovery
+```
+
+**La découverte capture** :
+- Les champs réellement obligatoires/optionnels
+- Les valeurs d'énumération issues des réponses en production
+- Les valeurs par défaut
+- Les validations de motifs
+- Les exemples de réponses
+
+### 2. Flux de travail de publication
+
+Les publications sont automatisées :
+
+1. Planification quotidienne (6h UTC) ou push sur main déclenche le workflow
+2. La vérification ETag détermine si les spécifications F5 ont changé
+3. Le pipeline traite et enrichit les spécifications
+4. La version est calculée à partir des tags git : `git describe --tags --abbrev=0`
+5. Commit direct + tag créé (pas de PR de montée de version)
+6. GitHub Release créée avec le changelog
+7. Documentation déployée sur GitHub Pages
+
+**Règles de montée de version** :
+
+| Condition | Type de montée | Exemple |
+|-----------|-----------|---------|
+| `[major]` dans le commit | Majeure | 1.0.0 → 2.0.0 |
+| `BREAKING CHANGE` dans le commit | Majeure | 1.0.0 → 2.0.0 |
+| Nouvelle spécification de domaine ajoutée | Mineure | 1.0.0 → 1.1.0 |
+| Tout autre changement | Correctif | 1.0.0 → 1.0.1 |
+
+### 3. Flux de travail de développement
+
+```bash
+# Create feature branch
+git checkout -b feature/my-change
+
+# Make changes to config or scripts
+
+# Test locally
+make pipeline
+make lint
+
+# Commit (pre-commit hooks run automatically)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# Push and create PR
+git push -u origin feature/my-change
+gh pr create
+```
+
+## Découverte en détail
+
+### Qu'est-ce que la découverte ?
+
+La découverte explore l'API F5 XC en production pour trouver :
+
+- **Contraintes non documentées** : Champs obligatoires non marqués dans OpenAPI
+- **Valeurs d'énumération réelles** : Valeurs réellement observées en production
+- **Comportements par défaut** : Valeurs appliquées par le serveur lorsque les champs sont omis
+- **Modèles de réponse** : Formes réelles des données
+
+### Configuration de la découverte
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### Extensions de découverte
+
+La découverte ajoute des extensions `x-discovered-*` aux spécifications :
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### Rapport d'analyse des contraintes
+
+```bash
+make constraint-report
+# Output: reports/constraint-analysis.md
+```
+
+## Processus de publication
+
+### Contenu du package de publication
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # Master combined spec
+├── openapi.yaml       # YAML format
+├── domains/           # Individual domain specs
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # Metadata
+├── CHANGELOG.md       # Release notes
+└── README.md          # Usage instructions
+```
+
+### Déclenchement manuel du workflow
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## Guide de configuration
+
+### Configuration de l'enrichissement
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### Configuration de la normalisation
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Règles de linting Spectral
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## Extensions OpenAPI
+
+Le pipeline d'enrichissement utilise des extensions propriétaires pour intégrer les métadonnées de validation et de valeurs par défaut.
+
+### Catégories d'extensions
+
+| Extension | Signification | Implication |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | Le serveur API F5 XC applique cette valeur lorsque le champ est omis | Le champ est optionnel ; l'omettre produit le comportement par défaut documenté |
+| `x-f5xc-recommended-value` | La console web F5 XC pré-remplit cette valeur pour les nouvelles ressources | Le champ n'a pas de valeur par défaut côté serveur mais cette valeur représente une configuration typique |
+| `x-f5xc-recommended-oneof-variant` | La console F5 XC présélectionne cette variante OneOf | Identifie le choix typique lorsque plusieurs options mutuellement exclusives existent |
+| `x-f5xc-conflicts-with` | Liste les autres propriétés qui ne peuvent pas être utilisées conjointement avec ce champ | La propriété fait partie d'un groupe OneOf ; seule une des propriétés en conflit peut être spécifiée |
+
+### Extensions de champs obligatoires
+
+| Extension | Source | Objectif |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | Spécification originale F5 XC | Le champ nécessite une valeur non nulle/non vide |
+| `x-f5xc-required-for` | Pipeline d'enrichissement | Statut obligatoire selon le contexte |
+
+**Contextes de x-f5xc-required-for** :
+- `create` : Obligatoire lors de la création de la ressource
+- `update` : Obligatoire lors de la mise à jour de la ressource
+- `minimum_config` : Obligatoire pour une configuration minimale viable
+
+### Extensions de valeurs par défaut et OneOf
+
+| Extension | Objectif |
+|-----------|---------|
+| `x-f5xc-server-default: true` | Marque les valeurs par défaut appliquées par le serveur |
+| `x-f5xc-recommended-value` | Valeur pré-remplie par la console F5 XC |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf recommandée |
+| `x-f5xc-conflicts-with` | Exclusion mutuelle avec d'autres propriétés OneOf |
+
+#### x-f5xc-server-default
+
+**Type** : `boolean`
+
+Lorsque `true`, indique que la valeur `default` associée est appliquée par le serveur API F5 XC. Les champs avec cette extension peuvent être omis en toute sécurité des requêtes API — le serveur applique la valeur par défaut automatiquement.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**Type** : `any` (correspond au type du champ)
+
+Spécifie une valeur que la console web F5 XC utilise comme valeur par défaut pré-remplie. Cette valeur n'est pas appliquée par le serveur mais représente la configuration de départ typique pour les nouvelles ressources créées via la console.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**Type** : `object` (correspondance entre nom de groupe et nom de variante)
+
+Pour les schémas avec des groupes de champs mutuellement exclusifs, identifie quelle variante est le choix par défaut ou le plus courant. La clé est le nom du groupe OneOf et la valeur est le nom du champ de la variante recommandée.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**Type** : `array` de chaînes de caractères
+
+**Ajouté** : v3.2.0 (Issue #494)
+
+Déclare les relations d'exclusion mutuelle entre les membres d'un groupe OneOf. Dérivé automatiquement des extensions `x-ves-oneof-field-*`. Cela permet aux outils en aval (Terraform, CLI, MCP) de valider les conflits au niveau du schéma plutôt qu'à l'exécution.
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**Cas d'utilisation** :
+- Les fournisseurs Terraform peuvent générer des règles de validation
+- Les outils CLI peuvent avertir des combinaisons de champs en conflit
+- Les assistants IA peuvent générer des configurations OneOf correctes
+- Les extensions IDE peuvent fournir une auto-complétion tenant compte des conflits
+
+**Source** : Dérivé automatiquement des extensions natives F5 `x-ves-oneof-field-*` lors de l'enrichissement par le pipeline.
+
+### Implications des règles de validation
+
+L'enrichisseur inspecte `x-ves-validation-rules` pour déduire le statut obligatoire :
+
+| Règle | Implication |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | Le champ est obligatoire |
+| `ves.io.schema.rules.uint32.gte: N` | Si N >= 1 et pas de valeur par défaut serveur, le champ est obligatoire |
+| `ves.io.schema.rules.repeated.min_items: N` | Si N >= 1, le tableau nécessite au moins N éléments |
+| `ves.io.schema.rules.string.min_bytes: N` | Si N >= 1, la chaîne nécessite au moins N octets |
+
+### Ressources avec valeurs par défaut appliquées par le serveur
+
+Certaines ressources acceptent des spécifications vides car le serveur applique les valeurs par défaut :
+
+| Ressource | Valeurs par défaut appliquées par le serveur |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, `api_groups` par défaut |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, valeurs par défaut imbriquées de http_health_check |
+
+Pour ces ressources, `x-f5xc-required-for.create` peut être `false` même lorsque `x-ves-required` est `true`.
+
+### Modèles de valeurs par défaut
+
+| Modèle | Type | Exemple |
+|---------|------|---------|
+| `\{\}` | Objet vide (sélection de choix) | `monitoring: \{\}` |
+| `[]` | Tableau vide | `expected_status_codes: []` |
+| `0` | Numérique | `jitter: 0` |
+| `""` | Chaîne de caractères | `expected_response: ""` |
+| `false` | Booléen | `use_http2: false` |
+
+### Ajout de valeurs par défaut découvertes
+
+1. Créer une ressource dans F5 XC avec une spécification minimale via l'API
+2. Relire la ressource pour voir les valeurs appliquées par le serveur
+3. Documenter les valeurs par défaut dans `config/discovered_defaults.yaml`
+4. Exécuter le pipeline : `make pipeline`
+5. Vérifier avec : `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## Résolution de problèmes
+
+### Le pre-commit prend trop de temps
+
+Le pipeline s'exécute à chaque commit pour assurer la cohérence. Pour les commits de travail en cours :
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# Run before final commit: make pre-commit-run
+```
+
+### Échec de la découverte
+
+```bash
+# Check VPN
+ping your-tenant.console.ves.volterra.io
+
+# Check credentials
+echo $F5XC_API_TOKEN | head -c 10
+
+# Check API URL format
+echo $F5XC_API_URL
+# Format: https://tenant.console.ves.volterra.io/api
+```
+
+### Erreurs de linting sur les spécifications générées
+
+```bash
+# Check lint report
+cat reports/lint-report.json | jq '.errors'
+```
+
+Corrigez les problèmes dans la configuration d'enrichissement/normalisation, pas dans les fichiers de sortie.
+
+### Système de versionnage
+
+La version est dérivée des tags git (par exemple, `v2.0.38`), éliminant les conditions de concurrence qui causaient des conflits de fusion sur les PR concurrentes.
+
+```python
+# Version is calculated dynamically from git tags
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### Spécifications manquantes après le clonage
+
+Les spécifications générées sont ignorées par git :
+
+```bash
+make build  # Downloads and generates everything
+```
+
+### Fichier volumineux bloqué
+
+Ajoutez une exclusion dans `.pre-commit-config.yaml` :
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## Référence rapide
+
+### Cibles Make
+
+| Cible | Description |
+|--------|-------------|
+| `make build` | Construction complète (téléchargement + pipeline) |
+| `make rebuild` | Reconstruction rapide (sans téléchargement) |
+| `make download` | Télécharger les spécifications (cache ETag) |
+| `make download-force` | Forcer le téléchargement |
+| `make pipeline` | Exécuter le pipeline d'enrichissement |
+| `make lint` | Linting Spectral |
+| `make serve` | Serveur de documentation local |
+| `make discover` | Découverte d'API (VPN requis) |
+| `make push-discovery` | Commiter les données de découverte |
+| `make clean` | Supprimer les fichiers générés |
+| `make pre-commit-run` | Exécuter toutes les vérifications de qualité |
+
+### Variables d'environnement
+
+| Variable | Objectif |
+|----------|---------|
+| `F5XC_API_URL` | URL de l'API du tenant F5 XC |
+| `F5XC_API_TOKEN` | Jeton d'authentification API |
+
+### Fichiers clés
+
+| Fichier | Objectif |
+|------|---------|
+| `.etag` | Dernier ETag téléchargé |
+| `CHANGELOG.md` | Changelog généré automatiquement |
+| `config/enrichment.yaml` | Règles d'enrichissement |
+| `config/normalization.yaml` | Règles de normalisation |
+| `config/discovery.yaml` | Paramètres de découverte |
+| `config/spectral.yaml` | Règles de linting |
+| `scripts/utils/version_calculator.py` | Calcul de version basé sur les tags |
+
+**Note** : La version est dérivée des tags git (par exemple, `v2.0.38`), et non d'un fichier `.version`.

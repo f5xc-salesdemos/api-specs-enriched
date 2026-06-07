@@ -1,0 +1,173 @@
+---
+title: Améliorations du Healthcheck
+description: Métadonnées d'enrichissement pour les schémas liés au healthcheck
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+Métadonnées d'enrichissement pour les schémas liés au healthcheck. Voir [Extensions OpenAPI](../development/#openapi-extensions) pour les définitions des extensions.
+
+## Schémas enrichis
+
+### Modèle
+
+Tous les schémas correspondant à `healthcheck.*SpecType` reçoivent des enrichissements :
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+De plus, le schéma imbriqué `healthcheckHttpHealthCheck` contient des enrichissements pour la configuration du health check HTTP.
+
+## Valeurs par défaut appliquées par le serveur
+
+Les champs marqués avec `x-f5xc-server-default: true` voient leur valeur `default` appliquée par le serveur API F5 XC lorsqu'ils sont omis des requêtes.
+
+### Champs de niveau supérieur
+
+| Champ | Valeur par défaut | Type | Description |
+|-------|-------------------|------|-------------|
+| `jitter` | `0` | integer | Valeur absolue de gigue pour la randomisation temporelle |
+| `jitter_percent` | `0` | integer | Gigue basée sur un pourcentage pour la randomisation temporelle |
+
+### Schéma healthcheckHttpHealthCheck
+
+| Champ | Valeur par défaut | Type | Description |
+|-------|-------------------|------|-------------|
+| `use_origin_server_name` | `{}` | object | Nom du serveur d'origine pour l'en-tête Host |
+| `headers` | `{}` | object | En-têtes personnalisés |
+| `request_headers_to_remove` | `[]` | array | En-têtes à supprimer des requêtes |
+| `use_http2` | `false` | boolean | Prise en charge HTTP/2 |
+| `expected_status_codes` | `[]` | array | Codes de statut acceptés (vide = 200-299) |
+
+## Valeurs recommandées
+
+Les champs marqués avec `x-f5xc-recommended-value` indiquent les valeurs que la console web F5 XC pré-remplit lors de la création de nouvelles ressources.
+
+### Champs de niveau supérieur
+
+| Champ | Valeur recommandée | Type | Description |
+|-------|---------------------|------|-------------|
+| `timeout` | `3` | integer | Délai d'expiration du health check en secondes |
+| `interval` | `15` | integer | Intervalle entre les health checks en secondes |
+| `unhealthy_threshold` | `1` | integer | Échecs consécutifs avant de marquer comme non sain |
+| `healthy_threshold` | `3` | integer | Succès consécutifs avant de marquer comme sain |
+| `jitter_percent` | `30` | integer | Pourcentage de gigue pour l'utilisation en production |
+
+### Schéma healthcheckHttpHealthCheck
+
+| Champ | Valeur recommandée | Type | Description |
+|-------|---------------------|------|-------------|
+| `path` | `"/"` | string | Chemin du point de terminaison du health check |
+| `use_http2` | `false` | boolean | Paramètre de prise en charge HTTP/2 |
+| `expected_status_codes` | `["200"]` | array | Codes de statut indiquant une origine saine |
+| `use_origin_server_name` | `{}` | object | Nom du serveur d'origine pour l'en-tête Host |
+
+## Recommandations de variantes OneOf
+
+Les schémas contenant des groupes de champs mutuellement exclusifs (OneOf) incluent `x-f5xc-recommended-oneof-variant` pour indiquer quelle variante est la plus couramment utilisée. Cette métadonnée identifie le choix typique lorsque plusieurs options existent, basé sur les valeurs par défaut de la console F5 XC et les modèles d'utilisation courants.
+
+### Groupes OneOf de niveau supérieur
+
+| Schéma | Groupe OneOf | Variante recommandée | Description |
+|--------|-------------|----------------------|-------------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | Type de health check HTTP |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | Type de health check HTTP |
+
+### Groupes OneOf healthcheckHttpHealthCheck
+
+| Schéma | Groupe OneOf | Variante recommandée | Description |
+|--------|-------------|----------------------|-------------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | En-tête Host pour les requêtes de health check |
+
+#### Choix de l'en-tête Host
+
+Le groupe OneOf `host_header_choice` contrôle la manière dont l'en-tête Host est spécifié dans les requêtes HTTP de health check.
+
+| Variante | Type | Description |
+|----------|------|-------------|
+| `use_origin_server_name` | `object` (vide) | Utilise le nom du serveur d'origine comme en-tête Host. C'est la sélection par défaut dans la console F5 XC. |
+| `host_header` | `string` | Spécifie une valeur personnalisée d'en-tête Host pour les requêtes de health check. |
+
+**Référence du schéma API** : `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## Référence des extensions OpenAPI
+
+Ces extensions propriétaires sont ajoutées au schéma OpenAPI standard pour transmettre le comportement par défaut spécifique à F5 XC.
+
+### x-f5xc-server-default
+
+**Type** : `boolean`
+
+Lorsque défini à `true`, indique que la valeur `default` associée est appliquée par le serveur API F5 XC. Les champs avec cette extension peuvent être omis en toute sécurité des requêtes API — le serveur applique automatiquement la valeur par défaut.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**Type** : `any` (correspond au type du champ)
+
+Spécifie une valeur que la console web F5 XC utilise comme valeur par défaut pré-remplie. Cette valeur n'est pas appliquée par le serveur mais représente la configuration de départ typique pour les nouvelles ressources créées via la console.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**Type** : `object` (correspondance entre nom de groupe et nom de variante)
+
+Pour les schémas avec des groupes de champs mutuellement exclusifs, identifie quelle variante est le choix par défaut ou le plus courant. La clé est le nom du groupe OneOf et la valeur est le nom du champ de la variante recommandée.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## Accès aux données
+
+### Spécifications OpenAPI
+
+| Fichier | Contenu |
+|---------|---------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | Spécification fusionnée avec tous les schémas |
+
+### Structure de validation.json
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # Champs avec x-f5xc-server-default: true
+├── recommended         # Champs avec x-f5xc-recommended-value
+├── oneof_recommended   # Recommandations de variantes OneOf
+└── nested_recommended  # Valeurs recommandées des schémas imbriqués
+```
+
+## Documentation associée
+
+- [Guide de développement - Extensions OpenAPI](../development/#openapi-extensions) - Définitions et utilisation des extensions
+- [Spécification de validation](../validation-spec/) - Format et structure de validation.json
+- [Améliorations de l'Origin Pool](./originpool-enhancements/) - Enrichissements du schéma Origin Pool
+
+## Journal des modifications
+
+| Version | Date | Modifications |
+|---------|------|---------------|
+| 2.1.4 | 2026-01-19 | Ajout de la documentation du groupe OneOf `host_header_choice` pour les paramètres de requête du health check HTTP |
+| 2.1.3 | 2026-01-18 | Consolidation de la documentation globale des extensions dans DEVELOPMENT.md ; données spécifiques aux ressources uniquement |
+| 2.1.2 | 2026-01-18 | Réécrit en tant que référence API pure ; suppression des exemples en aval et du langage prescriptif |
+| 2.1.1 | 2026-01-18 | Ajout des valeurs recommandées imbriquées, des variantes OneOf recommandées, de l'extension `x-f5xc-recommended-oneof-variant` |
+| 2.1.0 | 2026-01-18 | Ajout de la structure unifiée des valeurs par défaut dans validation.json |
+| 2.0.30 | 2026-01-16 | Ajout des valeurs par défaut imbriquées pour les schémas `$ref` |
+| 2.0.29 | 2026-01-17 | Valeurs par défaut initiales du healthcheck |

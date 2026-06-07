@@ -1,0 +1,84 @@
+---
+title: "\U0001F578️ 服务网格 API"
+description: 微服务路由和 Sidecar 配置。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: d33734c26c6d
+  translator: machine
+---
+
+包含发现和学习型模式分析的应用类型定义。用于智能请求处理的流量模式推断。
+
+- **类别**：基础设施
+- **复杂度**：高级
+- **路径数**：38 | **模式数**：247
+- **层级**：高级
+- **相关领域**：`managed_kubernetes`、`container_services`、`virtual`
+
+## 使用场景
+
+- 配置服务网格连接
+- 管理端点发现和路由
+- 配置 NFV 服务
+- 定义应用设置和类型
+
+## 主要资源
+
+- **endpoint**：用于流量路由的服务网格端点
+- **origin_pool**：用于负载均衡器流量分发的后端服务器组
+- **service_discovery**：用于动态端点的服务发现配置
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | 创建应用设置。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | 替换应用设置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | 列出应用设置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | 获取应用设置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | 删除应用设置。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | 获取可疑用户状态。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | 创建应用类型。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | 替换应用类型。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | 列出应用类型。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | 获取每个 API 端点的学习型模式。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | 获取 PDF |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | 获取 API 端点。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | 获取应用类型的 Swagger 规范。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | 移除覆盖。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | 添加覆盖。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | 获取覆盖。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | 获取服务 API 端点 PDF。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | 获取服务 API 端点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | 获取应用类型。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | 删除应用类型。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | 创建端点。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | 替换端点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | 列出端点。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | 获取端点。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | 删除端点。 |
+| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | 强制删除 NFV 服务。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services` | 创建 NFV 服务。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services/&#123;metadata.name&#125;` | 替换 NFV 服务。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services` | 列出 NFV 服务。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/nfv_services/metrics` | 指标 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | 获取 NFV 服务。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | 删除 NFV 服务。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | 创建站点网格组。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | 替换站点网格组。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | 列出站点网格组。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | 获取站点网格组。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | 删除站点网格组。 |
+| POST | `/api/maurice/software_os_version` | 基于 SW_VERSION 获取操作系统。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | 创建虚拟网络。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | 替换虚拟网络。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | SID 计数器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | 列出虚拟网络。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 获取虚拟网络。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 删除虚拟网络。 |
+
+## 链接
+
+- [交互式 API 参考](./service_mesh/)
+- [OpenAPI 规范 JSON](../specifications/api/service_mesh.json)

@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA Marketplace API"
+description: 附加服务、连接器和 TPM 策略。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+支持带有 DPD 定时器的第三方 GRE 和 IPSec 隧道配置。跨命名空间的共享资源分配及磁贴放置控制。
+
+- **类别**：Platform
+- **复杂度**：中等
+- **路径数**：36 | **模式数**：183
+- **层级**：高级
+- **相关领域**：`bigip`、`admin`
+
+## 使用场景
+
+- 访问第三方集成和附加组件
+- 管理市场扩展
+- 配置 Terraform 和外部集成
+- 管理 TPM 策略
+
+## 主要资源
+
+- **marketplace_item**：服务目录中的市场项目
+- **subscription**：服务权限订阅
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | 获取附加服务详情。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | 附加服务激活状态。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | 所有附加服务激活状态。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | 列出附加服务。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | 获取附加服务。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | 创建附加订阅。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | 替换附加订阅。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | 列出附加订阅。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | 获取附加订阅。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | 删除附加订阅。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | 创建中央管理器实例。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | 替换中央管理器实例。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | 列出中央管理器实例。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | 获取中央管理器实例。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | 删除中央管理器实例。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | 创建 external_connector 配置。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | 替换 external_connector 配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | 列出外部连接器配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | 获取 external_connector 配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | 删除外部连接器配置。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | 列出导航磁贴。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | 获取导航磁贴。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | 注册新 AWS 账户。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | 注册 AWS 账户。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | 列出计划 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | 获取计划 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | 替换第三方应用。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | 获取第三方应用的安全配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | 列出第三方应用。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | 获取第三方应用。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | 生成令牌。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | 获取视图的内部对象。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | 强制删除视图。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | 为视图运行 Terraform 操作。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | 获取视图的 Terraform 参数。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | 获取视图的 Terraform 状态。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | 注册 XC SaaS。 |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | 获取注册详情。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | 发送注册邮件。 |
+
+## 链接
+
+- [交互式 API 参考](./marketplace/)
+- [OpenAPI 规范 JSON](../specifications/api/marketplace.json)

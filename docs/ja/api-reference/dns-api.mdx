@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: 権威ゾーンとレコード管理。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+ゾーン転送とヘルスチェックによる名前解決。レコードタイプと委任のサポート。
+
+- **カテゴリ**: ネットワーキング
+- **複雑度**: 上級
+- **パス数**: 49 | **スキーマ数**: 285
+- **ティア**: Standard
+- **関連ドメイン**: `virtual`, `network`
+
+## ユースケース
+
+- DNS ロードバランシングの構成
+- DNS ゾーンとドメインの管理
+- DNS コンプライアンスポリシーの構成
+- リソースレコードセット（RRSets）の管理
+
+## 主要リソース
+
+- **dns_zone**: レコード管理機能を備えた権威 DNS ゾーン
+- **dns_domain**: DNS ドメイン委任と構成設定
+- **dns_load_balancer**: 地理的ルーティングとフェイルオーバーを備えた DNS ベースのトラフィック分散
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | DNS コンプライアンスチェックを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | DNS コンプライアンスチェックを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | DNS コンプライアンスチェック構成の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | DNS コンプライアンスチェックを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | DNS コンプライアンスチェック構成を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | DNS プロキシを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | DNS プロキシを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | DNS プロキシ構成の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | DNS プロキシを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | DNS プロキシ構成を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | DNS ドメインを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | DNS ドメインを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | DNS ドメインを検証。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | DNS ドメインの一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | DNS ドメインを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | DNS ドメインを削除。 |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | 値の提案。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | DNS ロードバランサーを作成。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | DNS ロードバランサーを置換。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | DNS ロードバランサーの一覧取得。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | DNS ロードバランサーのヘルスステータス一覧。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | DNS ロードバランサーのプールメンバーヘルスステータス一覧。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | DNS ロードバランサーのプールヘルスステータス。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | DNS ロードバランサーのプールメンバーヘルスステータス変更イベント。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | DNS ロードバランサーを取得。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | DNS ロードバランサーを削除。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | DNS ロードバランサーのヘルスステータス。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | DNS ロードバランサーヘルスチェックを作成。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | DNS ロードバランサーヘルスチェックを置換。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | DNS ロードバランサーヘルスチェックの一覧取得。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | DNS ロードバランサーヘルスチェックを取得。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | DNS ロードバランサーヘルスチェックを削除。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | DNS ロードバランサープールを作成。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | DNS ロードバランサープールを置換。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | DNS ロードバランサープールの一覧取得。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | DNS ロードバランサープールを取得。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | DNS ロードバランサープールを削除。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | DNSDomain からクローン。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | F5 Cloud Services DNS ゾーンをインポート。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | DNS ゾーンをインポート。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | BIND ファイルをインポート。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | BIND ファイルを検証。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | DNS ゾーンを作成。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | DNS ゾーンを置換。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | ローカルゾーンファイルを取得。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | リモートゾーンファイルを取得。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | ゾーンファイルをエクスポート。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | DNS ゾーンの一覧取得。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | DNS ゾーンメトリクス。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | DNS ゾーンリクエストログを取得。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | DNS ゾーンを取得。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | DNS ゾーンを削除。 |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | 作成 |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 取得 |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 削除 |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 置換 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | DNS 管理をサブスクライブ。 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | DNS 管理をアンサブスクライブ。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./dns/)
+- [OpenAPI 仕様 JSON](../specifications/api/dns.json)

@@ -1,0 +1,173 @@
+---
+title: हेल्थचेक संवर्धन
+description: हेल्थचेक-संबंधित स्कीमा के लिए संवर्धन मेटाडेटा
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+हेल्थचेक-संबंधित स्कीमा के लिए संवर्धन मेटाडेटा। एक्सटेंशन परिभाषाओं के लिए [OpenAPI Extensions](../development/#openapi-extensions) देखें।
+
+## संवर्धित स्कीमा
+
+### पैटर्न
+
+`healthcheck.*SpecType` से मिलान करने वाली सभी स्कीमा को संवर्धन प्राप्त होता है:
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+इसके अतिरिक्त, नेस्टेड स्कीमा `healthcheckHttpHealthCheck` में HTTP हेल्थ चेक कॉन्फ़िगरेशन के लिए संवर्धन शामिल हैं।
+
+## सर्वर-लागू डिफ़ॉल्ट
+
+`x-f5xc-server-default: true` के साथ चिह्नित फ़ील्ड का `default` मान F5 XC API सर्वर द्वारा तब लागू किया जाता है जब अनुरोधों में इसे छोड़ दिया जाता है।
+
+### शीर्ष-स्तरीय फ़ील्ड
+
+| फ़ील्ड | डिफ़ॉल्ट मान | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `jitter` | `0` | integer | समय यादृच्छिकीकरण के लिए पूर्ण जिटर मान |
+| `jitter_percent` | `0` | integer | समय यादृच्छिकीकरण के लिए प्रतिशत-आधारित जिटर |
+
+### healthcheckHttpHealthCheck स्कीमा
+
+| फ़ील्ड | डिफ़ॉल्ट मान | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `use_origin_server_name` | `{}` | object | Host हेडर के लिए मूल सर्वर नाम |
+| `headers` | `{}` | object | कस्टम हेडर |
+| `request_headers_to_remove` | `[]` | array | अनुरोधों से हटाने योग्य हेडर |
+| `use_http2` | `false` | boolean | HTTP/2 समर्थन |
+| `expected_status_codes` | `[]` | array | स्वीकृत स्थिति कोड (खाली = 200-299) |
+
+## अनुशंसित मान
+
+`x-f5xc-recommended-value` के साथ चिह्नित फ़ील्ड उन मानों को इंगित करती हैं जिन्हें F5 XC वेब कंसोल नए संसाधन बनाते समय पूर्व-भरित करता है।
+
+### शीर्ष-स्तरीय फ़ील्ड
+
+| फ़ील्ड | अनुशंसित मान | प्रकार | विवरण |
+|-------|-------------------|------|-------------|
+| `timeout` | `3` | integer | सेकंड में हेल्थ चेक टाइमआउट |
+| `interval` | `15` | integer | सेकंड में हेल्थ चेक के बीच अंतराल |
+| `unhealthy_threshold` | `1` | integer | अस्वस्थ चिह्नित करने से पहले लगातार विफलताएँ |
+| `healthy_threshold` | `3` | integer | स्वस्थ चिह्नित करने से पहले लगातार सफलताएँ |
+| `jitter_percent` | `30` | integer | उत्पादन उपयोग के लिए जिटर प्रतिशत |
+
+### healthcheckHttpHealthCheck स्कीमा
+
+| फ़ील्ड | अनुशंसित मान | प्रकार | विवरण |
+|-------|-------------------|------|-------------|
+| `path` | `"/"` | string | हेल्थ चेक एंडपॉइंट पथ |
+| `use_http2` | `false` | boolean | HTTP/2 समर्थन सेटिंग |
+| `expected_status_codes` | `["200"]` | array | स्वस्थ मूल को इंगित करने वाले स्थिति कोड |
+| `use_origin_server_name` | `{}` | object | Host हेडर के लिए मूल सर्वर नाम |
+
+## OneOf वैरिएंट अनुशंसाएँ
+
+परस्पर अनन्य फ़ील्ड समूहों (OneOf) वाली स्कीमा में `x-f5xc-recommended-oneof-variant` शामिल होता है जो यह इंगित करता है कि कौन सा वैरिएंट सबसे अधिक उपयोग किया जाता है। यह मेटाडेटा F5 XC कंसोल डिफ़ॉल्ट और सामान्य उपयोग पैटर्न के आधार पर, जब कई विकल्प मौजूद हों तब सामान्य विकल्प की पहचान करता है।
+
+### शीर्ष-स्तरीय OneOf समूह
+
+| स्कीमा | OneOf समूह | अनुशंसित वैरिएंट | विवरण |
+|--------|-------------|---------------------|-------------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP हेल्थ चेक प्रकार |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP हेल्थ चेक प्रकार |
+
+### healthcheckHttpHealthCheck OneOf समूह
+
+| स्कीमा | OneOf समूह | अनुशंसित वैरिएंट | विवरण |
+|--------|-------------|---------------------|-------------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | हेल्थ चेक अनुरोधों के लिए Host हेडर |
+
+#### Host हेडर विकल्प
+
+`host_header_choice` OneOf समूह यह नियंत्रित करता है कि हेल्थ चेक HTTP अनुरोधों में Host हेडर कैसे निर्दिष्ट किया जाता है।
+
+| वैरिएंट | प्रकार | विवरण |
+|---------|------|-------------|
+| `use_origin_server_name` | `object` (खाली) | मूल सर्वर नाम को Host हेडर के रूप में उपयोग करें। यह F5 XC कंसोल में डिफ़ॉल्ट चयन है। |
+| `host_header` | `string` | हेल्थ चेक अनुरोधों के लिए एक कस्टम Host हेडर मान निर्दिष्ट करें। |
+
+**API स्कीमा संदर्भ**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## OpenAPI एक्सटेंशन संदर्भ
+
+ये वेंडर एक्सटेंशन F5 XC-विशिष्ट डिफ़ॉल्ट व्यवहार को व्यक्त करने के लिए मानक OpenAPI स्कीमा में जोड़े गए हैं।
+
+### x-f5xc-server-default
+
+**प्रकार**: `boolean`
+
+जब `true` हो, यह इंगित करता है कि संबंधित `default` मान F5 XC API सर्वर द्वारा लागू किया जाता है। इस एक्सटेंशन वाली फ़ील्ड को API अनुरोधों से सुरक्षित रूप से छोड़ा जा सकता है—सर्वर स्वचालित रूप से डिफ़ॉल्ट लागू करता है।
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**प्रकार**: `any` (फ़ील्ड प्रकार से मिलान करता है)
+
+एक ऐसा मान निर्दिष्ट करता है जिसे F5 XC वेब कंसोल पूर्व-भरित डिफ़ॉल्ट के रूप में उपयोग करता है। यह मान सर्वर द्वारा लागू नहीं किया जाता है लेकिन कंसोल के माध्यम से बनाए गए नए संसाधनों के लिए सामान्य प्रारंभिक कॉन्फ़िगरेशन का प्रतिनिधित्व करता है।
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**प्रकार**: `object` (समूह नाम से वैरिएंट नाम का मैप)
+
+परस्पर अनन्य फ़ील्ड समूहों वाली स्कीमा के लिए, यह पहचानता है कि कौन सा वैरिएंट डिफ़ॉल्ट या सबसे सामान्य विकल्प है। कुंजी OneOf समूह का नाम है और मान अनुशंसित वैरिएंट फ़ील्ड नाम है।
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## डेटा एक्सेस
+
+### OpenAPI विनिर्देश
+
+| फ़ाइल | सामग्री |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | सभी स्कीमा के साथ मर्ज किया गया विनिर्देश |
+
+### validation.json संरचना
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # Fields with x-f5xc-server-default: true
+├── recommended         # Fields with x-f5xc-recommended-value
+├── oneof_recommended   # OneOf variant recommendations
+└── nested_recommended  # Nested schema recommended values
+```
+
+## संबंधित दस्तावेज़ीकरण
+
+- [विकास गाइड - OpenAPI Extensions](../development/#openapi-extensions) - एक्सटेंशन परिभाषाएँ और उपयोग
+- [सत्यापन विनिर्देश](../validation-spec/) - validation.json प्रारूप और संरचना
+- [ऑरिजिन पूल संवर्धन](./originpool-enhancements/) - ऑरिजिन पूल स्कीमा संवर्धन
+
+## परिवर्तन लॉग
+
+| संस्करण | तिथि | परिवर्तन |
+|---------|------|---------|
+| 2.1.4 | 2026-01-19 | HTTP हेल्थ चेक अनुरोध पैरामीटर के लिए `host_header_choice` OneOf समूह दस्तावेज़ीकरण जोड़ा गया |
+| 2.1.3 | 2026-01-18 | वैश्विक एक्सटेंशन दस्तावेज़ DEVELOPMENT.md में समेकित किए गए; केवल संसाधन-विशिष्ट डेटा |
+| 2.1.2 | 2026-01-18 | शुद्ध API संदर्भ के रूप में पुनर्लिखित; डाउनस्ट्रीम उदाहरण और निर्देशात्मक भाषा हटाई गई |
+| 2.1.1 | 2026-01-18 | नेस्टेड अनुशंसित मान, OneOf अनुशंसित वैरिएंट, `x-f5xc-recommended-oneof-variant` एक्सटेंशन जोड़ा गया |
+| 2.1.0 | 2026-01-18 | validation.json में एकीकृत डिफ़ॉल्ट संरचना जोड़ी गई |
+| 2.0.30 | 2026-01-16 | `$ref` स्कीमा के लिए नेस्टेड डिफ़ॉल्ट जोड़े गए |
+| 2.0.29 | 2026-01-17 | प्रारंभिक हेल्थचेक डिफ़ॉल्ट |

@@ -1,0 +1,318 @@
+---
+title: 驗證規格
+description: 驗證規格的結構與內容
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+本文件描述由 api-specs-enriched 專案發佈的驗證規格的結構與內容。
+
+## 概述
+
+驗證規格將 API 驗證約束、預設值和配置中繼資料整合至單一 JSON 檔案中。此規格從增強的 OpenAPI 規格產生，並隨其一同發佈。
+
+**發佈位置**：`docs/specifications/api/validation.json`
+
+## 規格結構
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## 區段
+
+### required_fields
+
+指定每個資源各操作類型的必要欄位。
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+定義受約束欄位的允許值。
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+類型層級的驗證預設值和基於模式的規則。
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+基於欄位名稱模式的驗證規則，附帶信賴分數。
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+所有預設值按資源類型以統一結構組織。
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### 預設值類別
+
+| 類別 | 說明 | 來源 |
+|----------|-------------|--------|
+| `server_applied` | 欄位被省略時 API 套用的值 | 即時 API 測試 |
+| `recommended` | F5 XC 網頁主控台預先填入的值 | UI 分析 |
+| `advanced_options` | advanced_options 物件內的巢狀預設值 | API 探索 |
+| `oneof_choices` | 預設的 OneOf 變體選擇 | API 行為 |
+| `oneof_recommended` | 建議的 OneOf 變體 | 主控台預設值 |
+| `nested_recommended` | 巢狀結構描述的建議值 | UI 分析 |
+| `ui_vs_server` | UI 預設值與 API 預設值不同的情況 | 比較分析 |
+
+### conditional_requirements
+
+互斥欄位和條件相依性。
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+最小可行配置及可運作的範例。
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## OpenAPI 擴充對應
+
+增強的 OpenAPI 規格使用以下擴充嵌入驗證中繼資料：
+
+| 擴充 | 用途 | 位置 |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | 上下文特定的必要欄位 | Schema 屬性 |
+| `x-f5xc-server-default` | 標記伺服器套用的預設值 | Schema 屬性 |
+| `x-f5xc-recommended-value` | 建議的預設值 | Schema 屬性 |
+| `x-f5xc-recommended-oneof-variant` | 建議的 OneOf 變體 | Schema 定義 |
+| `x-f5xc-conditions` | 條件需求 | Schema 屬性 |
+| `x-f5xc-minimum-configuration` | 最小配置範例 | Schema 定義 |
+| `x-f5xc-validation` | 探索衍生的約束 | Schema 屬性 |
+
+## 資料存取
+
+### 發佈 URL
+
+| 來源 | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### 本機路徑
+
+執行管線後：`docs/specifications/api/validation.json`
+
+## 版本管理
+
+驗證規格在 `version` 欄位中遵循語意化版本控制：
+
+| 變更類型 | 版本遞增 | 範例 |
+|-------------|--------------|---------|
+| 破壞性結構變更 | 主版本 | 欄位重新命名、移除區段 |
+| 新的驗證規則或資源 | 次版本 | 新的資源預設值 |
+| 錯誤修正或說明更新 | 修補版本 | 錯字修正 |
+
+## 調和優先順序
+
+當多個來源提供約束時，調和優先順序如下：
+
+1. **既有** - 原始 OpenAPI 規格中的約束（最高優先順序）
+2. **探索** - 來自即時 API 探索的約束
+3. **推斷** - 來自模式匹配的約束（最低優先順序）
+
+## 相關文件
+
+- [Healthcheck 增強](./Enhancements/healthcheck-enhancements/) - Healthcheck schema 增強
+- [Origin Pool 增強](./Enhancements/originpool-enhancements/) - Origin pool schema 增強
+- [CLAUDE.md](../../CLAUDE.md) - AI 助理指示
+- [DEVELOPMENT.md](./development/) - 開發者指南
+
+## 變更日誌
+
+| 版本 | 日期 | 變更內容 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | 重寫為純 API 參考文件；新增 oneof_recommended 和 nested_recommended 類別 |
+| 2.1.0 | 2026-01-18 | 統一的預設值結構，取代分散的區段 |
+| 2.0.0 | 2026-01-15 | 初始驗證規格 |

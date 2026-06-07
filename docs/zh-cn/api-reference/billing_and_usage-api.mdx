@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 计费与用量 API"
+description: 订阅计划、支付方式和配额。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+计划变更、发票开具和资源消耗。命名空间级别的配额限制与用量跟踪。
+
+- **类别**：平台
+- **复杂度**：中等
+- **路径数**：25 | **模式数**：101
+- **层级**：标准
+- **相关领域**：`system`、`users`
+
+## 使用场景
+
+- 管理订阅计划和计费变更
+- 配置支付方式和发票
+- 跟踪跨命名空间的资源配额使用情况
+- 监控使用限制和容量
+
+## 主要资源
+
+- **subscription**：用于服务权益的订阅
+- **quota**：用于使用限制的资源配额
+- **usage_report**：用于消耗跟踪的使用报告
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | 计费用量摘要。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | 获取发票 PDF。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | 列出发票。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | 将信用卡设为主要支付方式。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | 将支付方式设为次要。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | 将支付方式设为次要。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | 创建支付方式规格。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | 删除指定的支付方式。 |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | 获取计划变更。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | 发起计划变更。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | 创建配额。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | 替换配额。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | 自定义获取配额限制。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | 获取配额用量。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | 列出配额。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | 获取配额。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | 删除配额。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | 列出订阅。 |
+| POST | `/api/web/namespaces/system/addon/subscribe` | 订阅 XC 附加服务。 |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | 取消订阅 XC 附加服务。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | 列出当前用量详情。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | 列出每小时用量详情。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | 列出每月用量详情。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | 列出用量详情。 |
+| GET | `/api/web/namespaces/system/usage_plans/current` | 获取当前使用计划。 |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | 列出使用计划。 |
+
+## 链接
+
+- [交互式 API 参考](./billing_and_usage/)
+- [OpenAPI 规范 JSON](../specifications/api/billing_and_usage.json)

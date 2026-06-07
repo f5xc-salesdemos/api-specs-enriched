@@ -1,0 +1,532 @@
+---
+title: ระบบเมตาดาต้าข้อจำกัด
+description: เมตาดาต้าข้อจำกัดที่ครอบคลุมสำหรับการสร้างและตรวจสอบ AI แบบกำหนดได้
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**วัตถุประสงค์**: เมตาดาต้าข้อจำกัดที่ครอบคลุมสำหรับการสร้าง AI แบบกำหนดได้, การตรวจสอบ CLI และการบังคับใช้ Terraform schema
+
+**ส่วนขยาย**: `x-f5xc-constraints`
+**เวอร์ชัน**: 3.3.0
+**สถานะ**: Production
+**ผู้ใช้งาน**: ผู้ช่วย AI, เครื่องมือ CLI, Terraform providers, ส่วนขยาย IDE, ตัวตรวจสอบ API
+
+---
+
+## สารบัญ
+
+1. [ภาพรวม](#overview)
+2. [โครงสร้างส่วนขยาย](#extension-structure)
+3. [ประเภทข้อจำกัด](#constraint-types)
+4. [คำอธิบายด้วยภาษาธรรมชาติ](#natural-language-descriptions)
+5. [ตัวอย่างการตรวจสอบ](#validation-examples)
+6. [คะแนนความเชื่อมั่น](#confidence-scores)
+7. [การผสานรวม Discovery](#discovery-integration)
+8. [คู่มือการผสานรวมเครื่องมือ](#tool-integration-guide)
+
+---
+
+## ภาพรวม
+
+ส่วนขยาย `x-f5xc-constraints` ให้ความรู้แบบกำหนดได้เกี่ยวกับข้อจำกัดการตรวจสอบฟิลด์ ซึ่งช่วยให้:
+
+- **ผู้ช่วย AI**: สร้างการกำหนดค่าที่ถูกต้องโดยไม่ต้องให้ผู้ใช้ป้อนข้อมูลรายละเอียดข้อจำกัด
+- **เครื่องมือ CLI**: ให้คำแนะนำการป้อนข้อมูลที่แม่นยำ, การตรวจสอบ และข้อความแสดงข้อผิดพลาด
+- **Terraform**: บังคับใช้ข้อจำกัดในขั้นตอน plan ไม่ใช่ขั้นตอน apply
+- **ส่วนขยาย IDE**: การตรวจสอบแบบเรียลไทม์และข้อเสนอแนะการเติมอัตโนมัติ
+- **ตัวตรวจสอบ API**: การตรวจสอบก่อนส่งเพื่อลดข้อผิดพลาดของ API
+
+### สถิติความครอบคลุม
+
+- **ข้อจำกัด 9,851 รายการ** ครอบคลุมสเปก F5 XC API ทั้งหมด
+- **รูปแบบมากกว่า 50 ประเภท** (string, array, numeric)
+- **ความเชื่อมั่น 95%** สำหรับฟิลด์ที่มีความสำคัญสูง (names, ports, identifiers)
+- **การปรับข้อมูล 3 ระดับ**: EXISTING > DISCOVERY > INFERRED
+
+---
+
+## โครงสร้างส่วนขยาย
+
+### ฟิลด์ระดับบนสุด
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### คำอธิบายฟิลด์
+
+| ฟิลด์ | ประเภท | คำอธิบาย |
+|-------|------|-------------|
+| `constraintType` | string | ประเภทข้อมูล (string, array, number, object) |
+| `deterministic` | boolean | แฟล็กความเชื่อมั่นสูง (confidence >= 0.9) สำหรับการสร้าง AI |
+| `category` | string | หมวดหมู่ข้อจำกัดสำหรับการจัดกลุ่มและรายงาน |
+| *(constraint keys)* | ต่างๆ | คีย์ข้อจำกัดเฉพาะประเภทที่แบนอยู่ระดับบนสุด (เช่น `minLength`, `maxItems`, `minimum`) |
+| `metadata` | object | การติดตามแหล่งที่มา, ความเชื่อมั่น, ประทับเวลาการตรวจสอบ |
+
+---
+
+## ประเภทข้อจำกัด
+
+### ข้อจำกัดสตริง
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### รูปแบบที่รองรับ
+
+| รูปแบบ | คำอธิบาย | ตัวอย่าง |
+|--------|-------------|---------|
+| `dns-label` | DNS label ตาม RFC 1123 (1-63 ตัวอักษร) | `my-service` |
+| `fqdn` | ชื่อโดเมนแบบเต็ม (Fully Qualified Domain Name) | `api.example.com` |
+| `email` | ที่อยู่อีเมลตาม RFC 5322 | `user@example.com` |
+| `url` | URI/URL ตาม RFC 3986 | `https://example.com/api` |
+| `ipv4` | ที่อยู่ IPv4 | `192.168.1.1` |
+| `ipv6` | ที่อยู่ IPv6 | `2001:db8::1` |
+| `uuid` | UUID ตาม RFC 4122 | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | ประทับเวลา ISO 8601 | `2026-01-19T12:00:00Z` |
+| `date` | วันที่ ISO 8601 | `2026-01-19` |
+| `time` | เวลา ISO 8601 | `12:00:00` |
+| `json` | สตริง JSON (แยกวิเคราะห์ได้) | `{"key": "value"}` |
+| `yaml` | สตริง YAML (แยกวิเคราะห์ได้) | `key: value` |
+| `base64` | สตริงที่เข้ารหัส Base64 | `SGVsbG8gV29ybGQ=` |
+| `hex` | สตริงเลขฐานสิบหก | `48656c6c6f` |
+| `mac-address` | ที่อยู่ MAC | `00:1A:2B:3C:4D:5E` |
+| `phone` | หมายเลขโทรศัพท์ E.164 | `+1-555-123-4567` |
+
+### ข้อจำกัดอาร์เรย์
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### ข้อจำกัดตัวเลข
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## คำอธิบายด้วยภาษาธรรมชาติ
+
+### ข้อจำกัดรูปแบบสตริง
+
+**DNS Labels** (`format: "dns-label"`):
+- ชื่อ DNS label ต้องเป็นตัวอักษรพิมพ์เล็กและตัวเลข 1-63 ตัวอักษร
+- อนุญาตให้ใช้เครื่องหมายยัติภังค์แต่ไม่ใช่ที่จุดเริ่มต้น/สิ้นสุด (RFC 1123)
+- ตัวอย่าง: `my-service`, `api-gateway`, `lb-prod-01`
+
+**ที่อยู่อีเมล** (`format: "email"`):
+- ที่อยู่อีเมลต้องถูกต้องตาม RFC 5322
+- ความยาวสูงสุด 254 ตัวอักษร
+- ตัวอย่าง: `admin@example.com`, `api+webhook@service.io`
+
+**FQDNs** (`format: "fqdn"`):
+- ชื่อโดเมนแบบเต็ม (Fully Qualified Domain Names) ต้องมีความยาว 1-253 ตัวอักษร
+- DNS labels คั่นด้วยจุด
+- ตัวอย่าง: `api.example.com`, `service.production.internal`
+
+**URLs** (`format: "url"`):
+- URLs ต้องเป็น URIs ที่ถูกต้องตาม RFC 3986
+- ต้องระบุ scheme (http/https)
+- ตัวอย่าง: `https://api.example.com/v1`, `http://localhost:8080`
+
+**ที่อยู่ IPv4** (`format: "ipv4"`):
+- ที่อยู่ IPv4 ต้องอยู่ในรูปแบบ dotted-decimal
+- ตัวอย่าง: `192.168.1.1`, `10.0.0.1`
+
+**UUIDs** (`format: "uuid"`):
+- UUIDs ต้องเป็นไปตามรูปแบบ RFC 4122
+- ตัวอย่าง: `550e8400-e29b-41d4-a716-446655440000`
+
+**ประทับเวลา** (`format: "date-time"`):
+- ประทับเวลาต้องอยู่ในรูปแบบ ISO 8601
+- ตัวอย่าง: `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
+
+### ข้อจำกัดตัวเลข
+
+**หมายเลขพอร์ต**:
+- หมายเลขพอร์ตต้องเป็นจำนวนเต็มระหว่าง 1 ถึง 65535
+- พอร์ตมาตรฐาน: 80 (HTTP), 443 (HTTPS), 22 (SSH)
+
+**VLAN IDs**:
+- VLAN IDs ต้องเป็นจำนวนเต็มระหว่าง 1 ถึง 4094 (มาตรฐาน 802.1Q)
+
+**ค่า Timeout**:
+- ค่า Timeout ต้องเป็น 1-3600 วินาที (สูงสุด 1 ชั่วโมง)
+
+### ข้อจำกัดอาร์เรย์
+
+**Origin Pools**:
+- อาร์เรย์ของ origin pools ต้องมีอย่างน้อย 1 รายการ สูงสุด 50 รายการ
+- แต่ละรายการต้องไม่ซ้ำกัน
+
+**แท็ก**:
+- อาร์เรย์แท็กอนุญาตให้มี 0-100 รายการ
+- รายการไม่จำเป็นต้องไม่ซ้ำกัน
+
+---
+
+## ตัวอย่างการตรวจสอบ
+
+### ตัวอย่างที่ 1: การตรวจสอบชื่อ DNS Label
+
+**ข้อจำกัด**:
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**ค่าที่ถูกต้อง**:
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**ค่าที่ไม่ถูกต้อง**:
+- ❌ `My-Service` (ไม่อนุญาตตัวพิมพ์ใหญ่)
+- ❌ `-my-service` (เครื่องหมายยัติภังค์ที่จุดเริ่มต้น)
+- ❌ `my-service-` (เครื่องหมายยัติภังค์ที่จุดสิ้นสุด)
+- ❌ `my_service` (ไม่อนุญาตเครื่องหมายขีดล่าง)
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (ยาวเกินไป)
+
+### ตัวอย่างที่ 2: การตรวจสอบหมายเลขพอร์ต
+
+**ข้อจำกัด**:
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**ค่าที่ถูกต้อง**:
+- ✅ `80` (HTTP)
+- ✅ `443` (HTTPS)
+- ✅ `8080` (HTTP ทางเลือกที่ใช้ทั่วไป)
+- ✅ `65535` (พอร์ตสูงสุด)
+
+**ค่าที่ไม่ถูกต้อง**:
+- ❌ `0` (ต่ำกว่าค่าต่ำสุด)
+- ❌ `65536` (สูงกว่าค่าสูงสุด)
+- ❌ `-1` (ค่าลบ)
+- ❌ `"80"` (สตริง ไม่ใช่ตัวเลข)
+
+### ตัวอย่างที่ 3: การตรวจสอบขนาดอาร์เรย์
+
+**ข้อจำกัด**:
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**ค่าที่ถูกต้อง**:
+- ✅ `["origin-1"]` (1 รายการ)
+- ✅ `["origin-1", "origin-2", "origin-3"]` (3 รายการ ทั้งหมดไม่ซ้ำกัน)
+
+**ค่าที่ไม่ถูกต้อง**:
+- ❌ `[]` (ต่ำกว่าค่าต่ำสุด)
+- ❌ `["origin-1", "origin-1"]` (รายการซ้ำ)
+- ❌ `[อาร์เรย์ที่มี 51 รายการ]` (สูงกว่าค่าสูงสุด)
+
+---
+
+## คะแนนความเชื่อมั่น
+
+### การตีความคะแนน
+
+| ช่วง | การตีความ | การใช้งาน |
+|-------|----------------|-------|
+| 0.90-1.00 | **ความเชื่อมั่นสูง** | เปิดใช้งานแฟล็ก deterministic ใช้สำหรับการสร้าง AI |
+| 0.70-0.89 | **ความเชื่อมั่นปานกลาง** | เป็นคำแนะนำ แนะนำให้ผู้ใช้ยืนยัน |
+| 0.50-0.69 | **ความเชื่อมั่นต่ำ** | เพื่อข้อมูลเท่านั้น ต้องให้ผู้ใช้ตรวจสอบ |
+| < 0.50 | **ต่ำมาก** | ไม่รวมในข้อจำกัด |
+
+### แฟล็ก Deterministic
+
+แฟล็กบูลีน `deterministic` จะถูกตั้งค่าเมื่อ:
+- คะแนนความเชื่อมั่น >= 0.9
+- รูปแบบได้รับการตรวจสอบกับข้อมูล discovery แล้ว หรือ
+- รูปแบบตรงกับมาตรฐานที่เป็นที่ยอมรับ (RFC, ISO, ฯลฯ)
+
+**การใช้งานในการสร้าง AI**:
+```python
+if constraint.get("deterministic"):
+    # Generate value automatically without asking user
+    value = generate_from_pattern(constraint)
+else:
+    # Ask user for input with constraint hints
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## การผสานรวม Discovery
+
+### ลำดับความสำคัญของแหล่งที่มา
+
+ข้อจำกัดจะถูกปรับข้อมูลโดยใช้ลำดับความสำคัญ 3 ระดับ:
+
+1. **EXISTING** (ความเชื่อมั่น: 1.0)
+   - กำหนดไว้อย่างชัดเจนในสเปก OpenAPI ต้นฉบับ
+   - ไม่มีการแทนที่
+
+2. **DISCOVERY** (ความเชื่อมั่น: 0.99)
+   - สกัดจากการตอบกลับ API ของ F5 XC ที่ใช้งานจริง
+   - รวมกฎการตรวจสอบจาก x-ves-validation-rules
+   - แทนที่ข้อจำกัดที่อนุมาน
+
+3. **INFERRED** (ความเชื่อมั่น: 0.50-0.95)
+   - จับคู่รูปแบบจากชื่อฟิลด์
+   - ลำดับความสำคัญต่ำสุด ถูกแทนที่โดย discovery หรือ explicit
+
+### แหล่งข้อมูล Discovery
+
+ข้อจำกัด Discovery ถูกสกัดจาก:
+
+1. **x-ves-validation-rules**: ส่วนขยายการตรวจสอบแบบเนทีฟของ F5
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **Error Catalog**: ข้อความแสดงข้อผิดพลาดของ API ที่ระบุการละเมิดข้อจำกัด
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **Response Validation**: การตอบกลับ API ที่สำเร็จซึ่งแสดงค่าที่ถูกต้อง
+   - ช่วงค่าที่สังเกตได้
+   - รูปแบบที่ใช้งานจริง
+
+---
+
+## คู่มือการผสานรวมเครื่องมือ
+
+### การผสานรวมผู้ช่วย AI
+
+**สร้างชื่อทรัพยากรที่ถูกต้อง**:
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # Ask user for name
+        return prompt_user("Enter resource name: ")
+
+    # Generate automatically
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # Generate valid name matching pattern
+    return generate_dns_label(max_length=max_len)
+```
+
+### การผสานรวมเครื่องมือ CLI
+
+**ให้การตรวจสอบข้อมูลที่ป้อน**:
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # Check length (constraint keys are at top level)
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # Check pattern
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### การผสานรวม Terraform Provider
+
+**การสร้าง Schema**:
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // Constraint keys are at top level (no nested "string" wrapper)
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### การผสานรวมส่วนขยาย IDE
+
+**การเติมอัตโนมัติและการตรวจสอบ**:
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // Add format-specific completions
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // Add validation hint
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## ภาคผนวก: แค็ตตาล็อกรูปแบบข้อจำกัด
+
+### รูปแบบความเชื่อมั่นสูง (0.95-0.99)
+
+| รูปแบบ | Regex ชื่อฟิลด์ | ประเภทข้อจำกัด | ตัวอย่าง |
+|---------|------------------|-----------------|---------|
+| DNS Label | `\bname$` | String (1-63 ตัวอักษร, dns-label) | `my-service` |
+| Namespace | `\bnamespace$` | String (1-63 ตัวอักษร, dns-label) | `production` |
+| Port | `\bport$` | Number (1-65535) | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
+| UUID | `\buuid$` | String (36 ตัวอักษร, uuid format) | `550e8400-...` |
+| Email | `\bemail$` | String (สูงสุด 254 ตัวอักษร, email) | `user@example.com` |
+| Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
+
+### รูปแบบความเชื่อมั่นปานกลาง (0.80-0.94)
+
+| รูปแบบ | Regex ชื่อฟิลด์ | ประเภทข้อจำกัด | ตัวอย่าง |
+|---------|------------------|-----------------|---------|
+| Username | `\b(user\|username)$` | String (1-64 ตัวอักษร, alphanumeric) | `admin` |
+| Display Name | `\b(display_?)?name$` | String (1-256 ตัวอักษร, ข้อความอิสระ) | `My Service` |
+| Description | `\b(comment\|description\|note)$` | String (สูงสุด 4096 ตัวอักษร) | `Service description` |
+| Path | `\bpath$` | String (สูงสุด 2048 ตัวอักษร) | `/api/v1/resources` |
+
+---
+
+## การสนับสนุนและข้อเสนอแนะ
+
+- **ปัญหา**: รายงานปัญหาความถูกต้องของข้อจำกัดได้ที่ https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **เอกสาร**: เอกสาร API ฉบับเต็มที่ https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **การผสานรวม MCP**: ดูที่ repository `f5xc-api-mcp` สำหรับตัวอย่างการผสานรวม MCP server
+
+---
+
+**เวอร์ชัน**: 3.3.0
+**อัปเดตล่าสุด**: 2026-01-19
+**ข้อจำกัดที่ปรับข้อมูลแล้ว**: 9,851
+**ความครอบคลุมรูปแบบ**: มากกว่า 50 ประเภท

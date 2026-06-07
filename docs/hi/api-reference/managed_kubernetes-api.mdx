@@ -1,0 +1,65 @@
+---
+title: ⚙️ प्रबंधित Kubernetes API
+description: 'क्लस्टर RBAC, पॉड सुरक्षा, और कंटेनर रजिस्ट्रीज़।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 17accfbbab41
+  translator: machine
+---
+
+Kubernetes रोल बाइंडिंग और एडमिशन नीतियाँ। EKS, AKS, और GKE वर्कलोड के लिए रजिस्ट्री एकीकरण।
+
+- **श्रेणी**: इन्फ्रास्ट्रक्चर
+- **जटिलता**: मध्यम
+- **पथ**: 20 | **स्कीमा**: 95
+- **स्तर**: उन्नत
+- **संबंधित डोमेन**: `container_services`, `sites`, `service_mesh`
+
+## उपयोग के मामले
+
+- XCKS (प्रबंधित Kubernetes) क्लस्टर RBAC और सुरक्षा प्रबंधित करें
+- पॉड सुरक्षा नीतियाँ और एडमिशन कंट्रोलर कॉन्फ़िगर करें
+- एंटरप्राइज़ डिप्लॉयमेंट के लिए कंटेनर रजिस्ट्रीज़ प्रबंधित करें
+- बाहरी Kubernetes क्लस्टर (EKS, AKS, GKE) के साथ एकीकरण करें
+
+## प्राथमिक संसाधन
+
+- **mk8s_cluster**: प्रबंधित Kubernetes क्लस्टर कॉन्फ़िगरेशन
+- **k8s_cluster_role**: Kubernetes क्लस्टर RBAC रोल कॉन्फ़िगरेशन
+- **container_registry**: वर्कलोड इमेज के लिए कंटेनर इमेज रजिस्ट्री
+
+## एंडपॉइंट
+
+| विधि | पथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys` | कंटेनर रजिस्ट्री बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys/&#123;metadata.name&#125;` | कंटेनर रजिस्ट्री बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | कंटेनर रजिस्ट्री सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | कंटेनर रजिस्ट्री प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | कंटेनर रजिस्ट्री हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | K8s क्लस्टर रोल सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | K8s क्लस्टर रोल हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | K8s क्लस्टर रोल बाइंडिंग सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | K8s क्लस्टर रोल बाइंडिंग हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | K8s पॉड सुरक्षा एडमिशन सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | K8s पॉड सुरक्षा एडमिशन हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | K8s पॉड सुरक्षा नीति सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | कॉन्फ़िगरेशन स्पेसिफ़िकेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | K8s पॉड सुरक्षा नीति हटाएँ। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./managed_kubernetes/)
+- [OpenAPI स्पेसिफ़िकेशन JSON](../specifications/api/managed_kubernetes.json)
