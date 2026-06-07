@@ -1,0 +1,521 @@
+---
+title: 开发指南
+description: F5 XC API 增强管道的开发工作流
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+本指南介绍 F5 XC API 增强管道的开发工作流。
+
+## 快速开始
+
+### 首次设置
+
+```bash
+# Clone the repository
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# Create virtual environment and install dependencies
+make install
+
+# Install pre-commit hooks
+make pre-commit-install
+
+# Download specs and run pipeline
+make build
+
+# Preview documentation locally
+make serve
+```
+
+### 日常开发
+
+```bash
+# Quick rebuild (uses cached specs)
+make rebuild
+
+# Run all quality checks
+make pre-commit-run
+
+# Preview documentation
+make serve
+```
+
+## 架构概述
+
+### 双文件夹设计
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### 管道流程
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### 目录结构
+
+| 目录 | 用途 | Git 状态 |
+|-----------|---------|------------|
+| `specs/original/` | F5 源规范 | 已忽略 |
+| `specs/discovered/` | API 发现输出 | 已跟踪（openapi.json、session.json） |
+| `docs/specifications/api/` | 生成的域规范 | 已忽略 |
+| `scripts/` | Python 管道脚本 | 已跟踪 |
+| `config/` | 管道配置 | 已跟踪 |
+| `reports/` | 生成的报告 | 已忽略 |
+
+## 工作流模式
+
+### 1. 发现工作流
+
+**前提条件**：
+- VPN 连接到 F5 XC 环境
+- 有效的 API 凭据
+
+```bash
+# Set credentials
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# Run discovery
+make discover
+
+# View results
+jq '.statistics' specs/discovered/session.json
+
+# Commit for CI/CD
+make push-discovery
+```
+
+**发现捕获的内容**：
+- 实际的必需/可选字段
+- 来自实时响应的枚举值
+- 默认值
+- 模式验证
+- 响应示例
+
+### 2. 发布工作流
+
+发布是自动化的：
+
+1. 每日定时（UTC 时间上午 6 点）或推送到 main 分支触发工作流
+2. ETag 检查确定 F5 规范是否发生变更
+3. 管道处理和增强规范
+4. 版本从 git 标签计算：`git describe --tags --abbrev=0`
+5. 直接提交 + 创建标签（无版本升级 PR）
+6. 创建带有变更日志的 GitHub Release
+7. 文档部署到 GitHub Pages
+
+**版本升级规则**：
+
+| 条件 | 升级类型 | 示例 |
+|-----------|-----------|---------|
+| 提交中包含 `[major]` | 主版本 | 1.0.0 → 2.0.0 |
+| 提交中包含 `BREAKING CHANGE` | 主版本 | 1.0.0 → 2.0.0 |
+| 新增域规范 | 次版本 | 1.0.0 → 1.1.0 |
+| 其他任何变更 | 补丁版本 | 1.0.0 → 1.0.1 |
+
+### 3. 开发工作流
+
+```bash
+# Create feature branch
+git checkout -b feature/my-change
+
+# Make changes to config or scripts
+
+# Test locally
+make pipeline
+make lint
+
+# Commit (pre-commit hooks run automatically)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# Push and create PR
+git push -u origin feature/my-change
+gh pr create
+```
+
+## 发现功能深入解析
+
+### 什么是发现？
+
+发现功能探索实时 F5 XC API 以查找：
+
+- **未文档化的约束**：OpenAPI 中未标记的必需字段
+- **实际枚举值**：生产环境中看到的真实值
+- **默认行为**：省略字段时服务器应用的值
+- **响应模式**：实际的数据结构
+
+### 发现配置
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### 发现扩展
+
+发现功能向规范添加 `x-discovered-*` 扩展：
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### 约束分析报告
+
+```bash
+make constraint-report
+# Output: reports/constraint-analysis.md
+```
+
+## 发布流程
+
+### 发布包内容
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # Master combined spec
+├── openapi.yaml       # YAML format
+├── domains/           # Individual domain specs
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # Metadata
+├── CHANGELOG.md       # Release notes
+└── README.md          # Usage instructions
+```
+
+### 手动触发工作流
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## 配置指南
+
+### 增强配置
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### 规范化配置
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Spectral 检查规则
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## OpenAPI 扩展
+
+增强管道使用供应商扩展来嵌入验证和默认值元数据。
+
+### 扩展类别
+
+| 扩展 | 含义 | 影响 |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | F5 XC API 服务器在省略该字段时应用此值 | 字段为可选；省略它将产生文档中记录的默认行为 |
+| `x-f5xc-recommended-value` | F5 XC Web 控制台为新资源预填充此值 | 字段没有服务器默认值，但此值代表典型配置 |
+| `x-f5xc-recommended-oneof-variant` | F5 XC 控制台预选此 OneOf 变体 | 标识当存在多个互斥选项时的典型选择 |
+| `x-f5xc-conflicts-with` | 列出不能与此字段同时使用的其他属性 | 属性属于 OneOf 组的一部分；冲突属性中只能指定一个 |
+
+### 必需字段扩展
+
+| 扩展 | 来源 | 用途 |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | F5 XC 原始规范 | 字段要求非零/非空值 |
+| `x-f5xc-required-for` | 增强管道 | 上下文相关的必需状态 |
+
+**x-f5xc-required-for 上下文**：
+- `create`：创建资源时必需
+- `update`：更新资源时必需
+- `minimum_config`：最小可行配置所必需
+
+### 默认值和 OneOf 扩展
+
+| 扩展 | 用途 |
+|-----------|---------|
+| `x-f5xc-server-default: true` | 标记服务器应用的默认值 |
+| `x-f5xc-recommended-value` | F5 XC 控制台预填充的值 |
+| `x-f5xc-recommended-oneof-variant` | 推荐的 OneOf 变体 |
+| `x-f5xc-conflicts-with` | 与其他 OneOf 属性的互斥关系 |
+
+#### x-f5xc-server-default
+
+**类型**：`boolean`
+
+当为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。具有此扩展的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**类型**：`any`（与字段类型匹配）
+
+指定 F5 XC Web 控制台用作预填充默认值的值。此值不由服务器强制执行，但代表通过控制台创建新资源时的典型初始配置。
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**类型**：`object`（组名到变体名的映射）
+
+对于具有互斥字段组的 schema，标识哪个变体是默认或最常用的选择。键是 OneOf 组名，值是推荐的变体字段名。
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**类型**：字符串 `array`
+
+**新增**：v3.2.0（Issue #494）
+
+声明 OneOf 组成员之间的互斥关系。从 `x-ves-oneof-field-*` 扩展自动派生。这使下游工具（Terraform、CLI、MCP）能够在 schema 级别而非运行时验证冲突。
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**用例**：
+- Terraform provider 可以生成验证规则
+- CLI 工具可以警告冲突的字段组合
+- AI 助手可以生成正确的 OneOf 配置
+- IDE 扩展可以提供冲突感知的自动补全
+
+**来源**：在管道增强过程中从 F5 原生 `x-ves-oneof-field-*` 扩展自动派生。
+
+### 验证规则影响
+
+增强器检查 `x-ves-validation-rules` 以推断必需状态：
+
+| 规则 | 影响 |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | 字段为必需 |
+| `ves.io.schema.rules.uint32.gte: N` | 如果 N >= 1 且没有服务器默认值，则字段为必需 |
+| `ves.io.schema.rules.repeated.min_items: N` | 如果 N >= 1，数组至少需要 N 个元素 |
+| `ves.io.schema.rules.string.min_bytes: N` | 如果 N >= 1，字符串至少需要 N 个字节 |
+
+### 具有服务器应用默认值的资源
+
+某些资源接受空规范，因为服务器会应用默认值：
+
+| 资源 | 服务器应用的默认值 |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`、`default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`、`user_identification: []` |
+| `api_definition` | `swagger_specs: []`、默认 `api_groups` |
+| `healthcheck` | `jitter: 0`、`jitter_percent: 0`、嵌套的 http_health_check 默认值 |
+
+对于这些资源，即使 `x-ves-required` 为 `true`，`x-f5xc-required-for.create` 也可能为 `false`。
+
+### 默认值模式
+
+| 模式 | 类型 | 示例 |
+|---------|------|---------|
+| `\{\}` | 空对象（选择选项） | `monitoring: \{\}` |
+| `[]` | 空数组 | `expected_status_codes: []` |
+| `0` | 数值 | `jitter: 0` |
+| `""` | 字符串 | `expected_response: ""` |
+| `false` | 布尔值 | `use_http2: false` |
+
+### 添加发现的默认值
+
+1. 通过 API 使用最小规范在 F5 XC 中创建资源
+2. 读取资源以查看服务器应用的值
+3. 在 `config/discovered_defaults.yaml` 中记录默认值
+4. 运行管道：`make pipeline`
+5. 使用以下命令验证：`jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## 故障排除
+
+### Pre-commit 耗时过长
+
+管道在每次提交时运行以确保一致性。对于进行中的工作提交：
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# Run before final commit: make pre-commit-run
+```
+
+### 发现失败
+
+```bash
+# Check VPN
+ping your-tenant.console.ves.volterra.io
+
+# Check credentials
+echo $F5XC_API_TOKEN | head -c 10
+
+# Check API URL format
+echo $F5XC_API_URL
+# Format: https://tenant.console.ves.volterra.io/api
+```
+
+### 生成规范的 Lint 错误
+
+```bash
+# Check lint report
+cat reports/lint-report.json | jq '.errors'
+```
+
+在增强/规范化配置中修复问题，而非在输出文件中修改。
+
+### 版本系统
+
+版本从 git 标签派生（例如 `v2.0.38`），消除了并发 PR 上合并冲突导致的竞争条件。
+
+```python
+# Version is calculated dynamically from git tags
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### Clone 后缺少规范
+
+生成的规范已被 gitignore：
+
+```bash
+make build  # Downloads and generates everything
+```
+
+### 大文件被阻止
+
+在 `.pre-commit-config.yaml` 中添加排除项：
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## 快速参考
+
+### Make 目标
+
+| 目标 | 描述 |
+|--------|-------------|
+| `make build` | 完整构建（下载 + 管道） |
+| `make rebuild` | 快速重建（跳过下载） |
+| `make download` | 下载规范（ETag 缓存） |
+| `make download-force` | 强制下载 |
+| `make pipeline` | 运行增强管道 |
+| `make lint` | Spectral 检查 |
+| `make serve` | 本地文档服务器 |
+| `make discover` | API 发现（需要 VPN） |
+| `make push-discovery` | 提交发现数据 |
+| `make clean` | 删除生成的文件 |
+| `make pre-commit-run` | 运行所有质量检查 |
+
+### 环境变量
+
+| 变量 | 用途 |
+|----------|---------|
+| `F5XC_API_URL` | F5 XC 租户 API URL |
+| `F5XC_API_TOKEN` | API 认证令牌 |
+
+### 关键文件
+
+| 文件 | 用途 |
+|------|---------|
+| `.etag` | 上次下载的 ETag |
+| `CHANGELOG.md` | 自动生成的变更日志 |
+| `config/enrichment.yaml` | 增强规则 |
+| `config/normalization.yaml` | 规范化规则 |
+| `config/discovery.yaml` | 发现设置 |
+| `config/spectral.yaml` | 检查规则 |
+| `scripts/utils/version_calculator.py` | 基于标签的版本计算 |
+
+**注意**：版本从 git 标签派生（例如 `v2.0.38`），而非从 `.version` 文件获取。

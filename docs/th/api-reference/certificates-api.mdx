@@ -1,0 +1,60 @@
+---
+title: "\U0001F4DC Certificates API"
+description: 'SSL/TLS chains, CA ที่เชื่อถือได้ และรายการเพิกถอน'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: fe0fa4ae7db2
+  translator: machine
+---
+
+เชนใบรับรองและชุด CA ที่เชื่อถือได้ การจัดการรายการเพิกถอนและการกำหนดค่า manifest สำหรับการดำเนินงาน PKI
+
+- **หมวดหมู่**: ความปลอดภัย
+- **ความซับซ้อน**: ปานกลาง
+- **เส้นทาง**: 16 | **สคีมา**: 74
+- **ระดับ**: Standard
+- **โดเมนที่เกี่ยวข้อง**: `blindfold`, `system`
+
+## กรณีการใช้งาน
+
+- จัดการใบรับรอง SSL/TLS
+- กำหนดค่า CA ที่เชื่อถือได้
+- จัดการรายการเพิกถอนใบรับรอง (CRL)
+- กำหนดค่า manifest ใบรับรอง
+
+## ทรัพยากรหลัก
+
+- **certificate**: ใบรับรอง TLS สำหรับการเชื่อมต่อ HTTPS ที่ปลอดภัย
+- **ca_certificate**: ใบรับรองผู้ออกใบรับรอง (CA) สำหรับเชนความเชื่อถือ
+- **certificate_chain**: เชนใบรับรองสำหรับการตรวจสอบความเชื่อถือแบบสมบูรณ์
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls` | สร้าง CRL |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls/&#123;metadata.name&#125;` | แทนที่ CRL |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/crls` | แสดงรายการ CRL |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | ดึงข้อมูล CRL |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | ลบ CRL |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificates` | สร้างใบรับรอง |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificates/&#123;metadata.name&#125;` | แทนที่ใบรับรอง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates` | แสดงรายการใบรับรอง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates/&#123;name&#125;` | ดึงข้อมูลใบรับรอง |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/certificates/&#123;name&#125;` | ลบใบรับรอง |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificate_chains` | สร้างเชนใบรับรอง |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificate_chains/&#123;metadata.name&#125;` | แทนที่เชนใบรับรอง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains` | แสดงรายการเชนใบรับรอง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains/&#123;name&#125;` | ดึงข้อมูลเชนใบรับรอง |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains/&#123;name&#125;` | ลบเชนใบรับรอง |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists` | สร้างใบรับรอง Root CA |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists/&#123;metadata.name&#125;` | แทนที่ใบรับรอง Root CA |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists` | แสดงรายการใบรับรอง Root CA |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | ดึงข้อมูลใบรับรอง Root CA |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | ลบใบรับรอง Root CA |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./certificates/)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/certificates.json)

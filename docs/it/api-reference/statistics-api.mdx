@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 Statistics API"
+description: 'Avvisi, log, analisi dei flussi e reportistica.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+Policy di avviso con integrazioni dei ricevitori. Aggregazione dei log, viste topologiche e monitoraggio dello stato dei siti.
+
+- **Categoria**: Operazioni
+- **Complessità**: avanzata
+- **Percorsi**: 77 | **Schemi**: 575
+- **Livello**: Standard
+- **Domini correlati**: `observability`, `support`
+
+## Casi d'Uso
+
+- Accedere alle statistiche e analisi dei flussi
+- Gestire avvisi e policy di avviso
+- Visualizzare log e ricevitori di log
+- Generare report e grafici
+- Monitorare la topologia e la scoperta dei servizi
+- Monitorare lo stato dei siti
+
+## Risorse Principali
+
+- **dashboard**: Dashboard per la visualizzazione delle metriche
+- **saved_query**: Query salvata per l'analisi di metriche e log
+
+## Endpoint
+
+| Metodo | Percorso | Descrizione |
+|--------|----------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | Crea Policy di Avviso. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | Sostituisci Policy di Avviso. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | GET Corrispondenza Policy di Avviso. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | Elenca Policy di Avviso. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | GET Policy di Avviso. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | DELETE Policy di Avviso. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | Crea Ricevitore di Avvisi. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | Sostituisci Ricevitore di Avvisi. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | Elenca Ricevitore di Avvisi. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | GET Ricevitore di Avvisi. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | DELETE Ricevitore di Avvisi. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | Conferma Ricevitore di Avvisi. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | Test Ricevitore di Avvisi. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | Verifica Ricevitore di Avvisi. |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | GET Avvisi. |
+| PUT | `/api/web/namespaces/system/catalogs` | Elenca |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | Elenca servizi scoperti di un tipo specifico. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | Elenca Servizi Scoperti. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | GET Oggetto Servizio Scoperto. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | Crea bilanciatore di carico HTTP/HTTPS. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | Crea bilanciatore di carico TCP. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | Disabilita visibilità in tutti i workspace. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | Abilita visibilità in tutti i workspace. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | Suggerisci Valori. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | Elenca Anomalie di Flusso. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | GET Anomalia di Flusso. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | Mostra Flussi Corrispondenti. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | Iscriviti alla Raccolta Flussi. |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | Verifica stato iscrizione per la Raccolta Flussi. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | Annulla iscrizione alla Raccolta Flussi. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | Crea Ricevitore di Log Globale. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | Sostituisci Ricevitore di Log Globale. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | Stato Ricevitore di Log Globale. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | Elenca Ricevitore di Log Globale. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | GET Ricevitore di Log Globale. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | DELETE Ricevitore di Log Globale. |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | Test Ricevitore di Log Globale. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | Crea Ricevitore di Log. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | Sostituisci Ricevitore di Log. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | Elenca Ricevitore di Log. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | GET Ricevitore di Log. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | DELETE Ricevitore di Log. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | Test Ricevitore di Log. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | Query Log Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | Query Aggregazione Log Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Query Scroll Log Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Query Scroll Log Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Query Scroll Log Audit K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Query Scroll Log Audit K8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Query Scroll Eventi K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Query Scroll Eventi K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | Query Eventi Piattaforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Query Aggregazione Eventi Piattaforma. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Query Scroll Eventi Piattaforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Query Scroll Eventi Piattaforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | Query Log Audit VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | Query Aggregazione Log Audit VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Query Scroll Log Audit VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Query Scroll Log Audit VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | Query Eventi VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | Query Aggregazione Eventi VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Query Scroll Eventi VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Query Scroll Eventi VK8s. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | GET Report. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | Scarica Report. |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | Crea Configurazione Report. |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | Sostituisci Configurazione Report. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | Elenca Configurazione Report. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | Elenca Storico Report. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | Elenca Storico Report Bot Defence. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | Elenca Storico Report Waap. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | GET Configurazione Report. |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | DELETE Configurazione Report. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | Genera Report Ora. |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | Query Grafo Servizi Tutti i Namespace. |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | Topologia Cluster DC. |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | Riepilogo Gruppi Cluster DC. |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | GET Tabelle di Routing della Rete. |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | GET Tabella di Routing. |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | Topologia Site Mesh. |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | Riepilogo Gruppi Site Mesh. |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | GET Tabelle di Routing TGW. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | Query Traffico Applicazione L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | Query Traffico Mitigazione L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | Query Traffico di Rete L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | Query Traffico Zona L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | Conteggio Eventi L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | Query Top Talkers L3l4. |
+
+## Link
+
+- [Riferimento API Interattivo](./statistics/)
+- [Specifica OpenAPI JSON](../specifications/api/statistics.json)

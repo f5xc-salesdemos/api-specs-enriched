@@ -1,0 +1,56 @@
+---
+title: "\U0001F4E6 واجهة برمجة تطبيقات خدمات الحاويات"
+description: أحمال العمل المحتواة ومجموعات Kubernetes الافتراضية.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09062506475b
+  translator: machine
+---
+
+تنسيق الحاويات (Pod) دون تعقيدات المجموعة الكاملة. التنفيذ على مواقع الحافة، وفرض الحصص، وملفات تعريف الحوسبة الموحدة للتطبيقات الموزعة.
+
+- **الفئة**: البنية التحتية
+- **التعقيد**: متوسط
+- **المسارات**: 13 | **المخططات**: 159
+- **المستوى**: متقدم
+- **النطاقات ذات الصلة**: `managed_kubernetes`، `sites`، `service_mesh`
+
+## حالات الاستخدام
+
+- نشر فضاءات أسماء XCCS (خدمات الحاويات) لأحمال العمل متعددة المستأجرين
+- إدارة أحمال عمل الحاويات مع تنسيق مبسط
+- تكوين عمليات نشر حاويات الحافة الموزعة
+- تشغيل التطبيقات المحتواة دون تعقيدات K8s الكاملة
+
+## الموارد الأساسية
+
+- **virtual_k8s**: فضاء أسماء Kubernetes افتراضي لأحمال عمل الحاويات
+- **workload**: تكوين نشر أحمال عمل الحاويات
+- **pod_security_policy**: سياسة أمان الحاويات لقيود وقت تشغيل الحاويات
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | إنشاء Kubernetes افتراضي. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | استبدال Kubernetes افتراضي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | عرض قائمة Kubernetes الافتراضي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | الحصول على Kubernetes افتراضي. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | حذف Kubernetes افتراضي. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads` | إنشاء حمل عمل. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads/&#123;metadata.name&#125;` | استبدال حمل عمل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads` | عرض قائمة أحمال العمل. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/workloads/usage` | مقاييس الاستخدام. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | الحصول على حمل عمل. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | حذف حمل عمل. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors` | إنشاء نكهة حمل عمل. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors/&#123;metadata.name&#125;` | استبدال النكهة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors` | عرض قائمة نكهات أحمال العمل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | الحصول على نكهة حمل عمل. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | حذف نكهة حمل عمل. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./container_services/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/container_services.json)

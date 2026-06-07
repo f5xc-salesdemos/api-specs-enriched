@@ -1,0 +1,141 @@
+---
+title: "\U0001F50C Network API"
+description: BGP 對等連線、IPsec 隧道及分段策略。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 5737a59da5b8
+  translator: machine
+---
+
+邊界閘道協定（BGP）搭配 ASN 管理及自治系統關係。透過加密通道連接資料中心的站對站 VPN。
+
+- **類別**：網路
+- **複雜度**：進階
+- **路徑**：81 | **結構描述**：449
+- **層級**：進階
+- **相關領域**：`virtual`、`network_security`、`dns`
+
+## 使用案例
+
+- 設定 BGP 路由及 ASN 管理
+- 管理 IPsec 隧道及 IKE 階段
+- 設定網路連接器及路由
+- 管理 SRv6 及子網路劃分
+- 定義分段連線及策略
+- 設定 IP 前綴集
+
+## 主要資源
+
+- **virtual_network**：用於站點連線和分段的虛擬網路
+- **network_connector**：用於站對站或雲端連線的網路連接器
+- **site_mesh_group**：多站點之間的網狀連線設定
+
+## 端點
+
+| 方法 | 路徑 | 說明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/address_allocators` | 建立位址分配器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators` | 列出位址分配器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | 取得位址分配器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | 刪除位址分配器。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys` | 建立廣告策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys/&#123;metadata.name&#125;` | 取代廣告策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys` | 列出廣告策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | 取得廣告策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | 刪除廣告策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps` | 建立 BGP。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps/&#123;metadata.name&#125;` | 取代 BGP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps` | 列出 BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | 取得 BGP |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | 刪除 BGP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgpstatus/&#123;view_name&#125;` | 取得檢視的 BGP 狀態。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets` | 建立 BGP ASN 集合。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets/&#123;metadata.name&#125;` | 取代 BGP ASN 集合。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets` | 列出 BGP ASN 集合。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | 取得 BGP ASN 集合。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | 刪除 BGP ASN 集合。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_peers` | 顯示 BGP 對等資訊。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_routes` | 顯示 BGP 路由。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys` | 建立 BGP 路由策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys/&#123;metadata.name&#125;` | 取代 BGP 路由策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys` | 列出 BGP 路由策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | 取得 BGP 路由策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | 刪除 BGP 路由策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups` | 建立 DC 叢集群組。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups/&#123;metadata.name&#125;` | 取代 DC 叢集群組。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups` | 列出 DC 叢集群組。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dc_cluster_groups/metrics` | 指標 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | 取得 DC 叢集群組。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | 刪除 DC 叢集群組。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs` | 建立轉送類別。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs/&#123;metadata.name&#125;` | 取代轉送類別。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs` | 列出轉送類別。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | 取得轉送類別。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | 刪除轉送類別。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s` | 建立 IKE 第一階段設定檔。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s/&#123;metadata.name&#125;` | 取代 IKE 第一階段設定檔組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s` | 列出 IKE 第一階段設定檔。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | 取得 IKE 第一階段設定檔組態。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | 刪除 IKE 第一階段設定檔。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles` | 建立 IKE 第一階段設定檔。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles/&#123;metadata.name&#125;` | 取代 IKE 第一階段設定檔組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles` | 列出 IKE 第一階段設定檔。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | 取得 IKE 第一階段設定檔組態。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | 刪除 IKE 第一階段設定檔。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s` | 建立 IKE 第二階段設定檔。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s/&#123;metadata.name&#125;` | 取代 IKE 第二階段設定檔組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s` | 列出 IKE 第二階段設定檔。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | 取得 IKE 第二階段設定檔組態。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | 刪除 IKE 第二階段設定檔。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles` | 建立 IKE 第二階段設定檔。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles/&#123;metadata.name&#125;` | 取代 IKE 第二階段設定檔組態。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles` | 列出 IKE 第二階段設定檔。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | 取得 IKE 第二階段設定檔組態。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | 刪除 IKE 第二階段設定檔。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets` | 建立 IP 前綴集。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets/&#123;metadata.name&#125;` | 取代 IP 前綴集。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets` | 列出 IP 前綴集。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | 取得 IP 前綴集。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | 刪除 IP 前綴集。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors` | 建立網路連接器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors/&#123;metadata.name&#125;` | 取代網路連接器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors` | 列出網路連接器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | 取得網路連接器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | 刪除網路連接器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/public_ips/&#123;metadata.name&#125;` | 取代公用 IP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips` | 列出公用 IP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips/&#123;name&#125;` | 取得公用 IP。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes` | 建立路由。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes/&#123;metadata.name&#125;` | 取代路由。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes` | 列出路由。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | 取得路由 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | 刪除路由。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/routes` | 顯示路由。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/simplified_routes` | 顯示簡化路由。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices` | 建立 SRv6 網路切片。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices/&#123;metadata.name&#125;` | 取代 SRv6 網路切片。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices` | 列出 SRv6 網路切片。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | 取得 SRv6 網路切片。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | 刪除 SRv6 網路切片。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets` | 建立子網路。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets/&#123;metadata.name&#125;` | 取代子網路。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets` | 列出子網路。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | 取得子網路。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | 刪除子網路。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/traceroute` | 路由追蹤。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels` | 建立隧道。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels/&#123;metadata.name&#125;` | 取代隧道。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels` | 列出隧道。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | 取得隧道。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | 刪除隧道。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | 建立虛擬網路。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | 取代虛擬網路。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | 列出虛擬網路。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 取得虛擬網路。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 刪除虛擬網路。 |
+
+## 連結
+
+- [互動式 API 參考文件](./network/)
+- [OpenAPI 規格 JSON](../specifications/api/network.json)

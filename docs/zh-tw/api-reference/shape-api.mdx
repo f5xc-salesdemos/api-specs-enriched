@@ -1,0 +1,327 @@
+---
+title: "\U0001F3AD Shape API"
+description: 機器人防禦、詐欺預防與用戶端完整性。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09077d724f15
+  translator: machine
+---
+
+透過行為分析與裝置指紋辨識進行威脅識別。整合行動 SDK 以實現應用程式防護。
+
+- **類別**：Security
+- **複雜度**：advanced
+- **路徑**：271 | **結構描述**：813
+- **層級**：Advanced
+- **相關領域**：`bot_defense`、`virtual`
+
+## 使用案例
+
+- 設定 Shape Security 策略
+- 管理機器人與威脅預防
+- 設定 SafeAP 策略
+- 啟用威脅識別
+
+## 主要資源
+
+- **shape_app_firewall**：Shape 應用程式防火牆，提供進階防護
+- **shape_recognizer**：Shape 識別器，用於流量模式分析
+
+## 端點
+
+| 方法 | 路徑 | 說明 |
+|--------|------|-------------|
+| POST | `/api/shape/dip/namespaces/system/app_provision` | 應用程式佈建。 |
+| DELETE | `/api/shape/dip/namespaces/system/application` | 刪除應用程式。 |
+| POST | `/api/shape/dip/namespaces/system/application` | 更新應用程式。 |
+| GET | `/api/shape/dip/namespaces/system/applications` | 取得應用程式列表。 |
+| POST | `/api/shape/dip/namespaces/system/bot/asn` | 依熱門 ASN 取得機器人評估。 |
+| POST | `/api/shape/dip/namespaces/system/bot/transactions` | 取得交易的機器人評估。 |
+| POST | `/api/shape/dip/namespaces/system/bot/urls` | 依熱門 URL 取得機器人評估。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/age` | 依裝置時間取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/applications` | 依應用程式取得資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/asn` | 依 ASN 取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/country` | 依國家取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/session` | 依工作階段取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/ua` | 依 User-Agent 取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/unique` | 依唯一存取取得裝置資訊。 |
+| POST | `/api/shape/dip/namespaces/system/enable` | 啟用應用程式流量洞察。 |
+| GET | `/api/shape/dip/namespaces/system/provision/regions` | 取得應用程式流量洞察的可用區域。 |
+| GET | `/api/shape/dip/namespaces/system/status` | 取得應用程式流量洞察狀態。 |
+| POST | `/api/shape/dip/namespaces/system/validate/src_tag_injection` | 驗證 JS 注入。 |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys` | 建立警示產生策略。 |
+| PUT | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys/&#123;metadata.name&#125;` | 取代警示產生策略。 |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policy/&#123;name&#125;/status` | 複製警示範本。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys` | 列出 BRM 警示產生策略。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | 取得警示產生策略。 |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | 刪除 BRM 警示產生策略。 |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_templates` | 建立要保護的網域。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates` | 列出 BRM 警示的警示範本。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | 取得受保護網域。 |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | 刪除 BRM 警示的警示範本。 |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | 複製警示範本。 |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | 部署機器人偵測規則。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | 取得機器人偵測規則部署列表。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | 取得機器人偵測規則部署詳情。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 取得草稿狀態的機器人偵測規則。 |
+| DELETE | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 捨棄草稿。 |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 儲存草稿。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/summary` | 取得機器人偵測規則摘要。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | 列出機器人偵測規則。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | 取得機器人偵測規則的變更歷史。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | 取得機器人偵測規則。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | 建議值。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | 取得機器人偵測更新。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | 下載機器人偵測更新版本說明。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | 列出所有機器人端點策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 自訂取代機器人端點策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | 取代機器人端點策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | 機器人端點策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | 列出機器人端點策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 取得機器人端點策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | 取得內容。 |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | 建立機器人基礎架構。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | 取代機器人基礎架構。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | 列出機器人基礎架構。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | 取得機器人基礎架構。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | 部署歷史。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | 部署狀態。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | 將策略部署到機器人基礎架構。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | 列出所有機器人允許清單策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 自訂取代機器人允許清單策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | 取代機器人允許清單策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | 機器人允許清單策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | 列出機器人允許清單策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 取得機器人允許清單策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | 取得內容。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | 取得行動裝置基礎設定檔。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | 列出所有機器人網路策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 自訂取代機器人網路策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | 取代機器人網路策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | 機器人網路策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | 列出機器人網路策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 取得機器人網路策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | 取得內容。 |
+| POST | `/api/shape/csd/namespaces/system/init` | 啟用用戶端防禦。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | 取得偵測到的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | 取得網域詳情。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | 使用 GET 方法列出所有表單欄位。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | 列出所有表單欄位。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | 更新表單欄位分析。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | 取得表單欄位。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | 取得 JS 注入設定。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | 刪除腳本說明。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 列出腳本。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 列出腳本。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | 依腳本列出行為。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | 取得腳本概覽。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | 依腳本列出表單欄位。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | 依腳本列出網路互動。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | 更新腳本表單欄位讀取狀態。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | 列出受影響的使用者。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | 更新腳本說明。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | 取得狀態。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | 取得摘要。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/testjs` | 測試 JS |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/update_domains` | 更新網域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/allowed_domains` | 建立允許的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains` | 列出用戶端防禦允許的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 取得允許的網域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 刪除用戶端防禦允許的網域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/protected_domains` | 建立要保護的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains` | 列出用戶端防禦要保護的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 取得受保護網域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 刪除用戶端防禦要保護的網域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/mitigated_domains` | 建立已緩解的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | 列出用戶端防禦已緩解的網域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 取得已緩解的網域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 刪除用戶端防禦已緩解的網域。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | 列出所有偵測到的網域。 |
+| POST | `/api/shape/csd/namespaces/system/subscribe` | 訂閱用戶端防禦。 |
+| POST | `/api/shape/csd/namespaces/system/unsubscribe` | 取消訂閱用戶端防禦。 |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | 訂閱 Mobile App Shield。 |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | 取消訂閱 Mobile App Shield。 |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | 訂閱 Mobile Integrator。 |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/unsubscribe` | 取消訂閱 Mobile Integrator。 |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk` | 取得行動 SDK 列表。 |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk/&#123;name&#125;/&#123;version&#125;` | 取得行動 SDK。 |
+| POST | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs` | 建立行動 SDK 基礎設定。 |
+| PUT | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs/&#123;metadata.name&#125;` | 取代行動 SDK 基礎設定。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_config_file/&#123;name&#125;` | 取得行動裝置基礎設定檔。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs` | 列出行動 SDK 基礎設定。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 取得行動 SDK 基礎設定。 |
+| DELETE | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 刪除行動 SDK 基礎設定。 |
+| GET | `/api/shape/bot/namespaces/system/apikey` | API 金鑰 |
+| GET | `/api/shape/bot/namespaces/system/regions` | 區域 |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications` | 建立受保護應用程式。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications/&#123;metadata.name&#125;` | 取代受保護應用程式。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications` | 列出受保護應用程式。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 取得受保護應用程式。 |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 刪除受保護應用程式。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/config` | 連接器設定。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/template` | 範本連接器。 |
+| POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | 檢查對等節點狀態。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB 狀態。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | 消耗摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | 端點類別。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | 端點類別標籤。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/list` | 所有受保護端點。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/summary` | 端點摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoints` | 報告端點。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/credential-stuffing-attack` | 洞察事件：撞庫攻擊。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/bad-bot-reduction` | 洞察惡意機器人減少。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/unaddressed-automations` | 洞察未處理的自動化。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/personal-stats` | 洞察個人統計。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/total-automation` | 洞察事件：總自動化。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/endpoints` | 惡意報告端點。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/asn` | 惡意報告交易 ASN。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/browser` | 惡意報告交易瀏覽器。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ip` | 惡意報告交易 IP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/os` | 惡意報告交易作業系統。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ua` | 惡意報告交易 UA。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/endpoints` | 最常受攻擊端點。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview` | 最高延遲概覽。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview/apps` | 最高延遲概覽應用程式。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/asorg` | 依 ASOrg 分類的最惡意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/automation` | 最惡意機器人自動化類型。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ip` | 依 IP 位址分類的最惡意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ua` | 依 User Agent 字串分類的最惡意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/app` | 依應用程式分類的最高交易量。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/categories` | 最高類別。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/endpointlabels` | 最高端點標籤。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/good` | 最佳善意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/browser` | 最高人類瀏覽器。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/device` | 最高人類裝置。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/geolocation` | 最高人類地理位置。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/platform` | 最高人類平台。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/app` | 依應用程式分類的最惡意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/apps/timeseries` | 惡意報告應用程式時間序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg` | 依 ASOrg 分類的最惡意機器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 攻擊意圖的最高 ASN。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/attackintent` | 依攻擊意圖分類的最惡意機器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/automation` | 最惡意機器人自動化類型 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/bfp` | 最常受攻擊 BFP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/endpoints` | 最常受攻擊端點 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip` | 依 IP 位址分類的最惡意機器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 攻擊意圖的最高來源 IP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua` | 依 User Agent 字串分類的最惡意機器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 攻擊意圖的最高 User Agent。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/attackintent/timeseries` | 所有流量的攻擊意圖時間序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/categories/timeseries` | 所有流量的類別時間序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/dimension/attackintent/timeseries` | 惡意機器人攻擊意圖時間序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/actions` | 惡意流量概覽（依動作分類）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/metrics` | 惡意流量概覽指標。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/timeseries/actions` | 惡意流量概覽時間序列（依動作分類）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview` | 流量概覽。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/expanded` | 展開的流量概覽。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/timeseries` | 流量概覽時間序列。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | 使用量摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | 鑑識欄位。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | 自動化流量概覽（依動作分類）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | 端點摘要 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | 惡意報告端點 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | 惡意報告交易 ASN V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/browser` | 惡意報告交易瀏覽器 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | 惡意報告交易 IP V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | 惡意報告交易作業系統 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | 惡意報告交易 UA V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | 最佳善意機器人 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | 最高人類瀏覽器 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | 最高人類裝置 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/geolocation` | 最高人類地理位置 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/platform` | 最高人類平台 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/apps/timeseries` | 惡意報告應用程式時間序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 攻擊意圖的最高 ASN V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/attackintent` | 依攻擊意圖分類的最惡意機器人 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/endpoints` | 最常受攻擊端點 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 攻擊意圖的最高來源 IP V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 攻擊意圖的最高 User Agent V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/dimension/attackintent/timeseries` | 惡意機器人攻擊意圖時間序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/actions` | 惡意流量概覽（依動作分類）V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/metrics` | 惡意流量概覽指標 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/timeseries/actions` | 惡意流量概覽時間序列（依動作分類）V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview` | 流量概覽 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/expanded` | 展開的流量概覽 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/timeseries` | 流量概覽時間序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/good` | 最佳善意機器人 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/asorg` | 依 ASOrg 分類的最惡意機器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/automation` | 最惡意機器人自動化類型 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ip` | 依 IP 位址分類的最惡意機器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ua` | 依 User Agent 字串分類的最惡意機器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview` | 流量概覽 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/expanded` | 展開的流量概覽 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/timeseries` | 流量概覽時間序列 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/endpoints` | 最常受攻擊端點 v4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/ua` | 依 User Agent 字串分類的最惡意機器人 v4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/expanded` | 流量分析器中的展開流量概覽。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/timeseries` | 流量概覽時間序列 V4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/top/type/malicious/dimension/endpoints` | 最常受攻擊端點 v5。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/traffic/overview/expanded` | 展開的流量概覽 V5。 |
+| POST | `/api/shape/bot/reporting/peers/threat-types` | 依威脅類型分類的對等群組。 |
+| POST | `/api/shape/bot/reporting/peers/top-good-bots` | 對等群組最佳善意機器人。 |
+| POST | `/api/shape/bot/reporting/peers/top-reason-codes` | 對等群組最高原因碼。 |
+| POST | `/api/shape/bot/reporting/peers/traffic/overview` | 對等群組流量概覽。 |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/subscribe` | 訂閱 Shape Bot Defense。 |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | 取消訂閱 Shape Bot Defense。 |
+| POST | `/api/shape/bot/subscribe` | 訂閱 Shape Bot Defense。 |
+| POST | `/api/shape/bot/unsubscribe` | 取消訂閱 Shape Bot Defense。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | 頻道儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | 轉換儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | Enjoy 儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | 摩擦匯總儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | 摩擦直方圖儀表板。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | 健康檢查。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | Lift 儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | Rescue 儀表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | 最高原因碼。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | 取得 Recognize 佈建狀態附加元件。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | 狀態 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | 訂閱 Shape Recognize。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | 取消訂閱 Shape Recognize。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | ValidateSrcTagInjection 附加元件。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | 訂閱 Safe AP。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | 取消訂閱 Safe AP。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | 取得目前詐欺資料。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | 取得最高風險帳號。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | 取得最高風險裝置。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | 取得最高風險 IP 位址。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | 取得最高風險原因。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | 取得交易資料。 |
+| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | 健康檢查。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | 取得 SafeCubeJS 資料。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | 取得 SAFE 封鎖表格列表。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | 以 CSV 檔案取得 SAFE 分析師封鎖稽核。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | 以 CSV 檔案取得 SAFE 分析師封鎖表格。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | 取得 SAFE 封鎖詳情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | 提交 SAFE 封鎖回饋。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | 提交 SAFE 封鎖規則。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | 取得 SAFE 封鎖表格列表。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | 提交 SAFE 端點。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | 更新詐欺回饋。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | 更新詐欺回饋。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | 取得健康狀態請求。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | 提交 SAFE 佈建。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | 取得 SAFE 概覽。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | 提交 SAFE 概覽。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | 取得 SAFE 最高位置。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | 提交 SAFE 最高位置。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | 取得 SAFE 最高來源。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | 提交 SAFE 最高來源。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | 提交 SAFE 隨時間變化的交易。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | 取得 SAFE 分析師摘要。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | 取得 SAFE 分析師交易詳情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | 提交 SAFE 交易詳情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | 提交 SAFE 交易裝置歷史。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | 提交 SAFE 交易位置。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | 提交 SAFE 交易相關工作階段。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | 提交 SAFE 交易時間軸。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | 列出 SAFE 分析師交易。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | 以 CSV 檔案取得 SAFE 分析師交易。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | 企業設定。 |
+
+## 連結
+
+- [互動式 API 參考](./shape/)
+- [OpenAPI 規格 JSON](../specifications/api/shape.json)

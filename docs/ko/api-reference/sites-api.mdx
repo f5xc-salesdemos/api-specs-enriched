@@ -1,0 +1,192 @@
+---
+title: "\U0001F30D Sites API"
+description: 클라우드 및 엣지 노드 배포.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9a648b423e6f
+  translator: machine
+---
+
+AWS, Azure, GCP VPC와 트랜짓 게이트웨이 통합. 리전 간 정책 적용을 위한 레이블 기반 선택.
+
+- **카테고리**: 인프라
+- **복잡도**: 고급
+- **경로**: 133 | **스키마**: 1015
+- **티어**: Standard
+- **관련 도메인**: `cloud_infrastructure`, `customer_edge`, `managed_kubernetes`
+
+## 사용 사례
+
+- 클라우드 공급자(AWS, Azure, GCP) 간 F5 XC 배포
+- XCKS(관리형 Kubernetes) 사이트 배포 관리(이전 AppStack)
+- 네트워킹 중심 엣지 배포를 위한 Secure Mesh 사이트 배포
+- 외부 Kubernetes 클러스터를 Customer Edge로 통합
+- AWS VPC, Azure VNet 및 GCP VPC 사이트 구성
+- 가상 사이트 및 사이트 정책 관리
+
+## 주요 리소스
+
+- **site**: 엣지 서비스를 위한 물리적 또는 클라우드 배포 위치
+- **virtual_site**: 레이블 셀렉터를 사용한 사이트의 논리적 그룹핑
+- **site_mesh_group**: 여러 사이트 간 메시 연결 구성
+
+## 엔드포인트
+
+| 메서드 | 경로 | 설명 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites` | AWS TGW 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_tgw_sites/&#123;metadata.name&#125;` | AWS TGW 사이트 교체. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_tgw_info` | TGW 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vip_info` | AWS TGW 사이트 VIP 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpc_ip_prefixes` | VPC IP 접두사 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/set_vpn_tunnels` | VPN 터널 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_site/&#123;name&#125;/validate_config` | AWS TGW 구성 검증. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites` | AWS TGW 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | AWS TGW 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_tgw_sites/&#123;name&#125;` | AWS TGW 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites` | AWS VPC 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/aws_vpc_sites/&#123;metadata.name&#125;` | AWS VPC 사이트 교체. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_cloud_site_info` | AWS VPC 사이트 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/set_vip_info` | AWS VPC 사이트 VIP 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/storage/set_vpc_k8s_hostnames` | VPC K8s 호스트명 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_site/&#123;name&#125;/validate_config` | AWS VPC 사이트 구성 검증. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites` | AWS VPC 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | AWS VPC 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/aws_vpc_sites/&#123;name&#125;` | AWS VPC 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites` | App Stack 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/voltstack_sites/&#123;metadata.name&#125;` | App Stack 사이트 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites` | App Stack 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | App Stack 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/voltstack_sites/&#123;name&#125;` | App Stack 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites` | Azure VNet 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/azure_vnet_sites/&#123;metadata.name&#125;` | Azure VNet 사이트 교체. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_cloud_site_info` | Azure VNet 사이트 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/set_vip_info` | Azure VNet 사이트 VIP 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_site/&#123;name&#125;/validate_config` | Azure VNet 사이트 구성 검증. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites` | Azure VNet 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Azure VNet 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/azure_vnet_sites/&#123;name&#125;` | Azure VNet 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites` | GCP VPC 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/gcp_vpc_sites/&#123;metadata.name&#125;` | GCP VPC 사이트 교체. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/set_cloud_site_info` | GCP VPC 사이트 정보 구성. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_site/&#123;name&#125;/validate_config` | GCP VPC 사이트 구성 검증. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites` | GCP VPC 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | GCP VPC 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/gcp_vpc_sites/&#123;name&#125;` | GCP VPC 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites` | Secure Mesh 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_sites/&#123;metadata.name&#125;` | Secure Mesh 사이트 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | Secure Mesh 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Secure Mesh 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | Secure Mesh 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | Secure Mesh 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | Secure Mesh 사이트 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | Secure Mesh 사이트 구성 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Secure Mesh 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s/&#123;name&#125;` | Secure Mesh 사이트 구성 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters` | 구성 사양 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_clusters/&#123;metadata.name&#125;` | 구성 사양 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters` | K8s 클러스터 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | 구성 사양 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_clusters/&#123;name&#125;` | K8s 클러스터 삭제. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | 방화벽 로그 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | 방화벽 로그 집계 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 방화벽 로그 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 방화벽 로그 스크롤 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 감사 로그 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 감사 로그 스크롤 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 이벤트 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 이벤트 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | 플랫폼 이벤트 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | 플랫폼 이벤트 집계 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 플랫폼 이벤트 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 플랫폼 이벤트 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | 외부 커넥터 로그 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | K8s 감사 로그 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | K8s 감사 로그 집계 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | K8s 이벤트 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events/aggregation` | K8s 이벤트 집계 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 감사 로그 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 감사 로그 집계 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 감사 로그 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 감사 로그 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s 이벤트 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s 이벤트 집계 쿼리. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 이벤트 스크롤 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 이벤트 스크롤 쿼리. |
+| POST | `/api/web/namespaces/system/revoke/global-kubeconfigs` | 글로벌 Kubeconfig 폐기. |
+| POST | `/api/data/namespaces/system/site/&#123;name&#125;/status` | 사이트 존재 확인. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/configmaps` | ConfigMap 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/endpoints` | Endpoints 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces` | Namespace 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/configmaps` | ConfigMap 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/endpoints` | Endpoints 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/persistentvolumeclaims` | PersistentVolumeClaim 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/pods` | Pod 목록 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/secrets` | Secret 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/namespaces/&#123;namespace&#125;/services` | Service 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/nodes` | Namespace 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumeclaims` | PersistentVolumeClaim 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/persistentvolumes` | PersistentVolume 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/pods` | Pod 목록 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/secrets` | Secret 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/api/v1/services` | Service 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/daemonsets` | DaemonSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/deployments` | Deployment 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/daemonsets` | DaemonSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/deployments` | Deployment 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/replicasets` | ReplicaSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/namespaces/&#123;namespace&#125;/statefulsets` | StatefulSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/replicasets` | ReplicaSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/apps/v1/statefulsets` | StatefulSet 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/jobs` | Job 목록 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1/namespaces/&#123;namespace&#125;/jobs` | Job 목록 |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/cronjobs` | CronJob 목록. |
+| GET | `/api/data/namespaces/system/site/&#123;site&#125;/apis/batch/v1beta1/namespaces/&#123;namespace&#125;/cronjobs` | CronJob 목록. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/pods/metrics` | Pod 메트릭. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/namespaces/&#123;namespace&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances 메트릭. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/pods/metrics` | Pod 메트릭. |
+| POST | `/api/data/namespaces/system/site/&#123;site&#125;/virtualmachineinstances/metrics` | VirtualMachineInstances 메트릭. |
+| GET | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | 글로벌 Kube Config 목록. |
+| POST | `/api/web/namespaces/system/sites/&#123;site&#125;/global-kubeconfigs` | 글로벌 Kube Config 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/sites/&#123;metadata.name&#125;` | 사이트 교체. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/site/&#123;name&#125;/state` | 사이트 상태 설정. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/status/metrics` | 사이트 상태 메트릭. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites` | 사이트 목록 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;` | 사이트 조회 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfig` | K8s 클러스터 로컬 Kube Config 생성. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/local-kubeconfigs` | 로컬 Kube Config 목록. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | OS 업그레이드. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | SW 업그레이드. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | 글로벌 네트워크 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | 세그먼트 목록. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | 사이트 그래프 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | 사이트 엣지 쿼리. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | 사이트 노드 쿼리. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | 인터페이스 목록. |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DC 클러스터 토폴로지. |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DC 클러스터 그룹 요약. |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | 네트워크 라우트 테이블 조회. |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | 라우트 테이블 조회. |
+| GET | `/api/data/namespaces/system/topology/site/&#123;name&#125;/networks` | 사이트 네트워크 조회. |
+| POST | `/api/data/namespaces/system/topology/site/&#123;site&#125;` | 사이트 토폴로지. |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | 사이트 메시 토폴로지. |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | 사이트 메시 그룹 요약. |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | TGW 라우트 테이블 조회. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | Virtual Kubernetes 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | Virtual Kubernetes 교체. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_k8s/pvc/metrics` | PVC 메트릭. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | Virtual Kubernetes 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites` | 가상 사이트 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_sites/&#123;metadata.name&#125;` | 가상 사이트 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites` | 가상 사이트 목록. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 가상 사이트 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;` | 가상 사이트 삭제. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_sites/&#123;name&#125;/selectees` | 선택 대상 조회. |
+
+## 링크
+
+- [대화형 API 레퍼런스](./sites/)
+- [OpenAPI 사양 JSON](../specifications/api/sites.json)

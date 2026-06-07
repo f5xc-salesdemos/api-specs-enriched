@@ -1,0 +1,115 @@
+---
+title: "\U0001F512 ネットワークセキュリティ API"
+description: NATポリシー、ファイアウォール、およびセグメント接続。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: adf43856d55c
+  translator: machine
+---
+
+送信元、宛先、またはプロトコルに基づくルーティング判断を伴うファイアウォールルール。セグメンテーションはワークロードを分離し、アウトバウンドプロキシはアクセスを制御します。
+
+- **カテゴリ**: セキュリティ
+- **複雑度**: 上級
+- **パス**: 62 | **スキーマ**: 386
+- **ティア**: Advanced
+- **関連ドメイン**: `virtual`, `api`, `network`
+
+## ユースケース
+
+- ネットワークファイアウォールおよびACLポリシーの設定
+- NATポリシーとポートフォワーディングの管理
+- ポリシーベースルーティングの設定
+- ネットワークセグメントとポリシーの定義
+- フォワードプロキシポリシーの設定
+
+## 主要リソース
+
+- **network_policy**: トラフィックフィルタリングのためのネットワークセキュリティポリシー
+- **forward_proxy_policy**: アウトバウンドトラフィック制御のためのフォワードプロキシポリシー
+- **network_firewall**: レイヤー3/4トラフィック保護のためのネットワークファイアウォール
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | フォワードプロキシポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | フォワードプロキシポリシーの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | フォワードプロキシポリシーヒット。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | フォワードプロキシポリシー設定の一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | フォワードプロキシポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | フォワードプロキシポリシー設定の削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | ネットワークポリシービューの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | ネットワークポリシービューの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | ネットワークポリシーヒット。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | ネットワークポリシービュー設定の一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | ネットワークポリシービューの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | ネットワークポリシービュー設定の削除。 |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | 一覧表示 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | Fast ACLの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | Fast ACLの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Fast ACLヒット。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | Fast ACLの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Fast ACLの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Fast ACLの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | Fast ACLルールの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | Fast ACLルールの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | Fast ACLルールの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Fast ACLルールの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Fast ACLルールの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | 仕様の作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | 仕様の置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | フィルターセットの一覧表示。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | 1つ以上のコンテキストキーに対するフィルターセットの検索。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | 仕様の取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | フィルターセットの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | NATポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | NATポリシーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | NATポリシーの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | NATポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | NATポリシーの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | ネットワークファイアウォールの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | ネットワークファイアウォールの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | ネットワークファイアウォールの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | ネットワークファイアウォールの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | ネットワークファイアウォールの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | ネットワークポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | ネットワークポリシーの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | ネットワークポリシーヒット。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | ネットワークポリシーの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | ネットワークポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | ネットワークポリシーの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | ネットワークポリシールールの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | ネットワークポリシールールの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | ネットワークポリシールールの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | ネットワークポリシールールの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | ネットワークポリシールールの削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | ネットワークポリシーセットの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | ネットワークポリシーセットの取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | ポリシーベースルーティングの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | ポリシーベースルーティングの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | ポリシーベースルーティングの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | ポリシーベースルーティングの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | ポリシーベースルーティングの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | セグメントの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | セグメントの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | セグメントの一覧表示。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | セグメント |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | セグメントの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | セグメントの削除。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | セグメントコネクタの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | セグメントコネクタの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | セグメントコネクタの取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | サービスポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | サービスポリシーの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | サービスポリシーヒット。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | サービスポリシーレイテンシ。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | サービスポリシーの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | サービスポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | サービスポリシーの削除。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./network_security/)
+- [OpenAPI仕様JSON](../specifications/api/network_security.json)

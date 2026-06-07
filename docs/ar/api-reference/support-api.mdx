@@ -1,0 +1,96 @@
+---
+title: "\U0001F3AB واجهة برمجة تطبيقات الدعم"
+description: التذاكر والتصعيدات وتشخيصات الشبكة.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 91ad994f8afb
+  translator: machine
+---
+
+دورة حياة المشكلات مع التعليقات وتغييرات مستوى الخطورة وتتبع الحلول. التقاط الحزم لتحليل الاتصالات.
+
+- **الفئة**: العمليات
+- **التعقيد**: متوسط
+- **المسارات**: 53 | **المخططات**: 167
+- **المستوى**: قياسي
+- **النطاقات ذات الصلة**: `statistics`، `observability`
+
+## حالات الاستخدام
+
+- إرسال وإدارة تذاكر الدعم
+- تتبع طلبات دعم العملاء
+- الوصول إلى وثائق الدعم التشغيلي
+
+## الموارد الرئيسية
+
+- **support_case**: حالة دعم لتتبع المشكلات وحلها
+- **alert**: تنبيه النظام للإشعارات التشغيلية
+- **audit_log**: سجل التدقيق للامتثال وتتبع الأمان
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | إعادة مزامنة CRL. |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | قائمة تذاكر الدعم المنشأة لمستأجر فرعي. |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | طلب التحقق من الإعفاء الضريبي. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | إنشاء دعم العملاء. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | سرد جميع تذاكر المستأجر. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | إغلاق تذكرة دعم العملاء. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | إضافة تعليق إلى تذكرة دعم العملاء. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | تصعيد تذكرة. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | تغيير أولوية التذكرة. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | إعادة فتح تذكرة دعم عملاء مغلقة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | سرد دعم العملاء. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | الحصول على دعم العملاء. |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | الحصول على المرفق. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | التحقق من جمع معلومات التصحيح. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | التشخيص |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | تنزيل مجموعة معلومات التصحيح. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | الحالة الصحية |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | تغيير كلمة المرور. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | بدء جمع معلومات التصحيح. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | سرد خدمات F5XC. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | الحالة |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | تنفيذ |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | سجل التنفيذ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | تنفيذ المستخدم |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | اختبار اتصال المضيف |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | إعادة تشغيل العقدة. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | السجل |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | إعادة تشغيل ناعمة. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | عرض تأجيرات DHCP. |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | السماح بـ F5 SSH. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | الحصول على تكوين LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | تحديث تكوين LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | قطع الاتصال. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | عرض معلومات LTE. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | اختبار الاتصال |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | جلب التفريغ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | سرد Tcpdump. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | إيقاف Tcpdump. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | مشاريع JIRA وأنواع المشكلات. |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | التحقق من نظام تتبع التذاكر. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | إنشاء نظام تتبع التذاكر. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | استبدال نظام تتبع التذاكر. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | سرد أنظمة تتبع التذاكر. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | الحصول على نظام تتبع التذاكر. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | حذف نظام تتبع التذاكر. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | الحصول على تكوين USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | تحديث تكوين USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | سرد أجهزة USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | سرد قواعد تمكين USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | إضافة قواعد تمكين USB. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | حذف قواعد تمكين USB. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | الحصول على تكوين WIFI. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | تحديث تكوين WIFI. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | قطع الاتصال. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | عرض معلومات WIFI. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | سرد شبكات WIFI. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./support/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/support.json)

@@ -1,0 +1,141 @@
+---
+title: "\U0001F50C Network API"
+description: BGPピアリング、IPsecトンネル、およびセグメントポリシー。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 5737a59da5b8
+  translator: machine
+---
+
+ASN管理と自律システム関係を持つボーダーゲートウェイプロトコル。暗号化されたチャネルを通じてデータセンターを接続するサイト間VPN。
+
+- **カテゴリ**: ネットワーキング
+- **複雑さ**: 上級
+- **パス数**: 81 | **スキーマ数**: 449
+- **ティア**: Advanced
+- **関連ドメイン**: `virtual`, `network_security`, `dns`
+
+## ユースケース
+
+- BGPルーティングとASN管理の設定
+- IPsecトンネルとIKEフェーズの管理
+- ネットワークコネクタとルートの設定
+- SRv6とサブネッティングの管理
+- セグメント接続とポリシーの定義
+- IPプレフィックスセットの設定
+
+## 主要リソース
+
+- **virtual_network**: サイト接続とセグメンテーションのための仮想ネットワーク
+- **network_connector**: サイト間またはクラウド接続のためのネットワークコネクタ
+- **site_mesh_group**: 複数サイト間のメッシュ接続設定
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/address_allocators` | アドレスアロケータを作成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators` | アドレスアロケータを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | アドレスアロケータを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | アドレスアロケータを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys` | アドバタイズポリシーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys/&#123;metadata.name&#125;` | アドバタイズポリシーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys` | アドバタイズポリシーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | アドバタイズポリシーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | アドバタイズポリシーを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps` | BGPを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps/&#123;metadata.name&#125;` | BGPを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps` | BGPを一覧表示 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | BGPを取得 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | BGPを削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgpstatus/&#123;view_name&#125;` | ビューのBGPステータスを取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets` | BGP ASNセットを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets/&#123;metadata.name&#125;` | BGP ASNセットを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets` | BGP ASNセットを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | BGP ASNセットを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | BGP ASNセットを削除。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_peers` | BGPピア情報を表示。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_routes` | BGPルートを表示。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys` | BGPルーティングポリシーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys/&#123;metadata.name&#125;` | BGPルーティングポリシーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys` | BGPルーティングポリシーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | BGPルーティングポリシーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | BGPルーティングポリシーを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups` | DCクラスターグループを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups/&#123;metadata.name&#125;` | DCクラスターグループを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups` | DCクラスターグループを一覧表示。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dc_cluster_groups/metrics` | メトリクス |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | DCクラスターグループを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | DCクラスターグループを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs` | フォワーディングクラスを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs/&#123;metadata.name&#125;` | フォワーディングクラスを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs` | フォワーディングクラスを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | フォワーディングクラスを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | フォワーディングクラスを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s` | IKEフェーズ1プロファイルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s/&#123;metadata.name&#125;` | IKEフェーズ1プロファイル設定を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s` | IKEフェーズ1プロファイルを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | IKEフェーズ1プロファイル設定を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | IKEフェーズ1プロファイルを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles` | IKEフェーズ1プロファイルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles/&#123;metadata.name&#125;` | IKEフェーズ1プロファイル設定を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles` | IKEフェーズ1プロファイルを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | IKEフェーズ1プロファイル設定を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | IKEフェーズ1プロファイルを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s` | IKEフェーズ2プロファイルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s/&#123;metadata.name&#125;` | IKEフェーズ2プロファイル設定を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s` | IKEフェーズ2プロファイルを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | IKEフェーズ2プロファイル設定を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | IKEフェーズ2プロファイルを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles` | IKEフェーズ2プロファイルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles/&#123;metadata.name&#125;` | IKEフェーズ2プロファイル設定を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles` | IKEフェーズ2プロファイルを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | IKEフェーズ2プロファイル設定を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | IKEフェーズ2プロファイルを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets` | IPプレフィックスセットを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets/&#123;metadata.name&#125;` | IPプレフィックスセットを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets` | IPプレフィックスセットを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | IPプレフィックスセットを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | IPプレフィックスセットを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors` | ネットワークコネクタを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors/&#123;metadata.name&#125;` | ネットワークコネクタを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors` | ネットワークコネクタを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | ネットワークコネクタを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | ネットワークコネクタを削除。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/public_ips/&#123;metadata.name&#125;` | パブリックIPを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips` | パブリックIPを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips/&#123;name&#125;` | パブリックIPを取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes` | ルートを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes/&#123;metadata.name&#125;` | ルートを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes` | ルートを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | ルートを取得 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | ルートを削除。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/routes` | ルートを表示。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/simplified_routes` | 簡易ルートを表示。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices` | SRv6ネットワークスライスを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices/&#123;metadata.name&#125;` | SRv6ネットワークスライスを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices` | SRv6ネットワークスライスを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | SRv6ネットワークスライスを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | SRv6ネットワークスライスを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets` | サブネットを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets/&#123;metadata.name&#125;` | サブネットを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets` | サブネットを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | サブネットを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | サブネットを削除。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/traceroute` | トレースルート。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels` | トンネルを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels/&#123;metadata.name&#125;` | トンネルを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels` | トンネルを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | トンネルを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | トンネルを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | 仮想ネットワークを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | 仮想ネットワークを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | 仮想ネットワークを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 仮想ネットワークを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | 仮想ネットワークを削除。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./network/)
+- [OpenAPI仕様JSON](../specifications/api/network.json)

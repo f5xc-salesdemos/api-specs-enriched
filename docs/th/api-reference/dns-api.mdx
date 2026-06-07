@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: โซนที่มีอำนาจและการจัดการเรคคอร์ด
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+การแก้ไขชื่อด้วยการถ่ายโอนโซนและการตรวจสอบสถานะ รองรับประเภทเรคคอร์ดและการมอบหมาย
+
+- **หมวดหมู่**: เครือข่าย
+- **ความซับซ้อน**: ขั้นสูง
+- **เส้นทาง**: 49 | **สคีมา**: 285
+- **ระดับ**: มาตรฐาน
+- **โดเมนที่เกี่ยวข้อง**: `virtual`, `network`
+
+## กรณีการใช้งาน
+
+- กำหนดค่าการกระจายโหลด DNS
+- จัดการโซนและโดเมน DNS
+- กำหนดค่านโยบายความสอดคล้อง DNS
+- จัดการชุดเรคคอร์ดทรัพยากร (RRSets)
+
+## ทรัพยากรหลัก
+
+- **dns_zone**: โซน DNS ที่มีอำนาจพร้อมความสามารถในการจัดการเรคคอร์ด
+- **dns_domain**: การมอบหมายโดเมน DNS และการตั้งค่าการกำหนดค่า
+- **dns_load_balancer**: การกระจายทราฟฟิกผ่าน DNS พร้อมการกำหนดเส้นทางตามภูมิศาสตร์และการสำรอง
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | สร้าง DNS Compliance Checks |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | แทนที่ DNS Compliance Checks |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | แสดงรายการกำหนดค่า DNS Compliance Checks |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | ดึงข้อมูล DNS Compliance Checks |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | ลบการกำหนดค่า DNS Compliance Checks |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | สร้าง DNS Proxy |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | แทนที่ DNS Proxy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | แสดงรายการกำหนดค่า DNS Proxy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | ดึงข้อมูล DNS Proxy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | ลบการกำหนดค่า DNS Proxy |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | สร้าง DNS Domain |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | แทนที่ DNS Domain |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | ตรวจสอบ DNS Domain |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | แสดงรายการ DNS Domain |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | ดึงข้อมูล DNS Domain |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | ลบ DNS Domain |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | แนะนำค่า |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | สร้าง DNS Load Balancer |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | แทนที่ DNS Load Balancer |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | แสดงรายการ DNS Load Balancer |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | รายการสถานะสุขภาพ DNS Load Balancer |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | รายการสถานะสุขภาพสมาชิกพูล DNS Load Balancer |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | สถานะสุขภาพพูล DNS Load Balancer |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | เหตุการณ์การเปลี่ยนแปลงสถานะสุขภาพสมาชิกพูล DNS Load Balancer |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | ดึงข้อมูล DNS Load Balancer |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | ลบ DNS Load Balancer |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | สถานะสุขภาพ DNS Load Balancer |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | สร้าง DNS Load Balancer Health Check |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | แทนที่ DNS Load Balancer Health Check |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | แสดงรายการ DNS Load Balancer Health Check |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | ดึงข้อมูล DNS Load Balancer Health Check |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | ลบ DNS Load Balancer Health Check |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | สร้าง DNS Load Balancer Pool |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | แทนที่ DNS Load Balancer Pool |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | แสดงรายการ DNS Load Balancer Pool |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | ดึงข้อมูล DNS Load Balancer Pool |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | ลบ DNS Load Balancer Pool |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | โคลนจาก DNSDomain |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | นำเข้าโซน DNS ของ F5 Cloud Services |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | นำเข้าโซน DNS |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | นำเข้าไฟล์ BIND |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | ตรวจสอบไฟล์ BIND |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | สร้างโซน DNS |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | แทนที่โซน DNS |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | ดึงข้อมูลไฟล์โซนท้องถิ่น |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | ดึงข้อมูลไฟล์โซนระยะไกล |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | ส่งออกไฟล์โซน |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | แสดงรายการโซน DNS |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | เมตริกโซน DNS |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | ดึงข้อมูลบันทึกคำขอโซน DNS |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | ดึงข้อมูลโซน DNS |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | ลบโซน DNS |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | สร้าง |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | ดึงข้อมูล |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | ลบ |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | แทนที่ |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | สมัครสมาชิก DNS Management |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | ยกเลิกสมัครสมาชิก DNS Management |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./dns/)
+- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/dns.json)

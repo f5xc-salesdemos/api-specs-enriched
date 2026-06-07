@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 Billing And Usage API"
+description: 'Plans d''abonnement, méthodes de paiement et quotas.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+Transitions de plans, facturation et consommation de ressources. Limites de quotas au niveau du namespace et suivi de l'utilisation.
+
+- **Catégorie** : Platform
+- **Complexité** : modérée
+- **Chemins** : 25 | **Schémas** : 101
+- **Niveau** : Standard
+- **Domaines associés** : `system`, `users`
+
+## Cas d'utilisation
+
+- Gérer les plans d'abonnement et les transitions de facturation
+- Configurer les méthodes de paiement et les factures
+- Suivre l'utilisation des quotas de ressources à travers les namespaces
+- Surveiller les limites d'utilisation et la capacité
+
+## Ressources principales
+
+- **subscription** : Abonnement pour les droits d'accès aux services
+- **quota** : Quota de ressources pour les limites d'utilisation
+- **usage_report** : Rapport d'utilisation pour le suivi de la consommation
+
+## Points de terminaison
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | Résumé de l'utilisation de facturation. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | GetInvoicePdf. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | Lister les factures. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | Définir la carte de crédit comme principale. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | Définir la méthode de paiement comme secondaire. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | Définir la méthode de paiement comme secondaire. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | Créer une spécification de méthode de paiement. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | Supprimer la méthode de paiement spécifiée. |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | GetPlanTransition. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | InitiatePlanTransition. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | Créer un quota. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | Remplacer un quota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | GET personnalisé des limites de quota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | GET de l'utilisation du quota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | Lister les quotas. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | GET Quota |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | Supprimer un quota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | Lister les abonnements. |
+| POST | `/api/web/namespaces/system/addon/subscribe` | S'abonner aux services complémentaires XC. |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | Se désabonner des services complémentaires XC. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | Lister les détails d'utilisation actuelle. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | Lister les détails d'utilisation horaire. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | Lister les détails d'utilisation mensuelle. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | Lister les détails d'utilisation. |
+| GET | `/api/web/namespaces/system/usage_plans/current` | GET du plan d'utilisation actuel. |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | Lister les plans d'utilisation. |
+
+## Liens
+
+- [Référence interactive de l'API](./billing_and_usage/)
+- [Spécification OpenAPI JSON](../specifications/api/billing_and_usage.json)

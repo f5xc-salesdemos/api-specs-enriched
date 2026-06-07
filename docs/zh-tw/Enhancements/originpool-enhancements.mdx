@@ -1,0 +1,265 @@
+---
+title: Origin Pool 增強功能
+description: Origin Pool 結構描述的擴充中繼資料
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+Origin Pool 相關結構描述的擴充中繼資料。請參閱 [OpenAPI 擴充](../development/#openapi-extensions) 以了解擴充定義。
+
+## 已擴充的結構描述
+
+### 模式
+
+所有符合 `origin_pool.*SpecType` 的結構描述都會接收擴充：
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## 必填欄位
+
+| 欄位 | 適用操作 | 備註 |
+|-------|--------------|-------|
+| `metadata.name` | 所有操作 | 1-63 個字元，小寫英數字元，模式：`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | 所有操作 | 命名空間識別碼 |
+| `spec.origin_servers` | 建立 | 最少 1 個項目 |
+| `spec.port` | 建立 | 1-65535，無伺服器預設值 |
+
+## 最小可行配置
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## 伺服器套用的預設值
+
+標記為 `x-f5xc-server-default: true` 的欄位，當請求中省略時，其 `default` 值會由 F5 XC API 伺服器套用。
+
+### 頂層欄位
+
+| 欄位 | 預設值 | 類型 | 說明 |
+|-------|---------------|------|-------------|
+| `no_tls` | `{}` | object | 停用至來源的 TLS |
+| `healthcheck` | `[]` | array | 未配置健康檢查 |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | 輪詢負載平衡 |
+| `endpoint_selection` | `DISTRIBUTED` | enum | 使用所有端點（本地 + 遠端） |
+
+### advanced_options 預設值
+
+當未指定 `advanced_options` 時，伺服器的行為如同設定了以下值：
+
+| 欄位 | 預設值 | 類型 | 說明 |
+|-------|---------------|------|-------------|
+| `connection_timeout` | `2000` | integer | 連線逾時（毫秒） |
+| `http_idle_timeout` | `300000` | integer | HTTP 閒置逾時（毫秒，5 分鐘） |
+| `same_as_endpoint_port` | `{}` | object | 健康檢查使用端點連接埠 |
+| `default_circuit_breaker` | `{}` | object | 預設斷路器設定 |
+| `disable_outlier_detection` | `{}` | object | 停用異常值偵測 |
+| `no_panic_threshold` | `{}` | object | 無恐慌閾值 |
+| `disable_subsets` | `{}` | object | 停用子集負載平衡 |
+| `auto_http_config` | `{}` | object | 自動 HTTP 協定協商 |
+| `disable_proxy_protocol` | `{}` | object | 停用代理協定 |
+| `disable_lb_source_ip_persistance` | `{}` | object | 停用 LB 來源 IP 持久性 |
+
+### 巢狀物件預設值
+
+| 路徑 | 預設值 | 說明 |
+|------|---------------|-------------|
+| `origin_servers[].labels` | `{}` | 空標籤物件 |
+| `origin_servers[].public_name.refresh_interval` | `0` | 使用系統預設 DNS 重新整理 |
+
+## UI 與伺服器預設值的差異
+
+F5 XC Web UI 預先選取的值與省略欄位時 API 套用的值不同。
+
+| 欄位 | UI 預先選取 | 伺服器套用 | 備註 |
+|-------|-----------------|----------------|------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | 省略欄位時，UI 建立的資源與 API 建立的資源不同 |
+
+## 列舉值
+
+### loadbalancer_algorithm
+
+| 值 | 說明 | 備註 |
+|-------|-------------|-------|
+| `ROUND_ROBIN` | 以輪詢順序選取每個健康端點 | 伺服器預設值 |
+| `LEAST_REQUEST` | 選取活躍請求最少的端點 | |
+| `RING_HASH` | 使用端點名稱的環形雜湊進行一致性雜湊 | |
+| `RANDOM` | 隨機選取健康端點 | |
+| `LB_OVERRIDE` | 從父負載平衡器繼承雜湊策略 | UI 預設值 |
+
+### endpoint_selection
+
+| 值 | 說明 | 備註 |
+|-------|-------------|-------|
+| `DISTRIBUTED` | 同時考慮遠端和本地端點 | 伺服器預設值 |
+| `LOCAL_ONLY` | 僅使用本地端點 | |
+| `LOCAL_PREFERRED` | 優先使用本地端點，不可用時退回至遠端 | |
+
+## OneOf 欄位群組
+
+互斥的欄位群組。每個群組只能指定一個欄位：
+
+| 群組 | 欄位 | 伺服器預設值 |
+|-------|--------|----------------|
+| 連接埠配置 | `port`, `automatic_port`, `lb_port` | `port`（明確指定） |
+| 至來源的 TLS | `no_tls`, `use_tls` | `no_tls` |
+| 健康檢查連接埠 | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| 斷路器 | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
+| 異常值偵測 | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| 恐慌閾值 | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
+| 子集 LB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| HTTP 協定 | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
+| 代理協定 | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
+| LB 來源 IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| 連線池 | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## 欄位約束
+
+| 欄位 | 類型 | 約束 |
+|-------|------|------------|
+| `spec.port` | integer | 1-65535 |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 毫秒 |
+| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 毫秒 |
+| `spec.advanced_options.panic_threshold` | integer | 0-100（百分比） |
+| `metadata.name` | string | 1-63 個字元，模式：`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## UI 配置選項
+
+F5 XC Web 主控台為 Origin Pool 提供 15 個配置選項：
+
+| # | UI 標籤 | API 欄位路徑 | 類型 | 伺服器預設值 |
+|---|----------|----------------|------|----------------|
+| 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port`（明確指定） |
+| 2 | Connection Pool Reuse | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | Health Check Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | LoadBalancer Algorithm | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
+| 5 | Endpoint Selection | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
+| 6 | TLS to Origin | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | Connection Timeout | `spec.advanced_options.connection_timeout` | integer | 2000 毫秒 |
+| 8 | HTTP Idle Timeout | `spec.advanced_options.http_idle_timeout` | integer | 300000 毫秒 |
+| 9 | Circuit Breaker | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | Outlier Detection | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | Panic Threshold | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | Subset Load Balancing | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | HTTP Protocol | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | Proxy Protocol | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | LB Source IP Persistence | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## 資料存取
+
+### OpenAPI 規格
+
+| 檔案 | 內容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`、`origin_poolReplaceSpecType`、`origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | 包含所有結構描述的合併規格 |
+
+### validation.json 結構
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # Fields with x-f5xc-server-default: true
+├── recommended         # Fields with x-f5xc-recommended-value
+├── advanced_options    # Nested advanced_options defaults
+├── oneof_choices       # OneOf default selections
+└── ui_vs_server        # UI vs server discrepancies
+```
+
+## Origin Server 類型
+
+Origin Server 可以使用不同的類型變體來指定。類型決定了需要哪些額外欄位。
+
+### 已實作的類型
+
+| 類型 | 說明 | 必填欄位 | 狀態 |
+|------|-------------|-----------------|--------|
+| `public_name` | 具有公用 DNS 名稱的 Origin Server | `dns_name` | ✅ 完成 |
+| `public_ip` | 具有公用 IP 位址的 Origin Server | `ip`（IPv4） | ✅ 完成 |
+
+### 範例：public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### 範例：public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## 待辦：依賴站台的 Origin Server 類型
+
+以下 Origin Server 類型需要開發「站台」資源邏輯後才能實作：
+
+| 類型 | 說明 | 必填欄位 | 狀態 |
+|------|-------------|-----------------|--------|
+| `private_ip` | 具有私有/公用 IP 和站台資訊的 Origin Server | `ip`、`site_locator`、`network_choice`、`snat_pool` | 🔲 等待站台邏輯 |
+| `private_name` | 具有 DNS 名稱和站台資訊的 Origin Server | `dns_name`、`site_locator`、`network_choice`、`snat_pool` | 🔲 等待站台邏輯 |
+| `k8s_service` | 具有站台資訊的 Kubernetes 服務 | `service_name`、`site_locator`、`network_choice` | 🔲 等待站台邏輯 |
+| `consul_service` | 具有站台資訊的 HashiCorp Consul 服務 | `service_name`、`site_locator`、`network_choice` | 🔲 等待站台邏輯 |
+
+### 實作需求
+
+在完整記錄這些類型之前，需要：
+
+1. **站台資源探索** — 記錄 `site` 資源結構描述和 site_locator 模式
+2. **Network Choice 列舉** — 記錄 `network_choice` 的受限值（site_local_inside、site_local_outside 等）
+3. **SNAT Pool 選項** — 記錄 SNAT Pool 配置模式
+4. **跨資源參考** — 定義 origin_pool 如何參考站台資源
+
+### 追蹤
+
+- 配置預留位置：`config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- 相關衝刺：站台資源結構描述擴充
+
+## 相關文件
+
+- [開發指南 - OpenAPI 擴充](../development/#openapi-extensions) — 擴充定義和用法
+- [驗證規格](../validation-spec/) — validation.json 格式和結構
+- [Healthcheck 增強功能](./healthcheck-enhancements/) — Healthcheck 結構描述擴充
+
+## 變更日誌
+
+| 版本 | 日期 | 變更 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | 新增 Origin Server 類型章節，包含 public_name/public_ip；為依賴站台的類型新增 TODO 標記 |
+| 2.1.1 | 2026-01-18 | 改寫為純 API 參考文件；移除下游程式碼範例 |
+| 2.1.0 | 2026-01-18 | 更新為 validation.json 中的統一預設值結構 |
+| 2.0.33 | 2026-01-17 | 初始 Origin Pool 增強功能文件 |

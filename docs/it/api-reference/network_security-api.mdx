@@ -1,0 +1,115 @@
+---
+title: "\U0001F512 Network Security API"
+description: 'Policy NAT, firewall e connessioni tra segmenti.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: adf43856d55c
+  translator: machine
+---
+
+Regole firewall con decisioni di routing basate su sorgente, destinazione o protocollo. La segmentazione isola i carichi di lavoro mentre i proxy in uscita governano l'accesso.
+
+- **Categoria**: Sicurezza
+- **Complessità**: avanzata
+- **Percorsi**: 62 | **Schemi**: 386
+- **Livello**: Avanzato
+- **Domini correlati**: `virtual`, `api`, `network`
+
+## Casi d'uso
+
+- Configurare policy firewall di rete e ACL
+- Gestire policy NAT e port forwarding
+- Configurare il routing basato su policy
+- Definire segmenti di rete e relative policy
+- Configurare policy di forward proxy
+
+## Risorse principali
+
+- **network_policy**: Policy di sicurezza di rete per il filtraggio del traffico
+- **forward_proxy_policy**: Policy di forward proxy per il controllo del traffico in uscita
+- **network_firewall**: Firewall di rete per la protezione del traffico a livello 3/4
+
+## Endpoint
+
+| Metodo | Percorso | Descrizione |
+|--------|----------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | Crea Forward Proxy Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | Sostituisci Forward Proxy Policy. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | Hit Forward Proxy Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | Elenca Configurazione Forward Proxy Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | GET Forward Proxy Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | DELETE Configurazione Forward Proxy Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | Crea Vista Network Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | Sostituisci Vista Network Policy. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | Hit Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | Elenca Configurazione Vista Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | GET Vista Network Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | DELETE Configurazione Vista Network Policy. |
+| GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | Elenca |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | Crea Fast ACL. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | Sostituisci Fast ACL. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Hit Fast ACL. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | Elenca Fast ACL. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | GET Fast ACL. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | DELETE Fast ACL. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | Crea Regola Fast ACL. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | Sostituisci Regola Fast ACL. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | Elenca Regola Fast ACL. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | GET Regola Fast ACL. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | DELETE Regola Fast ACL. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | Crea Specifica. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | Sostituisci Specifica. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | Elenca Filter Set. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | Trova Filter Set per 1 o più chiavi di contesto. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | GET Specifica. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | DELETE Filter Set. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | Crea NAT Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | Sostituisci NAT Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | Elenca NAT Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | GET NAT Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | DELETE NAT Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | Crea Network Firewall. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | Sostituisci Network Firewall. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | Elenca Network Firewall. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | GET Network Firewall. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | DELETE Network Firewall. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | Crea Network Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | Sostituisci Network Policy. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | Hit Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | Elenca Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | GET Network Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | DELETE Network Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | Crea Regola Network Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | Sostituisci Regola Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | Elenca Regola Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | GET Regola Network Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | DELETE Regola Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | Elenca Set Network Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | GET Set Network Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | Crea Routing basato su Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | Sostituisci Routing basato su Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | Elenca Routing basato su Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | GET Routing basato su Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | DELETE Routing basato su Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | Crea segmento. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | Sostituisci segmento. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | Elenca Segmento. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | Segmento |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | GET segmento. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | DELETE Segmento. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | Sostituisci connettore di segmento. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | Elenca Connettore di Segmento. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | GET connettore di segmento. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | Crea Service Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | Sostituisci Service Policy. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | Hit Service Policy. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | Latenza Service Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | Elenca Service Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | GET Service Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | DELETE Service Policy. |
+
+## Link
+
+- [Riferimento API interattivo](./network_security/)
+- [Specifica OpenAPI JSON](../specifications/api/network_security.json)

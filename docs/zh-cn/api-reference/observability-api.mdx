@@ -1,0 +1,106 @@
+---
+title: "\U0001F4CA 可观测性 API"
+description: 合成健康检查和 DNS 解析验证。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 6a6373e33031
+  translator: machine
+---
+
+HTTP 可用性探测与延迟测量。证书过期告警和全局状态仪表板，用于基础设施健康监控。
+
+- **类别**：运维
+- **复杂度**：中等
+- **路径数**：56 | **模式数**：196
+- **层级**：标准
+- **相关领域**：`statistics`、`support`
+
+## 使用场景
+
+- 配置合成监控
+- 定义监控和测试策略
+- 管理可观测性仪表板
+
+## 主要资源
+
+- **log_receiver**：用于集中日志收集的日志接收器
+- **metrics_receiver**：用于集中指标收集的指标接收器
+- **alert_policy**：用于监控和通知的告警策略
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| GET | `/api/data/namespaces/system/all_ns_alerts` | 获取告警。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | 获取告警。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | 获取告警历史。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | 告警历史聚合。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | 告警历史滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | 告警历史滚动查询。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | 创建 DNS 监控器。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | 替换 DNS 监控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | 获取已过滤的 DNS 监控器列表。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | 列出 DNS 监控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | 获取 DNS 监控器。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | 删除 DNS 监控器。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | 创建 HTTP 监控器。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | 更新 HTTP 监控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | 获取已过滤的 HTTP 监控器列表。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | 列出 HTTP 监控器。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | 获取 HTTP 监控器。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | 删除 HTTP 监控器。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | 访问日志查询 V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | 访问日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | 访问日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | 访问日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | 审计日志查询 V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | 审计日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | 防火墙日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | 防火墙日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | 平台事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | 平台事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 审计日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 审计日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s 事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s 事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | 订阅可观测性服务。 |
+| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | 取消订阅可观测性合成监控。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | 获取证书报告详情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | 获取证书摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | 获取 DNS 监控摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | 获取 DNS 监控健康状态。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | 获取全局历史。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | 获取全局摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | 获取合成监控健康检查。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | 获取 HTTP 监控详情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | 获取 HTTP 监控摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | 获取 HTTP 监控健康状态。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | 获取指标查询数据。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | 获取监控事件。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | 获取监控历史。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | 获取记录类型摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | 获取来源摘要。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | 建议值。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | 获取 TLS 报告详情。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | 获取 TLS 报告摘要。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | 获取 TLS 摘要。 |
+
+## 链接
+
+- [交互式 API 参考](./observability/)
+- [OpenAPI 规范 JSON](../specifications/api/observability.json)

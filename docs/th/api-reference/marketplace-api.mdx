@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA Marketplace API"
+description: 'บริการเสริม, คอนเนกเตอร์ และนโยบาย TPM'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+การจัดเตรียมอุโมงค์ GRE และ IPSec ของบุคคลที่สามพร้อมตัวจับเวลา DPD การจัดสรรทรัพยากรร่วมข้าม namespace พร้อมการควบคุมการวางตำแหน่ง tile
+
+- **หมวดหมู่**: Platform
+- **ความซับซ้อน**: ปานกลาง
+- **Paths**: 36 | **Schemas**: 183
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `bigip`, `admin`
+
+## กรณีการใช้งาน
+
+- เข้าถึงการผสานรวมและส่วนเสริมของบุคคลที่สาม
+- จัดการส่วนขยาย marketplace
+- กำหนดค่า Terraform และการผสานรวมภายนอก
+- จัดการนโยบาย TPM
+
+## ทรัพยากรหลัก
+
+- **marketplace_item**: รายการ marketplace สำหรับแคตตาล็อกบริการ
+- **subscription**: การสมัครสมาชิกสำหรับสิทธิ์การใช้บริการ
+
+## Endpoints
+
+| Method | Path | คำอธิบาย |
+|--------|------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | ดูรายละเอียดบริการเสริม |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | สถานะการเปิดใช้งานบริการเสริม |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | สถานะการเปิดใช้งานบริการเสริมทั้งหมด |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | แสดงรายการบริการเสริม |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | ดูบริการเสริม |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | สร้างการสมัครสมาชิกบริการเสริม |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | แทนที่การสมัครสมาชิกบริการเสริม |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | แสดงรายการการสมัครสมาชิกบริการเสริม |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | ดูการสมัครสมาชิกบริการเสริม |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | ลบการสมัครสมาชิกบริการเสริม |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | สร้าง Central Manager Instance |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | แทนที่ Central Manager Instance |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | แสดงรายการ Central Manager Instance |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | ดู Central Manager Instance |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | ลบ Central Manager Instance |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | สร้างการกำหนดค่า external_connector |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า external_connector |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | แสดงรายการการกำหนดค่า External Connector |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | ดูการกำหนดค่า external_connector |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | ลบการกำหนดค่า External Connector |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | แสดงรายการ Navigation Tile |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | ดู Navigation Tile |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | ลงทะเบียนบัญชี AWS ใหม่ |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | สมัครบัญชี AWS |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | แสดงรายการแผน |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | ดูแผน |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | แทนที่แอปพลิเคชันบุคคลที่สาม |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | ดูการกำหนดค่าความปลอดภัยสำหรับแอปพลิเคชันบุคคลที่สาม |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | แสดงรายการแอปพลิเคชันบุคคลที่สาม |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | ดูแอปพลิเคชันบุคคลที่สาม |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | สร้างโทเค็น |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | ดูออบเจกต์ภายในสำหรับ view |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | บังคับลบ view |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | เรียกใช้ Terraform Action สำหรับ view |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | ดูพารามิเตอร์ Terraform สำหรับ view |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | ดูสถานะของ Terraform สำหรับ view |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | สมัคร XC SaaS |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | ดูรายละเอียดการลงทะเบียน |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | ส่งอีเมลสมัครสมาชิก |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./marketplace/)
+- [ไฟล์ข้อกำหนด OpenAPI JSON](../specifications/api/marketplace.json)

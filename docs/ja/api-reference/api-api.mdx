@@ -1,0 +1,92 @@
+---
+title: "\U0001F510 Api API"
+description: インターフェース定義、スキーマバリデーション、およびグルーピング。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 0b685fbf7c03
+  translator: machine
+---
+
+自動分類およびセキュリティプロファイリングによるリソースカタログ化。組織階層は、機能または保護ポリシーによってアクセスをセグメント化します。
+
+- **カテゴリ**: セキュリティ
+- **複雑度**: 上級
+- **パス**: 45 | **スキーマ**: 279
+- **ティア**: Advanced
+- **関連ドメイン**: `virtual`, `network_security`
+
+## ユースケース
+
+- APIの検出とカタログ化
+- APIセキュリティと動作のテスト
+- API認証情報の管理
+- APIグループとテストポリシーの定義
+
+## 主要リソース
+
+- **api_definition**: 検出と保護のためのAPIスキーマ定義
+- **api_endpoint**: 個別のAPIエンドポイント設定と保護
+- **api_rate_limit**: トラフィック制御のためのAPIレート制限設定
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers` | APIクローラーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers/&#123;metadata.name&#125;` | APIクローラーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers` | APIクローラーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | APIクローラーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | APIクローラーを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions` | API定義を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions/&#123;metadata.name&#125;` | API定義を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions` | API定義を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | API定義を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | API定義を削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/loadbalancers` | 参照元ロードバランサーを取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/mark_as_non_api` | 非APIとしてマーク。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/move_to_inventory` | APIインベントリに移動。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/remove_from_inventory` | APIインベントリから削除。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/unmark_as_non_api` | 非APIマークを解除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions_without_shared` | 利用可能なAPI定義を一覧表示。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys` | APIディスカバリーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys/&#123;metadata.name&#125;` | APIディスカバリーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys` | APIディスカバリーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | APIディスカバリーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | APIディスカバリーを削除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups` | APIグループを一覧表示。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups/&#123;name&#125;` | APIグループを取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements` | APIグループ要素を一覧表示。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements/&#123;name&#125;` | APIグループ要素を取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings` | APIテストを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings/&#123;metadata.name&#125;` | APIテストを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings` | APIテストを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | APIテストを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | APIテストを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups` | APIグループを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups/&#123;metadata.name&#125;` | APIグループを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups` | アプリAPIグループを一覧表示。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/evaluate` | APIグループを評価。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/stats` | APIグループを評価。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | APIグループを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | アプリAPIグループを削除。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/api_endpoint_protection` | APIエンドポイント保護ルールを提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/data_exposure` | 機密データルールを提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/oas_validation` | Open API仕様バリデーションルールを提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/rate_limit` | レート制限ルールを提案。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations` | コードベースインテグレーションを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations/&#123;metadata.name&#125;` | コードベースインテグレーションを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations` | コードベースインテグレーションを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | コードベースインテグレーションを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | コードベースインテグレーションを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys` | ディスカバリーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys/&#123;metadata.name&#125;` | ディスカバリーを置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/discovery/&#123;name&#125;/download_certificates` | 証明書をダウンロード。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys` | ディスカバリーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | ディスカバリーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | ディスカバリーを削除。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./api/)
+- [OpenAPI仕様JSON](../specifications/api/api.json)

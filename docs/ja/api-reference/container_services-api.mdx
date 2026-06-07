@@ -1,0 +1,56 @@
+---
+title: "\U0001F4E6 コンテナサービス API"
+description: コンテナ化されたワークロードと仮想 Kubernetes クラスター。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09062506475b
+  translator: machine
+---
+
+フルクラスターの複雑さを伴わない Pod オーケストレーション。エッジサイトでの実行、クォータの適用、分散アプリケーション向けの標準化されたコンピュートプロファイル。
+
+- **カテゴリ**: インフラストラクチャ
+- **複雑度**: 中程度
+- **パス数**: 13 | **スキーマ数**: 159
+- **ティア**: Advanced
+- **関連ドメイン**: `managed_kubernetes`, `sites`, `service_mesh`
+
+## ユースケース
+
+- マルチテナントワークロード用の XCCS（コンテナサービス）名前空間をデプロイする
+- 簡素化されたオーケストレーションでコンテナワークロードを管理する
+- 分散エッジコンテナデプロイメントを構成する
+- フル K8s の複雑さなしにコンテナ化されたアプリケーションを実行する
+
+## 主要リソース
+
+- **virtual_k8s**: コンテナワークロード用の仮想 Kubernetes 名前空間
+- **workload**: コンテナワークロードのデプロイメント構成
+- **pod_security_policy**: コンテナランタイム制約のための Pod セキュリティポリシー
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | Virtual Kubernetes を作成する。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | Virtual Kubernetes を置換する。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | Virtual Kubernetes を一覧表示する。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes を取得する。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | Virtual Kubernetes を削除する。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads` | ワークロードを作成する。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads/&#123;metadata.name&#125;` | ワークロードを置換する。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads` | ワークロードを一覧表示する。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/workloads/usage` | 使用量メトリクス。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ワークロードを取得する。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ワークロードを削除する。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors` | ワークロードフレーバーを作成する。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors/&#123;metadata.name&#125;` | フレーバーを置換する。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors` | ワークロードフレーバーを一覧表示する。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ワークロードフレーバーを取得する。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ワークロードフレーバーを削除する。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./container_services/)
+- [OpenAPI 仕様 JSON](../specifications/api/container_services.json)

@@ -1,0 +1,318 @@
+---
+title: Specifica di Validazione
+description: Struttura e contenuti della specifica di validazione
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+Questo documento descrive la struttura e i contenuti della specifica di validazione pubblicata dal progetto api-specs-enriched.
+
+## Panoramica
+
+La specifica di validazione consolida i vincoli di validazione delle API, i valori predefiniti e i metadati di configurazione in un singolo file JSON. Questa specifica viene generata dalle specifiche OpenAPI arricchite e pubblicata insieme ad esse.
+
+**Posizione di pubblicazione**: `docs/specifications/api/validation.json`
+
+## Struttura della Specifica
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## Sezioni
+
+### required_fields
+
+Specifica i campi obbligatori per ciascun tipo di operazione per risorsa.
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+Definisce i valori consentiti per i campi vincolati.
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+Valori predefiniti di validazione a livello di tipo e regole basate su pattern.
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+Regole di validazione basate su pattern dei nomi dei campi con punteggi di confidenza.
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+Tutti i valori predefiniti organizzati per tipo di risorsa in una struttura unificata.
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### Categorie di Valori Predefiniti
+
+| Categoria | Descrizione | Origine |
+|----------|-------------|--------|
+| `server_applied` | Valori applicati dall'API quando i campi vengono omessi | Test su API live |
+| `recommended` | Valori precompilati dalla console web F5 XC | Analisi dell'interfaccia utente |
+| `advanced_options` | Valori predefiniti annidati all'interno degli oggetti advanced_options | Scoperta tramite API |
+| `oneof_choices` | Selezioni predefinite delle varianti OneOf | Comportamento dell'API |
+| `oneof_recommended` | Varianti OneOf raccomandate | Valori predefiniti della console |
+| `nested_recommended` | Valori raccomandati per gli schemi annidati | Analisi dell'interfaccia utente |
+| `ui_vs_server` | Casi in cui i valori predefiniti dell'interfaccia utente differiscono da quelli dell'API | Analisi comparativa |
+
+### conditional_requirements
+
+Campi mutuamente esclusivi e dipendenze condizionali.
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+Configurazioni minime funzionanti con esempi operativi.
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Mappatura delle Estensioni OpenAPI
+
+Le specifiche OpenAPI arricchite incorporano metadati di validazione utilizzando queste estensioni:
+
+| Estensione | Scopo | Posizione |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | Campi obbligatori in base al contesto | Proprietà dello schema |
+| `x-f5xc-server-default` | Contrassegna i valori predefiniti applicati dal server | Proprietà dello schema |
+| `x-f5xc-recommended-value` | Valore predefinito raccomandato | Proprietà dello schema |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf raccomandata | Definizioni dello schema |
+| `x-f5xc-conditions` | Requisiti condizionali | Proprietà dello schema |
+| `x-f5xc-minimum-configuration` | Esempi di configurazione minima | Definizioni dello schema |
+| `x-f5xc-validation` | Vincoli derivati dalla scoperta | Proprietà dello schema |
+
+## Accesso ai Dati
+
+### URL di Pubblicazione
+
+| Origine | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### Percorso Locale
+
+Dopo l'esecuzione della pipeline: `docs/specifications/api/validation.json`
+
+## Versionamento
+
+La specifica di validazione segue il versionamento semantico nel campo `version`:
+
+| Tipo di Modifica | Incremento di Versione | Esempio |
+|-------------|--------------|---------|
+| Modifiche strutturali incompatibili | Major | Rinomina di campi, sezioni rimosse |
+| Nuove regole di validazione o risorse | Minor | Nuovi valori predefiniti per le risorse |
+| Correzioni di bug o aggiornamenti delle descrizioni | Patch | Correzioni di errori tipografici |
+
+## Priorità di Riconciliazione
+
+Quando più fonti forniscono vincoli, la priorità di riconciliazione è:
+
+1. **Esistente** - Vincoli nella specifica OpenAPI originale (priorità più alta)
+2. **Scoperta** - Vincoli derivanti dalla scoperta tramite API live
+3. **Inferito** - Vincoli derivanti dalla corrispondenza di pattern (priorità più bassa)
+
+## Documentazione Correlata
+
+- [Healthcheck Enhancements](./Enhancements/healthcheck-enhancements/) - Arricchimenti dello schema degli healthcheck
+- [Origin Pool Enhancements](./Enhancements/originpool-enhancements/) - Arricchimenti dello schema degli origin pool
+- [CLAUDE.md](../../CLAUDE.md) - Istruzioni per l'assistente AI
+- [DEVELOPMENT.md](./development/) - Guida per sviluppatori
+
+## Registro delle Modifiche
+
+| Versione | Data | Modifiche |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | Riscritto come puro riferimento API; aggiunte le categorie oneof_recommended e nested_recommended |
+| 2.1.0 | 2026-01-18 | Struttura unificata dei valori predefiniti che sostituisce le sezioni frammentate |
+| 2.0.0 | 2026-01-15 | Specifica di validazione iniziale |

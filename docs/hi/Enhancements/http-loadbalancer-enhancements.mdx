@@ -1,0 +1,516 @@
+---
+title: HTTP LoadBalancer एन्हांसमेंट्स
+description: HTTP लोड बैलेंसर स्कीमाओं के लिए एनरिचमेंट मेटाडेटा
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+HTTP लोड बैलेंसर स्कीमाओं के लिए एनरिचमेंट मेटाडेटा। एक्सटेंशन परिभाषाओं के लिए [OpenAPI Extensions](../development/#openapi-extensions) देखें।
+
+## एनरिच्ड स्कीमाएँ
+
+### पैटर्न
+
+`viewshttp_loadbalancer.*SpecType` से मिलान करने वाली सभी स्कीमाओं को एनरिचमेंट प्राप्त होती है:
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## न्यूनतम कॉन्फ़िगरेशन मेटाडेटा
+
+`x-f5xc-minimum-configuration` एक्सटेंशन न्यूनतम व्यवहार्य HTTP लोड बैलेंसर बनाने के लिए व्यापक CLI मेटाडेटा प्रदान करता है।
+
+### आवश्यक फ़ील्ड
+
+| फ़ील्ड | बाधा | विवरण |
+|-------|-----------|-------------|
+| `metadata.name` | DNS लेबल प्रारूप: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | संसाधन का नाम |
+| `metadata.namespace` | DNS लेबल प्रारूप | नेमस्पेस |
+| `spec.domains` | ऐरे, min_items: 1 | सेवा प्रदान करने वाले डोमेन |
+
+### लोड बैलेंसर प्रकार (OneOf आवश्यक)
+
+निम्नलिखित लोड बैलेंसर प्रकारों में से एक निर्दिष्ट करना आवश्यक है:
+
+| वैरिएंट | विवरण |
+|---------|-------------|
+| `spec.http` | केवल HTTP |
+| `spec.https` | मैनुअल प्रमाणपत्र के साथ HTTPS |
+| `spec.https_auto_cert` | स्वचालित प्रमाणपत्र के साथ HTTPS |
+| `spec.http_https` | HTTP और HTTPS दोनों |
+
+**नोट**: लोड बैलेंसर प्रकार OneOf समूह को इस प्रकार संदर्भित किया जाता है:
+- कॉन्फ़िगरेशन फ़ाइलों में `lb_type` (`config/minimum_configs.yaml` में संक्षिप्त रूप)
+- OpenAPI स्पेक नेटिव एक्सटेंशन में `loadbalancer_type` (नेटिव फ़ील्ड नाम)
+
+**API स्कीमा संदर्भ**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### न्यूनतम व्यवहार्य कॉन्फ़िगरेशन
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## सर्वर-लागू डिफ़ॉल्ट
+
+`x-f5xc-server-default: true` से चिह्नित फ़ील्ड का `default` मान F5 XC API सर्वर द्वारा लागू किया जाता है जब अनुरोधों से छोड़ दिया जाता है। HTTP लोड बैलेंसर में बड़ी संख्या में सर्वर-लागू डिफ़ॉल्ट हैं क्योंकि अधिकांश सुरक्षा सुविधाएँ और प्रोटोकॉल विकल्प डिफ़ॉल्ट रूप से अक्षम या सुरक्षित स्थिति में होते हैं।
+
+### HTTPS Auto-Cert डिफ़ॉल्ट
+
+जब `https_auto_cert` निर्दिष्ट किया जाता है, तो सर्वर छोड़े गए फ़ील्ड के लिए ये डिफ़ॉल्ट लागू करता है:
+
+| फ़ील्ड | डिफ़ॉल्ट मान | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS लिसनिंग पोर्ट |
+| `http_redirect` | `false` | boolean | HTTP से HTTPS रीडायरेक्ट |
+| `add_hsts` | `false` | boolean | HTTP Strict Transport Security हेडर |
+| `tls_config.default_security` | `{}` | object | मजबूत साइफर के साथ TLS 1.2+ |
+| `no_mtls` | `{}` | object | म्यूचुअल TLS अक्षम |
+| `default_header` | `{}` | object | डिफ़ॉल्ट सर्वर नाम हेडर हैंडलिंग |
+| `enable_path_normalize` | `{}` | object | पाथ नॉर्मलाइज़ेशन सक्षम |
+| `default_loadbalancer` | `{}` | object | डिफ़ॉल्ट लोड बैलेंसर सेटिंग्स |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | लीगेसी हेडर ट्रांसफॉर्मेशन |
+| `connection_idle_timeout` | `120000` | integer | कनेक्शन आइडल टाइमआउट मिलीसेकंड में (2 मिनट) |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 और HTTP/2 सक्षम |
+| `coalescing_options.default_coalescing` | `{}` | object | डिफ़ॉल्ट HTTP/2 कनेक्शन कोलेसिंग |
+
+### सुरक्षा सुविधा डिफ़ॉल्ट
+
+छोड़े जाने पर सभी सुरक्षा सुविधाएँ डिफ़ॉल्ट रूप से अक्षम होती हैं:
+
+| फ़ील्ड | डिफ़ॉल्ट मान | विवरण |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | वेब एप्लिकेशन फ़ायरवॉल अक्षम |
+| `disable_bot_defense` | `{}` | बॉट डिफेंस अक्षम |
+| `disable_rate_limit` | `{}` | रेट लिमिटिंग अक्षम |
+| `disable_api_discovery` | `{}` | API डिस्कवरी अक्षम |
+| `disable_api_testing` | `{}` | API टेस्टिंग अक्षम |
+| `disable_api_definition` | `{}` | API डेफ़िनिशन अक्षम |
+| `disable_malware_protection` | `{}` | मैलवेयर प्रोटेक्शन अक्षम |
+| `disable_client_side_defense` | `{}` | क्लाइंट-साइड डिफेंस अक्षम |
+| `disable_ip_reputation` | `{}` | IP रेपुटेशन अक्षम |
+| `disable_threat_mesh` | `{}` | थ्रेट मेश अक्षम |
+| `disable_malicious_user_detection` | `{}` | दुर्भावनापूर्ण उपयोगकर्ता पहचान अक्षम |
+
+### DDoS और एक्सेस कंट्रोल डिफ़ॉल्ट
+
+| फ़ील्ड | डिफ़ॉल्ट मान | विवरण |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | DDoS ट्रैफ़िक ब्लॉक करें (डिफ़ॉल्ट मिटिगेशन एक्शन) |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | डिफ़ॉल्ट RPS थ्रेशोल्ड का उपयोग करें |
+| `l7_ddos_protection.clientside_action_none` | `{}` | कोई क्लाइंट-साइड DDoS सत्यापन नहीं |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | कोई DDoS पॉलिसी संदर्भ नहीं |
+| `no_challenge` | `{}` | कोई क्लाइंट चैलेंज नहीं |
+| `user_id_client_ip` | `{}` | क्लाइंट IP द्वारा उपयोगकर्ताओं की पहचान करें |
+| `disable_trust_client_ip_headers` | `{}` | क्लाइंट IP हेडर पर विश्वास न करें |
+
+### अन्य सर्वर-लागू डिफ़ॉल्ट
+
+| फ़ील्ड | डिफ़ॉल्ट मान | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | सार्वजनिक डिफ़ॉल्ट VIP पर विज्ञापित करें |
+| `round_robin` | `{}` | object | राउंड-रॉबिन लोड बैलेंसिंग एल्गोरिदम |
+| `add_location` | `true` | boolean | प्रतिक्रियाओं में लोकेशन हेडर जोड़ें |
+| `system_default_timeouts` | `{}` | object | सिस्टम डिफ़ॉल्ट टाइमआउट का उपयोग करें |
+| `service_policies_from_namespace` | `{}` | object | नेमस्पेस से सर्विस पॉलिसीज़ इनहेरिट करें |
+| `default_sensitive_data_policy` | `{}` | object | डिफ़ॉल्ट संवेदनशील डेटा पॉलिसी का उपयोग करें |
+
+## पारस्परिक रूप से अनन्य फ़ील्ड समूह
+
+`x-f5xc-conflicts-with` से चिह्नित फ़ील्ड OneOf पैटर्न इंगित करती हैं। प्रत्येक समूह से केवल एक फ़ील्ड निर्दिष्ट की जा सकती है।
+
+### मूल कॉन्फ़िगरेशन समूह
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | लोड बैलेंसर प्रोटोकॉल प्रकार |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | लोड बैलेंसर को कैसे विज्ञापित करें |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | ट्रैफ़िक वितरण एल्गोरिदम |
+
+### HTTPS कॉन्फ़िगरेशन समूह (10 समूह)
+
+#### TLS कॉन्फ़िगरेशन
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS सुरक्षा स्तर |
+| `mtls` | `no_mtls`, `use_mtls` | म्यूचुअल TLS सक्षम या अक्षम |
+
+#### प्रोटोकॉल और हेडर
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP प्रोटोकॉल संस्करण |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP हेडर ट्रांसफॉर्मेशन प्रकार |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | सर्वर नाम हेडर हैंडलिंग |
+
+#### कनेक्शन प्रबंधन
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | पाथ नॉर्मलाइज़ेशन सक्षम या अक्षम |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | डिफ़ॉल्ट या गैर-डिफ़ॉल्ट लोड बैलेंसर |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 कनेक्शन कोलेसिंग विकल्प |
+
+### सुरक्षा सुविधा समूह (11 समूह)
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | वेब एप्लिकेशन फ़ायरवॉल |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | बॉट पहचान और मिटिगेशन |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | रेट लिमिटिंग |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API डिस्कवरी |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API टेस्टिंग |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API डेफ़िनिशन |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | मैलवेयर प्रोटेक्शन |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | क्लाइंट-साइड डिफेंस |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP रेपुटेशन |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | थ्रेट मेश |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | दुर्भावनापूर्ण उपयोगकर्ता पहचान |
+
+### DDoS प्रोटेक्शन समूह (4 समूह)
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS मिटिगेशन एक्शन |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | प्रति सेकंड अनुरोध थ्रेशोल्ड |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | क्लाइंट-साइड DDoS सत्यापन एक्शन |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS पॉलिसी संदर्भ या कोई नहीं |
+
+### अन्य सेटिंग्स समूह (6 समूह)
+
+| समूह नाम | फ़ील्ड | विवरण |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | बॉट पहचान के लिए क्लाइंट चैलेंज प्रकार |
+| `user_identification` | `user_id_client_ip`, `user_identification` | उपयोगकर्ता पहचान विधि |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | क्लाइंट IP हेडर पर विश्वास करें या नहीं |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | सिस्टम डिफ़ॉल्ट या कस्टम टाइमआउट का उपयोग करें |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | नेमस्पेस या सक्रिय सूची से सर्विस पॉलिसीज़ |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | डिफ़ॉल्ट या कस्टम संवेदनशील डेटा पॉलिसी का उपयोग करें |
+
+## OneOf वैरिएंट अनुशंसाएँ (भविष्य का एक्सटेंशन)
+
+**स्थिति**: अभी तक http_loadbalancer स्कीमाओं पर लागू नहीं किया गया है।
+
+हेल्थचेक के विपरीत, जिसमें OneOf समूहों के लिए सबसे सामान्य विकल्प इंगित करने के लिए `x-f5xc-recommended-oneof-variant` शामिल है, http_loadbalancer में वर्तमान में यह एक्सटेंशन नहीं है।
+
+### हेल्थचेक के साथ तुलना
+
+**हेल्थचेक** (लागू):
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP LoadBalancer** (अभी तक लागू नहीं):
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # अनुशंसित lb_type वैरिएंट इंगित करेगा
+```
+
+### भविष्य का कार्यान्वयन
+
+http_loadbalancer के लिए यह एक्सटेंशन जोड़ने के लिए:
+1. F5 XC कंसोल डिफ़ॉल्ट चयनों का अवलोकन करें (उदा., UI में कौन सा lb_type पूर्व-चयनित है)
+2. `config/discovered_defaults.yaml` में कॉन्फ़िगरेशन जोड़ें
+3. एक्सटेंशन लागू करने के लिए एनरिचमेंट पाइपलाइन पुनः चलाएँ
+
+**जोड़े जाने पर अपेक्षित संरचना**:
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # उदाहरण - सत्यापन आवश्यक
+```
+
+यह एक्सटेंशन डाउनस्ट्रीम टूल्स को उपयोगकर्ताओं को कॉन्फ़िगरेशन विकल्प प्रस्तुत करते समय सबसे अधिक उपयोग किए जाने वाले वैरिएंट को पूर्व-चयनित करने में सक्षम बनाएगा।
+
+## बाधा मेटाडेटा
+
+`x-f5xc-constraints` से चिह्नित फ़ील्ड में API विश्लेषण से खोजी गई सत्यापन बाधाएँ शामिल होती हैं।
+
+### ऐरे बाधाएँ
+
+| फ़ील्ड | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### इंटीजर बाधाएँ
+
+| फ़ील्ड | न्यूनतम | अधिकतम | डिफ़ॉल्ट | विवरण |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS पोर्ट नंबर |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | कनेक्शन आइडल टाइमआउट (मिलीसेकंड, 1s से 1h) |
+
+### एनम बाधाएँ
+
+| फ़ील्ड | मान | डिफ़ॉल्ट | विवरण |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS सुरक्षा स्तर |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP हेडर ट्रांसफॉर्मेशन |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP प्रोटोकॉल संस्करण |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 कनेक्शन कोलेसिंग |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | लोड बैलेंसिंग एल्गोरिदम |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | लेयर 7 DDoS मिटिगेशन एक्शन |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | DDoS पहचान के लिए RPS थ्रेशोल्ड |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | क्लाइंट-साइड DDoS सत्यापन |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | क्लाइंट चैलेंज प्रकार |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | लोड बैलेंसर विज्ञापन |
+
+## गाइडेड वर्कफ़्लो एकीकरण
+
+एनरिचमेंट पाइपलाइन स्पेक स्तर पर `x-f5xc-guided-workflows` मेटाडेटा जोड़ती है। ये वर्कफ़्लो AI सहायकों और CLI टूल्स द्वारा उपभोग किए जाने वाले चरण-दर-चरण डिप्लॉयमेंट मार्गदर्शन प्रदान करते हैं।
+
+### HTTP लोड बैलेंसर डिप्लॉय करें
+
+बैकएंड ऑरिजिन पूल के साथ पूर्ण रूप से कॉन्फ़िगर HTTP लोड बैलेंसर बनाने के लिए 5-चरणीय वर्कफ़्लो (`config/guided_workflows.yaml` में परिभाषित):
+
+| चरण | एक्शन | संसाधन | आवश्यक फ़ील्ड | वैकल्पिक |
+|------|--------|----------|-----------------|----------|
+| 1 | ऑरिजिन पूल बनाएँ | `origin_pool` | `name`, `origin_servers`, `port` | नहीं |
+| 2 | हेल्थ चेक कॉन्फ़िगर करें | `healthcheck` | `name`, `http_health_check` | हाँ |
+| 3 | हेल्थ चेक अटैच करें | - | - | हाँ |
+| 4 | HTTP लोड बैलेंसर बनाएँ | `http_loadbalancer` | `name`, `domains`, `http.port` | नहीं |
+| 5 | डिप्लॉयमेंट सत्यापित करें | - | - | नहीं |
+
+**पूर्वापेक्षाएँ**: लक्ष्य टेनेंट में वैध नेमस्पेस, IP या DNS के माध्यम से बैकएंड एप्लिकेशन पहुँच योग्य, SSL प्रमाणपत्र (HTTPS के लिए वैकल्पिक)।
+
+### TLS के साथ HTTPS लोड बैलेंसर डिप्लॉय करें
+
+SSL/TLS टर्मिनेशन के साथ HTTPS लोड बैलेंसर बनाने के लिए 7-चरणीय वर्कफ़्लो:
+
+| चरण | एक्शन | संसाधन | आवश्यक फ़ील्ड | वैकल्पिक |
+|------|--------|----------|-----------------|----------|
+| 1 | SSL प्रमाणपत्र अपलोड करें | `certificate` | `name`, `certificate_chain`, `private_key` | नहीं |
+| 2 | ऑरिजिन पूल बनाएँ | `origin_pool` | `name`, `origin_servers` | नहीं |
+| 3 | हेल्थ चेक कॉन्फ़िगर करें | `healthcheck` | - | हाँ |
+| 4 | WAF पॉलिसी कॉन्फ़िगर करें | `app_firewall` | - | हाँ |
+| 5 | HTTPS लोड बैलेंसर बनाएँ | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | नहीं |
+| 6 | WAF पॉलिसी अटैच करें | - | - | हाँ |
+| 7 | HTTPS डिप्लॉयमेंट सत्यापित करें | - | - | नहीं |
+
+**पूर्वापेक्षाएँ**: लक्ष्य टेनेंट में वैध नेमस्पेस, SSL प्रमाणपत्र और प्राइवेट कुंजी, बैकएंड एप्लिकेशन पहुँच योग्य।
+
+### वर्कफ़्लो उपभोग
+
+डाउनस्ट्रीम टूल्स इन वर्कफ़्लो का उपयोग उपयोगकर्ताओं को बहु-चरणीय डिप्लॉयमेंट के माध्यम से मार्गदर्शन करने के लिए करते हैं:
+
+- **xcsh CLI**: वर्कफ़्लो को इंटरैक्टिव गाइडेड कमांड के रूप में प्रस्तुत करता है (उदा., `xcsh deploy http-lb`)
+- **VS Code एक्सटेंशन**: प्रगति ट्रैकिंग के साथ साइडबार पैनल में वर्कफ़्लो चरण दिखाता है
+- **AI सहायक**: वर्कफ़्लो चरणों का क्रमिक रूप से पालन करते हैं, प्रत्येक संसाधन बनाते हैं और निर्भरताओं को मान्य करते हैं
+
+## OpenAPI एक्सटेंशन संदर्भ
+
+ये वेंडर एक्सटेंशन F5 XC-विशिष्ट मेटाडेटा को व्यक्त करने के लिए मानक OpenAPI स्कीमा में जोड़े जाते हैं।
+
+### x-f5xc-cli-domain
+
+**प्रकार**: `string`
+
+CLI और टूलिंग संगठन के लिए डोमेन वर्गीकरण इंगित करता है।
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**प्रकार**: `object`
+
+न्यूनतम व्यवहार्य कॉन्फ़िगरेशन बनाने के लिए व्यापक मेटाडेटा प्रदान करता है। इसमें शामिल हैं:
+- विवरण
+- बाधाओं के साथ आवश्यक फ़ील्ड
+- पारस्परिक रूप से अनन्य समूह
+- उदाहरण कॉन्फ़िगरेशन (YAML, JSON)
+- curl कमांड उदाहरण
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**प्रकार**: `boolean`
+
+जब `true` हो, तो यह इंगित करता है कि संलग्न `default` मान F5 XC API सर्वर द्वारा लागू किया जाता है। इस एक्सटेंशन वाले फ़ील्ड को API अनुरोधों से सुरक्षित रूप से छोड़ा जा सकता है -- सर्वर स्वचालित रूप से डिफ़ॉल्ट लागू करता है।
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**प्रकार**: `array of strings`
+
+उन फ़ील्ड नामों को सूचीबद्ध करता है जो वर्तमान फ़ील्ड के साथ पारस्परिक रूप से अनन्य हैं, जो OneOf पैटर्न इंगित करते हैं।
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**प्रकार**: `object`
+
+ऐरे आकार सीमा, इंटीजर रेंज, विशिष्टता आवश्यकताओं और डिस्कवरी मेटाडेटा सहित सत्यापन बाधाएँ प्रदान करता है।
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short और x-f5xc-description-medium
+
+**प्रकार**: `string`
+
+विभिन्न उपयोग मामलों के लिए वैकल्पिक विवरण लंबाई प्रदान करता है:
+- `x-f5xc-description-short`: अधिकतम 60 अक्षर (CLI कॉलम, बैज)
+- `x-f5xc-description-medium`: अधिकतम 150 अक्षर (टूलटिप्स, सारांश)
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**प्रकार**: `any` (फ़ील्ड प्रकार से मिलान करता है)
+
+दस्तावेज़ीकरण और टूलिंग के लिए ठोस फ़ील्ड उदाहरण प्रदान करता है।
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**प्रकार**: `array of strings`
+
+फ़्लैग का उपयोग करके संदर्भ-विशिष्ट आवश्यकताओं को इंगित करता है: `minimum_config`, `create`, `update`, `read`।
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## डेटा एक्सेस
+
+### OpenAPI स्पेसिफिकेशन
+
+| फ़ाइल | सामग्री |
+|------|---------|
+| `docs/specifications/api/virtual.json` | एनरिचमेंट के साथ सभी http_loadbalancer स्कीमाएँ |
+| `docs/specifications/api/openapi.json` | सभी स्कीमाओं के साथ मर्ज की गई स्पेसिफिकेशन |
+
+### कॉन्फ़िगरेशन फ़ाइलें
+
+| फ़ाइल | उद्देश्य |
+|------|---------|
+| `config/minimum_configs.yaml` | न्यूनतम कॉन्फ़िगरेशन मेटाडेटा का स्रोत |
+| `config/constraint_patterns.yaml` | बाधा पैटर्न परिभाषाएँ |
+| `config/guided_workflows.yaml` | गाइडेड वर्कफ़्लो चरण परिभाषाएँ |
+| `config/domain_descriptions.yaml` | डोमेन-स्तरीय विवरण मेटाडेटा |
+
+### एनरिच्ड स्कीमाएँ
+
+- `viewshttp_loadbalancerCreateSpecType` - क्रिएट ऑपरेशन स्कीमा
+- `viewshttp_loadbalancerReplaceSpecType` - अपडेट ऑपरेशन स्कीमा
+- `viewshttp_loadbalancerGetSpecType` - रीड ऑपरेशन स्कीमा
+
+## संबंधित दस्तावेज़ीकरण
+
+- [डेवलपमेंट गाइड - OpenAPI Extensions](../development/#openapi-extensions) - एक्सटेंशन परिभाषाएँ और उपयोग
+- [हेल्थचेक एन्हांसमेंट्स](./healthcheck-enhancements/) - हेल्थचेक स्कीमा एनरिचमेंट (`x-f5xc-recommended-oneof-variant` शामिल)
+- [ऑरिजिन पूल एन्हांसमेंट्स](./originpool-enhancements/) - ऑरिजिन पूल स्कीमा एनरिचमेंट
+- [बाधा मेटाडेटा गाइड](../constraint-metadata/) - विस्तृत बाधा सत्यापन दस्तावेज़ीकरण
+
+## परिवर्तन लॉग
+
+| संस्करण | दिनांक | परिवर्तन |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | सर्वर-लागू डिफ़ॉल्ट, गाइडेड वर्कफ़्लो एकीकरण, और विस्तारित न्यूनतम कॉन्फ़िग अनुभाग जोड़ा गया |
+| 2.0.45 | 2026-01-20 | प्रारंभिक http_loadbalancer एनरिचमेंट दस्तावेज़ीकरण |

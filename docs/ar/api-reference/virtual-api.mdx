@@ -1,0 +1,200 @@
+---
+title: ⚖️ Virtual API
+description: موازنة أحمال HTTP و TCP و UDP مع مجموعات الأصل.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: afc0bba07925
+  translator: machine
+---
+
+توزيع حركة المرور عبر المناطق مع قواعد التوجيه. فحوصات الصحة وسياسات تجاوز الفشل.
+
+- **الفئة**: الشبكات
+- **التعقيد**: متقدم
+- **المسارات**: 133 | **المخططات**: 903
+- **المستوى**: متقدم
+- **النطاقات ذات الصلة**: `dns`، `service_policy`، `network`
+
+## حالات الاستخدام
+
+- تكوين موازنات أحمال HTTP/TCP/UDP
+- إدارة مجموعات الأصل والخدمات
+- تكوين المضيفات الافتراضية والتوجيه
+- تعريف سياسات محدد المعدل والخدمة
+- إدارة التوجيه المستند إلى الموقع الجغرافي
+- تكوين سياسات الوكيل والتوجيه
+- إدارة الحماية من البرامج الضارة وحملات التهديد
+- تكوين فحوصات الصحة ومراقبة نقاط النهاية
+
+## الموارد الأساسية
+
+- **http_loadbalancer**: موازن أحمال HTTP/HTTPS من الطبقة 7 لتوزيع حركة مرور التطبيقات
+- **tcp_loadbalancer**: موازن أحمال TCP/UDP من الطبقة 4 لحركة مرور البروتوكولات غير HTTP
+- **origin_pool**: مجموعة خوادم خلفية لتوزيع حركة مرور موازن الأحمال
+- **healthcheck**: تكوين مراقبة الصحة لتوفر خوادم الأصل
+- **app_firewall**: سياسة جدار حماية تطبيقات الويب لحماية حركة مرور HTTP
+- **service_policy**: قواعد التحكم في الوصول على مستوى الخدمة وإدارة حركة المرور
+- **malicious_user_detection**: الكشف التلقائي والتخفيف من سلوك المستخدمين الخبيثين
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|--------|------|-------------|
+| POST | `/api/data/namespaces/system/app_firewall/all_ns_metrics` | مقاييس جميع مساحات الأسماء. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls` | إنشاء جدار حماية التطبيق. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls/&#123;metadata.name&#125;` | استبدال جدار حماية التطبيق. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_firewall/metrics` | المقاييس |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls` | قائمة جدار حماية التطبيق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | الحصول على جدار حماية التطبيق. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | حذف جدار حماية التطبيق. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_events` | استعلام أحداث الأمان لجميع مساحات الأسماء. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_events/aggregation` | استعلام تجميع أحداث الأمان لجميع مساحات الأسماء. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_search/loadbalancers` | البحث في موازنات الأحمال لجميع مساحات الأسماء. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events` | استعلام أحداث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/aggregation` | استعلام تجميع أحداث الأمان. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | استعلام تمرير أحداث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | استعلام تمرير أحداث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | استعلام حوادث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | استعلام تجميع حوادث الأمان. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | استعلام تمرير حوادث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | استعلام تمرير حوادث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/metrics` | مقاييس أحداث الأمان. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/search/loadbalancers` | البحث في موازنات الأحمال. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs` | استعلام سجلات المستخدمين المشبوهين. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | استعلام تجميع سجلات المستخدمين المشبوهين. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | استعلام تمرير سجلات المستخدمين المشبوهين. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | استعلام تمرير سجلات المستخدمين المشبوهين. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | اقتراح قاعدة حماية نقطة نهاية API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | اقتراح قاعدة حظر العميل. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/data_exposure/suggestion` | اقتراح قاعدة البيانات الحساسة. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | اقتراح قاعدة التخفيف من DDoS. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | اقتراح قاعدة التحقق من مواصفات Open API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/rate_limit/suggestion` | اقتراح قاعدة تحديد المعدل. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | اقتراح قاعدة الثقة بالعميل. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | اقتراح قاعدة استثناء WAF. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters` | إنشاء مجموعة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters/&#123;metadata.name&#125;` | استبدال مجموعة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/clusters` | قائمة المجموعات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | الحصول على مجموعة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | حذف مجموعة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers` | إنشاء موازن أحمال HTTP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers/&#123;metadata.name&#125;` | استبدال موازن أحمال HTTP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | قائمة تكوين موازن أحمال HTTP. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | الحصول على تكوين الأمان لموازن أحمال HTTP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | الحصول على موازن أحمال HTTP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | حذف تكوين موازن أحمال HTTP. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | تعيين تعريف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | قائمة تعريفات API المتاحة. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | الحصول على نقاط نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | الحصول على مواصفات Swagger لموازن أحمال HTTP. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | الحصول على تحديثات مخطط نقاط نهاية API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | تحديث مخططات نقاط نهاية API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | الحصول على قواعد التخفيف التلقائي من DoS لموازن أحمال HTTP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | حذف قاعدة التخفيف التلقائي من DoS لموازن أحمال HTTP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | الحصول على معلومات DNS. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | تعيين عتبة RPS لـ L7 DDoS. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections` | إنشاء فحص البروتوكول. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections/&#123;metadata.name&#125;` | استبدال فحص البروتوكول. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | قائمة تكوين فحص البروتوكول. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | الحصول على فحص البروتوكول. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | حذف تكوين فحص البروتوكول. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers` | إنشاء موازن أحمال TCP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers/&#123;metadata.name&#125;` | استبدال موازن أحمال TCP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | قائمة تكوين موازن أحمال TCP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | الحصول على موازن أحمال TCP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | حذف تكوين موازن أحمال TCP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | الحصول على معلومات DNS. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers` | إنشاء موازن أحمال UDP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers/&#123;metadata.name&#125;` | استبدال موازن أحمال UDP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | قائمة تكوين موازن أحمال UDP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | الحصول على موازن أحمال UDP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | حذف تكوين موازن أحمال UDP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | الحصول على معلومات DNS. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | إنشاء سياسة جدار الحماية المحسّنة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | استبدال سياسة جدار الحماية المحسّنة. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | إصابات سياسة جدار الحماية المحسّنة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | قائمة سياسة جدار الحماية المحسّنة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | الحصول على سياسة جدار الحماية المحسّنة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | حذف سياسة جدار الحماية المحسّنة. |
+| POST | `/api/config/namespaces/system/malware_protection/addon/subscribe` | الاشتراك في الحماية من البرامج الضارة. |
+| POST | `/api/config/namespaces/system/malware_protection/addon/unsubscribe` | إلغاء الاشتراك في الحماية من البرامج الضارة. |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets` | إنشاء الموقع الجغرافي. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets/&#123;metadata.name&#125;` | استبدال مجموعة الموقع الجغرافي. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets` | قائمة مجموعة الموقع الجغرافي. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | الحصول على مجموعة الموقع الجغرافي. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | حذف مجموعة الموقع الجغرافي. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks` | إنشاء فحص الصحة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks/&#123;metadata.name&#125;` | استبدال فحص الصحة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | قائمة فحص الصحة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | الحصول على فحص الصحة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | حذف فحص الصحة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | إنشاء مجموعة الأصل. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | استبدال مجموعة الأصل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | قائمة مجموعة الأصل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | الحصول على مجموعة الأصل. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | حذف مجموعة الأصل. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies` | إنشاء وكيل. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies/&#123;metadata.name&#125;` | استبدال وكيل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies` | قائمة الوكيل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | الحصول على وكيل |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | حذف وكيل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | الحصول على شهادة CA لخادم الوكيل. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys` | إنشاء المواصفة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys/&#123;metadata.name&#125;` | استبدال المواصفة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | قائمة سياسة محدد المعدل. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | الحصول على المواصفة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | حذف سياسة محدد المعدل. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | إنشاء سياسة الخدمة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | استبدال سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | قائمة سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | الحصول على سياسة الخدمة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | حذف سياسة الخدمة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules` | إنشاء قاعدة سياسة الخدمة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules/&#123;metadata.name&#125;` | استبدال قاعدة سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules` | قائمة قاعدة سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | الحصول على قاعدة سياسة الخدمة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | حذف قاعدة سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets` | قائمة مجموعة سياسة الخدمة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets/&#123;name&#125;` | الحصول على مجموعة سياسة الخدمة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts` | إنشاء مضيف افتراضي. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts/&#123;metadata.name&#125;` | استبدال مضيف افتراضي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts` | قائمة المضيف الافتراضي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | الحصول على مضيف افتراضي. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | حذف مضيف افتراضي. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_definitions/assign` | تعيين تعريف API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint` | الحصول على نقطة نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | الحصول على المخطط المُتعلَّم لكل نقطة نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | الحصول على PDF نقطة نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | الحصول على مخطط OpenApi المصدر ذي الصلة لكل نقطة نهاية API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/unmerge_sources_openapi_schema` | إلغاء دمج المصدر من نقطة نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints` | الحصول على نقاط نهاية API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | الحصول على إحصائيات نقاط نهاية API للمضيف الافتراضي. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | الحصول على إجمالي استدعاءات API للمضيف الافتراضي. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | الحصول على أعلى نقاط نهاية API للمضيف الافتراضي. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_sensitive_data` | الحصول على ملخص البيانات الحساسة للمضيف الافتراضي. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/swagger_spec` | الحصول على مواصفات Swagger لنوع التطبيق. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | الحصول على تحديثات مخطط نقاط نهاية API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | تحديث مخططات نقاط نهاية API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/create_ticket` | إنشاء تذكرة لثغرة أمنية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | الحصول على معلومات DNS. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/unlink_tickets` | إلغاء ربط التذاكر. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | الحصول على الثغرات الأمنية للمضيف الافتراضي. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | تحديث الثغرات الأمنية للمضيف الافتراضي. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/rule_hits` | مقاييس إصابات قواعد العميل. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/security_events` | مقاييس أحداث أمان العميل. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | مقاييس إصابات قواعد الخادم. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | مقاييس أحداث أمان الخادم. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys` | إنشاء سياسة استثناء WAF. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys/&#123;metadata.name&#125;` | استبدال سياسة استثناء WAF. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | قائمة سياسة استثناء WAF. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | الحصول على سياسة استثناء WAF. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | حذف سياسة استثناء WAF. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/active_staged_signatures` | التوقيعات المرحلية النشطة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/released_signatures` | التوقيعات المُصدَرة. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/staged_signatures` | التوقيعات المرحلية. |
+
+## الروابط
+
+- [مرجع API التفاعلي](./virtual/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/virtual.json)

@@ -1,0 +1,521 @@
+---
+title: Development Guide
+description: F5 XC APIエンリッチメントパイプラインの開発ワークフロー
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+このガイドでは、F5 XC APIエンリッチメントパイプラインの開発ワークフローについて説明します。
+
+## クイックスタート
+
+### 初回セットアップ
+
+```bash
+# リポジトリのクローン
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# 仮想環境の作成と依存関係のインストール
+make install
+
+# pre-commitフックのインストール
+make pre-commit-install
+
+# スペックのダウンロードとパイプラインの実行
+make build
+
+# ドキュメントのローカルプレビュー
+make serve
+```
+
+### 日常の開発
+
+```bash
+# クイックリビルド（キャッシュされたスペックを使用）
+make rebuild
+
+# すべての品質チェックを実行
+make pre-commit-run
+
+# ドキュメントのプレビュー
+make serve
+```
+
+## アーキテクチャ概要
+
+### 2フォルダ設計
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### パイプラインフロー
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### ディレクトリ構成
+
+| ディレクトリ | 用途 | Git状態 |
+|-----------|---------|------------|
+| `specs/original/` | F5ソーススペック | Gitignored |
+| `specs/discovered/` | APIディスカバリ出力 | トラッキング対象（openapi.json、session.json） |
+| `docs/specifications/api/` | 生成されたドメインスペック | Gitignored |
+| `scripts/` | Pythonパイプラインスクリプト | トラッキング対象 |
+| `config/` | パイプライン設定 | トラッキング対象 |
+| `reports/` | 生成されたレポート | Gitignored |
+
+## ワークフローパターン
+
+### 1. ディスカバリワークフロー
+
+**前提条件**:
+- F5 XC環境へのVPN接続
+- 有効なAPIクレデンシャル
+
+```bash
+# クレデンシャルの設定
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# ディスカバリの実行
+make discover
+
+# 結果の確認
+jq '.statistics' specs/discovered/session.json
+
+# CI/CD用にコミット
+make push-discovery
+```
+
+**ディスカバリで取得される情報**:
+- 実際の必須/オプションフィールド
+- ライブレスポンスからのenum値
+- デフォルト値
+- パターンバリデーション
+- レスポンスの例
+
+### 2. リリースワークフロー
+
+リリースは自動化されています：
+
+1. 日次スケジュール（UTC 6:00 AM）またはmainへのプッシュでワークフローがトリガーされます
+2. ETagチェックによりF5スペックの変更を検出します
+3. パイプラインがスペックを処理しエンリッチします
+4. バージョンはgitタグから計算されます: `git describe --tags --abbrev=0`
+5. 直接コミット + タグが作成されます（バージョンバンプPRなし）
+6. 変更ログ付きのGitHub Releaseが作成されます
+7. ドキュメントがGitHub Pagesにデプロイされます
+
+**バージョンバンプルール**:
+
+| 条件 | バンプタイプ | 例 |
+|-----------|-----------|---------|
+| コミットに`[major]`を含む | メジャー | 1.0.0 → 2.0.0 |
+| コミットに`BREAKING CHANGE`を含む | メジャー | 1.0.0 → 2.0.0 |
+| 新しいドメインスペックが追加された | マイナー | 1.0.0 → 1.1.0 |
+| その他の変更 | パッチ | 1.0.0 → 1.0.1 |
+
+### 3. 開発ワークフロー
+
+```bash
+# フィーチャーブランチの作成
+git checkout -b feature/my-change
+
+# 設定やスクリプトの変更
+
+# ローカルでテスト
+make pipeline
+make lint
+
+# コミット（pre-commitフックが自動的に実行されます）
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# プッシュしてPRを作成
+git push -u origin feature/my-change
+gh pr create
+```
+
+## ディスカバリ詳細
+
+### ディスカバリとは？
+
+ディスカバリはライブのF5 XC APIを探索し、以下を発見します：
+
+- **ドキュメント化されていない制約**: OpenAPIでマークされていない必須フィールド
+- **実際のenum値**: 本番環境で確認された実際の値
+- **デフォルトの挙動**: フィールドが省略された場合にサーバーが適用する値
+- **レスポンスパターン**: 実際のデータ構造
+
+### ディスカバリ設定
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### ディスカバリ拡張
+
+ディスカバリはスペックに`x-discovered-*`拡張を追加します：
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### 制約分析レポート
+
+```bash
+make constraint-report
+# 出力: reports/constraint-analysis.md
+```
+
+## リリースプロセス
+
+### リリースパッケージの内容
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # マスター統合スペック
+├── openapi.yaml       # YAML形式
+├── domains/           # 個別ドメインスペック
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # メタデータ
+├── CHANGELOG.md       # リリースノート
+└── README.md          # 使用方法
+```
+
+### 手動ワークフロートリガー
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## 設定ガイド
+
+### エンリッチメント設定
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### 正規化設定
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Spectralリンティングルール
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## OpenAPI拡張
+
+エンリッチメントパイプラインは、バリデーションおよびデフォルト値のメタデータを埋め込むためにベンダー拡張を使用します。
+
+### 拡張カテゴリ
+
+| 拡張 | 意味 | 影響 |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | フィールドが省略された場合にF5 XC APIサーバーがこの値を適用する | フィールドはオプション。省略するとドキュメント化されたデフォルトの挙動が適用される |
+| `x-f5xc-recommended-value` | F5 XCウェブコンソールが新しいリソースに対してこの値を事前入力する | サーバーデフォルトはないが、この値が一般的な設定を表す |
+| `x-f5xc-recommended-oneof-variant` | F5 XCコンソールがこのOneOfバリアントを事前選択する | 相互排他的な複数のオプションが存在する場合の一般的な選択肢を示す |
+| `x-f5xc-conflicts-with` | このフィールドと同時に使用できない他のプロパティを列挙する | プロパティはOneOfグループの一部。競合するプロパティのうち1つのみ指定可能 |
+
+### 必須フィールド拡張
+
+| 拡張 | ソース | 用途 |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | F5 XCオリジナルスペック | フィールドに非ゼロ/非空の値が必要 |
+| `x-f5xc-required-for` | エンリッチメントパイプライン | コンテキスト固有の必須ステータス |
+
+**x-f5xc-required-forコンテキスト**:
+- `create`: リソース作成時に必須
+- `update`: リソース更新時に必須
+- `minimum_config`: 最小限の実用的な設定に必須
+
+### デフォルト値およびOneOf拡張
+
+| 拡張 | 用途 |
+|-----------|---------|
+| `x-f5xc-server-default: true` | サーバー適用デフォルトのマーク |
+| `x-f5xc-recommended-value` | F5 XCコンソールの事前入力値 |
+| `x-f5xc-recommended-oneof-variant` | 推奨OneOfバリアント |
+| `x-f5xc-conflicts-with` | 他のOneOfプロパティとの相互排他性 |
+
+#### x-f5xc-server-default
+
+**型**: `boolean`
+
+`true`の場合、付随する`default`値がF5 XC APIサーバーによって適用されることを示します。この拡張を持つフィールドはAPIリクエストから安全に省略でき、サーバーがデフォルトを自動的に適用します。
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**型**: `any`（フィールドの型に一致）
+
+F5 XCウェブコンソールが事前入力のデフォルトとして使用する値を指定します。この値はサーバーで強制されるものではありませんが、コンソール経由で作成される新しいリソースの一般的な初期設定を表します。
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**型**: `object`（グループ名からバリアント名へのマップ）
+
+相互排他的なフィールドグループを持つスキーマにおいて、デフォルトまたは最も一般的な選択肢となるバリアントを示します。キーはOneOfグループ名、値は推奨バリアントのフィールド名です。
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**型**: 文字列の`array`
+
+**追加**: v3.2.0（Issue #494）
+
+OneOfグループメンバー間の相互排他関係を宣言します。`x-ves-oneof-field-*`拡張から自動導出されます。これにより、下流ツール（Terraform、CLI、MCP）がランタイムではなくスキーマレベルで競合を検証できます。
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**ユースケース**:
+- Terraformプロバイダーがバリデーションルールを生成できる
+- CLIツールが競合するフィールドの組み合わせについて警告できる
+- AIアシスタントが正しいOneOf設定を生成できる
+- IDE拡張機能が競合を考慮した自動補完を提供できる
+
+**ソース**: パイプラインエンリッチメント中にF5ネイティブの`x-ves-oneof-field-*`拡張から自動導出。
+
+### バリデーションルールの影響
+
+エンリッチャーは`x-ves-validation-rules`を検査して必須ステータスを推論します：
+
+| ルール | 影響 |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | フィールドは必須 |
+| `ves.io.schema.rules.uint32.gte: N` | N >= 1かつサーバーデフォルトがない場合、フィールドは必須 |
+| `ves.io.schema.rules.repeated.min_items: N` | N >= 1の場合、配列は最低N個のアイテムが必要 |
+| `ves.io.schema.rules.string.min_bytes: N` | N >= 1の場合、文字列は最低Nバイトが必要 |
+
+### サーバー適用デフォルトを持つリソース
+
+一部のリソースは、サーバーがデフォルトを適用するため、空のスペックを受け入れます：
+
+| リソース | サーバー適用デフォルト |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`、`default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`、`user_identification: []` |
+| `api_definition` | `swagger_specs: []`、デフォルトの`api_groups` |
+| `healthcheck` | `jitter: 0`、`jitter_percent: 0`、ネストされたhttp_health_checkデフォルト |
+
+これらのリソースでは、`x-ves-required`が`true`であっても、`x-f5xc-required-for.create`が`false`になる場合があります。
+
+### デフォルト値パターン
+
+| パターン | 型 | 例 |
+|---------|------|---------|
+| `\{\}` | 空オブジェクト（選択肢の選択） | `monitoring: \{\}` |
+| `[]` | 空配列 | `expected_status_codes: []` |
+| `0` | 数値 | `jitter: 0` |
+| `""` | 文字列 | `expected_response: ""` |
+| `false` | ブール値 | `use_http2: false` |
+
+### ディスカバリしたデフォルトの追加
+
+1. API経由で最小限のスペックを使用してF5 XCにリソースを作成する
+2. リソースを読み戻してサーバー適用の値を確認する
+3. `config/discovered_defaults.yaml`にデフォルトをドキュメント化する
+4. パイプラインを実行する: `make pipeline`
+5. 確認する: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## トラブルシューティング
+
+### Pre-commitに時間がかかりすぎる
+
+一貫性を確保するため、パイプラインはコミットごとに実行されます。作業中のコミットの場合：
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# 最終コミット前に実行: make pre-commit-run
+```
+
+### ディスカバリが失敗する
+
+```bash
+# VPNの確認
+ping your-tenant.console.ves.volterra.io
+
+# クレデンシャルの確認
+echo $F5XC_API_TOKEN | head -c 10
+
+# API URLフォーマットの確認
+echo $F5XC_API_URL
+# フォーマット: https://tenant.console.ves.volterra.io/api
+```
+
+### 生成されたスペックのリントエラー
+
+```bash
+# リントレポートの確認
+cat reports/lint-report.json | jq '.errors'
+```
+
+問題は出力ファイルではなく、エンリッチメント/正規化の設定で修正してください。
+
+### バージョンシステム
+
+バージョンはgitタグ（例: `v2.0.38`）から導出され、同時PRでのマージコンフリクトを引き起こしていた競合状態を排除します。
+
+```python
+# バージョンはgitタグから動的に計算されます
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### クローン後にスペックが見つからない
+
+生成されたスペックはgitignoreされています：
+
+```bash
+make build  # すべてをダウンロードして生成します
+```
+
+### 大きなファイルがブロックされる
+
+`.pre-commit-config.yaml`に除外設定を追加してください：
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## クイックリファレンス
+
+### Makeターゲット
+
+| ターゲット | 説明 |
+|--------|-------------|
+| `make build` | フルビルド（ダウンロード + パイプライン） |
+| `make rebuild` | クイックリビルド（ダウンロードをスキップ） |
+| `make download` | スペックのダウンロード（ETagキャッシュ） |
+| `make download-force` | 強制ダウンロード |
+| `make pipeline` | エンリッチメントパイプラインの実行 |
+| `make lint` | Spectralリンティング |
+| `make serve` | ローカルドキュメントサーバー |
+| `make discover` | APIディスカバリ（VPN必須） |
+| `make push-discovery` | ディスカバリデータのコミット |
+| `make clean` | 生成ファイルの削除 |
+| `make pre-commit-run` | すべての品質チェックの実行 |
+
+### 環境変数
+
+| 変数 | 用途 |
+|----------|---------|
+| `F5XC_API_URL` | F5 XCテナントAPI URL |
+| `F5XC_API_TOKEN` | API認証トークン |
+
+### 主要ファイル
+
+| ファイル | 用途 |
+|------|---------|
+| `.etag` | 最後にダウンロードしたETag |
+| `CHANGELOG.md` | 自動生成された変更ログ |
+| `config/enrichment.yaml` | エンリッチメントルール |
+| `config/normalization.yaml` | 正規化ルール |
+| `config/discovery.yaml` | ディスカバリ設定 |
+| `config/spectral.yaml` | リンティングルール |
+| `scripts/utils/version_calculator.py` | タグベースのバージョン計算 |
+
+**注意**: バージョンは`.version`ファイルからではなく、gitタグ（例: `v2.0.38`）から導出されます。

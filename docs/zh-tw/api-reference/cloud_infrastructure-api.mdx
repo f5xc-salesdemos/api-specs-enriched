@@ -1,0 +1,76 @@
+---
+title: ☁️ 雲端基礎架構 API
+description: AWS、Azure、GCP 連接器與 VPC 附接。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: ff903a0f3c99
+  translator: machine
+---
+
+多雲供應商連線，包含閘道對等互連與網路路徑配置。憑證保險庫整合與子網路列舉。
+
+- **類別**：基礎架構
+- **複雜度**：中等
+- **路徑**：31 | **結構描述**：208
+- **層級**：標準
+- **相關領域**：`sites`、`customer_edge`
+
+## 使用案例
+
+- 連線至雲端供應商（AWS、Azure、GCP）
+- 管理雲端憑證與驗證
+- 配置雲端連線與彈性佈建
+- 連結與管理雲端區域
+
+## 主要資源
+
+- **aws_vpc_site**：AWS VPC 站點部署，含邊緣節點佈建
+- **azure_vnet_site**：Azure VNet 站點部署，含邊緣節點佈建
+- **gcp_vpc_site**：Google Cloud VPC 站點部署，含邊緣節點佈建
+- **cloud_credentials**：用於站點部署的雲端供應商驗證憑證
+
+## 端點
+
+| 方法 | 路徑 | 說明 |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | 列出認證硬體。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | 取得認證硬體。 |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | 重新套用 VPC 附接。 |
+| POST | `/api/data/namespaces/system/cloud_connects/metrics` | 所有 Cloud Connect 指標。 |
+| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | 所有 Cloud Connect 區段指標。 |
+| POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | Cloud Connect 指標。 |
+| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | Cloud Connect VPC 探索。 |
+| POST | `/api/config/namespaces/system/edge_credentials` | 雲端憑證。 |
+| GET | `/api/config/namespaces/system/edge_list` | 邊緣清單 |
+| POST | `/api/data/namespaces/system/top/cloud_connects` | 熱門 Cloud Connect。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | 建立 Cloud Connect。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | 取代 Cloud Connect。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | 列出 Cloud Connect。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | 取得 Cloud Connect。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | 刪除 Cloud Connect。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | 建立雲端憑證。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | 取代雲端憑證。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | 列出雲端憑證。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | 取得雲端憑證。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | 刪除雲端憑證。 |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | 強制刪除雲端彈性 IP。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | 建立雲端彈性 IP。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | 取代雲端彈性 IP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | 列出雲端彈性 IP。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | 取得雲端彈性 IP。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | 刪除雲端彈性 IP。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | 取代雲端區域。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | 列出雲端區域。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | 取得雲端區域。 |
+| POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | CloudLink |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | 建立 CloudLink。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | 取代 CloudLink。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | 列出 CloudLink。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | 取得 CloudLink。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | 刪除 CloudLink。 |
+
+## 連結
+
+- [互動式 API 參考](./cloud_infrastructure/)
+- [OpenAPI 規格 JSON](../specifications/api/cloud_infrastructure.json)

@@ -1,0 +1,76 @@
+---
+title: ☁️ 클라우드 인프라 API
+description: 'AWS, Azure, GCP 커넥터 및 VPC 연결.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: ff903a0f3c99
+  translator: machine
+---
+
+게이트웨이 피어링 및 네트워크 경로 구성을 포함한 멀티 클라우드 공급자 연결. 자격 증명 저장소 통합 및 서브넷 열거.
+
+- **카테고리**: 인프라
+- **복잡도**: 보통
+- **경로**: 31 | **스키마**: 208
+- **티어**: Standard
+- **관련 도메인**: `sites`, `customer_edge`
+
+## 사용 사례
+
+- 클라우드 공급자(AWS, Azure, GCP)에 연결
+- 클라우드 자격 증명 및 인증 관리
+- 클라우드 연결 및 탄력적 프로비저닝 구성
+- 클라우드 리전 연결 및 관리
+
+## 주요 리소스
+
+- **aws_vpc_site**: 엣지 노드 프로비저닝을 포함한 AWS VPC 사이트 배포
+- **azure_vnet_site**: 엣지 노드 프로비저닝을 포함한 Azure VNet 사이트 배포
+- **gcp_vpc_site**: 엣지 노드 프로비저닝을 포함한 Google Cloud VPC 사이트 배포
+- **cloud_credentials**: 사이트 배포를 위한 클라우드 공급자 인증 자격 증명
+
+## 엔드포인트
+
+| 메서드 | 경로 | 설명 |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | 인증 하드웨어 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | 인증 하드웨어 조회. |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | VPC 연결 재적용. |
+| POST | `/api/data/namespaces/system/cloud_connects/metrics` | 전체 Cloud Connect 메트릭. |
+| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | 전체 Cloud Connect 세그먼트 메트릭. |
+| POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | Cloud Connect 메트릭. |
+| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | Cloud Connect VPC 검색. |
+| POST | `/api/config/namespaces/system/edge_credentials` | 클라우드 자격 증명. |
+| GET | `/api/config/namespaces/system/edge_list` | 엣지 목록 |
+| POST | `/api/data/namespaces/system/top/cloud_connects` | 상위 Cloud Connect. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | Cloud Connect 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | Cloud Connect 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | Cloud Connect 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | Cloud Connect 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | Cloud Connect 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | 클라우드 자격 증명 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | 클라우드 자격 증명 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | 클라우드 자격 증명 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | 클라우드 자격 증명 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | 클라우드 자격 증명 삭제. |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | 클라우드 탄력적 IP 강제 삭제. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | 클라우드 탄력적 IP 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | 클라우드 탄력적 IP 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | 클라우드 탄력적 IP 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | 클라우드 탄력적 IP 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | 클라우드 탄력적 IP 삭제. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | 클라우드 리전 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | 클라우드 리전 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | 클라우드 리전 조회. |
+| POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | CloudLink |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | CloudLink 생성. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | CloudLink 교체. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | CloudLink 목록 조회. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | CloudLink 조회. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | CloudLink 삭제. |
+
+## 링크
+
+- [대화형 API 레퍼런스](./cloud_infrastructure/)
+- [OpenAPI 사양 JSON](../specifications/api/cloud_infrastructure.json)

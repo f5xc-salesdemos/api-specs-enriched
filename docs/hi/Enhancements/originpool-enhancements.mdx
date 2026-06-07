@@ -1,0 +1,265 @@
+---
+title: Origin Pool संवर्द्धन
+description: Origin pool स्कीमा के लिए एनरिचमेंट मेटाडेटा
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+origin_pool-संबंधित स्कीमा के लिए एनरिचमेंट मेटाडेटा। एक्सटेंशन परिभाषाओं के लिए [OpenAPI Extensions](../development/#openapi-extensions) देखें।
+
+## संवर्द्धित स्कीमा
+
+### पैटर्न
+
+`origin_pool.*SpecType` से मेल खाने वाली सभी स्कीमा को संवर्द्धन प्राप्त होता है:
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## आवश्यक फ़ील्ड
+
+| फ़ील्ड | के लिए आवश्यक | नोट्स |
+|-------|--------------|-------|
+| `metadata.name` | सभी ऑपरेशन | 1-63 कैरेक्टर, लोअरकेस अल्फ़ान्यूमेरिक, पैटर्न: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | सभी ऑपरेशन | नेमस्पेस पहचानकर्ता |
+| `spec.origin_servers` | Create | न्यूनतम 1 आइटम |
+| `spec.port` | Create | 1-65535, कोई सर्वर डिफ़ॉल्ट नहीं |
+
+## न्यूनतम व्यवहार्य कॉन्फ़िगरेशन
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## सर्वर-लागू डिफ़ॉल्ट
+
+`x-f5xc-server-default: true` के साथ चिह्नित फ़ील्ड की `default` वैल्यू F5 XC API सर्वर द्वारा तब लागू की जाती है जब अनुरोधों से छोड़ दी जाती है।
+
+### शीर्ष-स्तरीय फ़ील्ड
+
+| फ़ील्ड | डिफ़ॉल्ट वैल्यू | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `no_tls` | `{}` | object | ऑरिजिन के लिए TLS अक्षम |
+| `healthcheck` | `[]` | array | कोई हेल्थ चेक कॉन्फ़िगर नहीं |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | राउंड-रॉबिन लोड बैलेंसिंग |
+| `endpoint_selection` | `DISTRIBUTED` | enum | सभी एंडपॉइंट्स का उपयोग करें (लोकल + रिमोट) |
+
+### advanced_options डिफ़ॉल्ट
+
+जब `advanced_options` निर्दिष्ट नहीं किया जाता, तो सर्वर ऐसे व्यवहार करता है जैसे ये वैल्यू सेट की गई हों:
+
+| फ़ील्ड | डिफ़ॉल्ट वैल्यू | प्रकार | विवरण |
+|-------|---------------|------|-------------|
+| `connection_timeout` | `2000` | integer | कनेक्शन टाइमआउट मिलीसेकंड में |
+| `http_idle_timeout` | `300000` | integer | HTTP आइडल टाइमआउट मिलीसेकंड में (5 मिनट) |
+| `same_as_endpoint_port` | `{}` | object | हेल्थ चेक एंडपॉइंट पोर्ट का उपयोग करता है |
+| `default_circuit_breaker` | `{}` | object | डिफ़ॉल्ट सर्किट ब्रेकर सेटिंग्स |
+| `disable_outlier_detection` | `{}` | object | आउटलायर डिटेक्शन अक्षम |
+| `no_panic_threshold` | `{}` | object | कोई पैनिक थ्रेशोल्ड नहीं |
+| `disable_subsets` | `{}` | object | सबसेट लोड बैलेंसिंग अक्षम |
+| `auto_http_config` | `{}` | object | स्वचालित HTTP प्रोटोकॉल नेगोशिएशन |
+| `disable_proxy_protocol` | `{}` | object | प्रॉक्सी प्रोटोकॉल अक्षम |
+| `disable_lb_source_ip_persistance` | `{}` | object | LB सोर्स IP पर्सिस्टेंस अक्षम |
+
+### नेस्टेड ऑब्जेक्ट डिफ़ॉल्ट
+
+| पथ | डिफ़ॉल्ट वैल्यू | विवरण |
+|------|---------------|-------------|
+| `origin_servers[].labels` | `{}` | खाली लेबल ऑब्जेक्ट |
+| `origin_servers[].public_name.refresh_interval` | `0` | सिस्टम डिफ़ॉल्ट DNS रिफ्रेश का उपयोग करें |
+
+## UI बनाम सर्वर डिफ़ॉल्ट विसंगतियाँ
+
+F5 XC वेब UI उन वैल्यू से भिन्न वैल्यू पूर्व-चयनित करता है जो API फ़ील्ड छोड़ने पर लागू करता है।
+
+| फ़ील्ड | UI पूर्व-चयनित | सर्वर लागू | नोट |
+|-------|-----------------|----------------|------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | जब फ़ील्ड छोड़ दी जाती है तो UI-निर्मित और API-निर्मित संसाधन भिन्न होते हैं |
+
+## Enum वैल्यू
+
+### loadbalancer_algorithm
+
+| वैल्यू | विवरण | नोट्स |
+|-------|-------------|-------|
+| `ROUND_ROBIN` | प्रत्येक स्वस्थ एंडपॉइंट राउंड-रॉबिन क्रम में चयनित | सर्वर डिफ़ॉल्ट |
+| `LEAST_REQUEST` | सबसे कम सक्रिय अनुरोधों वाला एंडपॉइंट चयनित | |
+| `RING_HASH` | एंडपॉइंट नामों के रिंग हैश का उपयोग करके कंसिस्टेंट हैशिंग | |
+| `RANDOM` | रैंडम स्वस्थ एंडपॉइंट चयन | |
+| `LB_OVERRIDE` | पैरेंट लोड बैलेंसर से हैश पॉलिसी इनहेरिट | UI डिफ़ॉल्ट |
+
+### endpoint_selection
+
+| वैल्यू | विवरण | नोट्स |
+|-------|-------------|-------|
+| `DISTRIBUTED` | रिमोट और लोकल दोनों एंडपॉइंट्स पर विचार करें | सर्वर डिफ़ॉल्ट |
+| `LOCAL_ONLY` | केवल लोकल एंडपॉइंट्स का उपयोग | |
+| `LOCAL_PREFERRED` | लोकल को प्राथमिकता, अनुपलब्ध होने पर रिमोट पर फ़ॉलबैक | |
+
+## OneOf फ़ील्ड समूह
+
+पारस्परिक रूप से अनन्य फ़ील्ड समूह। प्रत्येक समूह से केवल एक फ़ील्ड निर्दिष्ट की जा सकती है:
+
+| समूह | फ़ील्ड | सर्वर डिफ़ॉल्ट |
+|-------|--------|----------------|
+| पोर्ट कॉन्फ़िगरेशन | `port`, `automatic_port`, `lb_port` | `port` (स्पष्ट) |
+| ऑरिजिन के लिए TLS | `no_tls`, `use_tls` | `no_tls` |
+| हेल्थ चेक पोर्ट | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| सर्किट ब्रेकर | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
+| आउटलायर डिटेक्शन | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| पैनिक थ्रेशोल्ड | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
+| सबसेट LB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| HTTP प्रोटोकॉल | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
+| प्रॉक्सी प्रोटोकॉल | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
+| LB सोर्स IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| कनेक्शन पूल | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## फ़ील्ड प्रतिबंध
+
+| फ़ील्ड | प्रकार | प्रतिबंध |
+|-------|------|------------|
+| `spec.port` | integer | 1-65535 |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms |
+| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 ms |
+| `spec.advanced_options.panic_threshold` | integer | 0-100 (प्रतिशत) |
+| `metadata.name` | string | 1-63 कैरेक्टर, पैटर्न: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## UI कॉन्फ़िगरेशन विकल्प
+
+F5 XC वेब कंसोल ऑरिजिन पूल के लिए 15 कॉन्फ़िगरेशन विकल्प प्रस्तुत करता है:
+
+| # | UI लेबल | API फ़ील्ड पथ | प्रकार | सर्वर डिफ़ॉल्ट |
+|---|----------|----------------|------|----------------|
+| 1 | ऑरिजिन सर्वर पोर्ट | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (स्पष्ट) |
+| 2 | कनेक्शन पूल रीयूज़ | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | हेल्थ चेक पोर्ट | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | लोडबैलेंसर एल्गोरिथम | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
+| 5 | एंडपॉइंट चयन | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
+| 6 | ऑरिजिन के लिए TLS | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | कनेक्शन टाइमआउट | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
+| 8 | HTTP आइडल टाइमआउट | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
+| 9 | सर्किट ब्रेकर | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | आउटलायर डिटेक्शन | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | पैनिक थ्रेशोल्ड | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | सबसेट लोड बैलेंसिंग | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | HTTP प्रोटोकॉल | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | प्रॉक्सी प्रोटोकॉल | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | LB सोर्स IP पर्सिस्टेंस | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## डेटा एक्सेस
+
+### OpenAPI स्पेसिफिकेशन
+
+| फ़ाइल | सामग्री |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | सभी स्कीमा के साथ मर्ज्ड स्पेसिफिकेशन |
+
+### validation.json संरचना
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # x-f5xc-server-default: true वाले फ़ील्ड
+├── recommended         # x-f5xc-recommended-value वाले फ़ील्ड
+├── advanced_options    # नेस्टेड advanced_options डिफ़ॉल्ट
+├── oneof_choices       # OneOf डिफ़ॉल्ट चयन
+└── ui_vs_server        # UI बनाम सर्वर विसंगतियाँ
+```
+
+## ऑरिजिन सर्वर प्रकार
+
+ऑरिजिन सर्वर विभिन्न प्रकार के वेरिएंट का उपयोग करके निर्दिष्ट किए जा सकते हैं। प्रकार यह निर्धारित करता है कि कौन से अतिरिक्त फ़ील्ड आवश्यक हैं।
+
+### कार्यान्वित प्रकार
+
+| प्रकार | विवरण | आवश्यक फ़ील्ड | स्थिति |
+|------|-------------|-----------------|--------|
+| `public_name` | सार्वजनिक DNS नाम वाला ऑरिजिन सर्वर | `dns_name` | ✅ पूर्ण |
+| `public_ip` | सार्वजनिक IP पते वाला ऑरिजिन सर्वर | `ip` (IPv4) | ✅ पूर्ण |
+
+### उदाहरण: public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### उदाहरण: public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## TODO: साइट-निर्भर ऑरिजिन सर्वर प्रकार
+
+निम्नलिखित ऑरिजिन सर्वर प्रकारों को कार्यान्वयन से पहले "site" संसाधन लॉजिक विकास की आवश्यकता है:
+
+| प्रकार | विवरण | आवश्यक फ़ील्ड | स्थिति |
+|------|-------------|-----------------|--------|
+| `private_ip` | प्राइवेट/पब्लिक IP और साइट जानकारी वाला ऑरिजिन सर्वर | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 साइट लॉजिक लंबित |
+| `private_name` | DNS नाम और साइट जानकारी वाला ऑरिजिन सर्वर | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 साइट लॉजिक लंबित |
+| `k8s_service` | साइट जानकारी के साथ Kubernetes सेवा | `service_name`, `site_locator`, `network_choice` | 🔲 साइट लॉजिक लंबित |
+| `consul_service` | साइट जानकारी के साथ HashiCorp Consul सेवा | `service_name`, `site_locator`, `network_choice` | 🔲 साइट लॉजिक लंबित |
+
+### कार्यान्वयन आवश्यकताएँ
+
+इन प्रकारों को पूरी तरह से प्रलेखित करने से पहले:
+
+1. **साइट संसाधन खोज** - `site` संसाधन स्कीमा और site_locator पैटर्न का दस्तावेज़ीकरण
+2. **नेटवर्क चॉइस Enum** - `network_choice` प्रतिबंधित वैल्यू का दस्तावेज़ीकरण (site_local_inside, site_local_outside, आदि)
+3. **SNAT पूल विकल्प** - SNAT पूल कॉन्फ़िगरेशन पैटर्न का दस्तावेज़ीकरण
+4. **क्रॉस-संसाधन संदर्भ** - origin_pool साइट संसाधनों को कैसे संदर्भित करता है, इसे परिभाषित करें
+
+### ट्रैकिंग
+
+- कॉन्फ़िगरेशन प्लेसहोल्डर: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- संबंधित स्प्रिंट: साइट संसाधन स्कीमा संवर्द्धन
+
+## संबंधित दस्तावेज़ीकरण
+
+- [विकास गाइड - OpenAPI Extensions](../development/#openapi-extensions) - एक्सटेंशन परिभाषाएँ और उपयोग
+- [वैलिडेशन स्पेसिफिकेशन](../validation-spec/) - validation.json प्रारूप और संरचना
+- [हेल्थचेक संवर्द्धन](./healthcheck-enhancements/) - हेल्थचेक स्कीमा संवर्द्धन
+
+## परिवर्तन लॉग
+
+| संस्करण | तिथि | परिवर्तन |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | public_name/public_ip के साथ ऑरिजिन सर्वर प्रकार अनुभाग जोड़ा; साइट-निर्भर प्रकारों के लिए TODO मार्कर |
+| 2.1.1 | 2026-01-18 | शुद्ध API संदर्भ के रूप में पुनर्लिखित; डाउनस्ट्रीम कोड उदाहरण हटाए |
+| 2.1.0 | 2026-01-18 | validation.json में एकीकृत डिफ़ॉल्ट संरचना में अपडेट किया |
+| 2.0.33 | 2026-01-17 | प्रारंभिक ऑरिजिन पूल संवर्द्धन दस्तावेज़ीकरण |

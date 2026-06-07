@@ -1,0 +1,521 @@
+---
+title: Development Guide
+description: F5 XC API 인리치먼트 파이프라인의 개발 워크플로우
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+이 가이드는 F5 XC API 인리치먼트 파이프라인의 개발 워크플로우를 설명합니다.
+
+## 빠른 시작
+
+### 최초 설정
+
+```bash
+# 리포지토리 클론
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# 가상 환경 생성 및 의존성 설치
+make install
+
+# pre-commit 훅 설치
+make pre-commit-install
+
+# 스펙 다운로드 및 파이프라인 실행
+make build
+
+# 로컬에서 문서 미리보기
+make serve
+```
+
+### 일상 개발
+
+```bash
+# 빠른 재빌드 (캐시된 스펙 사용)
+make rebuild
+
+# 모든 품질 검사 실행
+make pre-commit-run
+
+# 문서 미리보기
+make serve
+```
+
+## 아키텍처 개요
+
+### 두 폴더 설계
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### 파이프라인 흐름
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### 디렉터리 구조
+
+| 디렉터리 | 용도 | Git 상태 |
+|-----------|---------|------------|
+| `specs/original/` | F5 소스 스펙 | Gitignored |
+| `specs/discovered/` | API 디스커버리 출력 | 추적됨 (openapi.json, session.json) |
+| `docs/specifications/api/` | 생성된 도메인 스펙 | Gitignored |
+| `scripts/` | Python 파이프라인 스크립트 | 추적됨 |
+| `config/` | 파이프라인 구성 | 추적됨 |
+| `reports/` | 생성된 보고서 | Gitignored |
+
+## 워크플로우 패턴
+
+### 1. 디스커버리 워크플로우
+
+**사전 요구 사항**:
+- F5 XC 환경에 대한 VPN 연결
+- 유효한 API 자격 증명
+
+```bash
+# 자격 증명 설정
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# 디스커버리 실행
+make discover
+
+# 결과 확인
+jq '.statistics' specs/discovered/session.json
+
+# CI/CD를 위한 커밋
+make push-discovery
+```
+
+**디스커버리가 캡처하는 항목**:
+- 실제 필수/선택 필드
+- 라이브 응답에서 확인된 열거형 값
+- 기본값
+- 패턴 유효성 검사
+- 응답 예시
+
+### 2. 릴리스 워크플로우
+
+릴리스는 자동화되어 있습니다:
+
+1. 일일 스케줄(UTC 오전 6시) 또는 main 브랜치 푸시 시 워크플로우 트리거
+2. ETag 검사로 F5 스펙 변경 여부 확인
+3. 파이프라인이 스펙을 처리하고 인리치먼트 수행
+4. git 태그에서 버전 계산: `git describe --tags --abbrev=0`
+5. 직접 커밋 + 태그 생성 (버전 범프 PR 없음)
+6. 변경 로그와 함께 GitHub Release 생성
+7. GitHub Pages에 문서 배포
+
+**버전 범프 규칙**:
+
+| 조건 | 범프 유형 | 예시 |
+|-----------|-----------|---------|
+| 커밋에 `[major]` 포함 | Major | 1.0.0 → 2.0.0 |
+| 커밋에 `BREAKING CHANGE` 포함 | Major | 1.0.0 → 2.0.0 |
+| 새 도메인 스펙 추가 | Minor | 1.0.0 → 1.1.0 |
+| 기타 모든 변경 | Patch | 1.0.0 → 1.0.1 |
+
+### 3. 개발 워크플로우
+
+```bash
+# 기능 브랜치 생성
+git checkout -b feature/my-change
+
+# config 또는 scripts 변경
+
+# 로컬 테스트
+make pipeline
+make lint
+
+# 커밋 (pre-commit 훅이 자동으로 실행됨)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# 푸시 및 PR 생성
+git push -u origin feature/my-change
+gh pr create
+```
+
+## 디스커버리 심층 분석
+
+### 디스커버리란?
+
+디스커버리는 라이브 F5 XC API를 탐색하여 다음을 찾습니다:
+
+- **문서화되지 않은 제약 조건**: OpenAPI에 표시되지 않은 필수 필드
+- **실제 열거형 값**: 프로덕션에서 확인된 실제 값
+- **기본 동작**: 필드가 생략될 때 서버가 적용하는 값
+- **응답 패턴**: 실제 데이터 형태
+
+### 디스커버리 구성
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### 디스커버리 확장
+
+디스커버리는 스펙에 `x-discovered-*` 확장을 추가합니다:
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### 제약 조건 분석 보고서
+
+```bash
+make constraint-report
+# 출력: reports/constraint-analysis.md
+```
+
+## 릴리스 프로세스
+
+### 릴리스 패키지 내용
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # 마스터 통합 스펙
+├── openapi.yaml       # YAML 형식
+├── domains/           # 개별 도메인 스펙
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # 메타데이터
+├── CHANGELOG.md       # 릴리스 노트
+└── README.md          # 사용 안내
+```
+
+### 수동 워크플로우 트리거
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## 구성 가이드
+
+### 인리치먼트 구성
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### 정규화 구성
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Spectral 린팅 규칙
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## OpenAPI 확장
+
+인리치먼트 파이프라인은 벤더 확장을 사용하여 유효성 검사 및 기본값 메타데이터를 포함합니다.
+
+### 확장 카테고리
+
+| 확장 | 의미 | 함의 |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | 필드가 생략될 때 F5 XC API 서버가 이 값을 적용합니다 | 필드는 선택 사항이며, 생략하면 문서화된 기본 동작이 수행됩니다 |
+| `x-f5xc-recommended-value` | F5 XC 웹 콘솔이 새 리소스에 대해 이 값을 미리 채웁니다 | 필드에 서버 기본값은 없지만 이 값이 일반적인 구성을 나타냅니다 |
+| `x-f5xc-recommended-oneof-variant` | F5 XC 콘솔이 이 OneOf 변형을 미리 선택합니다 | 상호 배타적인 여러 옵션이 존재할 때 일반적인 선택을 식별합니다 |
+| `x-f5xc-conflicts-with` | 이 필드와 함께 사용할 수 없는 다른 속성을 나열합니다 | 속성이 OneOf 그룹의 일부이며, 충돌하는 속성 중 하나만 지정할 수 있습니다 |
+
+### 필수 필드 확장
+
+| 확장 | 출처 | 용도 |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | F5 XC 원본 스펙 | 필드에 0이 아닌/비어 있지 않은 값이 필요합니다 |
+| `x-f5xc-required-for` | 인리치먼트 파이프라인 | 컨텍스트별 필수 상태 |
+
+**x-f5xc-required-for 컨텍스트**:
+- `create`: 리소스 생성 시 필수
+- `update`: 리소스 업데이트 시 필수
+- `minimum_config`: 최소 구성에 필수
+
+### 기본값 및 OneOf 확장
+
+| 확장 | 용도 |
+|-----------|---------|
+| `x-f5xc-server-default: true` | 서버 적용 기본값 표시 |
+| `x-f5xc-recommended-value` | F5 XC 콘솔 미리 채워진 값 |
+| `x-f5xc-recommended-oneof-variant` | 권장 OneOf 변형 |
+| `x-f5xc-conflicts-with` | 다른 OneOf 속성과의 상호 배타성 |
+
+#### x-f5xc-server-default
+
+**타입**: `boolean`
+
+`true`일 때, 함께 제공되는 `default` 값이 F5 XC API 서버에 의해 적용됨을 나타냅니다. 이 확장이 있는 필드는 API 요청에서 안전하게 생략할 수 있으며, 서버가 자동으로 기본값을 적용합니다.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**타입**: `any` (필드 타입과 일치)
+
+F5 XC 웹 콘솔이 미리 채워진 기본값으로 사용하는 값을 지정합니다. 이 값은 서버에서 강제되지 않지만, 콘솔을 통해 생성된 새 리소스의 일반적인 초기 구성을 나타냅니다.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**타입**: `object` (그룹 이름에서 변형 이름으로의 맵)
+
+상호 배타적 필드 그룹이 있는 스키마에서, 기본 또는 가장 일반적인 선택이 어떤 변형인지 식별합니다. 키는 OneOf 그룹 이름이고 값은 권장 변형 필드 이름입니다.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**타입**: `array` of strings
+
+**추가됨**: v3.2.0 (Issue #494)
+
+OneOf 그룹 멤버 간의 상호 배타성 관계를 선언합니다. `x-ves-oneof-field-*` 확장에서 자동으로 파생됩니다. 이를 통해 다운스트림 도구(Terraform, CLI, MCP)가 런타임이 아닌 스키마 수준에서 충돌을 검증할 수 있습니다.
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**사용 사례**:
+- Terraform 프로바이더가 유효성 검사 규칙을 생성할 수 있습니다
+- CLI 도구가 충돌하는 필드 조합에 대해 경고할 수 있습니다
+- AI 어시스턴트가 올바른 OneOf 구성을 생성할 수 있습니다
+- IDE 확장이 충돌 인식 자동 완성을 제공할 수 있습니다
+
+**출처**: 파이프라인 인리치먼트 중 F5 네이티브 `x-ves-oneof-field-*` 확장에서 자동 파생됩니다.
+
+### 유효성 검사 규칙 함의
+
+인리처는 `x-ves-validation-rules`를 검사하여 필수 상태를 추론합니다:
+
+| 규칙 | 함의 |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | 필드가 필수입니다 |
+| `ves.io.schema.rules.uint32.gte: N` | N >= 1이고 서버 기본값이 없으면 필드가 필수입니다 |
+| `ves.io.schema.rules.repeated.min_items: N` | N >= 1이면 배열에 최소 N개의 항목이 필요합니다 |
+| `ves.io.schema.rules.string.min_bytes: N` | N >= 1이면 문자열에 최소 N바이트가 필요합니다 |
+
+### 서버 적용 기본값이 있는 리소스
+
+일부 리소스는 서버가 기본값을 적용하므로 빈 스펙을 허용합니다:
+
+| 리소스 | 서버 적용 기본값 |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, 기본 `api_groups` |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, 중첩된 http_health_check 기본값 |
+
+이러한 리소스의 경우, `x-ves-required`가 `true`이더라도 `x-f5xc-required-for.create`는 `false`일 수 있습니다.
+
+### 기본값 패턴
+
+| 패턴 | 타입 | 예시 |
+|---------|------|---------|
+| `\{\}` | 빈 객체 (선택 항목) | `monitoring: \{\}` |
+| `[]` | 빈 배열 | `expected_status_codes: []` |
+| `0` | 숫자 | `jitter: 0` |
+| `""` | 문자열 | `expected_response: ""` |
+| `false` | 불리언 | `use_http2: false` |
+
+### 발견된 기본값 추가
+
+1. API를 통해 최소 스펙으로 F5 XC에서 리소스 생성
+2. 리소스를 다시 읽어 서버 적용 값 확인
+3. `config/discovered_defaults.yaml`에 기본값 문서화
+4. 파이프라인 실행: `make pipeline`
+5. 다음으로 확인: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## 문제 해결
+
+### Pre-commit이 너무 오래 걸리는 경우
+
+파이프라인은 일관성을 보장하기 위해 매 커밋마다 실행됩니다. 작업 중인 커밋의 경우:
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# 최종 커밋 전에 실행: make pre-commit-run
+```
+
+### 디스커버리 실패
+
+```bash
+# VPN 확인
+ping your-tenant.console.ves.volterra.io
+
+# 자격 증명 확인
+echo $F5XC_API_TOKEN | head -c 10
+
+# API URL 형식 확인
+echo $F5XC_API_URL
+# 형식: https://tenant.console.ves.volterra.io/api
+```
+
+### 생성된 스펙의 린트 오류
+
+```bash
+# 린트 보고서 확인
+cat reports/lint-report.json | jq '.errors'
+```
+
+출력 파일이 아닌 인리치먼트/정규화 구성에서 문제를 수정하십시오.
+
+### 버전 시스템
+
+버전은 git 태그(예: `v2.0.38`)에서 파생되어, 동시 PR에서 병합 충돌을 유발하던 경쟁 조건을 제거합니다.
+
+```python
+# 버전은 git 태그에서 동적으로 계산됩니다
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### 클론 후 스펙이 없는 경우
+
+생성된 스펙은 gitignored 되어 있습니다:
+
+```bash
+make build  # 모든 것을 다운로드하고 생성합니다
+```
+
+### 대용량 파일 차단
+
+`.pre-commit-config.yaml`에 제외 항목을 추가하십시오:
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## 빠른 참조
+
+### Make 타겟
+
+| 타겟 | 설명 |
+|--------|-------------|
+| `make build` | 전체 빌드 (다운로드 + 파이프라인) |
+| `make rebuild` | 빠른 재빌드 (다운로드 건너뜀) |
+| `make download` | 스펙 다운로드 (ETag 캐시됨) |
+| `make download-force` | 강제 다운로드 |
+| `make pipeline` | 인리치먼트 파이프라인 실행 |
+| `make lint` | Spectral 린팅 |
+| `make serve` | 로컬 문서 서버 |
+| `make discover` | API 디스커버리 (VPN 필요) |
+| `make push-discovery` | 디스커버리 데이터 커밋 |
+| `make clean` | 생성된 파일 제거 |
+| `make pre-commit-run` | 모든 품질 검사 실행 |
+
+### 환경 변수
+
+| 변수 | 용도 |
+|----------|---------|
+| `F5XC_API_URL` | F5 XC 테넌트 API URL |
+| `F5XC_API_TOKEN` | API 인증 토큰 |
+
+### 주요 파일
+
+| 파일 | 용도 |
+|------|---------|
+| `.etag` | 마지막으로 다운로드한 ETag |
+| `CHANGELOG.md` | 자동 생성된 변경 로그 |
+| `config/enrichment.yaml` | 인리치먼트 규칙 |
+| `config/normalization.yaml` | 정규화 규칙 |
+| `config/discovery.yaml` | 디스커버리 설정 |
+| `config/spectral.yaml` | 린팅 규칙 |
+| `scripts/utils/version_calculator.py` | 태그 기반 버전 계산 |
+
+**참고**: 버전은 `.version` 파일이 아닌 git 태그(예: `v2.0.38`)에서 파생됩니다.

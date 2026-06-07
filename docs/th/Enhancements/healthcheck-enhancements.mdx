@@ -1,0 +1,173 @@
+---
+title: การปรับปรุง Healthcheck
+description: เมตาดาต้าเสริมสำหรับสคีมาที่เกี่ยวข้องกับ healthcheck
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+เมตาดาต้าเสริมสำหรับสคีมาที่เกี่ยวข้องกับ healthcheck ดู [OpenAPI Extensions](../development/#openapi-extensions) สำหรับคำจำกัดความของส่วนขยาย
+
+## สคีมาที่ได้รับการเสริม
+
+### รูปแบบ
+
+สคีมาทั้งหมดที่ตรงกับ `healthcheck.*SpecType` จะได้รับการเสริม:
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+นอกจากนี้ สคีมาที่ซ้อนอยู่ `healthcheckHttpHealthCheck` ยังมีข้อมูลเสริมสำหรับการกำหนดค่า HTTP health check อีกด้วย
+
+## ค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด
+
+ฟิลด์ที่มีเครื่องหมาย `x-f5xc-server-default: true` จะมีค่า `default` ที่ถูกกำหนดโดยเซิร์ฟเวอร์ F5 XC API เมื่อไม่ได้ระบุในคำขอ
+
+### ฟิลด์ระดับบนสุด
+
+| ฟิลด์ | ค่าเริ่มต้น | ชนิด | คำอธิบาย |
+|-------|-------------|------|----------|
+| `jitter` | `0` | integer | ค่า jitter สัมบูรณ์สำหรับการสุ่มเวลา |
+| `jitter_percent` | `0` | integer | jitter แบบเปอร์เซ็นต์สำหรับการสุ่มเวลา |
+
+### สคีมา healthcheckHttpHealthCheck
+
+| ฟิลด์ | ค่าเริ่มต้น | ชนิด | คำอธิบาย |
+|-------|-------------|------|----------|
+| `use_origin_server_name` | `{}` | object | ชื่อเซิร์ฟเวอร์ต้นทางสำหรับ Host header |
+| `headers` | `{}` | object | headers แบบกำหนดเอง |
+| `request_headers_to_remove` | `[]` | array | headers ที่จะลบออกจากคำขอ |
+| `use_http2` | `false` | boolean | รองรับ HTTP/2 |
+| `expected_status_codes` | `[]` | array | รหัสสถานะที่ยอมรับ (ว่าง = 200-299) |
+
+## ค่าที่แนะนำ
+
+ฟิลด์ที่มีเครื่องหมาย `x-f5xc-recommended-value` ระบุค่าที่คอนโซลเว็บ F5 XC กรอกไว้ล่วงหน้าเมื่อสร้างทรัพยากรใหม่
+
+### ฟิลด์ระดับบนสุด
+
+| ฟิลด์ | ค่าที่แนะนำ | ชนิด | คำอธิบาย |
+|-------|-------------|------|----------|
+| `timeout` | `3` | integer | ระยะหมดเวลาของ health check เป็นวินาที |
+| `interval` | `15` | integer | ช่วงเวลาระหว่าง health check เป็นวินาที |
+| `unhealthy_threshold` | `1` | integer | จำนวนครั้งที่ล้มเหลวติดต่อกันก่อนทำเครื่องหมายว่าไม่แข็งแรง |
+| `healthy_threshold` | `3` | integer | จำนวนครั้งที่สำเร็จติดต่อกันก่อนทำเครื่องหมายว่าแข็งแรง |
+| `jitter_percent` | `30` | integer | เปอร์เซ็นต์ jitter สำหรับการใช้งานจริง |
+
+### สคีมา healthcheckHttpHealthCheck
+
+| ฟิลด์ | ค่าที่แนะนำ | ชนิด | คำอธิบาย |
+|-------|-------------|------|----------|
+| `path` | `"/"` | string | เส้นทาง endpoint ของ health check |
+| `use_http2` | `false` | boolean | การตั้งค่ารองรับ HTTP/2 |
+| `expected_status_codes` | `["200"]` | array | รหัสสถานะที่บ่งชี้ว่า origin แข็งแรง |
+| `use_origin_server_name` | `{}` | object | ชื่อเซิร์ฟเวอร์ต้นทางสำหรับ Host header |
+
+## คำแนะนำ OneOf Variant
+
+สคีมาที่มีกลุ่มฟิลด์ที่ใช้งานพร้อมกันไม่ได้ (OneOf) จะรวม `x-f5xc-recommended-oneof-variant` เพื่อระบุว่า variant ใดที่ใช้กันมากที่สุด เมตาดาต้านี้ระบุตัวเลือกทั่วไปเมื่อมีหลายตัวเลือก โดยอ้างอิงจากค่าเริ่มต้นของคอนโซล F5 XC และรูปแบบการใช้งานทั่วไป
+
+### กลุ่ม OneOf ระดับบนสุด
+
+| สคีมา | กลุ่ม OneOf | Variant ที่แนะนำ | คำอธิบาย |
+|-------|-------------|-------------------|----------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | ประเภท HTTP health check |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | ประเภท HTTP health check |
+
+### กลุ่ม OneOf ของ healthcheckHttpHealthCheck
+
+| สคีมา | กลุ่ม OneOf | Variant ที่แนะนำ | คำอธิบาย |
+|-------|-------------|-------------------|----------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | Host header สำหรับคำขอ health check |
+
+#### ตัวเลือก Host Header
+
+กลุ่ม OneOf `host_header_choice` ควบคุมวิธีระบุ Host header ในคำขอ HTTP ของ health check
+
+| Variant | ชนิด | คำอธิบาย |
+|---------|------|----------|
+| `use_origin_server_name` | `object` (ว่าง) | ใช้ชื่อเซิร์ฟเวอร์ต้นทางเป็น Host header นี่คือตัวเลือกเริ่มต้นในคอนโซล F5 XC |
+| `host_header` | `string` | ระบุค่า Host header แบบกำหนดเองสำหรับคำขอ health check |
+
+**การอ้างอิงสคีมา API**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## การอ้างอิงส่วนขยาย OpenAPI
+
+ส่วนขยายของผู้จำหน่ายเหล่านี้ถูกเพิ่มเข้าไปในสคีมา OpenAPI มาตรฐานเพื่อสื่อถึงพฤติกรรมเริ่มต้นเฉพาะของ F5 XC
+
+### x-f5xc-server-default
+
+**ชนิด**: `boolean`
+
+เมื่อเป็น `true` ระบุว่าค่า `default` ที่แนบมาจะถูกบังคับใช้โดยเซิร์ฟเวอร์ F5 XC API ฟิลด์ที่มีส่วนขยายนี้สามารถละเว้นจากคำขอ API ได้อย่างปลอดภัย เนื่องจากเซิร์ฟเวอร์จะกำหนดค่าเริ่มต้นโดยอัตโนมัติ
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**ชนิด**: `any` (ตรงกับชนิดของฟิลด์)
+
+ระบุค่าที่คอนโซลเว็บ F5 XC ใช้เป็นค่าเริ่มต้นที่กรอกไว้ล่วงหน้า ค่านี้ไม่ได้ถูกบังคับใช้โดยเซิร์ฟเวอร์ แต่แสดงถึงการกำหนดค่าเริ่มต้นทั่วไปสำหรับทรัพยากรใหม่ที่สร้างผ่านคอนโซล
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**ชนิด**: `object` (แมปจากชื่อกลุ่มไปยังชื่อ variant)
+
+สำหรับสคีมาที่มีกลุ่มฟิลด์ที่ใช้งานพร้อมกันไม่ได้ ระบุว่า variant ใดเป็นตัวเลือกเริ่มต้นหรือที่ใช้กันมากที่สุด คีย์คือชื่อกลุ่ม OneOf และค่าคือชื่อฟิลด์ variant ที่แนะนำ
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## การเข้าถึงข้อมูล
+
+### ข้อกำหนด OpenAPI
+
+| ไฟล์ | เนื้อหา |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | ข้อกำหนดรวมพร้อมสคีมาทั้งหมด |
+
+### โครงสร้าง validation.json
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # ฟิลด์ที่มี x-f5xc-server-default: true
+├── recommended         # ฟิลด์ที่มี x-f5xc-recommended-value
+├── oneof_recommended   # คำแนะนำ OneOf variant
+└── nested_recommended  # ค่าที่แนะนำของสคีมาที่ซ้อนกัน
+```
+
+## เอกสารที่เกี่ยวข้อง
+
+- [คู่มือการพัฒนา - OpenAPI Extensions](../development/#openapi-extensions) - คำจำกัดความและการใช้งานส่วนขยาย
+- [ข้อกำหนดการตรวจสอบ](../validation-spec/) - รูปแบบและโครงสร้าง validation.json
+- [การปรับปรุง Origin Pool](./originpool-enhancements/) - การเสริมสคีมา origin pool
+
+## บันทึกการเปลี่ยนแปลง
+
+| เวอร์ชัน | วันที่ | การเปลี่ยนแปลง |
+|---------|--------|----------------|
+| 2.1.4 | 2026-01-19 | เพิ่มเอกสารกลุ่ม OneOf `host_header_choice` สำหรับพารามิเตอร์คำขอ HTTP health check |
+| 2.1.3 | 2026-01-18 | รวมเอกสารส่วนขยายทั่วไปไว้ที่ DEVELOPMENT.md; เหลือเฉพาะข้อมูลเฉพาะทรัพยากร |
+| 2.1.2 | 2026-01-18 | เขียนใหม่เป็นเอกสารอ้างอิง API ล้วน; ลบตัวอย่างดาวน์สตรีมและภาษาที่กำหนดแนวทาง |
+| 2.1.1 | 2026-01-18 | เพิ่มค่าที่แนะนำแบบซ้อน, OneOf variant ที่แนะนำ, ส่วนขยาย `x-f5xc-recommended-oneof-variant` |
+| 2.1.0 | 2026-01-18 | เพิ่มโครงสร้างค่าเริ่มต้นรวมใน validation.json |
+| 2.0.30 | 2026-01-16 | เพิ่มค่าเริ่มต้นแบบซ้อนสำหรับสคีมา `$ref` |
+| 2.0.29 | 2026-01-17 | ค่าเริ่มต้น healthcheck เริ่มแรก |

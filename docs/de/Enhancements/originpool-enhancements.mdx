@@ -1,0 +1,265 @@
+---
+title: Origin-Pool-Erweiterungen
+description: Anreicherungsmetadaten für Origin-Pool-Schemas
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+Anreicherungsmetadaten für origin_pool-bezogene Schemas. Siehe [OpenAPI-Erweiterungen](../development/#openapi-extensions) für Erweiterungsdefinitionen.
+
+## Angereicherte Schemas
+
+### Muster
+
+Alle Schemas, die `origin_pool.*SpecType` entsprechen, erhalten Anreicherungen:
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## Pflichtfelder
+
+| Feld | Erforderlich für | Hinweise |
+|------|------------------|----------|
+| `metadata.name` | Alle Operationen | 1-63 Zeichen, Kleinbuchstaben alphanumerisch, Muster: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | Alle Operationen | Namespace-Bezeichner |
+| `spec.origin_servers` | Erstellen | Mindestens 1 Element |
+| `spec.port` | Erstellen | 1-65535, kein Server-Standardwert |
+
+## Minimale funktionsfähige Konfiguration
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## Serverseitig angewendete Standardwerte
+
+Felder, die mit `x-f5xc-server-default: true` gekennzeichnet sind, erhalten ihren `default`-Wert vom F5-XC-API-Server, wenn sie in Anfragen weggelassen werden.
+
+### Felder der obersten Ebene
+
+| Feld | Standardwert | Typ | Beschreibung |
+|------|--------------|-----|--------------|
+| `no_tls` | `{}` | Objekt | TLS zum Origin deaktiviert |
+| `healthcheck` | `[]` | Array | Keine Health-Checks konfiguriert |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | Enum | Round-Robin-Lastverteilung |
+| `endpoint_selection` | `DISTRIBUTED` | Enum | Alle Endpunkte verwenden (lokal + entfernt) |
+
+### advanced_options-Standardwerte
+
+Wenn `advanced_options` nicht angegeben ist, verhält sich der Server so, als wären diese Werte gesetzt:
+
+| Feld | Standardwert | Typ | Beschreibung |
+|------|--------------|-----|--------------|
+| `connection_timeout` | `2000` | Integer | Verbindungs-Timeout in Millisekunden |
+| `http_idle_timeout` | `300000` | Integer | HTTP-Leerlauf-Timeout in Millisekunden (5 Min.) |
+| `same_as_endpoint_port` | `{}` | Objekt | Health-Check verwendet Endpunkt-Port |
+| `default_circuit_breaker` | `{}` | Objekt | Standard-Circuit-Breaker-Einstellungen |
+| `disable_outlier_detection` | `{}` | Objekt | Ausreißererkennung deaktiviert |
+| `no_panic_threshold` | `{}` | Objekt | Kein Panic-Schwellenwert |
+| `disable_subsets` | `{}` | Objekt | Subset-Lastverteilung deaktiviert |
+| `auto_http_config` | `{}` | Objekt | Automatische HTTP-Protokollaushandlung |
+| `disable_proxy_protocol` | `{}` | Objekt | Proxy-Protokoll deaktiviert |
+| `disable_lb_source_ip_persistance` | `{}` | Objekt | LB-Quell-IP-Persistenz deaktiviert |
+
+### Standardwerte verschachtelter Objekte
+
+| Pfad | Standardwert | Beschreibung |
+|------|--------------|--------------|
+| `origin_servers[].labels` | `{}` | Leeres Labels-Objekt |
+| `origin_servers[].public_name.refresh_interval` | `0` | System-Standard-DNS-Aktualisierung verwenden |
+
+## Abweichungen zwischen UI- und Server-Standardwerten
+
+Die F5-XC-Web-UI wählt andere Werte vor als die, die die API anwendet, wenn Felder weggelassen werden.
+
+| Feld | UI-Vorauswahl | Server-Anwendung | Hinweis |
+|------|---------------|------------------|---------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | Über UI erstellte und über API erstellte Ressourcen unterscheiden sich, wenn das Feld weggelassen wird |
+
+## Enum-Werte
+
+### loadbalancer_algorithm
+
+| Wert | Beschreibung | Hinweise |
+|------|--------------|----------|
+| `ROUND_ROBIN` | Jeder gesunde Endpunkt wird in Round-Robin-Reihenfolge ausgewählt | Server-Standard |
+| `LEAST_REQUEST` | Endpunkt mit den wenigsten aktiven Anfragen wird ausgewählt | |
+| `RING_HASH` | Konsistentes Hashing mittels Ring-Hash der Endpunktnamen | |
+| `RANDOM` | Zufällige Auswahl eines gesunden Endpunkts | |
+| `LB_OVERRIDE` | Hash-Richtlinie wird vom übergeordneten Load Balancer übernommen | UI-Standard |
+
+### endpoint_selection
+
+| Wert | Beschreibung | Hinweise |
+|------|--------------|----------|
+| `DISTRIBUTED` | Sowohl entfernte als auch lokale Endpunkte berücksichtigen | Server-Standard |
+| `LOCAL_ONLY` | Nur lokale Endpunkte verwenden | |
+| `LOCAL_PREFERRED` | Lokale bevorzugen, bei Nichtverfügbarkeit auf entfernte zurückgreifen | |
+
+## OneOf-Feldgruppen
+
+Sich gegenseitig ausschließende Feldgruppen. Nur EIN Feld aus jeder Gruppe kann angegeben werden:
+
+| Gruppe | Felder | Server-Standard |
+|--------|--------|-----------------|
+| Port-Konfiguration | `port`, `automatic_port`, `lb_port` | `port` (explizit) |
+| TLS zum Origin | `no_tls`, `use_tls` | `no_tls` |
+| Health-Check-Port | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| Circuit Breaker | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
+| Ausreißererkennung | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| Panic-Schwellenwert | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
+| Subset-LB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| HTTP-Protokoll | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
+| Proxy-Protokoll | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
+| LB-Quell-IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| Verbindungspool | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## Feldbeschränkungen
+
+| Feld | Typ | Beschränkung |
+|------|-----|--------------|
+| `spec.port` | Integer | 1-65535 |
+| `spec.advanced_options.connection_timeout` | Integer | 0-1.800.000 ms |
+| `spec.advanced_options.http_idle_timeout` | Integer | 0-600.000 ms |
+| `spec.advanced_options.panic_threshold` | Integer | 0-100 (Prozent) |
+| `metadata.name` | String | 1-63 Zeichen, Muster: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## UI-Konfigurationsoptionen
+
+Die F5-XC-Webkonsole bietet 15 Konfigurationsoptionen für Origin-Pools:
+
+| # | UI-Bezeichnung | API-Feldpfad | Typ | Server-Standard |
+|---|----------------|--------------|-----|-----------------|
+| 1 | Origin-Server-Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (explizit) |
+| 2 | Verbindungspool-Wiederverwendung | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | Health-Check-Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | LoadBalancer-Algorithmus | `spec.loadbalancer_algorithm` | Enum | `ROUND_ROBIN` |
+| 5 | Endpunkt-Auswahl | `spec.endpoint_selection` | Enum | `DISTRIBUTED` |
+| 6 | TLS zum Origin | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | Verbindungs-Timeout | `spec.advanced_options.connection_timeout` | Integer | 2000 ms |
+| 8 | HTTP-Leerlauf-Timeout | `spec.advanced_options.http_idle_timeout` | Integer | 300000 ms |
+| 9 | Circuit Breaker | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | Ausreißererkennung | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | Panic-Schwellenwert | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | Subset-Lastverteilung | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | HTTP-Protokoll | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | Proxy-Protokoll | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | LB-Quell-IP-Persistenz | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## Datenzugriff
+
+### OpenAPI-Spezifikationen
+
+| Datei | Inhalt |
+|-------|--------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | Zusammengeführte Spezifikation mit allen Schemas |
+
+### validation.json-Struktur
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # Felder mit x-f5xc-server-default: true
+├── recommended         # Felder mit x-f5xc-recommended-value
+├── advanced_options    # Verschachtelte advanced_options-Standardwerte
+├── oneof_choices       # OneOf-Standardauswahlen
+└── ui_vs_server        # UI- vs. Server-Abweichungen
+```
+
+## Origin-Server-Typen
+
+Origin-Server können mit verschiedenen Typvarianten angegeben werden. Der Typ bestimmt, welche zusätzlichen Felder erforderlich sind.
+
+### Implementierte Typen
+
+| Typ | Beschreibung | Erforderliche Felder | Status |
+|-----|--------------|----------------------|--------|
+| `public_name` | Origin-Server mit öffentlichem DNS-Namen | `dns_name` | ✅ Vollständig |
+| `public_ip` | Origin-Server mit öffentlicher IP-Adresse | `ip` (IPv4) | ✅ Vollständig |
+
+### Beispiel: public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### Beispiel: public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## TODO: Standortabhängige Origin-Server-Typen
+
+Die folgenden Origin-Server-Typen erfordern die Entwicklung von "Site"-Ressourcenlogik vor der Implementierung:
+
+| Typ | Beschreibung | Erforderliche Felder | Status |
+|-----|--------------|----------------------|--------|
+| `private_ip` | Origin-Server mit privater/öffentlicher IP und Standortinformationen | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Ausstehend: Standortlogik |
+| `private_name` | Origin-Server mit DNS-Name und Standortinformationen | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Ausstehend: Standortlogik |
+| `k8s_service` | Kubernetes-Service mit Standortinformationen | `service_name`, `site_locator`, `network_choice` | 🔲 Ausstehend: Standortlogik |
+| `consul_service` | HashiCorp-Consul-Service mit Standortinformationen | `service_name`, `site_locator`, `network_choice` | 🔲 Ausstehend: Standortlogik |
+
+### Implementierungsanforderungen
+
+Bevor diese Typen vollständig dokumentiert werden können:
+
+1. **Site-Ressourcen-Erkennung** - `site`-Ressourcenschema und site_locator-Muster dokumentieren
+2. **Network-Choice-Enum** - Eingeschränkte Werte von `network_choice` dokumentieren (site_local_inside, site_local_outside usw.)
+3. **SNAT-Pool-Optionen** - SNAT-Pool-Konfigurationsmuster dokumentieren
+4. **Ressourcenübergreifende Referenzen** - Definieren, wie origin_pool auf Site-Ressourcen verweist
+
+### Nachverfolgung
+
+- Konfigurations-Platzhalter: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- Zugehöriger Sprint: Site-Ressourcen-Schema-Anreicherungen
+
+## Verwandte Dokumentation
+
+- [Entwicklungsleitfaden - OpenAPI-Erweiterungen](../development/#openapi-extensions) - Erweiterungsdefinitionen und Verwendung
+- [Validierungsspezifikation](../validation-spec/) - Format und Struktur von validation.json
+- [Healthcheck-Erweiterungen](./healthcheck-enhancements/) - Healthcheck-Schema-Anreicherungen
+
+## Änderungsprotokoll
+
+| Version | Datum | Änderungen |
+|---------|-------|------------|
+| 2.1.2 | 2026-01-18 | Abschnitt zu Origin-Server-Typen mit public_name/public_ip hinzugefügt; TODO-Markierungen für standortabhängige Typen |
+| 2.1.1 | 2026-01-18 | Als reine API-Referenz neu geschrieben; nachgelagerte Code-Beispiele entfernt |
+| 2.1.0 | 2026-01-18 | Auf einheitliche Standardwerte-Struktur in validation.json aktualisiert |
+| 2.0.33 | 2026-01-17 | Erstdokumentation der Origin-Pool-Erweiterungen |

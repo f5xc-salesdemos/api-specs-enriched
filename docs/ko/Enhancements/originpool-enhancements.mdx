@@ -1,0 +1,265 @@
+---
+title: 오리진 풀 개선 사항
+description: 오리진 풀 스키마를 위한 보강 메타데이터
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+origin_pool 관련 스키마를 위한 보강 메타데이터입니다. 확장 정의에 대해서는 [OpenAPI 확장](../development/#openapi-extensions)을 참조하십시오.
+
+## 보강된 스키마
+
+### 패턴
+
+`origin_pool.*SpecType`과 일치하는 모든 스키마가 보강을 받습니다:
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## 필수 필드
+
+| 필드 | 필수 대상 | 참고 |
+|-------|--------------|-------|
+| `metadata.name` | 모든 작업 | 1-63자, 소문자 영숫자, 패턴: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | 모든 작업 | 네임스페이스 식별자 |
+| `spec.origin_servers` | 생성 | 최소 1개 항목 |
+| `spec.port` | 생성 | 1-65535, 서버 기본값 없음 |
+
+## 최소 필수 구성
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## 서버 적용 기본값
+
+`x-f5xc-server-default: true`로 표시된 필드는 요청에서 생략될 때 F5 XC API 서버에 의해 `default` 값이 적용됩니다.
+
+### 최상위 필드
+
+| 필드 | 기본값 | 타입 | 설명 |
+|-------|---------------|------|-------------|
+| `no_tls` | `{}` | object | 오리진에 대한 TLS 비활성화 |
+| `healthcheck` | `[]` | array | 헬스 체크 미구성 |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | 라운드 로빈 로드 밸런싱 |
+| `endpoint_selection` | `DISTRIBUTED` | enum | 모든 엔드포인트 사용 (로컬 + 원격) |
+
+### advanced_options 기본값
+
+`advanced_options`가 지정되지 않은 경우, 서버는 다음 값이 설정된 것처럼 동작합니다:
+
+| 필드 | 기본값 | 타입 | 설명 |
+|-------|---------------|------|-------------|
+| `connection_timeout` | `2000` | integer | 연결 타임아웃 (밀리초) |
+| `http_idle_timeout` | `300000` | integer | HTTP 유휴 타임아웃 (밀리초, 5분) |
+| `same_as_endpoint_port` | `{}` | object | 헬스 체크에 엔드포인트 포트 사용 |
+| `default_circuit_breaker` | `{}` | object | 기본 서킷 브레이커 설정 |
+| `disable_outlier_detection` | `{}` | object | 이상치 탐지 비활성화 |
+| `no_panic_threshold` | `{}` | object | 패닉 임계값 없음 |
+| `disable_subsets` | `{}` | object | 서브셋 로드 밸런싱 비활성화 |
+| `auto_http_config` | `{}` | object | 자동 HTTP 프로토콜 협상 |
+| `disable_proxy_protocol` | `{}` | object | 프록시 프로토콜 비활성화 |
+| `disable_lb_source_ip_persistance` | `{}` | object | LB 소스 IP 지속성 비활성화 |
+
+### 중첩 객체 기본값
+
+| 경로 | 기본값 | 설명 |
+|------|---------------|-------------|
+| `origin_servers[].labels` | `{}` | 빈 레이블 객체 |
+| `origin_servers[].public_name.refresh_interval` | `0` | 시스템 기본 DNS 갱신 사용 |
+
+## UI와 서버 기본값 간 불일치
+
+F5 XC 웹 UI는 필드가 생략될 때 API가 적용하는 것과 다른 값을 미리 선택합니다.
+
+| 필드 | UI 미리 선택 값 | 서버 적용 값 | 참고 |
+|-------|-----------------|----------------|------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | 필드가 생략될 때 UI 생성 리소스와 API 생성 리소스가 다름 |
+
+## 열거형 값
+
+### loadbalancer_algorithm
+
+| 값 | 설명 | 참고 |
+|-------|-------------|-------|
+| `ROUND_ROBIN` | 각 정상 엔드포인트가 라운드 로빈 순서로 선택됨 | 서버 기본값 |
+| `LEAST_REQUEST` | 활성 요청이 가장 적은 엔드포인트가 선택됨 | |
+| `RING_HASH` | 엔드포인트 이름의 링 해시를 사용한 일관된 해싱 | |
+| `RANDOM` | 무작위 정상 엔드포인트 선택 | |
+| `LB_OVERRIDE` | 상위 로드 밸런서에서 해시 정책을 상속 | UI 기본값 |
+
+### endpoint_selection
+
+| 값 | 설명 | 참고 |
+|-------|-------------|-------|
+| `DISTRIBUTED` | 원격 및 로컬 엔드포인트 모두 고려 | 서버 기본값 |
+| `LOCAL_ONLY` | 로컬 엔드포인트만 사용 | |
+| `LOCAL_PREFERRED` | 로컬 우선, 사용 불가 시 원격으로 폴백 | |
+
+## OneOf 필드 그룹
+
+상호 배타적인 필드 그룹입니다. 각 그룹에서 하나의 필드만 지정할 수 있습니다:
+
+| 그룹 | 필드 | 서버 기본값 |
+|-------|--------|----------------|
+| 포트 구성 | `port`, `automatic_port`, `lb_port` | `port` (명시적) |
+| 오리진에 대한 TLS | `no_tls`, `use_tls` | `no_tls` |
+| 헬스 체크 포트 | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| 서킷 브레이커 | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
+| 이상치 탐지 | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| 패닉 임계값 | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
+| 서브셋 LB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| HTTP 프로토콜 | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
+| 프록시 프로토콜 | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
+| LB 소스 IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| 연결 풀 | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## 필드 제약 조건
+
+| 필드 | 타입 | 제약 조건 |
+|-------|------|------------|
+| `spec.port` | integer | 1-65535 |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms |
+| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 ms |
+| `spec.advanced_options.panic_threshold` | integer | 0-100 (백분율) |
+| `metadata.name` | string | 1-63자, 패턴: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## UI 구성 옵션
+
+F5 XC 웹 콘솔은 오리진 풀에 대해 15개의 구성 옵션을 제공합니다:
+
+| # | UI 레이블 | API 필드 경로 | 타입 | 서버 기본값 |
+|---|----------|----------------|------|----------------|
+| 1 | 오리진 서버 포트 | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (명시적) |
+| 2 | 연결 풀 재사용 | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | 헬스 체크 포트 | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | 로드밸런서 알고리즘 | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
+| 5 | 엔드포인트 선택 | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
+| 6 | 오리진에 대한 TLS | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | 연결 타임아웃 | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
+| 8 | HTTP 유휴 타임아웃 | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
+| 9 | 서킷 브레이커 | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | 이상치 탐지 | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | 패닉 임계값 | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | 서브셋 로드 밸런싱 | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | HTTP 프로토콜 | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | 프록시 프로토콜 | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | LB 소스 IP 지속성 | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## 데이터 접근
+
+### OpenAPI 명세
+
+| 파일 | 내용 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | 모든 스키마가 포함된 통합 명세 |
+
+### validation.json 구조
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # x-f5xc-server-default: true 가 지정된 필드
+├── recommended         # x-f5xc-recommended-value 가 지정된 필드
+├── advanced_options    # 중첩된 advanced_options 기본값
+├── oneof_choices       # OneOf 기본 선택
+└── ui_vs_server        # UI와 서버 간 불일치
+```
+
+## 오리진 서버 타입
+
+오리진 서버는 다양한 타입 변형을 사용하여 지정할 수 있습니다. 타입에 따라 필요한 추가 필드가 결정됩니다.
+
+### 구현된 타입
+
+| 타입 | 설명 | 필수 필드 | 상태 |
+|------|-------------|-----------------|--------|
+| `public_name` | 공용 DNS 이름을 가진 오리진 서버 | `dns_name` | ✅ 완료 |
+| `public_ip` | 공용 IP 주소를 가진 오리진 서버 | `ip` (IPv4) | ✅ 완료 |
+
+### 예시: public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### 예시: public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## TODO: 사이트 종속 오리진 서버 타입
+
+다음 오리진 서버 타입은 구현 전에 "site" 리소스 로직 개발이 필요합니다:
+
+| 타입 | 설명 | 필수 필드 | 상태 |
+|------|-------------|-----------------|--------|
+| `private_ip` | 사설/공용 IP 및 사이트 정보를 가진 오리진 서버 | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 사이트 로직 대기 중 |
+| `private_name` | DNS 이름 및 사이트 정보를 가진 오리진 서버 | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 사이트 로직 대기 중 |
+| `k8s_service` | 사이트 정보를 가진 Kubernetes 서비스 | `service_name`, `site_locator`, `network_choice` | 🔲 사이트 로직 대기 중 |
+| `consul_service` | 사이트 정보를 가진 HashiCorp Consul 서비스 | `service_name`, `site_locator`, `network_choice` | 🔲 사이트 로직 대기 중 |
+
+### 구현 요구 사항
+
+이러한 타입을 완전히 문서화하기 전에 다음 사항이 필요합니다:
+
+1. **사이트 리소스 디스커버리** - `site` 리소스 스키마 및 site_locator 패턴 문서화
+2. **네트워크 선택 열거형** - `network_choice` 제약 값 문서화 (site_local_inside, site_local_outside 등)
+3. **SNAT 풀 옵션** - SNAT 풀 구성 패턴 문서화
+4. **교차 리소스 참조** - origin_pool이 site 리소스를 참조하는 방식 정의
+
+### 추적
+
+- 구성 플레이스홀더: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- 관련 스프린트: 사이트 리소스 스키마 보강
+
+## 관련 문서
+
+- [개발 가이드 - OpenAPI 확장](../development/#openapi-extensions) - 확장 정의 및 사용법
+- [유효성 검사 명세](../validation-spec/) - validation.json 형식 및 구조
+- [헬스체크 개선 사항](./healthcheck-enhancements/) - 헬스체크 스키마 보강
+
+## 변경 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | public_name/public_ip를 포함한 오리진 서버 타입 섹션 추가; 사이트 종속 타입에 대한 TODO 마커 |
+| 2.1.1 | 2026-01-18 | 순수 API 레퍼런스로 재작성; 다운스트림 코드 예시 제거 |
+| 2.1.0 | 2026-01-18 | validation.json의 통합 기본값 구조로 업데이트 |
+| 2.0.33 | 2026-01-17 | 오리진 풀 개선 사항 초기 문서화 |

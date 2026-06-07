@@ -1,0 +1,65 @@
+---
+title: ⚙️ Managed Kubernetes API
+description: 'Cluster RBAC, ความปลอดภัยของ Pod และ Container Registry'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 17accfbbab41
+  translator: machine
+---
+
+Kubernetes role bindings และ admission policies การผสานรวม Registry สำหรับเวิร์กโหลด EKS, AKS และ GKE
+
+- **หมวดหมู่**: โครงสร้างพื้นฐาน
+- **ความซับซ้อน**: ปานกลาง
+- **Paths**: 20 | **Schemas**: 95
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `container_services`, `sites`, `service_mesh`
+
+## กรณีการใช้งาน
+
+- จัดการ RBAC และความปลอดภัยของคลัสเตอร์ XCKS (Managed Kubernetes)
+- กำหนดค่านโยบายความปลอดภัยของ Pod และ Admission Controllers
+- จัดการ Container Registry สำหรับการปรับใช้ระดับองค์กร
+- ผสานรวมกับคลัสเตอร์ Kubernetes ภายนอก (EKS, AKS, GKE)
+
+## ทรัพยากรหลัก
+
+- **mk8s_cluster**: การกำหนดค่าคลัสเตอร์ Managed Kubernetes
+- **k8s_cluster_role**: การกำหนดค่า RBAC Role ของคลัสเตอร์ Kubernetes
+- **container_registry**: Container Image Registry สำหรับอิมเมจเวิร์กโหลด
+
+## Endpoints
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys` | สร้าง Container Registry |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys/&#123;metadata.name&#125;` | แทนที่ Container Registry |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | แสดงรายการ Container Registry |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | ดึงข้อมูล Container Registry |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | ลบ Container Registry |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | สร้าง Configuration Specification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | แสดงรายการ K8s Cluster Role |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | ดึงข้อมูล Configuration Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | ลบ K8s Cluster Role |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | สร้าง Configuration Specification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | แสดงรายการ K8s Cluster Role Binding |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | ดึงข้อมูล Configuration Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | ลบ K8s Cluster Role Binding |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | สร้าง Configuration Specification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | แสดงรายการ K8s Pod Security Admission |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | ดึงข้อมูล Configuration Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | ลบ K8s Pod Security Admission |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | สร้าง Configuration Specification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | แสดงรายการ K8s Pod Security Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | ดึงข้อมูล Configuration Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | ลบ K8s Pod Security Policy |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./managed_kubernetes/)
+- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/managed_kubernetes.json)
