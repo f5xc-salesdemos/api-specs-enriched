@@ -1589,11 +1589,12 @@ resources:
     mutually_exclusive_groups:
       - name: "proxy_choice"
         fields: ["spec.any_proxy", "spec.drp_http_connect", "spec.network_connector", "spec.proxy_label_selector"]
-        reason: "Choose proxy scope (any_proxy requires system namespace)"
+        reason: "Choose proxy scope (any_proxy requires system namespace; drp_http_connect is user namespace only)"
       - name: "rule_choice"
         fields: ["spec.allow_all", "spec.allow_list", "spec.deny_list", "spec.rule_list"]
         reason: "Choose rule type"
 
+    # Example for user-namespace forward proxy (drp_http_connect)
     example_yaml: |
       metadata:
         name: example-fpp
@@ -1614,13 +1615,29 @@ resources:
         }
       }
 
+    # Example for system-namespace forward proxy (required for SMSv2 active_forward_proxy_policies)
+    # IMPORTANT: drp_http_connect is FORBIDDEN in system namespace — use allow_all only
+    example_json_system_ns: |
+      {
+        "metadata": {
+          "name": "example-fpp-system",
+          "namespace": "system"
+        },
+        "spec": {
+          "allow_all": {}
+        }
+      }
+
     cli:
       domain: "network_security"
       resource_name: "forward_proxy_policy"
 
     notes:
       - "any_proxy requires system namespace (400 in app namespace) (verified 2026-05-10)"
-      - "drp_http_connect works in app namespace"
+      - "drp_http_connect works in user/app namespace ONLY — forbidden in system namespace"
+      - "For SMSv2 active_forward_proxy_policies: policy MUST be in system namespace with spec:{allow_all:{}} only (verified live 2026-06-08)"
+      - "SMSv2 inner field is 'forward_proxy_policies' (no 'active_' prefix) — same pattern as enhanced_firewall_policy"
+      - "Previous docs were wrong: user namespace + drp_http_connect does NOT work for SMSv2 CE attachment"
       - "Server default: segment_policy: null"
 
   # ============================================================================
@@ -2012,14 +2029,16 @@ resources:
         spec_override: {"no_forward_proxy": {}}
         description: "No forward proxy"
       active_forward_proxy_policies:
-        spec_override: {"active_forward_proxy_policies": {"active_forward_proxy_policies": [{"name": "POLICY_NAME", "namespace": "NAMESPACE"}]}}
-        description: "Apply forward proxy policy — reference by name+namespace"
+        # IMPORTANT: inner field is "forward_proxy_policies" (no "active_" prefix)
+        # IMPORTANT: policy MUST be in system namespace with spec:{allow_all:{}} only
+        # DO NOT add drp_http_connect — it is forbidden in system namespace
+        spec_override: {"active_forward_proxy_policies": {"forward_proxy_policies": [{"name": "POLICY_NAME", "namespace": "system"}]}}
+        description: "Apply forward proxy policy — inner field is forward_proxy_policies, policy must be in system namespace with allow_all only"
         prerequisites:
           forward_proxy_policy:
             api_path: "forward_proxy_policys"
-            namespace: "user_namespace"
-            # drp_http_connect REQUIRED — without it API returns 400
-            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"drp_http_connect":{},"allow_all":{}}}'
+            namespace: "system"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"system"},"spec":{"allow_all":{}}}'
 
       # Group 5: enterprise_proxy
       f5_proxy:
