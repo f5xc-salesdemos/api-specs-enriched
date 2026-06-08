@@ -1997,13 +1997,15 @@ resources:
         spec_override: {"no_network_policy": {}}
         description: "No network policy applied"
       active_enhanced_firewall_policies:
-        spec_override: {"active_enhanced_firewall_policies": {"active_enhanced_firewall_policies": [{"name": "POLICY_NAME", "namespace": "NAMESPACE"}]}}
-        description: "Apply enhanced firewall policy — reference by name+namespace"
+        # IMPORTANT: inner field is "enhanced_firewall_policies" (no "active_" prefix)
+        # IMPORTANT: policy MUST be in system namespace — cannot reference user namespace
+        spec_override: {"active_enhanced_firewall_policies": {"enhanced_firewall_policies": [{"name": "POLICY_NAME", "namespace": "system"}]}}
+        description: "Apply enhanced firewall policy — inner field is enhanced_firewall_policies, policy must be in system namespace"
         prerequisites:
           enhanced_firewall_policy:
             api_path: "enhanced_firewall_policys"
-            namespace: "user_namespace"
-            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{}}'
+            namespace: "system"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"system"},"spec":{}}'
 
       # Group 4: forward_proxy
       no_forward_proxy:
@@ -2098,6 +2100,7 @@ resources:
       enable_management_network:
         spec_override: {"enable_management_network": {}}
         description: "Enable management network"
+
 
   # ============================================================================
   # Identity - Namespace
