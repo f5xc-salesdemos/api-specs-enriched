@@ -1,5 +1,5 @@
 ---
-title: Constraint-Metadatensystem
+title: Constraint-Metadaten-System
 description: >-
   Umfassende Constraint-Metadaten für deterministische KI-Generierung und
   Validierung
@@ -24,30 +24,30 @@ i18n:
 1. [Überblick](#überblick)
 2. [Erweiterungsstruktur](#erweiterungsstruktur)
 3. [Constraint-Typen](#constraint-typen)
-4. [Natürlichsprachliche Beschreibungen](#natürlichsprachliche-beschreibungen)
+4. [Natürlichsprachige Beschreibungen](#natürlichsprachige-beschreibungen)
 5. [Validierungsbeispiele](#validierungsbeispiele)
 6. [Konfidenzwerte](#konfidenzwerte)
 7. [Discovery-Integration](#discovery-integration)
-8. [Tool-Integrationsleitfaden](#tool-integrationsleitfaden)
+8. [Leitfaden zur Tool-Integration](#leitfaden-zur-tool-integration)
 
 ---
 
 ## Überblick
 
-Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldvalidierungs-Constraints bereit und ermöglicht:
+Die Erweiterung `x-f5xc-constraints` bietet deterministisches Wissen über Feldvalidierungs-Constraints und ermöglicht:
 
-- **KI-Assistenten**: Generierung gültiger Konfigurationen ohne Benutzereingabe für Constraint-Details
-- **CLI-Tools**: Bereitstellung akkurater Eingabehinweise, Validierung und Fehlermeldungen
-- **Terraform**: Durchsetzung von Constraints zur Plan-Zeit, nicht zur Apply-Zeit
+- **KI-Assistenten**: Gültige Konfigurationen ohne Benutzereingaben für Constraint-Details generieren
+- **CLI-Tools**: Präzise Eingabehinweise, Validierung und Fehlermeldungen bereitstellen
+- **Terraform**: Constraints zur Planungszeit durchsetzen, nicht zur Anwendungszeit
 - **IDE-Erweiterungen**: Echtzeit-Validierung und Autovervollständigungsvorschläge
-- **API-Validatoren**: Vor-Absendung-Validierung zur Reduzierung von API-Fehlern
+- **API-Validatoren**: Vor-Absendungs-Validierung zur Reduzierung von API-Fehlern
 
 ### Abdeckungsstatistiken
 
-- **9.851 Constraints** über alle F5 XC API-Spezifikationen
-- **50+ Mustertypen** (String, Array, Numerisch)
-- **95% Konfidenz** bei hochpriorisierten Feldern (Namen, Ports, Identifikatoren)
-- **3-stufige Abgleichung**: EXISTING > DISCOVERY > INFERRED
+- **9.851 Constraints** über alle F5 XC API-Spezifikationen hinweg
+- **50+ Mustertypen** (String, Array, numerisch)
+- **95% Konfidenz** bei hochprioritären Feldern (Namen, Ports, Bezeichner)
+- **3-stufige Abstimmung**: BESTEHEND > DISCOVERY > ABGELEITET
 
 ---
 
@@ -83,7 +83,7 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 | `constraintType` | string | Datentyp (string, array, number, object) |
 | `deterministic` | boolean | Hochkonfidenz-Flag (Konfidenz >= 0,9) für KI-Generierung |
 | `category` | string | Constraint-Kategorie für Gruppierung und Berichterstellung |
-| *(Constraint-Schlüssel)* | verschieden | Typspezifische Constraint-Schlüssel auf oberster Ebene abgeflacht (z.B. `minLength`, `maxItems`, `minimum`) |
+| *(Constraint-Schlüssel)* | verschieden | Typspezifische Constraint-Schlüssel, flach auf oberster Ebene (z. B. `minLength`, `maxItems`, `minimum`) |
 | `metadata` | object | Quellenverfolgung, Konfidenz, Validierungszeitstempel |
 
 ---
@@ -137,8 +137,8 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 | `date-time` | ISO 8601 Zeitstempel | `2026-01-19T12:00:00Z` |
 | `date` | ISO 8601 Datum | `2026-01-19` |
 | `time` | ISO 8601 Uhrzeit | `12:00:00` |
-| `json` | JSON-String (parsbar) | `{"key": "value"}` |
-| `yaml` | YAML-String (parsbar) | `key: value` |
+| `json` | JSON-String (parsebar) | `{"key": "value"}` |
+| `yaml` | YAML-String (parsebar) | `key: value` |
 | `base64` | Base64-kodierter String | `SGVsbG8gV29ybGQ=` |
 | `hex` | Hexadezimaler String | `48656c6c6f` |
 | `mac-address` | MAC-Adresse | `00:1A:2B:3C:4D:5E` |
@@ -182,13 +182,13 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 
 ---
 
-## Natürlichsprachliche Beschreibungen
+## Natürlichsprachige Beschreibungen
 
 ### String-Format-Constraints
 
 **DNS-Labels** (`format: "dns-label"`):
 - DNS-Label-Namen müssen 1-63 kleingeschriebene alphanumerische Zeichen umfassen
-- Bindestriche sind erlaubt, jedoch nicht am Anfang/Ende (RFC 1123)
+- Bindestriche sind erlaubt, aber nicht am Anfang/Ende (RFC 1123)
 - Beispiel: `my-service`, `api-gateway`, `lb-prod-01`
 
 **E-Mail-Adressen** (`format: "email"`):
@@ -207,28 +207,28 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 - Beispiel: `https://api.example.com/v1`, `http://localhost:8080`
 
 **IPv4-Adressen** (`format: "ipv4"`):
-- IPv4-Adressen müssen in Punkt-Dezimal-Notation angegeben werden
+- IPv4-Adressen müssen in Dezimalpunkt-Notation angegeben werden
 - Beispiel: `192.168.1.1`, `10.0.0.1`
 
 **UUIDs** (`format: "uuid"`):
-- UUIDs müssen dem RFC 4122-Format entsprechen
+- UUIDs müssen dem RFC 4122 Format entsprechen
 - Beispiel: `550e8400-e29b-41d4-a716-446655440000`
 
 **Zeitstempel** (`format: "date-time"`):
-- Zeitstempel müssen im ISO 8601-Format vorliegen
+- Zeitstempel müssen im ISO 8601 Format vorliegen
 - Beispiel: `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
 
 ### Numerische Constraints
 
 **Portnummern**:
 - Portnummern müssen Ganzzahlen zwischen 1 und 65535 sein
-- Standardports: 80 (HTTP), 443 (HTTPS), 22 (SSH)
+- Standard-Ports: 80 (HTTP), 443 (HTTPS), 22 (SSH)
 
 **VLAN-IDs**:
 - VLAN-IDs müssen Ganzzahlen zwischen 1 und 4094 sein (802.1Q-Standard)
 
-**Timeouts**:
-- Timeouts müssen 1-3600 Sekunden betragen (maximal 1 Stunde)
+**Zeitüberschreitungen**:
+- Zeitüberschreitungen müssen 1-3600 Sekunden betragen (maximal 1 Stunde)
 
 ### Array-Constraints
 
@@ -271,7 +271,7 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 - ❌ `my_service` (Unterstrich nicht erlaubt)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (zu lang)
 
-### Beispiel 2: Portnummer-Validierung
+### Beispiel 2: Portnummern-Validierung
 
 **Constraint**:
 ```json
@@ -293,7 +293,7 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 - ❌ `0` (unter dem Minimum)
 - ❌ `65536` (über dem Maximum)
 - ❌ `-1` (negativ)
-- ❌ `"80"` (String, keine Zahl)
+- ❌ `"80"` (String, nicht Zahl)
 
 ### Beispiel 3: Array-Größen-Validierung
 
@@ -321,11 +321,11 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 
 ## Konfidenzwerte
 
-### Wertinterpretation
+### Interpretation der Werte
 
 | Bereich | Interpretation | Verwendung |
 |---------|----------------|------------|
-| 0,90-1,00 | **Hohe Konfidenz** | Deterministisches Flag aktiviert, Verwendung für KI-Generierung |
+| 0,90-1,00 | **Hohe Konfidenz** | Deterministisches Flag aktiviert, zur KI-Generierung verwenden |
 | 0,70-0,89 | **Mittlere Konfidenz** | Beratend, Benutzerbestätigung empfohlen |
 | 0,50-0,69 | **Niedrige Konfidenz** | Nur informativ, Benutzervalidierung erforderlich |
 | < 0,50 | **Sehr niedrig** | Nicht in Constraints enthalten |
@@ -333,14 +333,14 @@ Die Erweiterung `x-f5xc-constraints` stellt deterministisches Wissen über Feldv
 ### Deterministisches Flag
 
 Das boolesche Flag `deterministic` wird gesetzt, wenn:
-- Konfidenzwert >= 0,9
-- Das Muster anhand von Discovery-Daten validiert wurde ODER
-- Das Muster gut etablierten Standards entspricht (RFC, ISO usw.)
+- Der Konfidenzwert >= 0,9 ist
+- Das Muster gegen Discovery-Daten validiert wurde ODER
+- Das Muster etablierten Standards entspricht (RFC, ISO usw.)
 
-**Verwendung bei der KI-Generierung**:
+**Verwendung in der KI-Generierung**:
 ```python
 if constraint.get("deterministic"):
-    # Wert automatisch generieren, ohne den Benutzer zu fragen
+    # Wert automatisch ohne Benutzerabfrage generieren
     value = generate_from_pattern(constraint)
 else:
     # Benutzer mit Constraint-Hinweisen zur Eingabe auffordern
@@ -351,22 +351,22 @@ else:
 
 ## Discovery-Integration
 
-### Quellenpriorität
+### Quellpriorität
 
-Constraints werden mittels 3-stufiger Priorität abgeglichen:
+Constraints werden mit 3-stufiger Priorität abgestimmt:
 
-1. **EXISTING** (Konfidenz: 1,0)
+1. **BESTEHEND** (Konfidenz: 1,0)
    - Explizit in der ursprünglichen OpenAPI-Spezifikation festgelegt
    - Wird niemals überschrieben
 
 2. **DISCOVERY** (Konfidenz: 0,99)
-   - Aus Live-Antworten der F5 XC API extrahiert
+   - Aus Live-F5-XC-API-Antworten extrahiert
    - Enthält Validierungsregeln aus x-ves-validation-rules
    - Überschreibt abgeleitete Constraints
 
-3. **INFERRED** (Konfidenz: 0,50-0,95)
-   - Durch Mustererkennung aus Feldnamen abgeleitet
-   - Niedrigste Priorität, wird durch Discovery oder Explicit überschrieben
+3. **ABGELEITET** (Konfidenz: 0,50-0,95)
+   - Musterabgleich aus Feldnamen
+   - Niedrigste Priorität, wird durch Discovery oder explizite Angaben überschrieben
 
 ### Discovery-Datenquellen
 
@@ -387,9 +387,9 @@ Discovery-Constraints werden extrahiert aus:
 
 ---
 
-## Tool-Integrationsleitfaden
+## Leitfaden zur Tool-Integration
 
-### KI-Assistenten-Integration
+### Integration von KI-Assistenten
 
 **Gültige Ressourcennamen generieren**:
 ```python
@@ -397,14 +397,14 @@ def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
 
     if not constraints.get("deterministic"):
-        # Benutzer nach dem Namen fragen
+        # Ask user for name
         return prompt_user("Enter resource name: ")
 
-    # Automatisch generieren
+    # Generate automatically
     pattern = constraints.get("pattern")
     max_len = constraints.get("maxLength", 63)
 
-    # Gültigen Namen generieren, der dem Muster entspricht
+    # Generate valid name matching pattern
     return generate_dns_label(max_length=max_len)
 ```
 
@@ -416,14 +416,14 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # Länge prüfen (Constraint-Schlüssel befinden sich auf oberster Ebene)
+    # Check length (constraint keys are at top level)
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
     if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
         return False, f"{field_name} must be at most {constraints['maxLength']} characters"
 
-    # Muster prüfen
+    # Check pattern
     if "pattern" in constraints:
         import re
         if not re.match(constraints["pattern"], user_value):
@@ -445,7 +445,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // Constraint-Schlüssel befinden sich auf oberster Ebene (kein verschachtelter "string"-Wrapper)
+    // Constraint keys are at top level (no nested "string" wrapper)
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -460,7 +460,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 }
 ```
 
-### IDE-Erweiterungsintegration
+### IDE-Erweiterungs-Integration
 
 **Autovervollständigung und Validierung**:
 ```typescript
@@ -470,7 +470,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // Formatspezifische Vervollständigungen hinzufügen
+    // Add format-specific completions
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -479,7 +479,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
         });
     }
 
-    // Validierungshinweis hinzufügen
+    // Add validation hint
     if (constraints.deterministic) {
         items.push({
             label: '✨ Auto-generate',
@@ -497,7 +497,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ## Anhang: Constraint-Musterkatalog
 
-### Hochkonfidente Muster (0,95-0,99)
+### Hochkonfidenz-Muster (0,95-0,99)
 
 | Muster | Feldname-Regex | Constraint-Typ | Beispiel |
 |--------|----------------|----------------|---------|
@@ -505,11 +505,11 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 | Namespace | `\bnamespace$` | String (1-63 Zeichen, dns-label) | `production` |
 | Port | `\bport$` | Number (1-65535) | `443` |
 | VLAN-ID | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
-| UUID | `\buuid$` | String (36 Zeichen, UUID-Format) | `550e8400-...` |
-| E-Mail | `\bemail$` | String (max. 254 Zeichen, E-Mail) | `user@example.com` |
+| UUID | `\buuid$` | String (36 Zeichen, uuid-Format) | `550e8400-...` |
+| E-Mail | `\bemail$` | String (max. 254 Zeichen, email) | `user@example.com` |
 | Zeitstempel | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
 
-### Mittelkonfidente Muster (0,80-0,94)
+### Mittlere-Konfidenz-Muster (0,80-0,94)
 
 | Muster | Feldname-Regex | Constraint-Typ | Beispiel |
 |--------|----------------|----------------|---------|
@@ -522,13 +522,13 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ## Support und Feedback
 
-- **Issues**: Melden Sie Probleme mit der Constraint-Genauigkeit unter https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **Probleme**: Melden Sie Ungenauigkeiten bei Constraints unter https://github.com/f5xc-salesdemos/api-specs-enriched/issues
 - **Dokumentation**: Vollständige API-Dokumentation unter https://f5xc-salesdemos.github.io/api-specs-enriched/
-- **MCP-Integration**: Siehe das Repository `f5xc-api-mcp` für Beispiele zur MCP-Server-Integration
+- **MCP-Integration**: Siehe Repository `f5xc-api-mcp` für Beispiele zur MCP-Server-Integration
 
 ---
 
 **Version**: 3.3.0
 **Zuletzt aktualisiert**: 19.01.2026
-**Abgeglichene Constraints**: 9.851
+**Abgestimmte Constraints**: 9.851
 **Musterabdeckung**: 50+ Typen

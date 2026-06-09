@@ -1,6 +1,6 @@
 ---
-title: Améliorations du Origin Pool
-description: Métadonnées d'enrichissement pour les schémas origin pool
+title: Améliorations du pool d'origines
+description: Métadonnées d'enrichissement pour les schémas du pool d'origines
 sidebar:
   order: 3
 i18n:
@@ -12,7 +12,7 @@ Métadonnées d'enrichissement pour les schémas liés à origin_pool. Voir [Ext
 
 ## Schémas enrichis
 
-### Motif
+### Modèle
 
 Tous les schémas correspondant à `origin_pool.*SpecType` reçoivent des enrichissements :
 
@@ -24,8 +24,8 @@ Tous les schémas correspondant à `origin_pool.*SpecType` reçoivent des enrich
 
 | Champ | Obligatoire pour | Notes |
 |-------|------------------|-------|
-| `metadata.name` | Toutes les opérations | 1-63 caractères, alphanumérique minuscule, motif : `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
-| `metadata.namespace` | Toutes les opérations | Identifiant de namespace |
+| `metadata.name` | Toutes les opérations | 1-63 caractères, alphanumérique minuscule, modèle : `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | Toutes les opérations | Identifiant de l'espace de noms |
 | `spec.origin_servers` | Création | Minimum 1 élément |
 | `spec.port` | Création | 1-65535, pas de valeur par défaut serveur |
 
@@ -58,10 +58,10 @@ Les champs marqués avec `x-f5xc-server-default: true` ont leur valeur `default`
 
 | Champ | Valeur par défaut | Type | Description |
 |-------|-------------------|------|-------------|
-| `no_tls` | `{}` | object | TLS vers l'origine désactivé |
-| `healthcheck` | `[]` | array | Aucune vérification de santé configurée |
-| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | Répartition de charge circulaire |
-| `endpoint_selection` | `DISTRIBUTED` | enum | Utiliser tous les endpoints (locaux + distants) |
+| `no_tls` | `{}` | objet | TLS vers l'origine désactivé |
+| `healthcheck` | `[]` | tableau | Aucune vérification d'état configurée |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | Répartition de charge en tourniquet |
+| `endpoint_selection` | `DISTRIBUTED` | enum | Utiliser tous les points de terminaison (locaux + distants) |
 
 ### Valeurs par défaut de advanced_options
 
@@ -69,31 +69,31 @@ Lorsque `advanced_options` n'est pas spécifié, le serveur se comporte comme si
 
 | Champ | Valeur par défaut | Type | Description |
 |-------|-------------------|------|-------------|
-| `connection_timeout` | `2000` | integer | Délai d'expiration de connexion en millisecondes |
-| `http_idle_timeout` | `300000` | integer | Délai d'inactivité HTTP en millisecondes (5 min) |
-| `same_as_endpoint_port` | `{}` | object | La vérification de santé utilise le port de l'endpoint |
-| `default_circuit_breaker` | `{}` | object | Paramètres par défaut du disjoncteur |
-| `disable_outlier_detection` | `{}` | object | Détection des anomalies désactivée |
-| `no_panic_threshold` | `{}` | object | Pas de seuil de panique |
-| `disable_subsets` | `{}` | object | Répartition de charge par sous-ensembles désactivée |
-| `auto_http_config` | `{}` | object | Négociation automatique du protocole HTTP |
-| `disable_proxy_protocol` | `{}` | object | Protocole proxy désactivé |
-| `disable_lb_source_ip_persistance` | `{}` | object | Persistance IP source du LB désactivée |
+| `connection_timeout` | `2000` | entier | Délai d'expiration de connexion en millisecondes |
+| `http_idle_timeout` | `300000` | entier | Délai d'inactivité HTTP en millisecondes (5 min) |
+| `same_as_endpoint_port` | `{}` | objet | La vérification d'état utilise le port du point de terminaison |
+| `default_circuit_breaker` | `{}` | objet | Paramètres de disjoncteur par défaut |
+| `disable_outlier_detection` | `{}` | objet | Détection des anomalies désactivée |
+| `no_panic_threshold` | `{}` | objet | Pas de seuil de panique |
+| `disable_subsets` | `{}` | objet | Répartition de charge par sous-ensembles désactivée |
+| `auto_http_config` | `{}` | objet | Négociation automatique du protocole HTTP |
+| `disable_proxy_protocol` | `{}` | objet | Protocole proxy désactivé |
+| `disable_lb_source_ip_persistance` | `{}` | objet | Persistance IP source du répartiteur de charge désactivée |
 
 ### Valeurs par défaut des objets imbriqués
 
 | Chemin | Valeur par défaut | Description |
 |--------|-------------------|-------------|
-| `origin_servers[].labels` | `{}` | Objet labels vide |
+| `origin_servers[].labels` | `{}` | Objet de labels vide |
 | `origin_servers[].public_name.refresh_interval` | `0` | Utiliser l'intervalle de rafraîchissement DNS par défaut du système |
 
-## Divergences entre l'UI et les valeurs par défaut du serveur
+## Différences entre l'interface utilisateur et les valeurs par défaut du serveur
 
 L'interface web F5 XC présélectionne des valeurs différentes de celles que l'API applique lorsque les champs sont omis.
 
-| Champ | Présélection UI | Appliqué par le serveur | Note |
+| Champ | Présélection IU | Appliqué par le serveur | Note |
 |-------|-----------------|-------------------------|------|
-| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | Les ressources créées via l'UI et via l'API diffèrent lorsque le champ est omis |
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | Les ressources créées via l'IU et celles créées via l'API diffèrent lorsque le champ est omis |
 
 ## Valeurs d'énumération
 
@@ -101,69 +101,69 @@ L'interface web F5 XC présélectionne des valeurs différentes de celles que l'
 
 | Valeur | Description | Notes |
 |--------|-------------|-------|
-| `ROUND_ROBIN` | Chaque endpoint sain est sélectionné en ordre circulaire | Valeur par défaut du serveur |
-| `LEAST_REQUEST` | L'endpoint avec le moins de requêtes actives est sélectionné | |
-| `RING_HASH` | Hachage cohérent utilisant un anneau de hachage des noms d'endpoints | |
-| `RANDOM` | Sélection aléatoire d'un endpoint sain | |
-| `LB_OVERRIDE` | La politique de hachage est héritée du répartiteur de charge parent | Valeur par défaut de l'UI |
+| `ROUND_ROBIN` | Chaque point de terminaison sain est sélectionné en ordre de tourniquet | Valeur par défaut du serveur |
+| `LEAST_REQUEST` | Le point de terminaison avec le moins de requêtes actives est sélectionné | |
+| `RING_HASH` | Hachage cohérent utilisant un anneau de hachage des noms de points de terminaison | |
+| `RANDOM` | Sélection aléatoire d'un point de terminaison sain | |
+| `LB_OVERRIDE` | Politique de hachage héritée du répartiteur de charge parent | Valeur par défaut de l'IU |
 
 ### endpoint_selection
 
 | Valeur | Description | Notes |
 |--------|-------------|-------|
-| `DISTRIBUTED` | Prendre en compte les endpoints distants et locaux | Valeur par défaut du serveur |
-| `LOCAL_ONLY` | Seuls les endpoints locaux sont utilisés | |
-| `LOCAL_PREFERRED` | Préférer les endpoints locaux, basculer vers les distants si indisponibles | |
+| `DISTRIBUTED` | Considérer les points de terminaison distants et locaux | Valeur par défaut du serveur |
+| `LOCAL_ONLY` | Seuls les points de terminaison locaux sont utilisés | |
+| `LOCAL_PREFERRED` | Préférer les locaux, basculer vers les distants si indisponible | |
 
 ## Groupes de champs OneOf
 
-Groupes de champs mutuellement exclusifs. Un SEUL champ de chaque groupe peut être spécifié :
+Groupes de champs mutuellement exclusifs. Un seul champ de chaque groupe peut être spécifié :
 
 | Groupe | Champs | Valeur par défaut du serveur |
 |--------|--------|------------------------------|
 | Configuration du port | `port`, `automatic_port`, `lb_port` | `port` (explicite) |
 | TLS vers l'origine | `no_tls`, `use_tls` | `no_tls` |
-| Port de vérification de santé | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| Port de vérification d'état | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
 | Disjoncteur | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
 | Détection des anomalies | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
 | Seuil de panique | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
-| LB par sous-ensembles | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| Sous-ensembles de répartition | `disable_subsets`, `enable_subsets` | `disable_subsets` |
 | Protocole HTTP | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
 | Protocole proxy | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
-| IP source du LB | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| IP source du répartiteur | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
 | Pool de connexions | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
 
 ## Contraintes des champs
 
 | Champ | Type | Contrainte |
 |-------|------|------------|
-| `spec.port` | integer | 1-65535 |
-| `spec.advanced_options.connection_timeout` | integer | 0-1 800 000 ms |
-| `spec.advanced_options.http_idle_timeout` | integer | 0-600 000 ms |
-| `spec.advanced_options.panic_threshold` | integer | 0-100 (pourcentage) |
-| `metadata.name` | string | 1-63 caractères, motif : `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `spec.port` | entier | 1-65535 |
+| `spec.advanced_options.connection_timeout` | entier | 0-1 800 000 ms |
+| `spec.advanced_options.http_idle_timeout` | entier | 0-600 000 ms |
+| `spec.advanced_options.panic_threshold` | entier | 0-100 (pourcentage) |
+| `metadata.name` | chaîne | 1-63 caractères, modèle : `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
 
-## Options de configuration de l'UI
+## Options de configuration de l'interface utilisateur
 
-La console web F5 XC présente 15 options de configuration pour les origin pools :
+La console web F5 XC présente 15 options de configuration pour les pools d'origines :
 
-| # | Libellé UI | Chemin du champ API | Type | Valeur par défaut du serveur |
+| # | Libellé IU | Chemin du champ API | Type | Valeur par défaut du serveur |
 |---|------------|---------------------|------|------------------------------|
-| 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (explicite) |
-| 2 | Connection Pool Reuse | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
-| 3 | Health Check Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
-| 4 | LoadBalancer Algorithm | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
-| 5 | Endpoint Selection | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
-| 6 | TLS to Origin | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
-| 7 | Connection Timeout | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
-| 8 | HTTP Idle Timeout | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
-| 9 | Circuit Breaker | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
-| 10 | Outlier Detection | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
-| 11 | Panic Threshold | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
-| 12 | Subset Load Balancing | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
-| 13 | HTTP Protocol | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
-| 14 | Proxy Protocol | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
-| 15 | LB Source IP Persistence | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+| 1 | Port du serveur d'origine | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (explicite) |
+| 2 | Réutilisation du pool de connexions | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | Port de vérification d'état | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | Algorithme de répartition de charge | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
+| 5 | Sélection des points de terminaison | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
+| 6 | TLS vers l'origine | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | Délai d'expiration de connexion | `spec.advanced_options.connection_timeout` | entier | 2000 ms |
+| 8 | Délai d'inactivité HTTP | `spec.advanced_options.http_idle_timeout` | entier | 300000 ms |
+| 9 | Disjoncteur | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | Détection des anomalies | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | Seuil de panique | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | Répartition par sous-ensembles | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | Protocole HTTP | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | Protocole proxy | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | Persistance IP source du répartiteur | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
 
 ## Accès aux données
 
@@ -178,21 +178,21 @@ La console web F5 XC présente 15 options de configuration pour les origin pools
 
 ```text
 defaults.resources.origin_pool
-├── server_applied      # Fields with x-f5xc-server-default: true
-├── recommended         # Fields with x-f5xc-recommended-value
-├── advanced_options    # Nested advanced_options defaults
-├── oneof_choices       # OneOf default selections
-└── ui_vs_server        # UI vs server discrepancies
+├── server_applied      # Champs avec x-f5xc-server-default: true
+├── recommended         # Champs avec x-f5xc-recommended-value
+├── advanced_options    # Valeurs par défaut de advanced_options imbriquées
+├── oneof_choices       # Sélections par défaut des OneOf
+└── ui_vs_server        # Différences entre IU et serveur
 ```
 
 ## Types de serveurs d'origine
 
-Les serveurs d'origine peuvent être spécifiés en utilisant différentes variantes de type. Le type détermine quels champs supplémentaires sont requis.
+Les serveurs d'origine peuvent être spécifiés à l'aide de différentes variantes de type. Le type détermine quels champs supplémentaires sont requis.
 
 ### Types implémentés
 
-| Type | Description | Champs requis | Statut |
-|------|-------------|---------------|--------|
+| Type | Description | Champs obligatoires | Statut |
+|------|-------------|---------------------|--------|
 | `public_name` | Serveur d'origine avec nom DNS public | `dns_name` | ✅ Complet |
 | `public_ip` | Serveur d'origine avec adresse IP publique | `ip` (IPv4) | ✅ Complet |
 
@@ -228,8 +228,8 @@ Les serveurs d'origine peuvent être spécifiés en utilisant différentes varia
 
 Les types de serveurs d'origine suivants nécessitent le développement de la logique de ressource « site » avant leur implémentation :
 
-| Type | Description | Champs requis | Statut |
-|------|-------------|---------------|--------|
+| Type | Description | Champs obligatoires | Statut |
+|------|-------------|---------------------|--------|
 | `private_ip` | Serveur d'origine avec IP privée/publique et informations de site | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 En attente de la logique site |
 | `private_name` | Serveur d'origine avec nom DNS et informations de site | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 En attente de la logique site |
 | `k8s_service` | Service Kubernetes avec informations de site | `service_name`, `site_locator`, `network_choice` | 🔲 En attente de la logique site |
@@ -239,27 +239,27 @@ Les types de serveurs d'origine suivants nécessitent le développement de la lo
 
 Avant que ces types puissent être entièrement documentés :
 
-1. **Découverte de la ressource Site** - Documenter le schéma de la ressource `site` et les motifs site_locator
+1. **Découverte de la ressource site** - Documenter le schéma de la ressource `site` et les modèles site_locator
 2. **Énumération Network Choice** - Documenter les valeurs contraintes de `network_choice` (site_local_inside, site_local_outside, etc.)
-3. **Options du pool SNAT** - Documenter les motifs de configuration du pool SNAT
+3. **Options du pool SNAT** - Documenter les modèles de configuration du pool SNAT
 4. **Références inter-ressources** - Définir comment origin_pool référence les ressources site
 
 ### Suivi
 
 - Espace réservé de configuration : `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
-- Sprint associé : Enrichissements du schéma de la ressource site
+- Sprint associé : Enrichissements du schéma de ressource site
 
 ## Documentation associée
 
 - [Guide de développement - Extensions OpenAPI](../development/#openapi-extensions) - Définitions et utilisation des extensions
 - [Spécification de validation](../validation-spec/) - Format et structure de validation.json
-- [Améliorations du Healthcheck](./healthcheck-enhancements/) - Enrichissements du schéma healthcheck
+- [Améliorations des vérifications d'état](./healthcheck-enhancements/) - Enrichissements du schéma de vérification d'état
 
 ## Journal des modifications
 
 | Version | Date | Modifications |
 |---------|------|---------------|
 | 2.1.2 | 2026-01-18 | Ajout de la section types de serveurs d'origine avec public_name/public_ip ; marqueurs À FAIRE pour les types dépendants du site |
-| 2.1.1 | 2026-01-18 | Réécrit comme référence API pure ; suppression des exemples de code en aval |
-| 2.1.0 | 2026-01-18 | Mis à jour vers la structure unifiée des valeurs par défaut dans validation.json |
-| 2.0.33 | 2026-01-17 | Documentation initiale des améliorations du origin pool |
+| 2.1.1 | 2026-01-18 | Réécrit en tant que référence API pure ; suppression des exemples de code en aval |
+| 2.1.0 | 2026-01-18 | Mise à jour vers la structure unifiée des valeurs par défaut dans validation.json |
+| 2.0.33 | 2026-01-17 | Documentation initiale des améliorations du pool d'origines |

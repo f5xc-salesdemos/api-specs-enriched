@@ -1,6 +1,6 @@
 ---
 title: Aprimoramentos do Origin Pool
-description: Metadados de enriquecimento para esquemas de origin pool
+description: Metadados de enriquecimento para schemas de origin pool
 sidebar:
   order: 3
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-Metadados de enriquecimento para esquemas relacionados a origin_pool. Consulte [Extensões OpenAPI](../development/#openapi-extensions) para definições de extensões.
+Metadados de enriquecimento para schemas relacionados a origin_pool. Consulte [Extensões OpenAPI](../development/#openapi-extensions) para definições de extensões.
 
-## Esquemas Enriquecidos
+## Schemas Enriquecidos
 
 ### Padrão
 
-Todos os esquemas que correspondem a `origin_pool.*SpecType` recebem enriquecimentos:
+Todos os schemas correspondentes a `origin_pool.*SpecType` recebem enriquecimentos:
 
 - `origin_poolCreateSpecType`
 - `origin_poolReplaceSpecType`
@@ -26,7 +26,7 @@ Todos os esquemas que correspondem a `origin_pool.*SpecType` recebem enriquecime
 |-------|------------------|-------------|
 | `metadata.name` | Todas as operações | 1-63 caracteres, alfanumérico minúsculo, padrão: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
 | `metadata.namespace` | Todas as operações | Identificador de namespace |
-| `spec.origin_servers` | Criação | Mínimo de 1 item |
+| `spec.origin_servers` | Criação | Mínimo 1 item |
 | `spec.port` | Criação | 1-65535, sem valor padrão do servidor |
 
 ## Configuração Mínima Viável
@@ -59,21 +59,21 @@ Campos marcados com `x-f5xc-server-default: true` têm seu valor `default` aplic
 | Campo | Valor Padrão | Tipo | Descrição |
 |-------|--------------|------|-----------|
 | `no_tls` | `{}` | object | TLS para a origem desabilitado |
-| `healthcheck` | `[]` | array | Nenhuma verificação de integridade configurada |
+| `healthcheck` | `[]` | array | Nenhuma verificação de saúde configurada |
 | `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | Balanceamento de carga round-robin |
 | `endpoint_selection` | `DISTRIBUTED` | enum | Usar todos os endpoints (locais + remotos) |
 
 ### Valores Padrão de advanced_options
 
-Quando `advanced_options` não é especificado, o servidor se comporta como se esses valores estivessem definidos:
+Quando `advanced_options` não é especificado, o servidor se comporta como se estes valores estivessem definidos:
 
 | Campo | Valor Padrão | Tipo | Descrição |
 |-------|--------------|------|-----------|
 | `connection_timeout` | `2000` | integer | Tempo limite de conexão em milissegundos |
 | `http_idle_timeout` | `300000` | integer | Tempo limite de inatividade HTTP em milissegundos (5 min) |
-| `same_as_endpoint_port` | `{}` | object | Verificação de integridade usa a porta do endpoint |
+| `same_as_endpoint_port` | `{}` | object | Verificação de saúde usa a porta do endpoint |
 | `default_circuit_breaker` | `{}` | object | Configurações padrão do circuit breaker |
-| `disable_outlier_detection` | `{}` | object | Detecção de outliers desabilitada |
+| `disable_outlier_detection` | `{}` | object | Detecção de outlier desabilitada |
 | `no_panic_threshold` | `{}` | object | Sem limite de pânico |
 | `disable_subsets` | `{}` | object | Balanceamento de carga por subconjunto desabilitado |
 | `auto_http_config` | `{}` | object | Negociação automática de protocolo HTTP |
@@ -85,7 +85,7 @@ Quando `advanced_options` não é especificado, o servidor se comporta como se e
 | Caminho | Valor Padrão | Descrição |
 |---------|--------------|-----------|
 | `origin_servers[].labels` | `{}` | Objeto de labels vazio |
-| `origin_servers[].public_name.refresh_interval` | `0` | Usar atualização de DNS padrão do sistema |
+| `origin_servers[].public_name.refresh_interval` | `0` | Usar intervalo padrão de atualização DNS do sistema |
 
 ## Discrepâncias entre UI e Valores Padrão do Servidor
 
@@ -101,8 +101,8 @@ A interface web do F5 XC pré-seleciona valores diferentes dos que a API aplica 
 
 | Valor | Descrição | Observações |
 |-------|-----------|-------------|
-| `ROUND_ROBIN` | Cada endpoint saudável é selecionado em ordem round-robin | Padrão do servidor |
-| `LEAST_REQUEST` | Endpoint com menos requisições ativas é selecionado | |
+| `ROUND_ROBIN` | Cada endpoint saudável selecionado em ordem round-robin | Padrão do servidor |
+| `LEAST_REQUEST` | Endpoint com menos requisições ativas selecionado | |
 | `RING_HASH` | Hashing consistente usando ring hash dos nomes dos endpoints | |
 | `RANDOM` | Seleção aleatória de endpoint saudável | |
 | `LB_OVERRIDE` | Política de hash herdada do balanceador de carga pai | Padrão da UI |
@@ -111,9 +111,9 @@ A interface web do F5 XC pré-seleciona valores diferentes dos que a API aplica 
 
 | Valor | Descrição | Observações |
 |-------|-----------|-------------|
-| `DISTRIBUTED` | Considera endpoints remotos e locais | Padrão do servidor |
-| `LOCAL_ONLY` | Apenas endpoints locais são utilizados | |
-| `LOCAL_PREFERRED` | Prefere locais, recorre a remotos se indisponíveis | |
+| `DISTRIBUTED` | Considerar endpoints remotos e locais | Padrão do servidor |
+| `LOCAL_ONLY` | Apenas endpoints locais utilizados | |
+| `LOCAL_PREFERRED` | Preferir local, recorrer a remoto se indisponível | |
 
 ## Grupos de Campos OneOf
 
@@ -123,9 +123,9 @@ Grupos de campos mutuamente exclusivos. Apenas UM campo de cada grupo pode ser e
 |-------|--------|---------------------|
 | Configuração de Porta | `port`, `automatic_port`, `lb_port` | `port` (explícito) |
 | TLS para Origem | `no_tls`, `use_tls` | `no_tls` |
-| Porta de Verificação de Integridade | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| Porta de Verificação de Saúde | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
 | Circuit Breaker | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
-| Detecção de Outliers | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| Detecção de Outlier | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
 | Limite de Pânico | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
 | LB por Subconjunto | `disable_subsets`, `enable_subsets` | `disable_subsets` |
 | Protocolo HTTP | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
@@ -148,7 +148,7 @@ Grupos de campos mutuamente exclusivos. Apenas UM campo de cada grupo pode ser e
 O console web do F5 XC apresenta 15 opções de configuração para origin pools:
 
 | # | Rótulo na UI | Caminho do Campo na API | Tipo | Padrão do Servidor |
-|---|--------------|--------------------------|------|---------------------|
+|---|--------------|-------------------------|------|---------------------|
 | 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (explícito) |
 | 2 | Connection Pool Reuse | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
 | 3 | Health Check Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
@@ -172,17 +172,17 @@ O console web do F5 XC apresenta 15 opções de configuração para origin pools
 | Arquivo | Conteúdo |
 |---------|----------|
 | `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
-| `docs/specifications/api/openapi.json` | Especificação combinada com todos os esquemas |
+| `docs/specifications/api/openapi.json` | Especificação combinada com todos os schemas |
 
 ### Estrutura do validation.json
 
 ```text
 defaults.resources.origin_pool
-├── server_applied      # Fields with x-f5xc-server-default: true
-├── recommended         # Fields with x-f5xc-recommended-value
-├── advanced_options    # Nested advanced_options defaults
-├── oneof_choices       # OneOf default selections
-└── ui_vs_server        # UI vs server discrepancies
+├── server_applied      # Campos com x-f5xc-server-default: true
+├── recommended         # Campos com x-f5xc-recommended-value
+├── advanced_options    # Valores padrão de advanced_options aninhados
+├── oneof_choices       # Seleções padrão de OneOf
+└── ui_vs_server        # Discrepâncias entre UI e servidor
 ```
 
 ## Tipos de Origin Server
@@ -226,34 +226,34 @@ Origin servers podem ser especificados usando diferentes variantes de tipo. O ti
 
 ## A FAZER: Tipos de Origin Server Dependentes de Site
 
-Os seguintes tipos de origin server requerem o desenvolvimento da lógica do recurso "site" antes da implementação:
+Os seguintes tipos de origin server requerem desenvolvimento da lógica do recurso "site" antes da implementação:
 
 | Tipo | Descrição | Campos Obrigatórios | Status |
 |------|-----------|---------------------|--------|
-| `private_ip` | Origin server com IP privado/público e informações de site | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pendente de lógica de site |
-| `private_name` | Origin server com nome DNS e informações de site | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pendente de lógica de site |
-| `k8s_service` | Serviço Kubernetes com informações de site | `service_name`, `site_locator`, `network_choice` | 🔲 Pendente de lógica de site |
-| `consul_service` | Serviço HashiCorp Consul com informações de site | `service_name`, `site_locator`, `network_choice` | 🔲 Pendente de lógica de site |
+| `private_ip` | Origin server com IP privado/público e informações do site | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pendente lógica de site |
+| `private_name` | Origin server com nome DNS e informações do site | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pendente lógica de site |
+| `k8s_service` | Serviço Kubernetes com informações do site | `service_name`, `site_locator`, `network_choice` | 🔲 Pendente lógica de site |
+| `consul_service` | Serviço HashiCorp Consul com informações do site | `service_name`, `site_locator`, `network_choice` | 🔲 Pendente lógica de site |
 
 ### Requisitos de Implementação
 
-Antes que esses tipos possam ser totalmente documentados:
+Antes que esses tipos possam ser completamente documentados:
 
-1. **Descoberta de Recurso Site** - Documentar o esquema do recurso `site` e os padrões de site_locator
-2. **Enum Network Choice** - Documentar os valores restritos de `network_choice` (site_local_inside, site_local_outside, etc.)
+1. **Descoberta de Recursos Site** - Documentar o schema do recurso `site` e os padrões de site_locator
+2. **Enum de Network Choice** - Documentar os valores restritos de `network_choice` (site_local_inside, site_local_outside, etc.)
 3. **Opções de SNAT Pool** - Documentar os padrões de configuração do SNAT pool
 4. **Referências entre Recursos** - Definir como origin_pool referencia recursos de site
 
 ### Acompanhamento
 
 - Placeholder de configuração: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
-- Sprint relacionada: Enriquecimentos do esquema de recurso site
+- Sprint relacionada: Enriquecimentos de schema de recursos site
 
 ## Documentação Relacionada
 
 - [Guia de Desenvolvimento - Extensões OpenAPI](../development/#openapi-extensions) - Definições e uso de extensões
 - [Especificação de Validação](../validation-spec/) - Formato e estrutura do validation.json
-- [Aprimoramentos de Healthcheck](./healthcheck-enhancements/) - Enriquecimentos do esquema de healthcheck
+- [Aprimoramentos de Healthcheck](./healthcheck-enhancements/) - Enriquecimentos de schema de healthcheck
 
 ## Registro de Alterações
 
@@ -262,4 +262,4 @@ Antes que esses tipos possam ser totalmente documentados:
 | 2.1.2 | 2026-01-18 | Adicionada seção de tipos de origin server com public_name/public_ip; marcadores A FAZER para tipos dependentes de site |
 | 2.1.1 | 2026-01-18 | Reescrito como referência pura de API; removidos exemplos de código downstream |
 | 2.1.0 | 2026-01-18 | Atualizado para estrutura unificada de valores padrão no validation.json |
-| 2.0.33 | 2026-01-17 | Documentação inicial dos aprimoramentos de origin pool |
+| 2.0.33 | 2026-01-17 | Documentação inicial de aprimoramentos do origin pool |

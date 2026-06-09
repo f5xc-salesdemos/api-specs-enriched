@@ -1,34 +1,33 @@
 ---
-title: 擴充延伸欄位目錄
-description: 豐富化 OpenAPI 規格中每個 x-* 延伸欄位的權威來源
+title: 擴充擴展目錄
+description: 豐富化 OpenAPI 規格中每個 x-* 擴展的權威參考來源
 i18n:
   sourceHash: 7fde0afb4dac
   translator: machine
 ---
 
-# 擴充延伸欄位目錄
+# 擴充擴展目錄
 
-`docs/specifications/api/*.json` 中出現的每個 `x-*` 延伸欄位的權威來源。與
+`docs/specifications/api/*.json` 中出現的每個 `x-*` 擴展的權威參考來源。與
 `scripts/utils/extension_constants.py` 的一致性由
 `tests/test_extension_catalog.py` 強制執行。
 
-此處記錄了三種類別的延伸欄位：
+本文件記錄了三類擴展：
 
-- **此處注入** — 我們的豐富化工具所新增的延伸欄位（`x-f5xc-*` 以及
+- **此處注入** — 我們的豐富化工具添加的擴展（`x-f5xc-*` 和
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / 探索
-  變體）。這些是下游工具應使用的欄位。
-- **上游透傳** — F5 在來源規格中發出的延伸欄位，
-  我們原封不動地保留（`x-ves-proto-*`、`x-displayname` 等）。
-  為透明度而記錄，但不由本儲存庫控制。
-- **未來注入** — 尚未發出；在豐富化工具開始產生時即記錄於此
-  （在初始填充時不適用）。
+  變體）。這些是下游工具應使用的擴展。
+- **上游透傳** — F5 在來源規格中發出且我們原樣保留的擴展（`x-ves-proto-*`、`x-displayname` 等）。
+  為透明性而記錄，但不由本儲存庫控制。
+- **未來注入** — 尚未發出；在豐富化工具開始產生它們的那一刻記錄於此（初始
+  填充時不適用）。
 
 ## 條目結構
 
 以下每個條目都具有完全相同的格式。
-`tests/test_extension_catalog.py` 中的一致性測試允許區段內容
-較為簡略，只要 `### x-name` 標題存在且
-`Pass-through from upstream:` 旗標的值為 `yes` 或 `no` 即可。
+`tests/test_extension_catalog.py` 中的一致性測試容許段落內容簡略，
+只要 `### x-name` 標題存在且
+`Pass-through from upstream:` 標記的值為 `yes` 或 `no` 即可。
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -70,7 +69,7 @@ i18n:
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** 用於建構豐富化檔案的上游來源規格時間戳記。
+- **Purpose:** 豐富化檔案所依據的上游來源規格的時間戳記。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -82,7 +81,7 @@ i18n:
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** 上游來源規格發行資產的 ETag。
+- **Purpose:** 上游來源規格發布資產的 ETag。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -94,7 +93,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** 由管線標記在豐富化規格上的語意版本號。
+- **Purpose:** 由管線標記在豐富化規格上的語意化版本。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -118,7 +117,7 @@ i18n:
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** 執行即時 API 探索掃描的時間戳記。
+- **Purpose:** 執行即時 API 探索的時間戳記。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -130,7 +129,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** 探索期間探測的即時 API 基礎 URL。
+- **Purpose:** 探索期間所探測的即時 API 基礎 URL。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -154,7 +153,7 @@ i18n:
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** 探索期間探測 API 的觀測回應時間（毫秒）。
+- **Purpose:** 探索期間所探測 API 的觀測回應時間（毫秒）。
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -166,7 +165,7 @@ i18n:
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** 針對某個領域精選的最佳實務指引。
+- **Purpose:** 針對某個領域整理的最佳實務指引。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -178,7 +177,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** 用於完成領域中常見任務的具名逐步工作流程。
+- **Purpose:** 用於完成某個領域常見任務的具名逐步工作流程。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -190,7 +189,7 @@ i18n:
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** 按領域劃分的縮略語展開對照表。
+- **Purpose:** 按領域分類的縮寫展開對照表。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -199,12 +198,12 @@ i18n:
 - **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
 - **Pass-through from upstream:** no
 
-## 注入 — 結構描述層級（元件結構描述）
+## 注入 — 結構層級（元件結構定義）
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** 成功執行 POST/PUT 此資源所需的最小可行欄位集。
+- **Purpose:** 成功 POST/PUT 此資源所需的最小可行欄位集。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -216,7 +215,7 @@ i18n:
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** 提供資源的命名空間限制、建議及分類中繼資料。
+- **Purpose:** 提供資源的命名空間限制、建議和分類中繼資料。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -228,7 +227,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** 建議的屬性排序，用於 UI/CLI 展示。
+- **Purpose:** 建議的屬性排序方式，用於 UI/CLI 呈現。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -240,7 +239,7 @@ i18n:
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** 對應至此結構描述的 Terraform 資源類型名稱。
+- **Purpose:** 對應此結構定義的 Terraform 資源類型名稱。
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -252,7 +251,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** 資源結構描述的人類可讀顯示名稱（覆寫自動產生的名稱）。
+- **Purpose:** 資源結構定義的人類可讀顯示名稱（覆蓋自動產生的名稱）。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -362,7 +361,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** 條件式需求（例如：當同層欄位等於 X 時為必填）。
+- **Purpose:** 條件式需求（例如當同層欄位等於 X 時為必填）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -374,7 +373,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** 附帶替代方案指引的棄用通知。
+- **Purpose:** 棄用通知，附帶替代方案指引。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -386,7 +385,7 @@ i18n:
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** 當客戶端省略此屬性時，伺服器指派的預設值。
+- **Purpose:** 當用戶端省略該屬性時，伺服器指派的預設值。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -410,7 +409,7 @@ i18n:
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** 對於 `oneOf` 區塊，指示建議使用的變體。
+- **Purpose:** 對於 `oneOf` 區塊，指出建議使用的變體。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -434,7 +433,7 @@ i18n:
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** 記錄跨欄位相依性，即某個欄位需要另一個欄位被設定。
+- **Purpose:** 記錄跨欄位依賴關係，即某個欄位需要另一個欄位被設定。
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -458,7 +457,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** 宣告欄位在其作用範圍內是否必須唯一。
+- **Purpose:** 宣告某個欄位在其範圍內是否必須唯一。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -472,7 +471,7 @@ i18n:
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** 列出成功執行所必須提供的操作主體欄位名稱。
+- **Purpose:** 指明為成功執行而必須提供的操作本體欄位。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -508,7 +507,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** 列出操作的可觀察副作用（重啟、重新設定等）。
+- **Purpose:** 列出操作的可觀察副作用（重新啟動、重新設定等）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -520,7 +519,7 @@ i18n:
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** 探索期間此操作的實測回應時間。
+- **Purpose:** 探索期間針對此操作實測的回應時間。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -532,7 +531,7 @@ i18n:
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** 從即時 API 中觀察到的速率限制標頭/行為。
+- **Purpose:** 從即時 API 觀察到的速率限制標頭/行為。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -544,7 +543,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** 即時探索期間觀察到的錯誤回應目錄，含範例酬載。
+- **Purpose:** 即時探索期間觀察到的錯誤回應目錄，附帶範例酬載。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -594,7 +593,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** 簡短（約 60 字元）的領域描述。也適用於長描述的屬性層級。
+- **Purpose:** 簡短（約 60 字元）的領域描述。也可套用於屬性層級以處理較長的描述。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -606,7 +605,7 @@ i18n:
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** 中等長度（約 150 字元）的領域描述。也適用於屬性層級。
+- **Purpose:** 中等長度（約 150 字元）的領域描述。也可套用於屬性層級。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -618,7 +617,7 @@ i18n:
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** 較長（約 500 字元）的領域描述。
+- **Purpose:** 長篇（約 500 字元）的領域描述。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -630,7 +629,7 @@ i18n:
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** 在此領域中撰寫設定的相對複雜度等級。
+- **Purpose:** 在此領域中編寫組態的相對複雜度層級。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -642,7 +641,7 @@ i18n:
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** 所需的最低 F5 XC 訂閱等級。
+- **Purpose:** 所需的最低 F5 XC 訂閱層級。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -654,7 +653,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** 標記領域為預覽版 / 測試版功能。
+- **Purpose:** 標記某個領域為預覽版 / 測試版功能。
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -702,7 +701,7 @@ i18n:
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** 與此領域常搭配使用的其他領域交叉連結。
+- **Purpose:** 交叉連結到通常與此領域一起使用的其他領域。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -714,7 +713,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** 渲染文件時的文件區段/導覽分組代稱。
+- **Purpose:** 渲染文件時的文件區段 / 導覽分組代稱。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -728,7 +727,7 @@ i18n:
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -740,7 +739,7 @@ i18n:
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -752,7 +751,7 @@ i18n:
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -764,7 +763,7 @@ i18n:
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -776,7 +775,7 @@ i18n:
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -788,7 +787,7 @@ i18n:
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -800,7 +799,7 @@ i18n:
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -812,7 +811,7 @@ i18n:
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -824,7 +823,7 @@ i18n:
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** 從 F5 上游規格原封不動保留。
+- **Purpose:** 從 F5 上游規格原樣保留。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A

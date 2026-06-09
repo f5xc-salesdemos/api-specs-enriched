@@ -12,7 +12,7 @@ Questo documento descrive la struttura e i contenuti della specifica di validazi
 
 ## Panoramica
 
-La specifica di validazione consolida i vincoli di validazione delle API, i valori predefiniti e i metadati di configurazione in un singolo file JSON. Questa specifica viene generata dalle specifiche OpenAPI arricchite e pubblicata insieme ad esse.
+La specifica di validazione consolida i vincoli di validazione delle API, i valori predefiniti e i metadati di configurazione in un unico file JSON. Questa specifica viene generata dalle specifiche OpenAPI arricchite e pubblicata insieme ad esse.
 
 **Posizione di pubblicazione**: `docs/specifications/api/validation.json`
 
@@ -40,7 +40,7 @@ La specifica di validazione consolida i vincoli di validazione delle API, i valo
 
 ### required_fields
 
-Specifica i campi obbligatori per ciascun tipo di operazione per risorsa.
+Specifica i campi obbligatori per ogni tipo di operazione per risorsa.
 
 ```json
 {
@@ -98,7 +98,7 @@ Valori predefiniti di validazione a livello di tipo e regole basate su pattern.
 
 ### patterns
 
-Regole di validazione basate su pattern dei nomi dei campi con punteggi di confidenza.
+Regole di validazione basate su pattern di nomi di campo con punteggi di confidenza.
 
 ```json
 {
@@ -200,14 +200,14 @@ Tutti i valori predefiniti organizzati per tipo di risorsa in una struttura unif
 }
 ```
 
-#### Categorie di Valori Predefiniti
+#### Categorie dei Valori Predefiniti
 
-| Categoria | Descrizione | Origine |
+| Categoria | Descrizione | Fonte |
 |----------|-------------|--------|
-| `server_applied` | Valori applicati dall'API quando i campi vengono omessi | Test su API live |
+| `server_applied` | Valori applicati dall'API quando i campi vengono omessi | Test API live |
 | `recommended` | Valori precompilati dalla console web F5 XC | Analisi dell'interfaccia utente |
-| `advanced_options` | Valori predefiniti annidati all'interno degli oggetti advanced_options | Scoperta tramite API |
-| `oneof_choices` | Selezioni predefinite delle varianti OneOf | Comportamento dell'API |
+| `advanced_options` | Valori predefiniti annidati all'interno degli oggetti advanced_options | Scoperta API |
+| `oneof_choices` | Selezioni predefinite delle varianti OneOf | Comportamento API |
 | `oneof_recommended` | Varianti OneOf raccomandate | Valori predefiniti della console |
 | `nested_recommended` | Valori raccomandati per gli schemi annidati | Analisi dell'interfaccia utente |
 | `ui_vs_server` | Casi in cui i valori predefiniti dell'interfaccia utente differiscono da quelli dell'API | Analisi comparativa |
@@ -263,8 +263,8 @@ Le specifiche OpenAPI arricchite incorporano metadati di validazione utilizzando
 
 | Estensione | Scopo | Posizione |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | Campi obbligatori in base al contesto | Proprietà dello schema |
-| `x-f5xc-server-default` | Contrassegna i valori predefiniti applicati dal server | Proprietà dello schema |
+| `x-f5xc-required-for` | Campi obbligatori specifici per contesto | Proprietà dello schema |
+| `x-f5xc-server-default` | Indica i valori predefiniti applicati dal server | Proprietà dello schema |
 | `x-f5xc-recommended-value` | Valore predefinito raccomandato | Proprietà dello schema |
 | `x-f5xc-recommended-oneof-variant` | Variante OneOf raccomandata | Definizioni dello schema |
 | `x-f5xc-conditions` | Requisiti condizionali | Proprietà dello schema |
@@ -275,7 +275,7 @@ Le specifiche OpenAPI arricchite incorporano metadati di validazione utilizzando
 
 ### URL di Pubblicazione
 
-| Origine | URL |
+| Fonte | URL |
 |--------|-----|
 | GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
 | Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
@@ -288,24 +288,24 @@ Dopo l'esecuzione della pipeline: `docs/specifications/api/validation.json`
 
 La specifica di validazione segue il versionamento semantico nel campo `version`:
 
-| Tipo di Modifica | Incremento di Versione | Esempio |
+| Tipo di Modifica | Incremento Versione | Esempio |
 |-------------|--------------|---------|
-| Modifiche strutturali incompatibili | Major | Rinomina di campi, sezioni rimosse |
+| Modifiche strutturali non retrocompatibili | Major | Rinominazione di campi, sezioni rimosse |
 | Nuove regole di validazione o risorse | Minor | Nuovi valori predefiniti per le risorse |
-| Correzioni di bug o aggiornamenti delle descrizioni | Patch | Correzioni di errori tipografici |
+| Correzione di bug o aggiornamenti delle descrizioni | Patch | Correzione di errori di battitura |
 
 ## Priorità di Riconciliazione
 
 Quando più fonti forniscono vincoli, la priorità di riconciliazione è:
 
 1. **Esistente** - Vincoli nella specifica OpenAPI originale (priorità più alta)
-2. **Scoperta** - Vincoli derivanti dalla scoperta tramite API live
-3. **Inferito** - Vincoli derivanti dalla corrispondenza di pattern (priorità più bassa)
+2. **Scoperta** - Vincoli dalla scoperta API live
+3. **Inferito** - Vincoli dal pattern matching (priorità più bassa)
 
 ## Documentazione Correlata
 
-- [Healthcheck Enhancements](./Enhancements/healthcheck-enhancements/) - Arricchimenti dello schema degli healthcheck
-- [Origin Pool Enhancements](./Enhancements/originpool-enhancements/) - Arricchimenti dello schema degli origin pool
+- [Miglioramenti Healthcheck](./Enhancements/healthcheck-enhancements/) - Arricchimenti dello schema healthcheck
+- [Miglioramenti Origin Pool](./Enhancements/originpool-enhancements/) - Arricchimenti dello schema origin pool
 - [CLAUDE.md](../../CLAUDE.md) - Istruzioni per l'assistente AI
 - [DEVELOPMENT.md](./development/) - Guida per sviluppatori
 
@@ -313,6 +313,6 @@ Quando più fonti forniscono vincoli, la priorità di riconciliazione è:
 
 | Versione | Data | Modifiche |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | Riscritto come puro riferimento API; aggiunte le categorie oneof_recommended e nested_recommended |
+| 2.1.2 | 2026-01-18 | Riscritto come riferimento API puro; aggiunte le categorie oneof_recommended e nested_recommended |
 | 2.1.0 | 2026-01-18 | Struttura unificata dei valori predefiniti che sostituisce le sezioni frammentate |
 | 2.0.0 | 2026-01-15 | Specifica di validazione iniziale |

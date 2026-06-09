@@ -1,5 +1,5 @@
 ---
-title: "\U0001F4B3 Billing And Usage API"
+title: "\U0001F4B3 API การเรียกเก็บเงินและการใช้งาน"
 description: แผนการสมัครสมาชิก วิธีการชำระเงิน และโควตา
 sidebar:
   hidden: true
@@ -8,41 +8,41 @@ i18n:
   translator: machine
 ---
 
-การเปลี่ยนแผน การออกใบแจ้งหนี้ และการใช้ทรัพยากร ขีดจำกัดโควตาระดับ Namespace และการติดตามการใช้งาน
+การเปลี่ยนแผน การออกใบแจ้งหนี้ และการใช้ทรัพยากร ขีดจำกัดโควตาระดับเนมสเปซและการติดตามการใช้งาน
 
-- **หมวดหมู่**: Platform
+- **หมวดหมู่**: แพลตฟอร์ม
 - **ความซับซ้อน**: ปานกลาง
-- **Paths**: 25 | **Schemas**: 101
-- **ระดับ**: Standard
+- **เส้นทาง**: 25 | **สคีมา**: 101
+- **ระดับ**: มาตรฐาน
 - **โดเมนที่เกี่ยวข้อง**: `system`, `users`
 
 ## กรณีการใช้งาน
 
 - จัดการแผนการสมัครสมาชิกและการเปลี่ยนแผนการเรียกเก็บเงิน
 - กำหนดค่าวิธีการชำระเงินและใบแจ้งหนี้
-- ติดตามการใช้โควตาทรัพยากรข้าม Namespace
+- ติดตามการใช้โควตาทรัพยากรทั่วทั้งเนมสเปซ
 - ตรวจสอบขีดจำกัดการใช้งานและความจุ
 
 ## ทรัพยากรหลัก
 
 - **subscription**: การสมัครสมาชิกสำหรับสิทธิ์การใช้บริการ
 - **quota**: โควตาทรัพยากรสำหรับขีดจำกัดการใช้งาน
-- **usage_report**: รายงานการใช้งานสำหรับการติดตามการบริโภค
+- **usage_report**: รายงานการใช้งานสำหรับการติดตามปริมาณการใช้
 
-## Endpoints
+## เอนด์พอยต์
 
-| Method | Path | คำอธิบาย |
+| เมธอด | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
 | POST | `/api/data/namespaces/system/billing/usage_summary` | สรุปการใช้งานการเรียกเก็บเงิน |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | GetInvoicePdf |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | ดึง PDF ใบแจ้งหนี้ |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | แสดงรายการใบแจ้งหนี้ |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | ตั้งบัตรเครดิตเป็นบัตรหลัก |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | ตั้งบัตรเครดิตเป็นหลัก |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | ตั้งวิธีการชำระเงินเป็นรอง |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | ตั้งวิธีการชำระเงินเป็นรอง |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | สร้างข้อกำหนดวิธีการชำระเงิน |
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | ลบวิธีการชำระเงินที่ระบุ |
-| GET | `/no_auth/namespaces/system/billing/plan_transition` | GetPlanTransition |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | InitiatePlanTransition |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | ดึงการเปลี่ยนแผน |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | เริ่มการเปลี่ยนแผน |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | สร้างโควตา |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | แทนที่โควตา |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | ดึงขีดจำกัดโควตาแบบกำหนดเอง |
@@ -52,7 +52,7 @@ i18n:
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ลบโควตา |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | แสดงรายการการสมัครสมาชิก |
 | POST | `/api/web/namespaces/system/addon/subscribe` | สมัครบริการเสริม XC |
-| POST | `/api/web/namespaces/system/addon/unsubscribe` | ยกเลิกการสมัครบริการเสริม XC |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | ยกเลิกสมัครบริการเสริม XC |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | แสดงรายละเอียดการใช้งานปัจจุบัน |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | แสดงรายละเอียดการใช้งานรายชั่วโมง |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | แสดงรายละเอียดการใช้งานรายเดือน |
@@ -63,4 +63,4 @@ i18n:
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./billing_and_usage/)
-- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/billing_and_usage.json)
+- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/billing_and_usage.json)

@@ -73,14 +73,14 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 
 ### Estrutura de Diretórios
 
-| Diretório | Propósito | Status no Git |
+| Diretório | Finalidade | Status no Git |
 |-----------|---------|------------|
-| `specs/original/` | Specs fonte da F5 | Gitignored |
+| `specs/original/` | Specs fonte da F5 | Ignorado pelo Git |
 | `specs/discovered/` | Saída da descoberta de API | Rastreado (openapi.json, session.json) |
-| `docs/specifications/api/` | Specs de domínio geradas | Gitignored |
+| `docs/specifications/api/` | Specs de domínio geradas | Ignorado pelo Git |
 | `scripts/` | Scripts Python do pipeline | Rastreado |
 | `config/` | Configuração do pipeline | Rastreado |
-| `reports/` | Relatórios gerados | Gitignored |
+| `reports/` | Relatórios gerados | Ignorado pelo Git |
 
 ## Padrões de Fluxo de Trabalho
 
@@ -107,19 +107,19 @@ make push-discovery
 
 **A descoberta captura**:
 - Campos obrigatórios/opcionais reais
-- Valores de enum de respostas reais
+- Valores de enum de respostas em produção
 - Valores padrão
 - Validações de padrão
 - Exemplos de resposta
 
 ### 2. Fluxo de Trabalho de Release
 
-Releases são automatizados:
+Os releases são automatizados:
 
 1. Agendamento diário (6h UTC) ou push para main aciona o workflow
 2. Verificação de ETag determina se as specs da F5 mudaram
-3. Pipeline processa e enriquece as specs
-4. Versão calculada a partir das tags git: `git describe --tags --abbrev=0`
+3. O pipeline processa e enriquece as specs
+4. A versão é calculada a partir das tags git: `git describe --tags --abbrev=0`
 5. Commit direto + tag criada (sem PR de bump de versão)
 6. GitHub Release criado com changelog
 7. Documentação implantada no GitHub Pages
@@ -131,7 +131,7 @@ Releases são automatizados:
 | `[major]` no commit | Major | 1.0.0 → 2.0.0 |
 | `BREAKING CHANGE` no commit | Major | 1.0.0 → 2.0.0 |
 | Nova spec de domínio adicionada | Minor | 1.0.0 → 1.1.0 |
-| Qualquer outra mudança | Patch | 1.0.0 → 1.0.1 |
+| Qualquer outra alteração | Patch | 1.0.0 → 1.0.1 |
 
 ### 3. Fluxo de Trabalho de Desenvolvimento
 
@@ -154,14 +154,14 @@ git push -u origin feature/my-change
 gh pr create
 ```
 
-## Aprofundamento em Descoberta
+## Descoberta em Profundidade
 
 ### O que é Descoberta?
 
-A descoberta explora a API F5 XC em tempo real para encontrar:
+A descoberta explora a API F5 XC em produção para encontrar:
 
 - **Restrições não documentadas**: Campos obrigatórios não marcados no OpenAPI
-- **Valores de enum reais**: Valores reais observados em produção
+- **Valores de enum reais**: Valores reais vistos em produção
 - **Comportamentos padrão**: Valores aplicados pelo servidor quando campos são omitidos
 - **Padrões de resposta**: Formatos reais dos dados
 
@@ -291,13 +291,13 @@ O pipeline de enriquecimento utiliza extensões de fornecedor para incorporar me
 | Extensão | Significado | Implicação |
 |-----------|---------|-------------|
 | `x-f5xc-server-default` | O servidor da API F5 XC aplica este valor quando o campo é omitido | O campo é opcional; omiti-lo produz o comportamento padrão documentado |
-| `x-f5xc-recommended-value` | O console web F5 XC pré-preenche este valor para novos recursos | O campo não possui valor padrão do servidor, mas este valor representa a configuração típica |
+| `x-f5xc-recommended-value` | O console web F5 XC pré-preenche este valor para novos recursos | O campo não tem valor padrão do servidor, mas este valor representa a configuração típica |
 | `x-f5xc-recommended-oneof-variant` | O console F5 XC pré-seleciona esta variante OneOf | Identifica a escolha típica quando existem múltiplas opções mutuamente exclusivas |
 | `x-f5xc-conflicts-with` | Lista outras propriedades que não podem ser usadas junto com este campo | A propriedade faz parte de um grupo OneOf; apenas uma das propriedades conflitantes pode ser especificada |
 
 ### Extensões de Campo Obrigatório
 
-| Extensão | Origem | Propósito |
+| Extensão | Origem | Finalidade |
 |-----------|--------|---------|
 | `x-ves-required: "true"` | Spec original F5 XC | Campo requer valor não-zero/não-vazio |
 | `x-f5xc-required-for` | Pipeline de enriquecimento | Status de obrigatoriedade específico por contexto |
@@ -309,7 +309,7 @@ O pipeline de enriquecimento utiliza extensões de fornecedor para incorporar me
 
 ### Extensões de Valor Padrão e OneOf
 
-| Extensão | Propósito |
+| Extensão | Finalidade |
 |-----------|---------|
 | `x-f5xc-server-default: true` | Marca valores padrão aplicados pelo servidor |
 | `x-f5xc-recommended-value` | Valor pré-preenchido pelo console F5 XC |
@@ -320,7 +320,7 @@ O pipeline de enriquecimento utiliza extensões de fornecedor para incorporar me
 
 **Tipo**: `boolean`
 
-Quando `true`, indica que o valor `default` acompanhante é aplicado pelo servidor da API F5 XC. Campos com esta extensão podem ser omitidos com segurança das requisições de API — o servidor aplica o valor padrão automaticamente.
+Quando `true`, indica que o valor `default` acompanhante é aplicado pelo servidor da API F5 XC. Campos com esta extensão podem ser omitidos com segurança das requisições à API — o servidor aplica o valor padrão automaticamente.
 
 ```yaml
 use_http2:
@@ -333,7 +333,7 @@ use_http2:
 
 **Tipo**: `any` (corresponde ao tipo do campo)
 
-Especifica um valor que o console web F5 XC utiliza como padrão pré-preenchido. Este valor não é aplicado pelo servidor, mas representa a configuração inicial típica para novos recursos criados pelo console.
+Especifica um valor que o console web F5 XC usa como padrão pré-preenchido. Este valor não é imposto pelo servidor, mas representa a configuração inicial típica para novos recursos criados via console.
 
 ```yaml
 timeout:
@@ -345,7 +345,7 @@ timeout:
 
 **Tipo**: `object` (mapa de nome do grupo para nome da variante)
 
-Para esquemas com grupos de campos mutuamente exclusivos, identifica qual variante é a escolha padrão ou mais comum. A chave é o nome do grupo OneOf e o valor é o nome do campo da variante recomendada.
+Para schemas com grupos de campos mutuamente exclusivos, identifica qual variante é a escolha padrão ou mais comum. A chave é o nome do grupo OneOf e o valor é o nome do campo da variante recomendada.
 
 ```yaml
 healthcheckCreateSpecType:
@@ -360,7 +360,7 @@ healthcheckCreateSpecType:
 
 **Adicionado**: v3.2.0 (Issue #494)
 
-Declara relacionamentos de exclusividade mútua entre membros de grupos OneOf. Derivado automaticamente das extensões `x-ves-oneof-field-*`. Isso permite que ferramentas downstream (Terraform, CLI, MCP) validem conflitos no nível do esquema em vez de em tempo de execução.
+Declara relações de exclusividade mútua entre membros de grupos OneOf. Derivado automaticamente das extensões `x-ves-oneof-field-*`. Isso permite que ferramentas downstream (Terraform, CLI, MCP) validem conflitos no nível do schema em vez de em tempo de execução.
 
 ```yaml
 host_header:
@@ -388,8 +388,8 @@ O enriquecedor inspeciona `x-ves-validation-rules` para inferir o status de obri
 |------|-------------|
 | `ves.io.schema.rules.message.required: "true"` | Campo é obrigatório |
 | `ves.io.schema.rules.uint32.gte: N` | Se N >= 1 e sem valor padrão do servidor, campo é obrigatório |
-| `ves.io.schema.rules.repeated.min_items: N` | Se N >= 1, o array requer pelo menos N itens |
-| `ves.io.schema.rules.string.min_bytes: N` | Se N >= 1, a string requer pelo menos N bytes |
+| `ves.io.schema.rules.repeated.min_items: N` | Se N >= 1, array requer pelo menos N itens |
+| `ves.io.schema.rules.string.min_bytes: N` | Se N >= 1, string requer pelo menos N bytes |
 
 ### Recursos com Valores Padrão Aplicados pelo Servidor
 
@@ -402,7 +402,7 @@ Alguns recursos aceitam specs vazias porque o servidor aplica valores padrão:
 | `api_definition` | `swagger_specs: []`, `api_groups` padrão |
 | `healthcheck` | `jitter: 0`, `jitter_percent: 0`, valores padrão aninhados de http_health_check |
 
-Para esses recursos, `x-f5xc-required-for.create` pode ser `false` mesmo quando `x-ves-required` é `true`.
+Para estes recursos, `x-f5xc-required-for.create` pode ser `false` mesmo quando `x-ves-required` é `true`.
 
 ### Padrões de Valores Padrão
 
@@ -433,7 +433,7 @@ git commit --no-verify -m "WIP: work in progress"
 # Run before final commit: make pre-commit-run
 ```
 
-### Falha na Descoberta
+### Descoberta Falha
 
 ```bash
 # Check VPN
@@ -447,7 +447,7 @@ echo $F5XC_API_URL
 # Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### Erros de Lint em Specs Geradas
+### Erros de Lint nas Specs Geradas
 
 ```bash
 # Check lint report
@@ -468,7 +468,7 @@ version = get_version_from_tags()  # Returns "2.0.38"
 
 ### Specs Ausentes Após Clone
 
-Specs geradas estão no gitignore:
+As specs geradas são ignoradas pelo git:
 
 ```bash
 make build  # Downloads and generates everything
@@ -495,22 +495,22 @@ Adicione exclusão ao `.pre-commit-config.yaml`:
 | `make download-force` | Forçar download |
 | `make pipeline` | Executar pipeline de enriquecimento |
 | `make lint` | Linting Spectral |
-| `make serve` | Servidor de documentação local |
-| `make discover` | Descoberta de API (VPN obrigatória) |
-| `make push-discovery` | Commit de dados de descoberta |
+| `make serve` | Servidor local de documentação |
+| `make discover` | Descoberta de API (VPN necessária) |
+| `make push-discovery` | Commit dos dados de descoberta |
 | `make clean` | Remover arquivos gerados |
 | `make pre-commit-run` | Executar todas as verificações de qualidade |
 
 ### Variáveis de Ambiente
 
-| Variável | Propósito |
+| Variável | Finalidade |
 |----------|---------|
 | `F5XC_API_URL` | URL da API do tenant F5 XC |
 | `F5XC_API_TOKEN` | Token de autenticação da API |
 
 ### Arquivos Principais
 
-| Arquivo | Propósito |
+| Arquivo | Finalidade |
 |------|---------|
 | `.etag` | Último ETag baixado |
 | `CHANGELOG.md` | Changelog gerado automaticamente |

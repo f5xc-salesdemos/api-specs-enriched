@@ -1,6 +1,6 @@
 ---
 title: 健康检查增强
-description: 健康检查相关模式的富化元数据
+description: 健康检查相关模式的丰富元数据
 sidebar:
   order: 1
 i18n:
@@ -8,44 +8,44 @@ i18n:
   translator: machine
 ---
 
-健康检查相关模式的富化元数据。扩展定义请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
+健康检查相关模式的丰富元数据。有关扩展定义，请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
 
-## 富化模式
+## 丰富的模式
 
-### 匹配模式
+### 模式匹配
 
-所有匹配 `healthcheck.*SpecType` 的模式均会接收富化信息：
+所有匹配 `healthcheck.*SpecType` 的模式都会接收丰富数据：
 
 - `healthcheckCreateSpecType`
 - `healthcheckReplaceSpecType`
 - `healthcheckGetSpecType`
 
-此外，嵌套模式 `healthcheckHttpHealthCheck` 包含 HTTP 健康检查配置的富化信息。
+此外，嵌套模式 `healthcheckHttpHealthCheck` 包含 HTTP 健康检查配置的丰富数据。
 
-## 服务器端应用的默认值
+## 服务器应用的默认值
 
-标记为 `x-f5xc-server-default: true` 的字段，当请求中省略时，其 `default` 值会由 F5 XC API 服务器自动应用。
+标记有 `x-f5xc-server-default: true` 的字段，当请求中省略时，其 `default` 值由 F5 XC API 服务器自动应用。
 
 ### 顶层字段
 
 | 字段 | 默认值 | 类型 | 描述 |
 |-------|--------|------|------|
 | `jitter` | `0` | integer | 用于时间随机化的绝对抖动值 |
-| `jitter_percent` | `0` | integer | 基于百分比的时间随机化抖动值 |
+| `jitter_percent` | `0` | integer | 用于时间随机化的基于百分比的抖动 |
 
 ### healthcheckHttpHealthCheck 模式
 
 | 字段 | 默认值 | 类型 | 描述 |
 |-------|--------|------|------|
-| `use_origin_server_name` | `{}` | object | 用于 Host 头的源服务器名称 |
+| `use_origin_server_name` | `{}` | object | Host 头部使用的源服务器名称 |
 | `headers` | `{}` | object | 自定义头部 |
-| `request_headers_to_remove` | `[]` | array | 需从请求中移除的头部 |
+| `request_headers_to_remove` | `[]` | array | 需要从请求中移除的头部 |
 | `use_http2` | `false` | boolean | HTTP/2 支持 |
-| `expected_status_codes` | `[]` | array | 可接受的状态码（空值 = 200-299） |
+| `expected_status_codes` | `[]` | array | 接受的状态码（空值表示 200-299） |
 
 ## 推荐值
 
-标记为 `x-f5xc-recommended-value` 的字段表示 F5 XC Web 控制台在创建新资源时预填充的值。
+标记有 `x-f5xc-recommended-value` 的字段表示 F5 XC Web 控制台在创建新资源时预填充的值。
 
 ### 顶层字段
 
@@ -63,12 +63,12 @@ i18n:
 |-------|--------|------|------|
 | `path` | `"/"` | string | 健康检查端点路径 |
 | `use_http2` | `false` | boolean | HTTP/2 支持设置 |
-| `expected_status_codes` | `["200"]` | array | 表示源站健康的状态码 |
-| `use_origin_server_name` | `{}` | object | 用于 Host 头的源服务器名称 |
+| `expected_status_codes` | `["200"]` | array | 表示源服务器健康的状态码 |
+| `use_origin_server_name` | `{}` | object | Host 头部使用的源服务器名称 |
 
 ## OneOf 变体推荐
 
-包含互斥字段组（OneOf）的模式会包含 `x-f5xc-recommended-oneof-variant`，用于指示最常用的变体。此元数据根据 F5 XC 控制台默认值和常见使用模式，标识存在多个选项时的典型选择。
+包含互斥字段组（OneOf）的模式包含 `x-f5xc-recommended-oneof-variant` 以指示最常用的变体。此元数据基于 F5 XC 控制台默认值和常见使用模式，标识存在多个选项时的典型选择。
 
 ### 顶层 OneOf 组
 
@@ -81,18 +81,18 @@ i18n:
 
 | 模式 | OneOf 组 | 推荐变体 | 描述 |
 |------|----------|----------|------|
-| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | 健康检查请求的 Host 头 |
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | 健康检查请求的 Host 头部 |
 
-#### Host 头选择
+#### Host 头部选择
 
-`host_header_choice` OneOf 组控制健康检查 HTTP 请求中 Host 头的指定方式。
+`host_header_choice` OneOf 组控制健康检查 HTTP 请求中 Host 头部的指定方式。
 
 | 变体 | 类型 | 描述 |
 |------|------|------|
-| `use_origin_server_name` | `object`（空） | 使用源服务器名称作为 Host 头。这是 F5 XC 控制台中的默认选项。 |
-| `host_header` | `string` | 为健康检查请求指定自定义 Host 头值。 |
+| `use_origin_server_name` | `object`（空） | 使用源服务器名称作为 Host 头部。这是 F5 XC 控制台中的默认选择。 |
+| `host_header` | `string` | 为健康检查请求指定自定义 Host 头部值。 |
 
-**API 模式参考**：`x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+**API 模式参考**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
 
 ## OpenAPI 扩展参考
 
@@ -100,9 +100,9 @@ i18n:
 
 ### x-f5xc-server-default
 
-**类型**：`boolean`
+**类型**: `boolean`
 
-当值为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。具有此扩展的字段可以在 API 请求中安全省略——服务器会自动应用默认值。
+当为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。具有此扩展的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
 
 ```yaml
 use_http2:
@@ -113,7 +113,7 @@ use_http2:
 
 ### x-f5xc-recommended-value
 
-**类型**：`any`（与字段类型匹配）
+**类型**: `any`（与字段类型匹配）
 
 指定 F5 XC Web 控制台用作预填充默认值的值。此值不由服务器强制执行，但代表通过控制台创建新资源时的典型初始配置。
 
@@ -125,9 +125,9 @@ timeout:
 
 ### x-f5xc-recommended-oneof-variant
 
-**类型**：`object`（组名到变体名的映射）
+**类型**: `object`（组名到变体名的映射）
 
-对于具有互斥字段组的模式，标识哪个变体是默认或最常见的选择。键为 OneOf 组名称，值为推荐的变体字段名称。
+对于具有互斥字段组的模式，标识哪个变体是默认或最常见的选择。键为 OneOf 组名，值为推荐的变体字段名。
 
 ```yaml
 healthcheckCreateSpecType:
@@ -148,8 +148,8 @@ healthcheckCreateSpecType:
 
 ```text
 defaults.resources.healthcheck
-├── server_applied      # 带有 x-f5xc-server-default: true 的字段
-├── recommended         # 带有 x-f5xc-recommended-value 的字段
+├── server_applied      # 具有 x-f5xc-server-default: true 的字段
+├── recommended         # 具有 x-f5xc-recommended-value 的字段
 ├── oneof_recommended   # OneOf 变体推荐
 └── nested_recommended  # 嵌套模式推荐值
 ```
@@ -158,7 +158,7 @@ defaults.resources.healthcheck
 
 - [开发指南 - OpenAPI 扩展](../development/#openapi-extensions) - 扩展定义和用法
 - [验证规范](../validation-spec/) - validation.json 格式和结构
-- [源站池增强](./originpool-enhancements/) - 源站池模式富化
+- [源站池增强](./originpool-enhancements/) - 源站池模式丰富数据
 
 ## 变更日志
 

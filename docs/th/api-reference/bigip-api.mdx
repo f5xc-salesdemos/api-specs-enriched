@@ -1,6 +1,6 @@
 ---
 title: "\U0001F3E2 Bigip API"
-description: 'iRules, data groups, และการผสานรวม APM'
+description: 'iRules, data groups และการผสานรวม APM'
 sidebar:
   hidden: true
 i18n:
@@ -8,12 +8,12 @@ i18n:
   translator: machine
 ---
 
-การจัดการอุปกรณ์แบบเดิมด้วยสคริปต์ iRule และการซิงโครไนซ์ data group การผูก virtual server และการเก็บรวบรวมเมตริก
+การจัดการอุปกรณ์แบบดั้งเดิมด้วยสคริปต์ iRule และการซิงโครไนซ์ data group การผูก virtual server และการรวบรวมเมตริก
 
-- **หมวดหมู่**: Platform
+- **หมวดหมู่**: แพลตฟอร์ม
 - **ความซับซ้อน**: ขั้นสูง
-- **Paths**: 29 | **Schemas**: 238
-- **ระดับ**: Advanced
+- **เส้นทาง**: 29 | **สคีมา**: 238
+- **ระดับ**: ขั้นสูง
 - **โดเมนที่เกี่ยวข้อง**: `marketplace`
 
 ## กรณีการใช้งาน
@@ -28,14 +28,14 @@ i18n:
 - **bigip_pool**: พูล BIG-IP สำหรับการผสานรวมการกระจายโหลด
 - **bigip_device**: การลงทะเบียนและจัดการอุปกรณ์ BIG-IP
 
-## Endpoints
+## เอนด์พอยต์
 
-| Method | Path | คำอธิบาย |
+| เมธอด | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms` | สร้าง APM Service |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms/&#123;metadata.name&#125;` | แทนที่ APM Service |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms` | สร้างบริการ APM |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/apms/&#123;metadata.name&#125;` | แทนที่บริการ APM |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/apms` | แสดงรายการ BIG-IP APM as a Service |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/apms/&#123;name&#125;` | ดึงข้อมูล APM Service |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/apms/&#123;name&#125;` | ดึงข้อมูลบริการ APM |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/apms/&#123;name&#125;` | ลบ BIG-IP APM as a Service |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/bigip/apm/metrics` | เมตริก |
 | POST | `/api/bigipconnector/namespaces/&#123;metadata.namespace&#125;/bigip_irules` | ข้อกำหนด |
@@ -45,23 +45,23 @@ i18n:
 | DELETE | `/api/bigipconnector/namespaces/&#123;namespace&#125;/bigip_irules/&#123;name&#125;` | ลบ BIG-IP iRule as a Service |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_virtual_servers/&#123;metadata.name&#125;` | แทนที่ BIG-IP virtual server |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers` | แสดงรายการ BIG-IP virtual server |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers/get_security_config` | ดึงข้อมูล Security Config สำหรับ BIG-IP Load Balancer |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers/get_security_config` | ดึงข้อมูลการกำหนดค่าความปลอดภัยสำหรับ BIG-IP Load Balancer |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_virtual_servers/&#123;name&#125;` | ดึงข้อมูล BIG-IP virtual server |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/application_profiless` | สร้าง Application Profiles |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/application_profiless/&#123;metadata.name&#125;` | แทนที่ Application Profiles |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/application_profiless` | แสดงรายการ Configure Application Profiles |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/application_profiless` | แสดงรายการกำหนดค่า Application Profiles |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/application_profiless/&#123;name&#125;` | ดึงข้อมูล Application Profiles |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/application_profiless/&#123;name&#125;` | ลบ Configure Application Profiles |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/application_profiless/&#123;name&#125;` | ลบกำหนดค่า Application Profiles |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_http_proxies` | สร้าง BIG-IP HTTP Proxy |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bigip_http_proxies/&#123;metadata.name&#125;` | แทนที่ BIG-IP HTTP Proxy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies` | แสดงรายการ Configure BIG-IP HTTP Proxy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies` | แสดงรายการกำหนดค่า BIG-IP HTTP Proxy |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies/&#123;name&#125;` | ดึงข้อมูล BIG-IP HTTP Proxy |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies/&#123;name&#125;` | ลบ Configure BIG-IP HTTP Proxy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bigip_http_proxies/&#123;name&#125;` | ลบกำหนดค่า BIG-IP HTTP Proxy |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/irules` | สร้าง iRule |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/irules/&#123;metadata.name&#125;` | แทนที่ iRule |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/irules` | แสดงรายการ Configure iRule |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/irules` | แสดงรายการกำหนดค่า iRule |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/irules/&#123;name&#125;` | ดึงข้อมูล iRule |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/irules/&#123;name&#125;` | ลบ Configure iRule |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/irules/&#123;name&#125;` | ลบกำหนดค่า iRule |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/data_groups` | สร้าง Data group |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/data_groups/&#123;metadata.name&#125;` | แทนที่ Data Group |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/data_groups` | แสดงรายการ Data Group |
@@ -71,4 +71,4 @@ i18n:
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./bigip/)
-- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/bigip.json)
+- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/bigip.json)

@@ -8,19 +8,19 @@ i18n:
   translator: machine
 ---
 
-**目的**: 決定論的AI生成、CLIバリデーション、およびTerraformスキーマ適用のための包括的な制約メタデータ。
+**目的**: 決定論的AI生成、CLIバリデーション、Terraformスキーマ適用のための包括的な制約メタデータ。
 
 **拡張**: `x-f5xc-constraints`
 **バージョン**: 3.3.0
 **ステータス**: プロダクション
-**利用者**: AIアシスタント、CLIツール、Terraformプロバイダー、IDE拡張機能、APIバリデーター
+**コンシューマー**: AIアシスタント、CLIツール、Terraformプロバイダー、IDE拡張機能、APIバリデーター
 
 ---
 
 ## 目次
 
 1. [概要](#overview)
-2. [拡張の構造](#extension-structure)
+2. [拡張構造](#extension-structure)
 3. [制約タイプ](#constraint-types)
 4. [自然言語による説明](#natural-language-descriptions)
 5. [バリデーション例](#validation-examples)
@@ -32,12 +32,12 @@ i18n:
 
 ## 概要
 
-`x-f5xc-constraints` 拡張は、フィールドバリデーション制約に関する決定論的知識を提供し、以下を実現します：
+`x-f5xc-constraints` 拡張は、フィールドバリデーション制約に関する決定論的な知識を提供し、以下を実現します:
 
 - **AIアシスタント**: 制約の詳細についてユーザー入力なしで有効な設定を生成
-- **CLIツール**: 正確な入力ヒント、バリデーション、エラーメッセージの提供
+- **CLIツール**: 正確な入力ヒント、バリデーション、エラーメッセージを提供
 - **Terraform**: apply時ではなくplan時に制約を適用
-- **IDE拡張機能**: リアルタイムバリデーションとオートコンプリート候補の提示
+- **IDE拡張機能**: リアルタイムのバリデーションとオートコンプリート候補
 - **APIバリデーター**: APIエラーを削減するための送信前バリデーション
 
 ### カバレッジ統計
@@ -49,7 +49,7 @@ i18n:
 
 ---
 
-## 拡張の構造
+## 拡張構造
 
 ### トップレベルフィールド
 
@@ -80,9 +80,9 @@ i18n:
 |-------|------|-------------|
 | `constraintType` | string | データ型（string、array、number、object） |
 | `deterministic` | boolean | AI生成のための高信頼度フラグ（confidence >= 0.9） |
-| `category` | string | グループ化とレポートのための制約カテゴリ |
-| *(制約キー)* | 各種 | トップレベルにフラット化された型固有の制約キー（例：`minLength`、`maxItems`、`minimum`） |
-| `metadata` | object | ソース追跡、信頼度、バリデーションタイムスタンプ |
+| `category` | string | グループ化およびレポート用の制約カテゴリ |
+| *(制約キー)* | various | トップレベルにフラット化された型固有の制約キー（例: `minLength`、`maxItems`、`minimum`） |
+| `metadata` | object | ソーストラッキング、信頼度、バリデーションタイムスタンプ |
 
 ---
 
@@ -185,27 +185,27 @@ i18n:
 ### 文字列フォーマット制約
 
 **DNSラベル** (`format: "dns-label"`):
-- DNSラベル名は1-63文字の小文字英数字である必要があります
-- ハイフンは使用可能ですが、先頭/末尾には使用できません（RFC 1123）
+- DNSラベル名は1-63文字の小文字英数字でなければなりません
+- ハイフンは使用可能ですが、先頭/末尾には使用不可（RFC 1123）
 - 例: `my-service`、`api-gateway`、`lb-prod-01`
 
 **メールアドレス** (`format: "email"`):
-- メールアドレスはRFC 5322に準拠して有効である必要があります
+- メールアドレスはRFC 5322に準拠した有効なものでなければなりません
 - 最大254文字
 - 例: `admin@example.com`、`api+webhook@service.io`
 
 **FQDN** (`format: "fqdn"`):
-- 完全修飾ドメイン名は1-253文字である必要があります
+- 完全修飾ドメイン名は1-253文字でなければなりません
 - ドットで区切られたDNSラベル
 - 例: `api.example.com`、`service.production.internal`
 
 **URL** (`format: "url"`):
-- URLはRFC 3986に準拠した有効なURIである必要があります
-- スキーム（http/https）を含める必要があります
+- URLはRFC 3986に準拠した有効なURIでなければなりません
+- スキーム（http/https）を含む必要があります
 - 例: `https://api.example.com/v1`、`http://localhost:8080`
 
 **IPv4アドレス** (`format: "ipv4"`):
-- IPv4アドレスはドット区切り10進表記である必要があります
+- IPv4アドレスはドット区切りの10進数表記でなければなりません
 - 例: `192.168.1.1`、`10.0.0.1`
 
 **UUID** (`format: "uuid"`):
@@ -213,30 +213,30 @@ i18n:
 - 例: `550e8400-e29b-41d4-a716-446655440000`
 
 **タイムスタンプ** (`format: "date-time"`):
-- タイムスタンプはISO 8601フォーマットである必要があります
+- タイムスタンプはISO 8601フォーマットでなければなりません
 - 例: `2026-01-19T12:00:00Z`、`2026-01-19T12:00:00+00:00`
 
 ### 数値制約
 
 **ポート番号**:
-- ポート番号は1から65535の間の整数である必要があります
+- ポート番号は1から65535の整数でなければなりません
 - 標準ポート: 80 (HTTP)、443 (HTTPS)、22 (SSH)
 
 **VLAN ID**:
-- VLAN IDは1から4094の間の整数である必要があります（802.1Q標準）
+- VLAN IDは1から4094の整数でなければなりません（802.1Q標準）
 
 **タイムアウト**:
-- タイムアウトは1-3600秒（最大1時間）である必要があります
+- タイムアウトは1-3600秒（最大1時間）でなければなりません
 
 ### 配列制約
 
 **オリジンプール**:
-- オリジンプールの配列は最小1項目、最大50項目が必要です
-- 各項目は一意である必要があります
+- オリジンプールの配列は最低1項目、最大50項目が必要です
+- 各項目はユニークでなければなりません
 
 **タグ**:
-- タグ配列は0-100項目が許可されます
-- 項目が一意である必要はありません
+- タグ配列は0-100項目を許可します
+- 項目はユニークである必要はありません
 
 ---
 
@@ -263,11 +263,11 @@ i18n:
 - ✅ `web`
 
 **無効な値**:
-- ❌ `My-Service` (大文字は使用不可)
-- ❌ `-my-service` (先頭にハイフン)
-- ❌ `my-service-` (末尾にハイフン)
-- ❌ `my_service` (アンダースコアは使用不可)
-- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (長すぎる)
+- ❌ `My-Service`（大文字は許可されていません）
+- ❌ `-my-service`（先頭のハイフン）
+- ❌ `my-service-`（末尾のハイフン）
+- ❌ `my_service`（アンダースコアは許可されていません）
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（長すぎます）
 
 ### 例2: ポート番号のバリデーション
 
@@ -284,14 +284,14 @@ i18n:
 **有効な値**:
 - ✅ `80` (HTTP)
 - ✅ `443` (HTTPS)
-- ✅ `8080` (一般的な代替HTTPポート)
-- ✅ `65535` (最大ポート)
+- ✅ `8080`（一般的な代替HTTPポート）
+- ✅ `65535`（最大ポート）
 
 **無効な値**:
-- ❌ `0` (最小値未満)
-- ❌ `65536` (最大値超過)
-- ❌ `-1` (負の値)
-- ❌ `"80"` (文字列であり、数値ではない)
+- ❌ `0`（最小値未満）
+- ❌ `65536`（最大値超過）
+- ❌ `-1`（負の数）
+- ❌ `"80"`（数値ではなく文字列）
 
 ### 例3: 配列サイズのバリデーション
 
@@ -307,13 +307,13 @@ i18n:
 ```
 
 **有効な値**:
-- ✅ `["origin-1"]` (1項目)
-- ✅ `["origin-1", "origin-2", "origin-3"]` (3項目、すべて一意)
+- ✅ `["origin-1"]`（1項目）
+- ✅ `["origin-1", "origin-2", "origin-3"]`（3項目、すべてユニーク）
 
 **無効な値**:
-- ❌ `[]` (最小値未満)
-- ❌ `["origin-1", "origin-1"]` (重複項目)
-- ❌ `[51項目の配列]` (最大値超過)
+- ❌ `[]`（最小値未満）
+- ❌ `["origin-1", "origin-1"]`（重複項目）
+- ❌ `[51項目の配列]`（最大値超過）
 
 ---
 
@@ -326,22 +326,22 @@ i18n:
 | 0.90-1.00 | **高信頼度** | deterministicフラグ有効、AI生成に使用 |
 | 0.70-0.89 | **中信頼度** | 参考情報、ユーザー確認を推奨 |
 | 0.50-0.69 | **低信頼度** | 情報提供のみ、ユーザーバリデーションが必要 |
-| < 0.50 | **非常に低い** | 制約に含まれない |
+| < 0.50 | **非常に低い** | 制約に含まれません |
 
 ### deterministicフラグ
 
-`deterministic` ブールフラグは以下の場合に設定されます：
+`deterministic` ブーリアンフラグは以下の場合に設定されます:
 - 信頼度スコア >= 0.9
-- パターンがディスカバリーデータに対してバリデーション済み、または
-- パターンが確立された標準（RFC、ISOなど）に一致
+- パターンがディスカバリーデータに対して検証済み、または
+- パターンが確立された標準（RFC、ISOなど）に合致
 
-**AI生成での使用例**:
+**AI生成での使用方法**:
 ```python
 if constraint.get("deterministic"):
     # ユーザーに確認せず自動的に値を生成
     value = generate_from_pattern(constraint)
 else:
-    # 制約ヒント付きでユーザーに入力を要求
+    # 制約ヒントを伴ってユーザーに入力を求める
     value = prompt_user_with_hints(constraint)
 ```
 
@@ -351,24 +351,24 @@ else:
 
 ### ソースの優先順位
 
-制約は3階層の優先順位を使用して調整されます：
+制約は3階層の優先順位で調整されます:
 
-1. **EXISTING** (信頼度: 1.0)
-   - 元のOpenAPI仕様で明示的に設定
-   - オーバーライドされることはない
+1. **EXISTING**（信頼度: 1.0）
+   - 元のOpenAPI仕様に明示的に設定
+   - 上書きされることはありません
 
-2. **DISCOVERY** (信頼度: 0.99)
-   - ライブのF5 XC APIレスポンスから抽出
+2. **DISCOVERY**（信頼度: 0.99）
+   - ライブF5 XC APIレスポンスから抽出
    - x-ves-validation-rulesからのバリデーションルールを含む
-   - 推論された制約をオーバーライド
+   - 推測された制約を上書き
 
-3. **INFERRED** (信頼度: 0.50-0.95)
+3. **INFERRED**（信頼度: 0.50-0.95）
    - フィールド名からのパターンマッチング
-   - 最低優先度、ディスカバリーまたは明示的制約によりオーバーライドされる
+   - 最低優先順位、ディスカバリーまたは明示的設定により上書き
 
 ### ディスカバリーデータソース
 
-ディスカバリー制約は以下から抽出されます：
+ディスカバリー制約は以下から抽出されます:
 
 1. **x-ves-validation-rules**: ネイティブF5バリデーション拡張
    - `ves.io.schema.rules.string.max_len` → `maxLength`
@@ -414,7 +414,7 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # 長さチェック（制約キーはトップレベルにある）
+    # 長さチェック（制約キーはトップレベル）
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
@@ -443,7 +443,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // 制約キーはトップレベルにある（ネストされた"string"ラッパーなし）
+    // 制約キーはトップレベル（ネストされた"string"ラッパーなし）
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -468,7 +468,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // フォーマット固有の補完を追加
+    // フォーマット固有のコンプリートを追加
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -497,31 +497,31 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ### 高信頼度パターン (0.95-0.99)
 
-| パターン | フィールド名正規表現 | 制約タイプ | 例 |
+| パターン | フィールド名の正規表現 | 制約タイプ | 例 |
 |---------|------------------|-----------------|---------|
-| DNSラベル | `\bname$` | String (1-63文字, dns-label) | `my-service` |
-| 名前空間 | `\bnamespace$` | String (1-63文字, dns-label) | `production` |
-| ポート | `\bport$` | Number (1-65535) | `443` |
-| VLAN ID | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
-| UUID | `\buuid$` | String (36文字, uuidフォーマット) | `550e8400-...` |
-| メール | `\bemail$` | String (最大254文字, email) | `user@example.com` |
-| タイムスタンプ | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
+| DNSラベル | `\bname$` | String（1-63文字、dns-label） | `my-service` |
+| 名前空間 | `\bnamespace$` | String（1-63文字、dns-label） | `production` |
+| ポート | `\bport$` | Number（1-65535） | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | Number（1-4094） | `100` |
+| UUID | `\buuid$` | String（36文字、uuidフォーマット） | `550e8400-...` |
+| メール | `\bemail$` | String（最大254文字、email） | `user@example.com` |
+| タイムスタンプ | `\b(timestamp\|created_at\|updated_at)$` | String（ISO 8601） | `2026-01-19T12:00:00Z` |
 
 ### 中信頼度パターン (0.80-0.94)
 
-| パターン | フィールド名正規表現 | 制約タイプ | 例 |
+| パターン | フィールド名の正規表現 | 制約タイプ | 例 |
 |---------|------------------|-----------------|---------|
-| ユーザー名 | `\b(user\|username)$` | String (1-64文字, 英数字) | `admin` |
-| 表示名 | `\b(display_?)?name$` | String (1-256文字, フリーテキスト) | `My Service` |
-| 説明 | `\b(comment\|description\|note)$` | String (最大4096文字) | `Service description` |
-| パス | `\bpath$` | String (最大2048文字) | `/api/v1/resources` |
+| ユーザー名 | `\b(user\|username)$` | String（1-64文字、英数字） | `admin` |
+| 表示名 | `\b(display_?)?name$` | String（1-256文字、自由テキスト） | `My Service` |
+| 説明 | `\b(comment\|description\|note)$` | String（最大4096文字） | `Service description` |
+| パス | `\bpath$` | String（最大2048文字） | `/api/v1/resources` |
 
 ---
 
 ## サポートとフィードバック
 
-- **問題報告**: 制約の精度に関する問題は https://github.com/f5xc-salesdemos/api-specs-enriched/issues で報告してください
-- **ドキュメント**: 完全なAPIドキュメントは https://f5xc-salesdemos.github.io/api-specs-enriched/ でご覧いただけます
+- **課題報告**: 制約の精度に関する問題は https://github.com/f5xc-salesdemos/api-specs-enriched/issues で報告してください
+- **ドキュメント**: 完全なAPIドキュメントは https://f5xc-salesdemos.github.io/api-specs-enriched/ にあります
 - **MCP統合**: MCPサーバー統合の例については `f5xc-api-mcp` リポジトリを参照してください
 
 ---

@@ -1,6 +1,6 @@
 ---
 title: 健康檢查增強功能
-description: 健康檢查相關結構描述的擴充中繼資料
+description: 健康檢查相關結構描述的enrichment metadata
 sidebar:
   order: 1
 i18n:
@@ -8,19 +8,19 @@ i18n:
   translator: machine
 ---
 
-健康檢查相關結構描述的擴充中繼資料。請參閱 [OpenAPI 擴充](../development/#openapi-extensions) 以取得擴充定義。
+健康檢查相關結構描述的 enrichment metadata。請參閱 [OpenAPI 擴展](../development/#openapi-extensions) 以了解擴展定義。
 
-## 擴充結構描述
+## 已增強的結構描述
 
 ### 模式
 
-所有符合 `healthcheck.*SpecType` 的結構描述都會接收擴充：
+所有匹配 `healthcheck.*SpecType` 的結構描述都會接收增強功能：
 
 - `healthcheckCreateSpecType`
 - `healthcheckReplaceSpecType`
 - `healthcheckGetSpecType`
 
-此外，巢狀結構描述 `healthcheckHttpHealthCheck` 包含 HTTP 健康檢查設定的擴充。
+此外，巢狀結構描述 `healthcheckHttpHealthCheck` 包含 HTTP 健康檢查配置的增強功能。
 
 ## 伺服器套用的預設值
 
@@ -31,7 +31,7 @@ i18n:
 | 欄位 | 預設值 | 類型 | 說明 |
 |-------|--------|------|------|
 | `jitter` | `0` | integer | 用於時間隨機化的絕對抖動值 |
-| `jitter_percent` | `0` | integer | 用於時間隨機化的百分比抖動 |
+| `jitter_percent` | `0` | integer | 用於時間隨機化的百分比抖動值 |
 
 ### healthcheckHttpHealthCheck 結構描述
 
@@ -39,7 +39,7 @@ i18n:
 |-------|--------|------|------|
 | `use_origin_server_name` | `{}` | object | 用於 Host 標頭的來源伺服器名稱 |
 | `headers` | `{}` | object | 自訂標頭 |
-| `request_headers_to_remove` | `[]` | array | 要從請求中移除的標頭 |
+| `request_headers_to_remove` | `[]` | array | 從請求中移除的標頭 |
 | `use_http2` | `false` | boolean | HTTP/2 支援 |
 | `expected_status_codes` | `[]` | array | 接受的狀態碼（空值 = 200-299） |
 
@@ -52,10 +52,10 @@ i18n:
 | 欄位 | 建議值 | 類型 | 說明 |
 |-------|--------|------|------|
 | `timeout` | `3` | integer | 健康檢查逾時時間（秒） |
-| `interval` | `15` | integer | 健康檢查之間的間隔（秒） |
+| `interval` | `15` | integer | 健康檢查之間的間隔時間（秒） |
 | `unhealthy_threshold` | `1` | integer | 標記為不健康前的連續失敗次數 |
 | `healthy_threshold` | `3` | integer | 標記為健康前的連續成功次數 |
-| `jitter_percent` | `30` | integer | 生產環境使用的抖動百分比 |
+| `jitter_percent` | `30` | integer | 用於生產環境的抖動百分比 |
 
 ### healthcheckHttpHealthCheck 結構描述
 
@@ -63,12 +63,12 @@ i18n:
 |-------|--------|------|------|
 | `path` | `"/"` | string | 健康檢查端點路徑 |
 | `use_http2` | `false` | boolean | HTTP/2 支援設定 |
-| `expected_status_codes` | `["200"]` | array | 表示來源健康的狀態碼 |
+| `expected_status_codes` | `["200"]` | array | 表示來源伺服器健康的狀態碼 |
 | `use_origin_server_name` | `{}` | object | 用於 Host 標頭的來源伺服器名稱 |
 
 ## OneOf 變體建議
 
-包含互斥欄位群組（OneOf）的結構描述包含 `x-f5xc-recommended-oneof-variant`，以指示最常使用的變體。此中繼資料根據 F5 XC 主控台預設值和常見使用模式，識別存在多個選項時的典型選擇。
+包含互斥欄位群組（OneOf）的結構描述包括 `x-f5xc-recommended-oneof-variant`，以指示最常使用的變體。此 metadata 根據 F5 XC 主控台預設值和常見使用模式，識別存在多個選項時的典型選擇。
 
 ### 頂層 OneOf 群組
 
@@ -90,19 +90,19 @@ i18n:
 | 變體 | 類型 | 說明 |
 |------|------|------|
 | `use_origin_server_name` | `object`（空） | 使用來源伺服器名稱作為 Host 標頭。這是 F5 XC 主控台中的預設選擇。 |
-| `host_header` | `string` | 為健康檢查請求指定自訂 Host 標頭值。 |
+| `host_header` | `string` | 為健康檢查請求指定自訂的 Host 標頭值。 |
 
 **API 結構描述參考**：`x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
 
-## OpenAPI 擴充參考
+## OpenAPI 擴展參考
 
-這些供應商擴充被新增到標準 OpenAPI 結構描述中，以傳達 F5 XC 特定的預設行為。
+這些供應商擴展被加入到標準 OpenAPI 結構描述中，以傳達 F5 XC 特定的預設行為。
 
 ### x-f5xc-server-default
 
 **類型**：`boolean`
 
-當值為 `true` 時，表示附帶的 `default` 值由 F5 XC API 伺服器強制執行。具有此擴充的欄位可以安全地從 API 請求中省略——伺服器會自動套用預設值。
+當值為 `true` 時，表示隨附的 `default` 值由 F5 XC API 伺服器強制執行。具有此擴展的欄位可以安全地從 API 請求中省略——伺服器會自動套用預設值。
 
 ```yaml
 use_http2:
@@ -113,9 +113,9 @@ use_http2:
 
 ### x-f5xc-recommended-value
 
-**類型**：`any`（符合欄位類型）
+**類型**：`any`（與欄位類型匹配）
 
-指定 F5 XC 網頁主控台用作預先填入預設值的值。此值並非由伺服器強制執行，而是代表透過主控台建立新資源時的典型起始設定。
+指定 F5 XC 網頁主控台用作預先填入預設值的值。此值並非由伺服器強制執行，但代表透過主控台建立新資源時的典型初始配置。
 
 ```yaml
 timeout:
@@ -127,7 +127,7 @@ timeout:
 
 **類型**：`object`（群組名稱到變體名稱的映射）
 
-對於具有互斥欄位群組的結構描述，識別哪個變體是預設或最常見的選擇。鍵是 OneOf 群組名稱，值是建議的變體欄位名稱。
+對於具有互斥欄位群組的結構描述，識別哪個變體是預設或最常見的選擇。鍵為 OneOf 群組名稱，值為建議的變體欄位名稱。
 
 ```yaml
 healthcheckCreateSpecType:
@@ -156,18 +156,18 @@ defaults.resources.healthcheck
 
 ## 相關文件
 
-- [開發指南 - OpenAPI 擴充](../development/#openapi-extensions) - 擴充定義與用法
+- [開發指南 - OpenAPI 擴展](../development/#openapi-extensions) - 擴展定義與用法
 - [驗證規格](../validation-spec/) - validation.json 格式與結構
-- [來源池增強功能](./originpool-enhancements/) - 來源池結構描述擴充
+- [來源伺服器池增強功能](./originpool-enhancements/) - 來源伺服器池結構描述增強功能
 
-## 變更日誌
+## 變更紀錄
 
 | 版本 | 日期 | 變更 |
 |------|------|------|
 | 2.1.4 | 2026-01-19 | 新增 HTTP 健康檢查請求參數的 `host_header_choice` OneOf 群組文件 |
-| 2.1.3 | 2026-01-18 | 將全域擴充文件整合至 DEVELOPMENT.md；僅保留資源特定資料 |
-| 2.1.2 | 2026-01-18 | 重寫為純 API 參考；移除下游範例和規範性語言 |
-| 2.1.1 | 2026-01-18 | 新增巢狀建議值、OneOf 建議變體、`x-f5xc-recommended-oneof-variant` 擴充 |
+| 2.1.3 | 2026-01-18 | 將全域擴展文件整合至 DEVELOPMENT.md；僅保留資源特定資料 |
+| 2.1.2 | 2026-01-18 | 改寫為純 API 參考；移除下游範例和規範性語言 |
+| 2.1.1 | 2026-01-18 | 新增巢狀建議值、OneOf 建議變體、`x-f5xc-recommended-oneof-variant` 擴展 |
 | 2.1.0 | 2026-01-18 | 在 validation.json 中新增統一預設值結構 |
 | 2.0.30 | 2026-01-16 | 為 `$ref` 結構描述新增巢狀預設值 |
 | 2.0.29 | 2026-01-17 | 初始健康檢查預設值 |
