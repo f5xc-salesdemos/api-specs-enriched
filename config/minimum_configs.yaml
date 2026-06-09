@@ -331,8 +331,13 @@ resources:
 
       - field: "spec.advertise_custom.advertise_where[].network"
         type: "enum"
-        values: ["SITE_NETWORK_INSIDE_AND_OUTSIDE", "SITE_NETWORK_INSIDE", "SITE_NETWORK_OUTSIDE", "SITE_NETWORK_SUBSCRIBER"]
-        description: "Network scope for site advertising"
+        values: ["SITE_NETWORK_INSIDE_AND_OUTSIDE", "SITE_NETWORK_INSIDE", "SITE_NETWORK_OUTSIDE", "SITE_NETWORK_OUTSIDE_WITH_INTERNET_VIP", "SITE_NETWORK_INSIDE_AND_OUTSIDE_WITH_INTERNET_VIP", "SITE_NETWORK_SERVICE"]
+        description: "Network scope for site/virtual_site advertising. NOTE: SITE_NETWORK_IP_FABRIC is NOT valid for HTTP LB advertise_where (API returns 400 for both site and virtual_site targeting). SITE_NETWORK_SPECIFIED_VIP_OUTSIDE and SITE_NETWORK_SPECIFIED_VIP_INSIDE are only valid for virtual_site_with_vip."
+
+      - field: "spec.advertise_custom.advertise_where[].advertise_on_site_choice"
+        type: "enum"
+        values: ["site", "virtual_site", "virtual_site_with_vip", "virtual_network", "vk8s_service", "advertise_on_public"]
+        description: "How to target the advertise_where entry — choose one per entry"
 
       - field: "spec.bot_defense.policy.protected_app_endpoints[].http_methods"
         type: "enum"
@@ -456,6 +461,213 @@ resources:
       - "bot_defense requires f5xc-bot-defense-standard addon subscription"
       - "rate_limit.rate_limiter.burst_multiplier must be > 0 (verified 2026-05-10)"
       - "slow_ddos_mitigation: only request_headers_timeout and request_timeout stored; others silently dropped"
+
+    # -------------------------------------------------------------------------
+    # Option examples — advertise_custom.advertise_where sub-options
+    # Source of truth for xcsh payload construction. Verified live 2026-06-09.
+    # -------------------------------------------------------------------------
+    option_examples:
+
+      # Top-level advertising choices (4 mutually exclusive)
+      advertise_on_public_default_vip:
+        spec_override: {"advertise_on_public_default_vip": {}}
+        description: "Advertise on public default VIP on Regional Edges (default)"
+
+      advertise_on_public:
+        spec_override: {"advertise_on_public": {}}
+        description: "Advertise on public VIP — optionally specify a public_ip reference"
+
+      do_not_advertise:
+        spec_override: {"do_not_advertise": {}}
+        description: "Do not advertise this load balancer"
+
+      # advertise_custom — site targeting sub-choices
+      # Each advertise_where entry requires ONE site-targeting choice + ONE port choice.
+
+      # virtual_site: advertise on a virtual CE or RE site (ref NOT validated at creation)
+      advertise_custom_virtual_site_slo_sli:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on virtual site — inside AND outside (SLI + SLO)"
+        prerequisites:
+          virtual_site:
+            api_path: "virtual_sites"
+            namespace: "user_namespace"
+            payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in (TARGET_SITE_NAME)"]}}}'
+
+      advertise_custom_virtual_site_sli:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE"
+                use_default_port: {}
+        description: "Advertise on virtual site — inside only (SLI)"
+
+      advertise_custom_virtual_site_slo:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on virtual site — outside only (SLO)"
+
+      advertise_custom_virtual_site_slo_internet_vip:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_OUTSIDE_WITH_INTERNET_VIP"
+                use_default_port: {}
+        description: "Advertise on virtual site — outside with internet VIP"
+
+      advertise_custom_virtual_site_slo_sli_internet_vip:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE_WITH_INTERNET_VIP"
+                use_default_port: {}
+        description: "Advertise on virtual site — inside and outside with internet VIP"
+
+      advertise_custom_virtual_site_service:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_SERVICE"
+                use_default_port: {}
+        description: "Advertise on virtual site — service network"
+
+      advertise_custom_virtual_site_ip_fabric:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_IP_FABRIC"
+                use_default_port: {}
+        description: "Advertise on virtual site — IP fabric network"
+
+      # site: advertise on a specific CE site (ref IS validated at creation — must exist)
+      advertise_custom_site_slo_sli:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - site:
+                  site: {name: "CE_SITE_NAME", namespace: "system"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on specific CE site — inside and outside. IMPORTANT: site ref must exist (400 if not)."
+
+      advertise_custom_site_slo:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - site:
+                  site: {name: "CE_SITE_NAME", namespace: "system"}
+                  network: "SITE_NETWORK_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on specific CE site — outside (SLO) only"
+
+      advertise_custom_site_sli:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - site:
+                  site: {name: "CE_SITE_NAME", namespace: "system"}
+                  network: "SITE_NETWORK_INSIDE"
+                use_default_port: {}
+        description: "Advertise on specific CE site — inside (SLI) only"
+
+      # virtual_site_with_vip: advertise on virtual site with a specific VIP address
+      advertise_custom_virtual_site_with_vip_outside:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site_with_vip:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  ip: "10.0.0.100"
+                  network: "SITE_NETWORK_SPECIFIED_VIP_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on virtual site with specific VIP — outside"
+
+      advertise_custom_virtual_site_with_vip_inside:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site_with_vip:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  ip: "10.0.0.100"
+                  network: "SITE_NETWORK_SPECIFIED_VIP_INSIDE"
+                use_default_port: {}
+        description: "Advertise on virtual site with specific VIP — inside"
+
+      # vk8s_service: advertise in vK8s service network
+      advertise_custom_vk8s_service_site:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - vk8s_service:
+                  site: {name: "RE_SITE_NAME", namespace: "system"}
+                use_default_port: {}
+        description: "Advertise in vK8s service network on a specific RE site"
+
+      advertise_custom_vk8s_service_virtual_site:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - vk8s_service:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                use_default_port: {}
+        description: "Advertise in vK8s service network on a virtual site"
+
+      # Port choice variants (orthogonal to site targeting — combine with any site choice)
+      advertise_custom_port_specific:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE"
+                port: 8443
+        description: "Advertise on virtual site with specific port"
+
+      advertise_custom_port_ranges:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE"
+                port_ranges: "80,443,8080-8191"
+        description: "Advertise on virtual site with port ranges"
+
+      # Multi-entry advertise_where
+      advertise_custom_multi_site:
+        spec_override:
+          advertise_custom:
+            advertise_where:
+              - virtual_site:
+                  virtual_site: {name: "VIRTUAL_SITE_NAME", namespace: "NAMESPACE"}
+                  network: "SITE_NETWORK_INSIDE_AND_OUTSIDE"
+                use_default_port: {}
+              - site:
+                  site: {name: "CE_SITE_NAME", namespace: "system"}
+                  network: "SITE_NETWORK_OUTSIDE"
+                use_default_port: {}
+        description: "Advertise on both a virtual site and a specific CE site simultaneously"
 
   # ============================================================================
 
@@ -1524,21 +1736,29 @@ resources:
   # ============================================================================
 
   virtual_site:
-    description: "Label-based site selector for grouping RE and CE sites"
+    description: "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs"
     domain: "virtual_infrastructure"
     resource_type: "site"
 
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.site_type"  # enum: REGIONAL_EDGE, CUSTOMER_EDGE
-      - "spec.site_selector"  # with expressions list
+      - "spec.site_type"  # enum: REGIONAL_EDGE, CUSTOMER_EDGE, NGINX_ONE
+      - "spec.site_selector"  # with expressions list (Kubernetes-style label selectors)
 
     constrained_fields:
       - field: "spec.site_type"
         type: "enum"
-        values: ["REGIONAL_EDGE", "CUSTOMER_EDGE"]
-        description: "Type of sites to select"
+        values: ["REGIONAL_EDGE", "CUSTOMER_EDGE", "NGINX_ONE"]
+        description: "Type of sites to select — CUSTOMER_EDGE for CE/SMSv2 sites, REGIONAL_EDGE for cloud PoPs"
+
+      - field: "spec.site_selector.expressions"
+        type: "array"
+        description: |
+          Kubernetes-style label selector expressions. Common patterns:
+          - Match by site name: "ves.io/siteName in (my-ce-site-1, my-ce-site-2)"
+          - Match by label: "environment=production,tier=frontend"
+          - All CE sites in a region: "ves.io/region in (us-east-1)"
 
     example_json: |
       {
@@ -1566,10 +1786,26 @@ resources:
           expressions:
             - "ves.io/siteName=any"
 
+    option_examples:
+      customer_edge_by_name:
+        payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ({{ce_site_name}})" ]}}}'
+        description: "Virtual site targeting a specific CE site by name — use as advertise_where target for HTTP LBs on CE meshes"
+
+      customer_edge_by_label:
+        payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["environment={{env_label}}"]}}}'
+        description: "Virtual site targeting CE sites with a custom label — assign matching labels to CE sites first"
+
+      regional_edge_all:
+        payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":["ves.io/siteName=any"]}}}'
+        description: "Virtual site targeting all Regional Edge PoPs"
+
     notes:
       - "site_type and site_selector both required (verified 2026-05-10)"
       - "Minimal resource — no additional server defaults"
       - "CRUD-verified against staging API 2026-05-20"
+      - "CUSTOMER_EDGE type: use to group SMSv2 CE sites for HTTP LB advertise_where targeting"
+      - "Label selector 'ves.io/siteName in (site1, site2)' matches CE sites by their resource name"
+      - "CE sites must have matching labels assigned — system labels like ves.io/siteName are auto-applied"
 
   # ============================================================================
   # Network Security - Forward Proxy Policies
