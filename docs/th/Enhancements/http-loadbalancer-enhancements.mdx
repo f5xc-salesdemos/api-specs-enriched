@@ -1,6 +1,6 @@
 ---
-title: HTTP LoadBalancer Enhancements
-description: เมตาดาต้าเสริมสำหรับ HTTP load balancer schemas
+title: การปรับปรุง HTTP LoadBalancer
+description: เมตาดาต้าเสริมสำหรับสกีมา HTTP load balancer
 sidebar:
   order: 2
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-เมตาดาต้าเสริมสำหรับ HTTP load balancer schemas ดู [OpenAPI Extensions](../development/#openapi-extensions) สำหรับคำจำกัดความของส่วนขยาย
+เมตาดาต้าเสริมสำหรับสกีมา HTTP load balancer ดู [ส่วนขยาย OpenAPI](../development/#openapi-extensions) สำหรับคำจำกัดความของส่วนขยาย
 
-## สคีมาที่ได้รับการเสริม
+## สกีมาที่ได้รับการเสริม
 
 ### รูปแบบ
 
-สคีมาทั้งหมดที่ตรงกับ `viewshttp_loadbalancer.*SpecType` จะได้รับการเสริม:
+สกีมาทั้งหมดที่ตรงกับ `viewshttp_loadbalancer.*SpecType` จะได้รับการเสริม:
 
 - `viewshttp_loadbalancerCreateSpecType`
 - `viewshttp_loadbalancerReplaceSpecType`
@@ -22,24 +22,24 @@ i18n:
 
 ## เมตาดาต้าการกำหนดค่าขั้นต่ำ
 
-ส่วนขยาย `x-f5xc-minimum-configuration` ให้เมตาดาต้า CLI อย่างครอบคลุมสำหรับการสร้าง HTTP load balancers ขั้นต่ำที่ใช้งานได้
+ส่วนขยาย `x-f5xc-minimum-configuration` ให้เมตาดาต้า CLI แบบครอบคลุมสำหรับการสร้าง HTTP load balancer ที่ใช้งานได้ขั้นต่ำ
 
 ### ฟิลด์ที่จำเป็น
 
 | ฟิลด์ | ข้อจำกัด | คำอธิบาย |
 |-------|-----------|-------------|
-| `metadata.name` | รูปแบบ DNS label: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | ชื่อทรัพยากร |
-| `metadata.namespace` | รูปแบบ DNS label | Namespace |
-| `spec.domains` | Array, min_items: 1 | โดเมนที่ให้บริการ |
+| `metadata.name` | รูปแบบ DNS label: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | ชื่อรีซอร์ส |
+| `metadata.namespace` | รูปแบบ DNS label | เนมสเปซ |
+| `spec.domains` | อาร์เรย์, min_items: 1 | โดเมนที่ให้บริการ |
 
 ### ประเภท Load Balancer (ต้องระบุ OneOf)
 
-ต้องระบุประเภท load balancer อย่างใดอย่างหนึ่งต่อไปนี้:
+ต้องระบุประเภท load balancer หนึ่งในประเภทต่อไปนี้:
 
 | ตัวเลือก | คำอธิบาย |
 |---------|-------------|
 | `spec.http` | HTTP เท่านั้น |
-| `spec.https` | HTTPS พร้อมใบรับรองแบบ manual |
+| `spec.https` | HTTPS พร้อมใบรับรองแบบแมนนวล |
 | `spec.https_auto_cert` | HTTPS พร้อมใบรับรองอัตโนมัติ |
 | `spec.http_https` | ทั้ง HTTP และ HTTPS |
 
@@ -47,7 +47,7 @@ i18n:
 - `lb_type` ในไฟล์การกำหนดค่า (รูปแบบย่อใน `config/minimum_configs.yaml`)
 - `loadbalancer_type` ในส่วนขยายดั้งเดิมของ OpenAPI spec (ชื่อฟิลด์ดั้งเดิม)
 
-**อ้างอิงสคีมา API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+**อ้างอิงสกีมา API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
 
 ### การกำหนดค่าขั้นต่ำที่ใช้งานได้
 
@@ -71,7 +71,7 @@ i18n:
 
 ## ค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด
 
-ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-server-default: true` จะมีค่า `default` ที่ถูกกำหนดโดยเซิร์ฟเวอร์ F5 XC API เมื่อถูกละเว้นจากคำขอ HTTP load balancer มีค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนดจำนวนมาก เนื่องจากฟีเจอร์ความปลอดภัยและตัวเลือกโปรโตคอลส่วนใหญ่มีค่าเริ่มต้นเป็นสถานะปิดใช้งานหรือสถานะปลอดภัย
+ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-server-default: true` จะมีค่า `default` ที่ถูกกำหนดโดยเซิร์ฟเวอร์ API ของ F5 XC เมื่อถูกละเว้นจากคำขอ HTTP load balancer มีค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนดจำนวนมากเนื่องจากฟีเจอร์ความปลอดภัยและตัวเลือกโปรโตคอลส่วนใหญ่มีค่าเริ่มต้นเป็นสถานะปิดใช้งานหรือสถานะที่ปลอดภัย
 
 ### ค่าเริ่มต้นของ HTTPS Auto-Cert
 
@@ -79,16 +79,16 @@ i18n:
 
 | ฟิลด์ | ค่าเริ่มต้น | ประเภท | คำอธิบาย |
 |-------|---------------|------|-------------|
-| `port` | `443` | integer | พอร์ต HTTPS ที่รับฟัง |
+| `port` | `443` | integer | พอร์ตรับฟัง HTTPS |
 | `http_redirect` | `false` | boolean | เปลี่ยนเส้นทาง HTTP ไปยัง HTTPS |
 | `add_hsts` | `false` | boolean | เฮดเดอร์ HTTP Strict Transport Security |
-| `tls_config.default_security` | `{}` | object | TLS 1.2+ พร้อมรหัสลับที่แข็งแกร่ง |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ พร้อมชุดรหัสที่แข็งแกร่ง |
 | `no_mtls` | `{}` | object | ปิดใช้งาน Mutual TLS |
 | `default_header` | `{}` | object | การจัดการเฮดเดอร์ชื่อเซิร์ฟเวอร์เริ่มต้น |
 | `enable_path_normalize` | `{}` | object | เปิดใช้งานการปรับมาตรฐานเส้นทาง |
 | `default_loadbalancer` | `{}` | object | การตั้งค่า load balancer เริ่มต้น |
 | `header_transformation_type.legacy_header_transformation` | `{}` | object | การแปลงเฮดเดอร์แบบดั้งเดิม |
-| `connection_idle_timeout` | `120000` | integer | ระยะหมดเวลาการเชื่อมต่อที่ไม่ได้ใช้งานเป็นมิลลิวินาที (2 นาที) |
+| `connection_idle_timeout` | `120000` | integer | ระยะหมดเวลาการเชื่อมต่อที่ไม่มีกิจกรรมเป็นมิลลิวินาที (2 นาที) |
 | `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | เปิดใช้งาน HTTP/1.1 และ HTTP/2 |
 | `coalescing_options.default_coalescing` | `{}` | object | การรวมการเชื่อมต่อ HTTP/2 เริ่มต้น |
 
@@ -103,11 +103,11 @@ i18n:
 | `disable_rate_limit` | `{}` | ปิดใช้งานการจำกัดอัตรา |
 | `disable_api_discovery` | `{}` | ปิดใช้งานการค้นหา API |
 | `disable_api_testing` | `{}` | ปิดใช้งานการทดสอบ API |
-| `disable_api_definition` | `{}` | ปิดใช้งานคำจำกัดความ API |
+| `disable_api_definition` | `{}` | ปิดใช้งานการกำหนด API |
 | `disable_malware_protection` | `{}` | ปิดใช้งานการป้องกันมัลแวร์ |
 | `disable_client_side_defense` | `{}` | ปิดใช้งานการป้องกันฝั่งไคลเอนต์ |
 | `disable_ip_reputation` | `{}` | ปิดใช้งานชื่อเสียง IP |
-| `disable_threat_mesh` | `{}` | ปิดใช้งาน Threat mesh |
+| `disable_threat_mesh` | `{}` | ปิดใช้งาน threat mesh |
 | `disable_malicious_user_detection` | `{}` | ปิดใช้งานการตรวจจับผู้ใช้ที่เป็นอันตราย |
 
 ### ค่าเริ่มต้นของ DDoS และการควบคุมการเข้าถึง
@@ -115,11 +115,11 @@ i18n:
 | ฟิลด์ | ค่าเริ่มต้น | คำอธิบาย |
 |-------|---------------|-------------|
 | `l7_ddos_protection.mitigation_block` | `{}` | บล็อกทราฟฟิก DDoS (การดำเนินการบรรเทาเริ่มต้น) |
-| `l7_ddos_protection.default_rps_threshold` | `{}` | ใช้ค่าขีดจำกัด RPS เริ่มต้น |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | ใช้เกณฑ์ RPS เริ่มต้น |
 | `l7_ddos_protection.clientside_action_none` | `{}` | ไม่มีการตรวจสอบ DDoS ฝั่งไคลเอนต์ |
 | `l7_ddos_protection.ddos_policy_none` | `{}` | ไม่มีการอ้างอิงนโยบาย DDoS |
 | `no_challenge` | `{}` | ไม่มีการท้าทายไคลเอนต์ |
-| `user_id_client_ip` | `{}` | ระบุตัวตนผู้ใช้ด้วย IP ของไคลเอนต์ |
+| `user_id_client_ip` | `{}` | ระบุผู้ใช้ด้วย IP ของไคลเอนต์ |
 | `disable_trust_client_ip_headers` | `{}` | ไม่เชื่อถือเฮดเดอร์ IP ของไคลเอนต์ |
 
 ### ค่าเริ่มต้นอื่นๆ ที่เซิร์ฟเวอร์กำหนด
@@ -127,21 +127,21 @@ i18n:
 | ฟิลด์ | ค่าเริ่มต้น | ประเภท | คำอธิบาย |
 |-------|---------------|------|-------------|
 | `advertise_on_public_default_vip` | `{}` | object | ประกาศบน VIP สาธารณะเริ่มต้น |
-| `round_robin` | `{}` | object | อัลกอริทึมการกระจายภาระแบบ Round-robin |
-| `add_location` | `true` | boolean | เพิ่มเฮดเดอร์ location ในการตอบกลับ |
+| `round_robin` | `{}` | object | อัลกอริทึมโหลดบาลานซ์แบบ round-robin |
+| `add_location` | `true` | boolean | เพิ่มเฮดเดอร์ตำแหน่งในการตอบกลับ |
 | `system_default_timeouts` | `{}` | object | ใช้ระยะหมดเวลาเริ่มต้นของระบบ |
-| `service_policies_from_namespace` | `{}` | object | สืบทอดนโยบายบริการจาก namespace |
+| `service_policies_from_namespace` | `{}` | object | สืบทอดนโยบายบริการจากเนมสเปซ |
 | `default_sensitive_data_policy` | `{}` | object | ใช้นโยบายข้อมูลที่ละเอียดอ่อนเริ่มต้น |
 
 ## กลุ่มฟิลด์ที่ใช้ร่วมกันไม่ได้
 
-ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-conflicts-with` แสดงถึงรูปแบบ OneOf สามารถระบุได้เพียงฟิลด์เดียวจากแต่ละกลุ่ม
+ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-conflicts-with` บ่งชี้รูปแบบ OneOf สามารถระบุฟิลด์ได้เพียงหนึ่งฟิลด์จากแต่ละกลุ่ม
 
 ### กลุ่มการกำหนดค่าหลัก
 
 | ชื่อกลุ่ม | ฟิลด์ | คำอธิบาย |
 |-----------|--------|-------------|
-| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | ประเภทโปรโตคอลของ load balancer |
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | ประเภทโปรโตคอล load balancer |
 | `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | วิธีการประกาศ load balancer |
 | `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | อัลกอริทึมการกระจายทราฟฟิก |
 
@@ -167,7 +167,7 @@ i18n:
 | ชื่อกลุ่ม | ฟิลด์ | คำอธิบาย |
 |-----------|--------|-------------|
 | `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | เปิดหรือปิดใช้งานการปรับมาตรฐานเส้นทาง |
-| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | Load balancer เริ่มต้นหรือไม่เริ่มต้น |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | load balancer เริ่มต้นหรือไม่ใช่เริ่มต้น |
 | `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | ตัวเลือกการรวมการเชื่อมต่อ HTTP/2 |
 
 ### กลุ่มฟีเจอร์ความปลอดภัย (11 กลุ่ม)
@@ -179,7 +179,7 @@ i18n:
 | `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | การจำกัดอัตรา |
 | `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | การค้นหา API |
 | `api_testing` | `disable_api_testing`, `enable_api_testing` | การทดสอบ API |
-| `api_definition` | `disable_api_definition`, `enable_api_definition` | คำจำกัดความ API |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | การกำหนด API |
 | `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | การป้องกันมัลแวร์ |
 | `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | การป้องกันฝั่งไคลเอนต์ |
 | `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | ชื่อเสียง IP |
@@ -191,26 +191,26 @@ i18n:
 | ชื่อกลุ่ม | ฟิลด์ | คำอธิบาย |
 |-----------|--------|-------------|
 | `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | การดำเนินการบรรเทา DDoS |
-| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | ค่าขีดจำกัดคำขอต่อวินาที |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | เกณฑ์คำขอต่อวินาที |
 | `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | การดำเนินการตรวจสอบ DDoS ฝั่งไคลเอนต์ |
-| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | การอ้างอิงนโยบาย DDoS หรือไม่มี |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | อ้างอิงนโยบาย DDoS หรือไม่มี |
 
 ### กลุ่มการตั้งค่าอื่นๆ (6 กลุ่ม)
 
 | ชื่อกลุ่ม | ฟิลด์ | คำอธิบาย |
 |-----------|--------|-------------|
 | `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | ประเภทการท้าทายไคลเอนต์สำหรับการตรวจจับบอท |
-| `user_identification` | `user_id_client_ip`, `user_identification` | วิธีการระบุตัวตนผู้ใช้ |
+| `user_identification` | `user_id_client_ip`, `user_identification` | วิธีการระบุผู้ใช้ |
 | `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | เชื่อถือเฮดเดอร์ IP ของไคลเอนต์หรือไม่ |
 | `timeouts` | `system_default_timeouts`, `custom_timeouts` | ใช้ระยะหมดเวลาเริ่มต้นของระบบหรือกำหนดเอง |
-| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | นโยบายบริการจาก namespace หรือรายการที่ใช้งานอยู่ |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | นโยบายบริการจากเนมสเปซหรือรายการที่ใช้งาน |
 | `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | ใช้นโยบายข้อมูลที่ละเอียดอ่อนเริ่มต้นหรือกำหนดเอง |
 
 ## คำแนะนำตัวเลือก OneOf (ส่วนขยายในอนาคต)
 
-**สถานะ**: ยังไม่ได้นำไปใช้กับสคีมา http_loadbalancer
+**สถานะ**: ยังไม่ได้นำไปใช้กับสกีมา http_loadbalancer
 
-ต่างจาก healthcheck ที่รวม `x-f5xc-recommended-oneof-variant` เพื่อระบุตัวเลือกที่ใช้บ่อยที่สุดสำหรับกลุ่ม OneOf ปัจจุบัน http_loadbalancer ยังไม่มีส่วนขยายนี้
+ต่างจาก healthcheck ที่มี `x-f5xc-recommended-oneof-variant` เพื่อบ่งชี้ตัวเลือกที่พบบ่อยที่สุดสำหรับกลุ่ม OneOf ปัจจุบัน http_loadbalancer ยังไม่มีส่วนขยายนี้
 
 ### การเปรียบเทียบกับ Healthcheck
 
@@ -231,23 +231,23 @@ viewshttp_loadbalancerCreateSpecType:
 
 เพื่อเพิ่มส่วนขยายนี้สำหรับ http_loadbalancer:
 1. สังเกตการเลือกเริ่มต้นของคอนโซล F5 XC (เช่น lb_type ใดที่ถูกเลือกไว้ล่วงหน้าใน UI)
-2. เพิ่มการกำหนดค่าไปยัง `config/discovered_defaults.yaml`
-3. รันไปป์ไลน์เสริมใหม่เพื่อใช้ส่วนขยาย
+2. เพิ่มการกำหนดค่าใน `config/discovered_defaults.yaml`
+3. รันไปป์ไลน์การเสริมอีกครั้งเพื่อใช้ส่วนขยาย
 
-**โครงสร้างที่คาดไว้เมื่อเพิ่ม**:
+**โครงสร้างที่คาดหวังเมื่อเพิ่ม**:
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
   x-f5xc-recommended-oneof-variant:
     loadbalancer_type: "https_auto_cert"  # Example - requires verification
 ```
 
-ส่วนขยายนี้จะช่วยให้เครื่องมือปลายทางสามารถเลือกตัวเลือกที่ใช้บ่อยที่สุดไว้ล่วงหน้าเมื่อนำเสนอตัวเลือกการกำหนดค่าให้กับผู้ใช้
+ส่วนขยายนี้จะช่วยให้เครื่องมือดาวน์สตรีมสามารถเลือกตัวเลือกที่ใช้บ่อยที่สุดไว้ล่วงหน้าเมื่อนำเสนอตัวเลือกการกำหนดค่าให้กับผู้ใช้
 
 ## เมตาดาต้าข้อจำกัด
 
-ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-constraints` รวมถึงข้อจำกัดการตรวจสอบที่ค้นพบจากการวิเคราะห์ API
+ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-constraints` มีข้อจำกัดการตรวจสอบที่ค้นพบจากการวิเคราะห์ API
 
-### ข้อจำกัดของ Array
+### ข้อจำกัดอาร์เรย์
 
 | ฟิลด์ | minItems | maxItems | uniqueItems |
 |-------|----------|----------|-------------|
@@ -257,14 +257,14 @@ viewshttp_loadbalancerCreateSpecType:
 | `spec.trusted_clients` | 1 | 128 | true |
 | `spec.data_guard_rules` | 1 | 256 | true |
 
-### ข้อจำกัดของ Integer
+### ข้อจำกัดจำนวนเต็ม
 
 | ฟิลด์ | ค่าต่ำสุด | ค่าสูงสุด | ค่าเริ่มต้น | คำอธิบาย |
 |-------|---------|---------|---------|-------------|
 | `spec.https_auto_cert.port` | 1 | 65535 | 443 | หมายเลขพอร์ต HTTPS |
-| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | ระยะหมดเวลาการเชื่อมต่อที่ไม่ได้ใช้งาน (มิลลิวินาที, 1 วินาที ถึง 1 ชั่วโมง) |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | ระยะหมดเวลาการเชื่อมต่อที่ไม่มีกิจกรรม (มิลลิวินาที, 1 วินาที ถึง 1 ชั่วโมง) |
 
-### ข้อจำกัดของ Enum
+### ข้อจำกัด Enum
 
 | ฟิลด์ | ค่า | ค่าเริ่มต้น | คำอธิบาย |
 |-------|--------|---------|-------------|
@@ -272,64 +272,64 @@ viewshttp_loadbalancerCreateSpecType:
 | `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | การแปลงเฮดเดอร์ HTTP |
 | `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | เวอร์ชันโปรโตคอล HTTP |
 | `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | การรวมการเชื่อมต่อ HTTP/2 |
-| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | อัลกอริทึมการกระจายภาระ |
-| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | การดำเนินการบรรเทา DDoS Layer 7 |
-| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | ค่าขีดจำกัด RPS สำหรับการตรวจจับ DDoS |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | อัลกอริทึมโหลดบาลานซ์ |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | การดำเนินการบรรเทา DDoS เลเยอร์ 7 |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | เกณฑ์ RPS สำหรับการตรวจจับ DDoS |
 | `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | การตรวจสอบ DDoS ฝั่งไคลเอนต์ |
 | `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | ประเภทการท้าทายไคลเอนต์ |
 | `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | การประกาศ load balancer |
 
 ## การรวม Guided Workflow
 
-ไปป์ไลน์เสริมจะเพิ่มเมตาดาต้า `x-f5xc-guided-workflows` ในระดับ spec เวิร์กโฟลว์เหล่านี้ให้คำแนะนำการปรับใช้แบบทีละขั้นตอนที่ใช้โดยผู้ช่วย AI และเครื่องมือ CLI
+ไปป์ไลน์การเสริมจะเพิ่มเมตาดาต้า `x-f5xc-guided-workflows` ที่ระดับ spec เวิร์กโฟลว์เหล่านี้ให้คำแนะนำการปรับใช้แบบทีละขั้นตอนที่ใช้โดยผู้ช่วย AI และเครื่องมือ CLI
 
 ### ปรับใช้ HTTP Load Balancer
 
-เวิร์กโฟลว์ 5 ขั้นตอนสำหรับการสร้าง HTTP load balancer ที่กำหนดค่าอย่างสมบูรณ์พร้อม backend origin pool (กำหนดไว้ใน `config/guided_workflows.yaml`):
+เวิร์กโฟลว์ 5 ขั้นตอนสำหรับการสร้าง HTTP load balancer ที่กำหนดค่าเต็มรูปแบบพร้อมออริจินพูลแบ็กเอนด์ (กำหนดใน `config/guided_workflows.yaml`):
 
-| ขั้นตอน | การดำเนินการ | ทรัพยากร | ฟิลด์ที่จำเป็น | ไม่บังคับ |
+| ขั้นตอน | การดำเนินการ | รีซอร์ส | ฟิลด์ที่จำเป็น | ไม่บังคับ |
 |------|--------|----------|-----------------|----------|
-| 1 | สร้าง Origin Pool | `origin_pool` | `name`, `origin_servers`, `port` | ไม่ |
+| 1 | สร้างออริจินพูล | `origin_pool` | `name`, `origin_servers`, `port` | ไม่ |
 | 2 | กำหนดค่า Health Check | `healthcheck` | `name`, `http_health_check` | ใช่ |
 | 3 | แนบ Health Check | - | - | ใช่ |
 | 4 | สร้าง HTTP Load Balancer | `http_loadbalancer` | `name`, `domains`, `http.port` | ไม่ |
 | 5 | ตรวจสอบการปรับใช้ | - | - | ไม่ |
 
-**ข้อกำหนดเบื้องต้น**: namespace ที่ถูกต้องใน target tenant, แอปพลิเคชัน backend ที่เข้าถึงได้ผ่าน IP หรือ DNS, ใบรับรอง SSL (ไม่บังคับสำหรับ HTTPS)
+**ข้อกำหนดเบื้องต้น**: เนมสเปซที่ถูกต้องในเทแนนท์เป้าหมาย, แอปพลิเคชันแบ็กเอนด์ที่เข้าถึงได้ผ่าน IP หรือ DNS, ใบรับรอง SSL (ไม่บังคับสำหรับ HTTPS)
 
 ### ปรับใช้ HTTPS Load Balancer พร้อม TLS
 
 เวิร์กโฟลว์ 7 ขั้นตอนสำหรับการสร้าง HTTPS load balancer พร้อมการยุติ SSL/TLS:
 
-| ขั้นตอน | การดำเนินการ | ทรัพยากร | ฟิลด์ที่จำเป็น | ไม่บังคับ |
+| ขั้นตอน | การดำเนินการ | รีซอร์ส | ฟิลด์ที่จำเป็น | ไม่บังคับ |
 |------|--------|----------|-----------------|----------|
 | 1 | อัปโหลดใบรับรอง SSL | `certificate` | `name`, `certificate_chain`, `private_key` | ไม่ |
-| 2 | สร้าง Origin Pool | `origin_pool` | `name`, `origin_servers` | ไม่ |
+| 2 | สร้างออริจินพูล | `origin_pool` | `name`, `origin_servers` | ไม่ |
 | 3 | กำหนดค่า Health Check | `healthcheck` | - | ใช่ |
 | 4 | กำหนดค่านโยบาย WAF | `app_firewall` | - | ใช่ |
 | 5 | สร้าง HTTPS Load Balancer | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | ไม่ |
 | 6 | แนบนโยบาย WAF | - | - | ใช่ |
 | 7 | ตรวจสอบการปรับใช้ HTTPS | - | - | ไม่ |
 
-**ข้อกำหนดเบื้องต้น**: namespace ที่ถูกต้องใน target tenant, ใบรับรอง SSL และ private key, แอปพลิเคชัน backend ที่เข้าถึงได้
+**ข้อกำหนดเบื้องต้น**: เนมสเปซที่ถูกต้องในเทแนนท์เป้าหมาย, ใบรับรอง SSL และคีย์ส่วนตัว, แอปพลิเคชันแบ็กเอนด์ที่เข้าถึงได้
 
 ### การใช้งานเวิร์กโฟลว์
 
-เครื่องมือปลายทางใช้เวิร์กโฟลว์เหล่านี้เพื่อนำทางผู้ใช้ผ่านการปรับใช้แบบหลายขั้นตอน:
+เครื่องมือดาวน์สตรีมใช้เวิร์กโฟลว์เหล่านี้เพื่อแนะนำผู้ใช้ผ่านการปรับใช้หลายขั้นตอน:
 
-- **xcsh CLI**: นำเสนอเวิร์กโฟลว์เป็นคำสั่งแบบโต้ตอบที่มีการนำทาง (เช่น `xcsh deploy http-lb`)
-- **ส่วนขยาย VS Code**: แสดงขั้นตอนเวิร์กโฟลว์ในแผงด้านข้างพร้อมการติดตามความคืบหน้า
-- **ผู้ช่วย AI**: ทำตามขั้นตอนเวิร์กโฟลว์ตามลำดับ สร้างทรัพยากรแต่ละรายการและตรวจสอบการพึ่งพา
+- **xcsh CLI**: นำเสนอเวิร์กโฟลว์เป็นคำสั่งแนะนำแบบโต้ตอบ (เช่น `xcsh deploy http-lb`)
+- **ส่วนขยาย VS Code**: แสดงขั้นตอนเวิร์กโฟลว์ในแผงแถบด้านข้างพร้อมการติดตามความคืบหน้า
+- **ผู้ช่วย AI**: ทำตามขั้นตอนเวิร์กโฟลว์ตามลำดับ สร้างรีซอร์สแต่ละรายการและตรวจสอบความสัมพันธ์
 
 ## อ้างอิงส่วนขยาย OpenAPI
 
-ส่วนขยายของผู้จำหน่ายเหล่านี้ถูกเพิ่มเข้าไปในสคีมา OpenAPI มาตรฐานเพื่อสื่อสารเมตาดาต้าเฉพาะของ F5 XC
+ส่วนขยายของผู้จำหน่ายเหล่านี้ถูกเพิ่มเข้าไปในสกีมา OpenAPI มาตรฐานเพื่อสื่อสารเมตาดาต้าเฉพาะของ F5 XC
 
 ### x-f5xc-cli-domain
 
 **ประเภท**: `string`
 
-ระบุการจำแนกโดเมนสำหรับการจัดระเบียบ CLI และเครื่องมือ
+บ่งชี้การจำแนกโดเมนสำหรับการจัดระเบียบ CLI และเครื่องมือ
 
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
@@ -341,7 +341,7 @@ viewshttp_loadbalancerCreateSpecType:
 
 **ประเภท**: `object`
 
-ให้เมตาดาต้าที่ครอบคลุมสำหรับการสร้างการกำหนดค่าขั้นต่ำที่ใช้งานได้ รวมถึง:
+ให้เมตาดาต้าที่ครอบคลุมสำหรับการสร้างการกำหนดค่าขั้นต่ำที่ใช้งานได้ ประกอบด้วย:
 - คำอธิบาย
 - ฟิลด์ที่จำเป็นพร้อมข้อจำกัด
 - กลุ่มที่ใช้ร่วมกันไม่ได้
@@ -373,7 +373,7 @@ viewshttp_loadbalancerCreateSpecType:
 
 **ประเภท**: `boolean`
 
-เมื่อเป็น `true` แสดงว่าค่า `default` ที่แนบมาถูกบังคับใช้โดยเซิร์ฟเวอร์ F5 XC API ฟิลด์ที่มีส่วนขยายนี้สามารถละเว้นจากคำขอ API ได้อย่างปลอดภัย -- เซิร์ฟเวอร์จะกำหนดค่าเริ่มต้นโดยอัตโนมัติ
+เมื่อเป็น `true` บ่งชี้ว่าค่า `default` ที่แนบมาจะถูกบังคับใช้โดยเซิร์ฟเวอร์ API ของ F5 XC ฟิลด์ที่มีส่วนขยายนี้สามารถละเว้นจากคำขอ API ได้อย่างปลอดภัย -- เซิร์ฟเวอร์จะกำหนดค่าเริ่มต้นโดยอัตโนมัติ
 
 ```yaml
 disable_waf:
@@ -386,7 +386,7 @@ disable_waf:
 
 **ประเภท**: `array of strings`
 
-แสดงรายชื่อฟิลด์ที่ใช้ร่วมกันไม่ได้กับฟิลด์ปัจจุบัน ซึ่งแสดงถึงรูปแบบ OneOf
+แสดงรายการชื่อฟิลด์ที่ใช้ร่วมกันไม่ได้กับฟิลด์ปัจจุบัน บ่งชี้รูปแบบ OneOf
 
 ```yaml
 advertise_custom:
@@ -401,7 +401,7 @@ advertise_custom:
 
 **ประเภท**: `object`
 
-ให้ข้อจำกัดการตรวจสอบรวมถึงขนาดจำกัดของ array ช่วงของจำนวนเต็ม ข้อกำหนดความไม่ซ้ำกัน และเมตาดาต้าการค้นพบ
+ให้ข้อจำกัดการตรวจสอบรวมถึงขีดจำกัดขนาดอาร์เรย์ ช่วงจำนวนเต็ม ข้อกำหนดความเป็นเอกลักษณ์ และเมตาดาต้าการค้นพบ
 
 ```yaml
 routes:
@@ -433,9 +433,9 @@ port:
 
 **ประเภท**: `string`
 
-ให้คำอธิบายในความยาวที่แตกต่างกันสำหรับกรณีการใช้งานที่แตกต่างกัน:
+ให้ความยาวคำอธิบายทางเลือกสำหรับกรณีการใช้งานที่แตกต่างกัน:
 - `x-f5xc-description-short`: สูงสุด 60 ตัวอักษร (คอลัมน์ CLI, ป้าย)
-- `x-f5xc-description-medium`: สูงสุด 150 ตัวอักษร (คำแนะนำเครื่องมือ, สรุป)
+- `x-f5xc-description-medium`: สูงสุด 150 ตัวอักษร (ทูลทิป, สรุป)
 
 ```yaml
 domains:
@@ -447,9 +447,9 @@ domains:
 
 ### x-f5xc-example
 
-**ประเภท**: `any` (ตรงกับประเภทของฟิลด์)
+**ประเภท**: `any` (ตรงกับประเภทฟิลด์)
 
-ให้ตัวอย่างฟิลด์ที่เป็นรูปธรรมสำหรับเอกสารและเครื่องมือ
+ให้ตัวอย่างฟิลด์ที่เป็นรูปธรรมสำหรับเอกสารประกอบและเครื่องมือ
 
 ```yaml
 name:
@@ -465,7 +465,7 @@ domains:
 
 **ประเภท**: `array of strings`
 
-ระบุข้อกำหนดเฉพาะบริบทโดยใช้แฟล็ก: `minimum_config`, `create`, `update`, `read`
+บ่งชี้ข้อกำหนดเฉพาะบริบทโดยใช้แฟล็ก: `minimum_config`, `create`, `update`, `read`
 
 ```yaml
 metadata.name:
@@ -479,12 +479,12 @@ metadata.uid:
 
 ## การเข้าถึงข้อมูล
 
-### ข้อมูลจำเพาะ OpenAPI
+### ข้อกำหนด OpenAPI
 
 | ไฟล์ | เนื้อหา |
 |------|---------|
-| `docs/specifications/api/virtual.json` | สคีมา http_loadbalancer ทั้งหมดพร้อมการเสริม |
-| `docs/specifications/api/openapi.json` | ข้อมูลจำเพาะที่รวมแล้วพร้อมสคีมาทั้งหมด |
+| `docs/specifications/api/virtual.json` | สกีมา http_loadbalancer ทั้งหมดพร้อมการเสริม |
+| `docs/specifications/api/openapi.json` | ข้อกำหนดที่รวมแล้วพร้อมสกีมาทั้งหมด |
 
 ### ไฟล์การกำหนดค่า
 
@@ -492,25 +492,25 @@ metadata.uid:
 |------|---------|
 | `config/minimum_configs.yaml` | แหล่งที่มาของเมตาดาต้าการกำหนดค่าขั้นต่ำ |
 | `config/constraint_patterns.yaml` | คำจำกัดความรูปแบบข้อจำกัด |
-| `config/guided_workflows.yaml` | คำจำกัดความขั้นตอนเวิร์กโฟลว์ที่มีการนำทาง |
+| `config/guided_workflows.yaml` | คำจำกัดความขั้นตอนเวิร์กโฟลว์แนะนำ |
 | `config/domain_descriptions.yaml` | เมตาดาต้าคำอธิบายระดับโดเมน |
 
-### สคีมาที่ได้รับการเสริม
+### สกีมาที่ได้รับการเสริม
 
-- `viewshttp_loadbalancerCreateSpecType` - สคีมาการดำเนินการสร้าง
-- `viewshttp_loadbalancerReplaceSpecType` - สคีมาการดำเนินการอัปเดต
-- `viewshttp_loadbalancerGetSpecType` - สคีมาการดำเนินการอ่าน
+- `viewshttp_loadbalancerCreateSpecType` - สกีมาการดำเนินการสร้าง
+- `viewshttp_loadbalancerReplaceSpecType` - สกีมาการดำเนินการอัปเดต
+- `viewshttp_loadbalancerGetSpecType` - สกีมาการดำเนินการอ่าน
 
-## เอกสารที่เกี่ยวข้อง
+## เอกสารประกอบที่เกี่ยวข้อง
 
-- [Development Guide - OpenAPI Extensions](../development/#openapi-extensions) - คำจำกัดความและการใช้งานส่วนขยาย
-- [Healthcheck Enhancements](./healthcheck-enhancements/) - การเสริมสคีมา Healthcheck (รวม `x-f5xc-recommended-oneof-variant`)
-- [Origin Pool Enhancements](./originpool-enhancements/) - การเสริมสคีมา Origin pool
-- [Constraint Metadata Guide](../constraint-metadata/) - เอกสารการตรวจสอบข้อจำกัดโดยละเอียด
+- [คู่มือการพัฒนา - ส่วนขยาย OpenAPI](../development/#openapi-extensions) - คำจำกัดความและการใช้งานส่วนขยาย
+- [การปรับปรุง Healthcheck](./healthcheck-enhancements/) - การเสริมสกีมา Healthcheck (รวมถึง `x-f5xc-recommended-oneof-variant`)
+- [การปรับปรุง Origin Pool](./originpool-enhancements/) - การเสริมสกีมา Origin Pool
+- [คู่มือเมตาดาต้าข้อจำกัด](../constraint-metadata/) - เอกสารประกอบการตรวจสอบข้อจำกัดโดยละเอียด
 
 ## บันทึกการเปลี่ยนแปลง
 
 | เวอร์ชัน | วันที่ | การเปลี่ยนแปลง |
 |---------|------|---------|
 | 2.0.46 | 2026-04-18 | เพิ่มค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด การรวม guided workflow และขยายส่วนการกำหนดค่าขั้นต่ำ |
-| 2.0.45 | 2026-01-20 | เอกสารการเสริม http_loadbalancer เริ่มต้น |
+| 2.0.45 | 2026-01-20 | เอกสารประกอบการเสริม http_loadbalancer เริ่มต้น |

@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-本文件描述由 api-specs-enriched 專案發佈的驗證規格的結構與內容。
+本文件描述由 api-specs-enriched 專案發布的驗證規格結構與內容。
 
 ## 概述
 
-驗證規格將 API 驗證約束、預設值和配置中繼資料整合至單一 JSON 檔案中。此規格從增強的 OpenAPI 規格產生，並隨其一同發佈。
+驗證規格將 API 驗證約束、預設值和組態中繼資料整合為單一 JSON 檔案。此規格從擴充的 OpenAPI 規格生成，並與其一同發布。
 
-**發佈位置**：`docs/specifications/api/validation.json`
+**發布位置**：`docs/specifications/api/validation.json`
 
 ## 規格結構
 
@@ -36,11 +36,11 @@ i18n:
 }
 ```
 
-## 區段
+## 章節
 
 ### required_fields
 
-指定每個資源各操作類型的必要欄位。
+指定每種資源的各操作類型所需的欄位。
 
 ```json
 {
@@ -98,7 +98,7 @@ i18n:
 
 ### patterns
 
-基於欄位名稱模式的驗證規則，附帶信賴分數。
+基於欄位名稱模式的驗證規則，附帶信心分數。
 
 ```json
 {
@@ -204,9 +204,9 @@ i18n:
 
 | 類別 | 說明 | 來源 |
 |----------|-------------|--------|
-| `server_applied` | 欄位被省略時 API 套用的值 | 即時 API 測試 |
+| `server_applied` | 當欄位被省略時 API 套用的值 | 即時 API 測試 |
 | `recommended` | F5 XC 網頁主控台預先填入的值 | UI 分析 |
-| `advanced_options` | advanced_options 物件內的巢狀預設值 | API 探索 |
+| `advanced_options` | advanced_options 物件中的巢狀預設值 | API 探索 |
 | `oneof_choices` | 預設的 OneOf 變體選擇 | API 行為 |
 | `oneof_recommended` | 建議的 OneOf 變體 | 主控台預設值 |
 | `nested_recommended` | 巢狀結構描述的建議值 | UI 分析 |
@@ -214,7 +214,7 @@ i18n:
 
 ### conditional_requirements
 
-互斥欄位和條件相依性。
+互斥欄位與條件相依性。
 
 ```json
 {
@@ -236,7 +236,7 @@ i18n:
 
 ### minimum_configurations
 
-最小可行配置及可運作的範例。
+最小可行組態及可用範例。
 
 ```json
 {
@@ -259,21 +259,21 @@ i18n:
 
 ## OpenAPI 擴充對應
 
-增強的 OpenAPI 規格使用以下擴充嵌入驗證中繼資料：
+擴充的 OpenAPI 規格使用以下擴充嵌入驗證中繼資料：
 
 | 擴充 | 用途 | 位置 |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | 上下文特定的必要欄位 | Schema 屬性 |
+| `x-f5xc-required-for` | 上下文相關的必填欄位 | Schema 屬性 |
 | `x-f5xc-server-default` | 標記伺服器套用的預設值 | Schema 屬性 |
 | `x-f5xc-recommended-value` | 建議的預設值 | Schema 屬性 |
 | `x-f5xc-recommended-oneof-variant` | 建議的 OneOf 變體 | Schema 定義 |
 | `x-f5xc-conditions` | 條件需求 | Schema 屬性 |
-| `x-f5xc-minimum-configuration` | 最小配置範例 | Schema 定義 |
+| `x-f5xc-minimum-configuration` | 最小組態範例 | Schema 定義 |
 | `x-f5xc-validation` | 探索衍生的約束 | Schema 屬性 |
 
 ## 資料存取
 
-### 發佈 URL
+### 發布 URL
 
 | 來源 | URL |
 |--------|-----|
@@ -284,14 +284,14 @@ i18n:
 
 執行管線後：`docs/specifications/api/validation.json`
 
-## 版本管理
+## 版本控制
 
 驗證規格在 `version` 欄位中遵循語意化版本控制：
 
-| 變更類型 | 版本遞增 | 範例 |
+| 變更類型 | 版本升級 | 範例 |
 |-------------|--------------|---------|
-| 破壞性結構變更 | 主版本 | 欄位重新命名、移除區段 |
-| 新的驗證規則或資源 | 次版本 | 新的資源預設值 |
+| 破壞性結構變更 | 主版本 | 欄位重新命名、移除章節 |
+| 新增驗證規則或資源 | 次版本 | 新增資源預設值 |
 | 錯誤修正或說明更新 | 修補版本 | 錯字修正 |
 
 ## 調和優先順序
@@ -304,15 +304,15 @@ i18n:
 
 ## 相關文件
 
-- [Healthcheck 增強](./Enhancements/healthcheck-enhancements/) - Healthcheck schema 增強
-- [Origin Pool 增強](./Enhancements/originpool-enhancements/) - Origin pool schema 增強
-- [CLAUDE.md](../../CLAUDE.md) - AI 助理指示
+- [健康檢查增強](./Enhancements/healthcheck-enhancements/) - 健康檢查結構描述擴充
+- [來源池增強](./Enhancements/originpool-enhancements/) - 來源池結構描述擴充
+- [CLAUDE.md](../../CLAUDE.md) - AI 助理說明
 - [DEVELOPMENT.md](./development/) - 開發者指南
 
 ## 變更日誌
 
 | 版本 | 日期 | 變更內容 |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | 重寫為純 API 參考文件；新增 oneof_recommended 和 nested_recommended 類別 |
-| 2.1.0 | 2026-01-18 | 統一的預設值結構，取代分散的區段 |
+| 2.1.2 | 2026-01-18 | 重寫為純 API 參考；新增 oneof_recommended 和 nested_recommended 類別 |
+| 2.1.0 | 2026-01-18 | 統一預設值結構，取代分散的章節 |
 | 2.0.0 | 2026-01-15 | 初始驗證規格 |

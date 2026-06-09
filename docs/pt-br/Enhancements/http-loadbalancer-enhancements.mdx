@@ -1,6 +1,6 @@
 ---
 title: Aprimoramentos do HTTP LoadBalancer
-description: Metadados de enriquecimento para esquemas de HTTP load balancer
+description: Metadados de enriquecimento para esquemas do HTTP load balancer
 sidebar:
   order: 2
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-Metadados de enriquecimento para esquemas de HTTP load balancer. Consulte [Extensões OpenAPI](../development/#openapi-extensions) para definições de extensões.
+Metadados de enriquecimento para esquemas do HTTP load balancer. Consulte [Extensões OpenAPI](../development/#openapi-extensions) para definições das extensões.
 
 ## Esquemas Enriquecidos
 
 ### Padrão
 
-Todos os esquemas que correspondem a `viewshttp_loadbalancer.*SpecType` recebem enriquecimentos:
+Todos os esquemas correspondentes a `viewshttp_loadbalancer.*SpecType` recebem enriquecimentos:
 
 - `viewshttp_loadbalancerCreateSpecType`
 - `viewshttp_loadbalancerReplaceSpecType`
@@ -22,14 +22,14 @@ Todos os esquemas que correspondem a `viewshttp_loadbalancer.*SpecType` recebem 
 
 ## Metadados de Configuração Mínima
 
-A extensão `x-f5xc-minimum-configuration` fornece metadados CLI abrangentes para criar HTTP load balancers minimamente viáveis.
+A extensão `x-f5xc-minimum-configuration` fornece metadados CLI abrangentes para criação de HTTP load balancers minimamente viáveis.
 
 ### Campos Obrigatórios
 
 | Campo | Restrição | Descrição |
 |-------|-----------|-----------|
-| `metadata.name` | Formato de label DNS: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Nome do recurso |
-| `metadata.namespace` | Formato de label DNS | Namespace |
+| `metadata.name` | Formato de rótulo DNS: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Nome do recurso |
+| `metadata.namespace` | Formato de rótulo DNS | Namespace |
 | `spec.domains` | Array, min_items: 1 | Domínios a serem servidos |
 
 ### Tipo de Load Balancer (OneOf Obrigatório)
@@ -38,16 +38,16 @@ Um dos seguintes tipos de load balancer deve ser especificado:
 
 | Variante | Descrição |
 |----------|-----------|
-| `spec.http` | Somente HTTP |
+| `spec.http` | Apenas HTTP |
 | `spec.https` | HTTPS com certificado manual |
 | `spec.https_auto_cert` | HTTPS com certificado automático |
 | `spec.http_https` | Tanto HTTP quanto HTTPS |
 
-**Nota**: O grupo OneOf do tipo de load balancer é referenciado como:
+**Nota**: O grupo OneOf do tipo de load balancer é referido como:
 - `lb_type` em arquivos de configuração (forma abreviada em `config/minimum_configs.yaml`)
-- `loadbalancer_type` em extensões nativas da especificação OpenAPI (nome nativo do campo)
+- `loadbalancer_type` nas extensões nativas da especificação OpenAPI (nome nativo do campo)
 
-**Referência do Schema da API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+**Referência do Esquema da API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
 
 ### Configuração Mínima Viável
 
@@ -69,16 +69,16 @@ Um dos seguintes tipos de load balancer deve ser especificado:
 }
 ```
 
-## Valores Padrão Aplicados pelo Servidor
+## Padrões Aplicados pelo Servidor
 
-Campos marcados com `x-f5xc-server-default: true` têm seu valor `default` aplicado pelo servidor da API F5 XC quando omitidos das requisições. O HTTP load balancer possui um grande número de valores padrão aplicados pelo servidor porque a maioria dos recursos de segurança e opções de protocolo são configurados por padrão em um estado desabilitado ou seguro.
+Campos marcados com `x-f5xc-server-default: true` têm seu valor `default` aplicado pelo servidor da API F5 XC quando omitidos das requisições. O HTTP load balancer possui um grande número de padrões aplicados pelo servidor porque a maioria dos recursos de segurança e opções de protocolo tem como padrão um estado desabilitado ou seguro.
 
-### Valores Padrão do HTTPS Auto-Cert
+### Padrões do HTTPS Auto-Cert
 
-Quando `https_auto_cert` é especificado, o servidor aplica estes valores padrão para campos omitidos:
+Quando `https_auto_cert` é especificado, o servidor aplica estes padrões para campos omitidos:
 
 | Campo | Valor Padrão | Tipo | Descrição |
-|-------|--------------|------|-----------|
+|-------|-------------|------|-----------|
 | `port` | `443` | integer | Porta de escuta HTTPS |
 | `http_redirect` | `false` | boolean | Redirecionamento de HTTP para HTTPS |
 | `add_hsts` | `false` | boolean | Cabeçalho HTTP Strict Transport Security |
@@ -88,16 +88,16 @@ Quando `https_auto_cert` é especificado, o servidor aplica estes valores padrã
 | `enable_path_normalize` | `{}` | object | Normalização de caminho habilitada |
 | `default_loadbalancer` | `{}` | object | Configurações padrão do load balancer |
 | `header_transformation_type.legacy_header_transformation` | `{}` | object | Transformação de cabeçalho legada |
-| `connection_idle_timeout` | `120000` | integer | Tempo limite de inatividade da conexão em milissegundos (2 minutos) |
+| `connection_idle_timeout` | `120000` | integer | Tempo limite de conexão ociosa em milissegundos (2 minutos) |
 | `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 e HTTP/2 habilitados |
 | `coalescing_options.default_coalescing` | `{}` | object | Coalescência de conexão HTTP/2 padrão |
 
-### Valores Padrão de Recursos de Segurança
+### Padrões de Recursos de Segurança
 
 Todos os recursos de segurança são desabilitados por padrão quando omitidos:
 
 | Campo | Valor Padrão | Descrição |
-|-------|--------------|-----------|
+|-------|-------------|-----------|
 | `disable_waf` | `{}` | Web Application Firewall desabilitado |
 | `disable_bot_defense` | `{}` | Defesa contra bots desabilitada |
 | `disable_rate_limit` | `{}` | Limitação de taxa desabilitada |
@@ -110,23 +110,23 @@ Todos os recursos de segurança são desabilitados por padrão quando omitidos:
 | `disable_threat_mesh` | `{}` | Threat mesh desabilitado |
 | `disable_malicious_user_detection` | `{}` | Detecção de usuários maliciosos desabilitada |
 
-### Valores Padrão de DDoS e Controle de Acesso
+### Padrões de DDoS e Controle de Acesso
 
 | Campo | Valor Padrão | Descrição |
-|-------|--------------|-----------|
+|-------|-------------|-----------|
 | `l7_ddos_protection.mitigation_block` | `{}` | Bloquear tráfego DDoS (ação de mitigação padrão) |
 | `l7_ddos_protection.default_rps_threshold` | `{}` | Usar limite de RPS padrão |
 | `l7_ddos_protection.clientside_action_none` | `{}` | Sem validação DDoS do lado do cliente |
-| `l7_ddos_protection.ddos_policy_none` | `{}` | Sem referência a política DDoS |
-| `no_challenge` | `{}` | Sem desafio ao cliente |
-| `user_id_client_ip` | `{}` | Identificar usuários por IP do cliente |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | Sem referência de política DDoS |
+| `no_challenge` | `{}` | Sem desafio para o cliente |
+| `user_id_client_ip` | `{}` | Identificar usuários pelo IP do cliente |
 | `disable_trust_client_ip_headers` | `{}` | Não confiar nos cabeçalhos de IP do cliente |
 
-### Outros Valores Padrão Aplicados pelo Servidor
+### Outros Padrões Aplicados pelo Servidor
 
 | Campo | Valor Padrão | Tipo | Descrição |
-|-------|--------------|------|-----------|
-| `advertise_on_public_default_vip` | `{}` | object | Divulgar no VIP público padrão |
+|-------|-------------|------|-----------|
+| `advertise_on_public_default_vip` | `{}` | object | Anunciar no VIP público padrão |
 | `round_robin` | `{}` | object | Algoritmo de balanceamento de carga round-robin |
 | `add_location` | `true` | boolean | Adicionar cabeçalho de localização às respostas |
 | `system_default_timeouts` | `{}` | object | Usar tempos limite padrão do sistema |
@@ -140,9 +140,9 @@ Campos marcados com `x-f5xc-conflicts-with` indicam padrões OneOf. Apenas um ca
 ### Grupos de Configuração Principal
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | Tipo de protocolo do load balancer |
-| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | Como divulgar o load balancer |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | Como anunciar o load balancer |
 | `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | Algoritmo de distribuição de tráfego |
 
 ### Grupos de Configuração HTTPS (10 grupos)
@@ -150,14 +150,14 @@ Campos marcados com `x-f5xc-conflicts-with` indicam padrões OneOf. Apenas um ca
 #### Configuração TLS
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | Nível de segurança TLS |
 | `mtls` | `no_mtls`, `use_mtls` | TLS mútuo habilitado ou desabilitado |
 
 #### Protocolo e Cabeçalhos
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | Versões do protocolo HTTP |
 | `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | Tipo de transformação de cabeçalho HTTP |
 | `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | Tratamento do cabeçalho de nome do servidor |
@@ -165,7 +165,7 @@ Campos marcados com `x-f5xc-conflicts-with` indicam padrões OneOf. Apenas um ca
 #### Gerenciamento de Conexão
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | Normalização de caminho habilitada ou desabilitada |
 | `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | Load balancer padrão ou não padrão |
 | `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | Opções de coalescência de conexão HTTP/2 |
@@ -173,7 +173,7 @@ Campos marcados com `x-f5xc-conflicts-with` indicam padrões OneOf. Apenas um ca
 ### Grupos de Recursos de Segurança (11 grupos)
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `waf` | `disable_waf`, `enable_waf` | Web Application Firewall |
 | `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | Detecção e mitigação de bots |
 | `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | Limitação de taxa |
@@ -189,26 +189,26 @@ Campos marcados com `x-f5xc-conflicts-with` indicam padrões OneOf. Apenas um ca
 ### Grupos de Proteção DDoS (4 grupos)
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | Ação de mitigação DDoS |
 | `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | Limite de requisições por segundo |
 | `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | Ação de validação DDoS do lado do cliente |
-| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | Referência a política DDoS ou nenhuma |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | Referência de política DDoS ou nenhuma |
 
 ### Outros Grupos de Configurações (6 grupos)
 
 | Nome do Grupo | Campos | Descrição |
-|---------------|--------|-----------|
+|--------------|--------|-----------|
 | `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | Tipo de desafio ao cliente para detecção de bots |
 | `user_identification` | `user_id_client_ip`, `user_identification` | Método de identificação do usuário |
 | `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | Confiar ou não nos cabeçalhos de IP do cliente |
 | `timeouts` | `system_default_timeouts`, `custom_timeouts` | Usar tempos limite padrão do sistema ou personalizados |
 | `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | Políticas de serviço do namespace ou lista ativa |
-| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | Usar política padrão ou personalizada de dados sensíveis |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | Usar política de dados sensíveis padrão ou personalizada |
 
 ## Recomendações de Variantes OneOf (Extensão Futura)
 
-**Status**: Ainda não aplicado aos esquemas http_loadbalancer.
+**Status**: Ainda não aplicada aos esquemas do http_loadbalancer.
 
 Diferentemente do healthcheck, que inclui `x-f5xc-recommended-oneof-variant` para indicar a escolha mais comum para grupos OneOf, o http_loadbalancer atualmente não possui esta extensão.
 
@@ -241,9 +241,9 @@ viewshttp_loadbalancerCreateSpecType:
     loadbalancer_type: "https_auto_cert"  # Example - requires verification
 ```
 
-Esta extensão permitiria que ferramentas downstream pré-selecionassem a variante mais comumente usada ao apresentar opções de configuração aos usuários.
+Esta extensão permitiria que ferramentas downstream pré-selecionassem a variante mais comumente utilizada ao apresentar opções de configuração aos usuários.
 
-## Metadados de Restrição
+## Metadados de Restrições
 
 Campos marcados com `x-f5xc-constraints` incluem restrições de validação descobertas a partir da análise da API.
 
@@ -257,12 +257,12 @@ Campos marcados com `x-f5xc-constraints` incluem restrições de validação des
 | `spec.trusted_clients` | 1 | 128 | true |
 | `spec.data_guard_rules` | 1 | 256 | true |
 
-### Restrições de Inteiro
+### Restrições de Inteiros
 
 | Campo | Mínimo | Máximo | Padrão | Descrição |
 |-------|--------|--------|--------|-----------|
 | `spec.https_auto_cert.port` | 1 | 65535 | 443 | Número da porta HTTPS |
-| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | Tempo limite de inatividade da conexão (milissegundos, 1s a 1h) |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | Tempo limite de conexão ociosa (milissegundos, 1s a 1h) |
 
 ### Restrições de Enum
 
@@ -273,15 +273,15 @@ Campos marcados com `x-f5xc-constraints` incluem restrições de validação des
 | `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | Versões do protocolo HTTP |
 | `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | Coalescência de conexão HTTP/2 |
 | `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | Algoritmo de balanceamento de carga |
-| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | Ação de mitigação DDoS de camada 7 |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | Ação de mitigação DDoS da camada 7 |
 | `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | Limite de RPS para detecção de DDoS |
 | `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | Validação DDoS do lado do cliente |
 | `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | Tipo de desafio ao cliente |
-| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Divulgação do load balancer |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Anúncio do load balancer |
 
-## Integração de Fluxo de Trabalho Guiado
+## Integração com Fluxos de Trabalho Guiados
 
-O pipeline de enriquecimento adiciona metadados `x-f5xc-guided-workflows` no nível da especificação. Esses fluxos de trabalho fornecem orientação de implantação passo a passo consumida por assistentes de IA e ferramentas CLI.
+O pipeline de enriquecimento adiciona metadados `x-f5xc-guided-workflows` no nível da especificação. Esses fluxos de trabalho fornecem orientação passo a passo para implantação, consumidos por assistentes de IA e ferramentas CLI.
 
 ### Implantar HTTP Load Balancer
 
@@ -291,7 +291,7 @@ Um fluxo de trabalho de 5 etapas para criar um HTTP load balancer totalmente con
 |-------|------|---------|---------------------|----------|
 | 1 | Criar Origin Pool | `origin_pool` | `name`, `origin_servers`, `port` | Não |
 | 2 | Configurar Health Check | `healthcheck` | `name`, `http_health_check` | Sim |
-| 3 | Anexar Health Check | - | - | Sim |
+| 3 | Vincular Health Check | - | - | Sim |
 | 4 | Criar HTTP Load Balancer | `http_loadbalancer` | `name`, `domains`, `http.port` | Não |
 | 5 | Verificar Implantação | - | - | Não |
 
@@ -303,19 +303,19 @@ Um fluxo de trabalho de 7 etapas para criar um HTTPS load balancer com terminaç
 
 | Etapa | Ação | Recurso | Campos Obrigatórios | Opcional |
 |-------|------|---------|---------------------|----------|
-| 1 | Enviar Certificado SSL | `certificate` | `name`, `certificate_chain`, `private_key` | Não |
+| 1 | Fazer Upload do Certificado SSL | `certificate` | `name`, `certificate_chain`, `private_key` | Não |
 | 2 | Criar Origin Pool | `origin_pool` | `name`, `origin_servers` | Não |
 | 3 | Configurar Health Check | `healthcheck` | - | Sim |
 | 4 | Configurar Política WAF | `app_firewall` | - | Sim |
 | 5 | Criar HTTPS Load Balancer | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | Não |
-| 6 | Anexar Política WAF | - | - | Sim |
+| 6 | Vincular Política WAF | - | - | Sim |
 | 7 | Verificar Implantação HTTPS | - | - | Não |
 
 **Pré-requisitos**: Namespace válido no tenant de destino, certificado SSL e chave privada, aplicação backend acessível.
 
 ### Consumo de Fluxos de Trabalho
 
-Ferramentas downstream utilizam esses fluxos de trabalho para guiar os usuários através de implantações em múltiplas etapas:
+Ferramentas downstream utilizam esses fluxos de trabalho para guiar usuários em implantações com múltiplas etapas:
 
 - **xcsh CLI**: Apresenta fluxos de trabalho como comandos guiados interativos (por exemplo, `xcsh deploy http-lb`)
 - **Extensão VS Code**: Exibe etapas do fluxo de trabalho em um painel lateral com acompanhamento de progresso
@@ -323,7 +323,7 @@ Ferramentas downstream utilizam esses fluxos de trabalho para guiar os usuários
 
 ## Referência de Extensões OpenAPI
 
-Estas extensões de fornecedor são adicionadas ao schema OpenAPI padrão para transmitir metadados específicos do F5 XC.
+Estas extensões de fornecedor são adicionadas ao esquema OpenAPI padrão para transmitir metadados específicos do F5 XC.
 
 ### x-f5xc-cli-domain
 
@@ -341,12 +341,12 @@ viewshttp_loadbalancerCreateSpecType:
 
 **Tipo**: `object`
 
-Fornece metadados abrangentes para criar configurações minimamente viáveis. Inclui:
+Fornece metadados abrangentes para criação de configurações mínimas viáveis. Inclui:
 - Descrição
 - Campos obrigatórios com restrições
 - Grupos mutuamente exclusivos
 - Exemplos de configuração (YAML, JSON)
-- Exemplos de comando curl
+- Exemplos de comandos curl
 
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
@@ -373,7 +373,7 @@ viewshttp_loadbalancerCreateSpecType:
 
 **Tipo**: `boolean`
 
-Quando `true`, indica que o valor `default` acompanhante é aplicado pelo servidor da API F5 XC. Campos com esta extensão podem ser omitidos com segurança das requisições da API -- o servidor aplica o valor padrão automaticamente.
+Quando `true`, indica que o valor `default` acompanhante é aplicado pelo servidor da API F5 XC. Campos com esta extensão podem ser omitidos com segurança das requisições à API -- o servidor aplica o padrão automaticamente.
 
 ```yaml
 disable_waf:
@@ -434,7 +434,7 @@ port:
 **Tipo**: `string`
 
 Fornece comprimentos alternativos de descrição para diferentes casos de uso:
-- `x-f5xc-description-short`: máximo de 60 caracteres (colunas CLI, badges)
+- `x-f5xc-description-short`: máximo de 60 caracteres (colunas de CLI, badges)
 - `x-f5xc-description-medium`: máximo de 150 caracteres (tooltips, resumos)
 
 ```yaml
@@ -483,34 +483,34 @@ metadata.uid:
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| `docs/specifications/api/virtual.json` | Todos os esquemas http_loadbalancer com enriquecimentos |
+| `docs/specifications/api/virtual.json` | Todos os esquemas do http_loadbalancer com enriquecimentos |
 | `docs/specifications/api/openapi.json` | Especificação mesclada com todos os esquemas |
 
 ### Arquivos de Configuração
 
 | Arquivo | Finalidade |
-|---------|------------|
-| `config/minimum_configs.yaml` | Fonte de metadados de configuração mínima |
+|---------|-----------|
+| `config/minimum_configs.yaml` | Fonte dos metadados de configuração mínima |
 | `config/constraint_patterns.yaml` | Definições de padrões de restrição |
-| `config/guided_workflows.yaml` | Definições de etapas de fluxos de trabalho guiados |
-| `config/domain_descriptions.yaml` | Metadados de descrição em nível de domínio |
+| `config/guided_workflows.yaml` | Definições de etapas dos fluxos de trabalho guiados |
+| `config/domain_descriptions.yaml` | Metadados de descrição no nível do domínio |
 
 ### Esquemas Enriquecidos
 
-- `viewshttp_loadbalancerCreateSpecType` - Schema da operação de criação
-- `viewshttp_loadbalancerReplaceSpecType` - Schema da operação de atualização
-- `viewshttp_loadbalancerGetSpecType` - Schema da operação de leitura
+- `viewshttp_loadbalancerCreateSpecType` - Esquema da operação de criação
+- `viewshttp_loadbalancerReplaceSpecType` - Esquema da operação de atualização
+- `viewshttp_loadbalancerGetSpecType` - Esquema da operação de leitura
 
 ## Documentação Relacionada
 
-- [Guia de Desenvolvimento - Extensões OpenAPI](../development/#openapi-extensions) - Definições e uso de extensões
-- [Aprimoramentos de Healthcheck](./healthcheck-enhancements/) - Enriquecimentos de esquema de healthcheck (inclui `x-f5xc-recommended-oneof-variant`)
-- [Aprimoramentos de Origin Pool](./originpool-enhancements/) - Enriquecimentos de esquema de origin pool
-- [Guia de Metadados de Restrição](../constraint-metadata/) - Documentação detalhada de validação de restrições
+- [Guia de Desenvolvimento - Extensões OpenAPI](../development/#openapi-extensions) - Definições e uso das extensões
+- [Aprimoramentos do Healthcheck](./healthcheck-enhancements/) - Enriquecimentos do esquema de healthcheck (inclui `x-f5xc-recommended-oneof-variant`)
+- [Aprimoramentos do Origin Pool](./originpool-enhancements/) - Enriquecimentos do esquema de origin pool
+- [Guia de Metadados de Restrições](../constraint-metadata/) - Documentação detalhada de validação de restrições
 
 ## Registro de Alterações
 
 | Versão | Data | Alterações |
 |--------|------|------------|
-| 2.0.46 | 2026-04-18 | Adicionados valores padrão aplicados pelo servidor, integração de fluxo de trabalho guiado e seção expandida de configuração mínima |
-| 2.0.45 | 2026-01-20 | Documentação inicial de enriquecimentos do http_loadbalancer |
+| 2.0.46 | 2026-04-18 | Adicionados padrões aplicados pelo servidor, integração com fluxos de trabalho guiados e seção expandida de configuração mínima |
+| 2.0.45 | 2026-01-20 | Documentação inicial dos enriquecimentos do http_loadbalancer |

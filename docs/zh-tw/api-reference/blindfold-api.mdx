@@ -1,6 +1,6 @@
 ---
 title: "\U0001F50F Blindfold API"
-description: 機密加密、金鑰原則與稽核軌跡。
+description: 密鑰加密、金鑰策略與稽核軌跡。
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-具有基於原則的存取控制之加密金鑰管理。稽核記錄與安全資料保護。
+具備基於策略的存取控制的加密金鑰管理。稽核日誌記錄與安全資料保護。
 
 - **類別**：安全性
 - **複雜度**：中等
@@ -18,52 +18,52 @@ i18n:
 
 ## 使用案例
 
-- 配置加密的機密原則
+- 配置密鑰加密策略
 - 管理敏感資料加密
-- 強制執行資料保護原則
+- 強制執行資料保護策略
 
 ## 主要資源
 
-- **blindfold_secret**：使用 Blindfold 加密的已加密機密
-- **secret_policy**：機密管理原則配置
-- **policy_document**：用於存取控制定義的原則文件
+- **blindfold_secret**：使用 Blindfold 加密的已加密密鑰
+- **secret_policy**：密鑰管理策略配置
+- **policy_document**：存取控制定義的策略文件
 
 ## 端點
 
 | 方法 | 路徑 | 描述 |
 |--------|------|-------------|
 | GET | `/api/secret_management/get_public_key` | 公開金鑰。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | 原則文件。 |
-| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | 解密機密。 |
-| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | 處理原則資訊。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | VoltShare 存取計數查詢。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | 稽核記錄查詢。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | 稽核記錄彙總查詢。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | 稽核記錄捲動查詢。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | 稽核記錄捲動查詢。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | 建立機密管理存取。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | 取代機密管理存取。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | 列出機密管理存取。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | 取得機密管理存取。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | 刪除機密管理存取。 |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | 建立機密原則。 |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | 取代機密原則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | 列出機密原則。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | 依指定原則名稱復原機密原則。 |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | 依指定原則名稱刪除機密原則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | 列出機密原則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | 取得機密原則。 |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | 刪除機密原則。 |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | 建立機密原則規則。 |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | 取代機密原則規則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | 列出機密原則規則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | 取得機密原則規則。 |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | 刪除機密原則規則。 |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | 建立 VoltShare 管理員原則。 |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | 取代 VoltShare 管理員原則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | 列出 VoltShare 管理員原則。 |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | 取得 VoltShare 管理員原則。 |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | 刪除 VoltShare 管理員原則。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | 策略文件。 |
+| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | 解密密鑰。 |
+| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | 處理策略資訊。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | VoltShare 存取次數查詢。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | 稽核日誌查詢。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | 稽核日誌聚合查詢。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | 稽核日誌捲動查詢。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | 稽核日誌捲動查詢。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | 建立密鑰管理存取。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | 替換密鑰管理存取。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | 列出密鑰管理存取。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | 取得密鑰管理存取。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | 刪除密鑰管理存取。 |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | 建立密鑰策略。 |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | 替換密鑰策略。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | 列出密鑰策略。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | 依指定策略名稱復原密鑰策略。 |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | 依指定策略名稱刪除密鑰策略。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | 列出密鑰策略。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | 取得密鑰策略。 |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | 刪除密鑰策略。 |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | 建立密鑰策略規則。 |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | 替換密鑰策略規則。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | 列出密鑰策略規則。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | 取得密鑰策略規則。 |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | 刪除密鑰策略規則。 |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | 建立 VoltShare 管理員策略。 |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | 替換 VoltShare 管理員策略。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | 列出 VoltShare 管理員策略。 |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | 取得 VoltShare 管理員策略。 |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | 刪除 VoltShare 管理員策略。 |
 
 ## 連結
 

@@ -1,6 +1,6 @@
 ---
 title: تحسينات موازن حمل HTTP
-description: بيانات تعريفية للإثراء لمخططات موازن حمل HTTP
+description: بيانات وصفية للإثراء لمخططات موازن حمل HTTP
 sidebar:
   order: 2
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-بيانات تعريفية للإثراء لمخططات موازن حمل HTTP. راجع [امتدادات OpenAPI](../development/#openapi-extensions) لتعريفات الامتدادات.
+بيانات وصفية للإثراء لمخططات موازن حمل HTTP. راجع [امتدادات OpenAPI](../development/#openapi-extensions) لتعريفات الامتدادات.
 
 ## المخططات المُثراة
 
@@ -20,32 +20,32 @@ i18n:
 - `viewshttp_loadbalancerReplaceSpecType`
 - `viewshttp_loadbalancerGetSpecType`
 
-## البيانات التعريفية للتكوين الأدنى
+## بيانات وصفية للحد الأدنى من التكوين
 
-يوفر امتداد `x-f5xc-minimum-configuration` بيانات تعريفية شاملة لواجهة سطر الأوامر لإنشاء موازنات حمل HTTP بالحد الأدنى من التكوين القابل للتشغيل.
+يوفر امتداد `x-f5xc-minimum-configuration` بيانات وصفية شاملة لواجهة سطر الأوامر لإنشاء موازنات حمل HTTP بالحد الأدنى القابل للتشغيل.
 
 ### الحقول المطلوبة
 
 | الحقل | القيد | الوصف |
 |-------|-------|-------|
 | `metadata.name` | تنسيق تسمية DNS: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | اسم المورد |
-| `metadata.namespace` | تنسيق تسمية DNS | مساحة الاسم |
+| `metadata.namespace` | تنسيق تسمية DNS | نطاق الأسماء |
 | `spec.domains` | مصفوفة، الحد الأدنى للعناصر: 1 | النطاقات المراد خدمتها |
 
-### نوع موازن الحمل (OneOf مطلوب)
+### نوع موازن الحمل (يجب تحديد واحد - OneOf)
 
 يجب تحديد أحد أنواع موازن الحمل التالية:
 
-| المتغير | الوصف |
-|---------|-------|
+| البديل | الوصف |
+|--------|-------|
 | `spec.http` | HTTP فقط |
 | `spec.https` | HTTPS مع شهادة يدوية |
 | `spec.https_auto_cert` | HTTPS مع شهادة تلقائية |
-| `spec.http_https` | كلاً من HTTP و HTTPS |
+| `spec.http_https` | كل من HTTP و HTTPS |
 
-**ملاحظة**: تتم الإشارة إلى مجموعة OneOf لنوع موازن الحمل بالأسماء التالية:
+**ملاحظة**: يُشار إلى مجموعة OneOf لنوع موازن الحمل بالأسماء التالية:
 - `lb_type` في ملفات التكوين (الشكل المختصر في `config/minimum_configs.yaml`)
-- `loadbalancer_type` في الامتدادات الأصلية لمواصفات OpenAPI (اسم الحقل الأصلي)
+- `loadbalancer_type` في امتدادات OpenAPI الأصلية (اسم الحقل الأصلي)
 
 **مرجع مخطط API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
 
@@ -69,27 +69,27 @@ i18n:
 }
 ```
 
-## القيم الافتراضية المطبقة من الخادم
+## القيم الافتراضية المُطبقة من الخادم
 
-الحقول المميزة بـ `x-f5xc-server-default: true` يتم تطبيق قيمتها `default` بواسطة خادم F5 XC API عند حذفها من الطلبات. يحتوي موازن حمل HTTP على عدد كبير من القيم الافتراضية المطبقة من الخادم لأن معظم ميزات الأمان وخيارات البروتوكول تكون افتراضياً في حالة معطلة أو آمنة.
+الحقول المعلّمة بـ `x-f5xc-server-default: true` يتم تطبيق قيمتها `default` بواسطة خادم F5 XC API عند حذفها من الطلبات. يحتوي موازن حمل HTTP على عدد كبير من القيم الافتراضية المُطبقة من الخادم لأن معظم ميزات الأمان وخيارات البروتوكول تكون في حالة معطلة أو آمنة افتراضياً.
 
-### القيم الافتراضية لـ HTTPS Auto-Cert
+### القيم الافتراضية لشهادة HTTPS التلقائية
 
 عند تحديد `https_auto_cert`، يطبق الخادم هذه القيم الافتراضية للحقول المحذوفة:
 
 | الحقل | القيمة الافتراضية | النوع | الوصف |
 |-------|-------------------|-------|-------|
 | `port` | `443` | عدد صحيح | منفذ الاستماع لـ HTTPS |
-| `http_redirect` | `false` | منطقي | إعادة توجيه HTTP إلى HTTPS |
-| `add_hsts` | `false` | منطقي | رأس HTTP Strict Transport Security |
-| `tls_config.default_security` | `{}` | كائن | TLS 1.2+ مع تشفيرات قوية |
+| `http_redirect` | `false` | قيمة منطقية | إعادة توجيه HTTP إلى HTTPS |
+| `add_hsts` | `false` | قيمة منطقية | رأس أمان النقل الصارم لـ HTTP |
+| `tls_config.default_security` | `{}` | كائن | TLS 1.2+ مع تشفير قوي |
 | `no_mtls` | `{}` | كائن | TLS المتبادل معطل |
-| `default_header` | `{}` | كائن | معالجة رأس اسم الخادم الافتراضي |
-| `enable_path_normalize` | `{}` | كائن | تطبيع المسار مفعّل |
+| `default_header` | `{}` | كائن | معالجة رأس اسم الخادم الافتراضية |
+| `enable_path_normalize` | `{}` | كائن | تطبيع المسار مفعل |
 | `default_loadbalancer` | `{}` | كائن | إعدادات موازن الحمل الافتراضية |
 | `header_transformation_type.legacy_header_transformation` | `{}` | كائن | تحويل الرؤوس القديم |
-| `connection_idle_timeout` | `120000` | عدد صحيح | مهلة خمول الاتصال بالميلي ثانية (دقيقتان) |
-| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | كائن | HTTP/1.1 و HTTP/2 مفعّلان |
+| `connection_idle_timeout` | `120000` | عدد صحيح | مهلة خمول الاتصال بالمللي ثانية (دقيقتان) |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | كائن | HTTP/1.1 و HTTP/2 مفعلان |
 | `coalescing_options.default_coalescing` | `{}` | كائن | دمج اتصالات HTTP/2 الافتراضي |
 
 ### القيم الافتراضية لميزات الأمان
@@ -104,11 +104,11 @@ i18n:
 | `disable_api_discovery` | `{}` | اكتشاف API معطل |
 | `disable_api_testing` | `{}` | اختبار API معطل |
 | `disable_api_definition` | `{}` | تعريف API معطل |
-| `disable_malware_protection` | `{}` | الحماية من البرمجيات الخبيثة معطلة |
+| `disable_malware_protection` | `{}` | حماية البرمجيات الخبيثة معطلة |
 | `disable_client_side_defense` | `{}` | الدفاع من جانب العميل معطل |
 | `disable_ip_reputation` | `{}` | سمعة IP معطلة |
 | `disable_threat_mesh` | `{}` | شبكة التهديدات معطلة |
-| `disable_malicious_user_detection` | `{}` | اكتشاف المستخدمين الضارين معطل |
+| `disable_malicious_user_detection` | `{}` | كشف المستخدمين الخبيثين معطل |
 
 ### القيم الافتراضية لحماية DDoS والتحكم في الوصول
 
@@ -116,31 +116,31 @@ i18n:
 |-------|-------------------|-------|
 | `l7_ddos_protection.mitigation_block` | `{}` | حظر حركة مرور DDoS (إجراء التخفيف الافتراضي) |
 | `l7_ddos_protection.default_rps_threshold` | `{}` | استخدام عتبة RPS الافتراضية |
-| `l7_ddos_protection.clientside_action_none` | `{}` | لا يوجد تحقق من DDoS من جانب العميل |
+| `l7_ddos_protection.clientside_action_none` | `{}` | لا يوجد تحقق DDoS من جانب العميل |
 | `l7_ddos_protection.ddos_policy_none` | `{}` | لا يوجد مرجع لسياسة DDoS |
 | `no_challenge` | `{}` | لا يوجد تحدي للعميل |
-| `user_id_client_ip` | `{}` | تحديد المستخدمين بواسطة IP العميل |
-| `disable_trust_client_ip_headers` | `{}` | عدم الوثوق برؤوس IP العميل |
+| `user_id_client_ip` | `{}` | تحديد المستخدمين بواسطة عنوان IP للعميل |
+| `disable_trust_client_ip_headers` | `{}` | عدم الوثوق برؤوس عنوان IP للعميل |
 
-### القيم الافتراضية الأخرى المطبقة من الخادم
+### قيم افتراضية أخرى مُطبقة من الخادم
 
 | الحقل | القيمة الافتراضية | النوع | الوصف |
 |-------|-------------------|-------|-------|
-| `advertise_on_public_default_vip` | `{}` | كائن | الإعلان على VIP العام الافتراضي |
-| `round_robin` | `{}` | كائن | خوارزمية موازنة الحمل الدورية |
-| `add_location` | `true` | منطقي | إضافة رأس الموقع إلى الاستجابات |
+| `advertise_on_public_default_vip` | `{}` | كائن | الإعلان على عنوان VIP العام الافتراضي |
+| `round_robin` | `{}` | كائن | خوارزمية توزيع الحمل بالتناوب |
+| `add_location` | `true` | قيمة منطقية | إضافة رأس الموقع إلى الاستجابات |
 | `system_default_timeouts` | `{}` | كائن | استخدام مهلات النظام الافتراضية |
-| `service_policies_from_namespace` | `{}` | كائن | وراثة سياسات الخدمة من مساحة الاسم |
+| `service_policies_from_namespace` | `{}` | كائن | وراثة سياسات الخدمة من نطاق الأسماء |
 | `default_sensitive_data_policy` | `{}` | كائن | استخدام سياسة البيانات الحساسة الافتراضية |
 
 ## مجموعات الحقول المتعارضة
 
-الحقول المميزة بـ `x-f5xc-conflicts-with` تشير إلى أنماط OneOf. يمكن تحديد حقل واحد فقط من كل مجموعة.
+الحقول المعلّمة بـ `x-f5xc-conflicts-with` تشير إلى أنماط OneOf. يمكن تحديد حقل واحد فقط من كل مجموعة.
 
 ### مجموعات التكوين الأساسية
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
+|-------------|--------|-------|
 | `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | نوع بروتوكول موازن الحمل |
 | `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | كيفية الإعلان عن موازن الحمل |
 | `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | خوارزمية توزيع حركة المرور |
@@ -150,14 +150,14 @@ i18n:
 #### تكوين TLS
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
+|-------------|--------|-------|
 | `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | مستوى أمان TLS |
-| `mtls` | `no_mtls`, `use_mtls` | TLS المتبادل مفعّل أو معطل |
+| `mtls` | `no_mtls`, `use_mtls` | TLS المتبادل مفعل أو معطل |
 
 #### البروتوكول والرؤوس
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
+|-------------|--------|-------|
 | `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | إصدارات بروتوكول HTTP |
 | `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | نوع تحويل رؤوس HTTP |
 | `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | معالجة رأس اسم الخادم |
@@ -165,72 +165,72 @@ i18n:
 #### إدارة الاتصالات
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
-| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | تطبيع المسار مفعّل أو معطل |
+|-------------|--------|-------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | تطبيع المسار مفعل أو معطل |
 | `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | موازن حمل افتراضي أو غير افتراضي |
 | `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | خيارات دمج اتصالات HTTP/2 |
 
 ### مجموعات ميزات الأمان (11 مجموعة)
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
+|-------------|--------|-------|
 | `waf` | `disable_waf`, `enable_waf` | جدار حماية تطبيقات الويب |
-| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | اكتشاف الروبوتات والتخفيف منها |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | كشف الروبوتات والتخفيف منها |
 | `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | تحديد المعدل |
 | `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | اكتشاف API |
 | `api_testing` | `disable_api_testing`, `enable_api_testing` | اختبار API |
 | `api_definition` | `disable_api_definition`, `enable_api_definition` | تعريف API |
-| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | الحماية من البرمجيات الخبيثة |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | حماية البرمجيات الخبيثة |
 | `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | الدفاع من جانب العميل |
 | `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | سمعة IP |
 | `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | شبكة التهديدات |
-| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | اكتشاف المستخدمين الضارين |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | كشف المستخدمين الخبيثين |
 
 ### مجموعات حماية DDoS (4 مجموعات)
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
+|-------------|--------|-------|
 | `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | إجراء تخفيف DDoS |
 | `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | عتبة الطلبات في الثانية |
 | `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | إجراء التحقق من DDoS من جانب العميل |
 | `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | مرجع سياسة DDoS أو بدون |
 
-### مجموعات الإعدادات الأخرى (6 مجموعات)
+### مجموعات إعدادات أخرى (6 مجموعات)
 
 | اسم المجموعة | الحقول | الوصف |
-|--------------|--------|-------|
-| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | نوع تحدي العميل لاكتشاف الروبوتات |
-| `user_identification` | `user_id_client_ip`, `user_identification` | طريقة تحديد هوية المستخدم |
-| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | الوثوق برؤوس IP العميل أم لا |
+|-------------|--------|-------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | نوع تحدي العميل لكشف الروبوتات |
+| `user_identification` | `user_id_client_ip`, `user_identification` | طريقة تحديد المستخدم |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | الوثوق برؤوس عنوان IP للعميل أم لا |
 | `timeouts` | `system_default_timeouts`, `custom_timeouts` | استخدام مهلات النظام الافتراضية أو مخصصة |
-| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | سياسات الخدمة من مساحة الاسم أو القائمة النشطة |
-| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | استخدام سياسة بيانات حساسة افتراضية أو مخصصة |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | سياسات الخدمة من نطاق الأسماء أو القائمة النشطة |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | استخدام سياسة البيانات الحساسة الافتراضية أو مخصصة |
 
-## توصيات متغيرات OneOf (امتداد مستقبلي)
+## توصيات بدائل OneOf (امتداد مستقبلي)
 
-**الحالة**: لم يتم تطبيقها بعد على مخططات http_loadbalancer.
+**الحالة**: لم يتم تطبيقه بعد على مخططات http_loadbalancer.
 
-على عكس healthcheck الذي يتضمن `x-f5xc-recommended-oneof-variant` للإشارة إلى الخيار الأكثر شيوعاً لمجموعات OneOf، فإن http_loadbalancer يفتقر حالياً إلى هذا الامتداد.
+على عكس healthcheck، الذي يتضمن `x-f5xc-recommended-oneof-variant` للإشارة إلى الخيار الأكثر شيوعاً لمجموعات OneOf، فإن http_loadbalancer لا يحتوي حالياً على هذا الامتداد.
 
 ### المقارنة مع Healthcheck
 
-**Healthcheck** (مُنفَّذ):
+**Healthcheck** (مُطبق):
 ```yaml
 viewshealthcheckCreateSpecType:
   x-f5xc-recommended-oneof-variant:
     health_check: "http_health_check"
 ```
 
-**HTTP LoadBalancer** (غير مُنفَّذ بعد):
+**HTTP LoadBalancer** (لم يُطبق بعد):
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
   x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
 ```
 
-### التنفيذ المستقبلي
+### التطبيق المستقبلي
 
 لإضافة هذا الامتداد لـ http_loadbalancer:
-1. مراقبة الاختيارات الافتراضية في وحدة تحكم F5 XC (مثلاً، أي lb_type يتم تحديده مسبقاً في واجهة المستخدم)
+1. مراقبة اختيارات وحدة تحكم F5 XC الافتراضية (مثلاً، أي نوع lb_type يكون محدداً مسبقاً في واجهة المستخدم)
 2. إضافة التكوين إلى `config/discovered_defaults.yaml`
 3. إعادة تشغيل خط أنابيب الإثراء لتطبيق الامتداد
 
@@ -241,11 +241,11 @@ viewshttp_loadbalancerCreateSpecType:
     loadbalancer_type: "https_auto_cert"  # Example - requires verification
 ```
 
-سيمكّن هذا الامتداد الأدوات اللاحقة من التحديد المسبق للمتغير الأكثر استخداماً عند عرض خيارات التكوين للمستخدمين.
+سيمكن هذا الامتداد الأدوات المتلقية من تحديد البديل الأكثر استخداماً مسبقاً عند عرض خيارات التكوين للمستخدمين.
 
-## البيانات التعريفية للقيود
+## بيانات وصفية للقيود
 
-الحقول المميزة بـ `x-f5xc-constraints` تتضمن قيود التحقق المكتشفة من تحليل API.
+الحقول المعلّمة بـ `x-f5xc-constraints` تتضمن قيود التحقق المكتشفة من تحليل API.
 
 ### قيود المصفوفات
 
@@ -260,9 +260,9 @@ viewshttp_loadbalancerCreateSpecType:
 ### قيود الأعداد الصحيحة
 
 | الحقل | الحد الأدنى | الحد الأقصى | الافتراضي | الوصف |
-|-------|-------------|-------------|-----------|-------|
+|-------|------------|------------|-----------|-------|
 | `spec.https_auto_cert.port` | 1 | 65535 | 443 | رقم منفذ HTTPS |
-| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | مهلة خمول الاتصال (ميلي ثانية، من ثانية واحدة إلى ساعة واحدة) |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | مهلة خمول الاتصال (بالمللي ثانية، من ثانية واحدة إلى ساعة) |
 
 ### قيود التعدادات
 
@@ -272,37 +272,37 @@ viewshttp_loadbalancerCreateSpecType:
 | `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | تحويل رؤوس HTTP |
 | `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | إصدارات بروتوكول HTTP |
 | `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | دمج اتصالات HTTP/2 |
-| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | خوارزمية موازنة الحمل |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | خوارزمية توزيع الحمل |
 | `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | إجراء تخفيف DDoS من الطبقة 7 |
-| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | عتبة RPS لاكتشاف DDoS |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | عتبة RPS لكشف DDoS |
 | `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | التحقق من DDoS من جانب العميل |
 | `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | نوع تحدي العميل |
 | `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | إعلان موازن الحمل |
 
 ## تكامل سير العمل الموجّه
 
-يضيف خط أنابيب الإثراء بيانات تعريفية `x-f5xc-guided-workflows` على مستوى المواصفات. توفر مسارات العمل هذه إرشادات نشر خطوة بخطوة تستهلكها المساعدات الذكية وأدوات سطر الأوامر.
+يضيف خط أنابيب الإثراء بيانات وصفية `x-f5xc-guided-workflows` على مستوى المواصفات. توفر سيرورات العمل هذه إرشادات نشر خطوة بخطوة تستهلكها مساعدات الذكاء الاصطناعي وأدوات سطر الأوامر.
 
 ### نشر موازن حمل HTTP
 
-سير عمل من 5 خطوات لإنشاء موازن حمل HTTP مكوّن بالكامل مع مجمع أصل خلفي (مُعرّف في `config/guided_workflows.yaml`):
+سير عمل من 5 خطوات لإنشاء موازن حمل HTTP مكوّن بالكامل مع مجمع أصل خلفي (معرّف في `config/guided_workflows.yaml`):
 
 | الخطوة | الإجراء | المورد | الحقول المطلوبة | اختياري |
-|--------|---------|--------|-----------------|---------|
+|--------|---------|--------|----------------|---------|
 | 1 | إنشاء مجمع الأصل | `origin_pool` | `name`, `origin_servers`, `port` | لا |
 | 2 | تكوين فحص الصحة | `healthcheck` | `name`, `http_health_check` | نعم |
 | 3 | ربط فحص الصحة | - | - | نعم |
 | 4 | إنشاء موازن حمل HTTP | `http_loadbalancer` | `name`, `domains`, `http.port` | لا |
 | 5 | التحقق من النشر | - | - | لا |
 
-**المتطلبات المسبقة**: مساحة اسم صالحة في المستأجر المستهدف، تطبيق خلفي يمكن الوصول إليه عبر IP أو DNS، شهادة SSL (اختيارية لـ HTTPS).
+**المتطلبات الأساسية**: نطاق أسماء صالح في المستأجر المستهدف، تطبيق خلفي قابل للوصول عبر IP أو DNS، شهادة SSL (اختيارية لـ HTTPS).
 
 ### نشر موازن حمل HTTPS مع TLS
 
 سير عمل من 7 خطوات لإنشاء موازن حمل HTTPS مع إنهاء SSL/TLS:
 
 | الخطوة | الإجراء | المورد | الحقول المطلوبة | اختياري |
-|--------|---------|--------|-----------------|---------|
+|--------|---------|--------|----------------|---------|
 | 1 | رفع شهادة SSL | `certificate` | `name`, `certificate_chain`, `private_key` | لا |
 | 2 | إنشاء مجمع الأصل | `origin_pool` | `name`, `origin_servers` | لا |
 | 3 | تكوين فحص الصحة | `healthcheck` | - | نعم |
@@ -311,19 +311,19 @@ viewshttp_loadbalancerCreateSpecType:
 | 6 | ربط سياسة WAF | - | - | نعم |
 | 7 | التحقق من نشر HTTPS | - | - | لا |
 
-**المتطلبات المسبقة**: مساحة اسم صالحة في المستأجر المستهدف، شهادة SSL ومفتاح خاص، تطبيق خلفي يمكن الوصول إليه.
+**المتطلبات الأساسية**: نطاق أسماء صالح في المستأجر المستهدف، شهادة SSL ومفتاح خاص، تطبيق خلفي قابل للوصول.
 
 ### استهلاك سير العمل
 
-تستخدم الأدوات اللاحقة مسارات العمل هذه لتوجيه المستخدمين خلال عمليات النشر متعددة الخطوات:
+تستخدم الأدوات المتلقية سيرورات العمل هذه لتوجيه المستخدمين خلال عمليات النشر متعددة الخطوات:
 
-- **واجهة سطر أوامر xcsh**: تعرض مسارات العمل كأوامر موجّهة تفاعلية (مثلاً `xcsh deploy http-lb`)
-- **امتداد VS Code**: يعرض خطوات سير العمل في لوحة جانبية مع تتبع التقدم
-- **المساعدات الذكية**: تتبع خطوات سير العمل بالتتابع، وتنشئ كل مورد وتتحقق من التبعيات
+- **واجهة سطر الأوامر xcsh**: تعرض سيرورات العمل كأوامر تفاعلية موجّهة (مثلاً `xcsh deploy http-lb`)
+- **إضافة VS Code**: تعرض خطوات سير العمل في لوحة جانبية مع تتبع التقدم
+- **مساعدات الذكاء الاصطناعي**: تتبع خطوات سير العمل بالتتابع، وتنشئ كل مورد وتتحقق من التبعيات
 
 ## مرجع امتدادات OpenAPI
 
-تُضاف هذه الامتدادات الخاصة بالمورّد إلى مخطط OpenAPI القياسي لنقل البيانات التعريفية الخاصة بـ F5 XC.
+تُضاف هذه الامتدادات المخصصة إلى مخطط OpenAPI القياسي لنقل بيانات وصفية خاصة بـ F5 XC.
 
 ### x-f5xc-cli-domain
 
@@ -341,11 +341,11 @@ viewshttp_loadbalancerCreateSpecType:
 
 **النوع**: `object`
 
-يوفر بيانات تعريفية شاملة لإنشاء تكوينات بالحد الأدنى القابل للتشغيل. يتضمن:
+يوفر بيانات وصفية شاملة لإنشاء تكوينات بالحد الأدنى القابل للتشغيل. يتضمن:
 - الوصف
 - الحقول المطلوبة مع القيود
 - المجموعات المتعارضة
-- أمثلة التكوين (YAML، JSON)
+- أمثلة تكوين (YAML, JSON)
 - أمثلة أوامر curl
 
 ```yaml
@@ -373,7 +373,7 @@ viewshttp_loadbalancerCreateSpecType:
 
 **النوع**: `boolean`
 
-عندما تكون القيمة `true`، يشير إلى أن قيمة `default` المرافقة يتم فرضها بواسطة خادم F5 XC API. يمكن حذف الحقول التي تحمل هذا الامتداد بأمان من طلبات API -- حيث يطبق الخادم القيمة الافتراضية تلقائياً.
+عندما تكون القيمة `true`، يشير إلى أن قيمة `default` المرافقة يتم فرضها بواسطة خادم F5 XC API. يمكن حذف الحقول التي تحتوي على هذا الامتداد من طلبات API بأمان -- حيث يطبق الخادم القيمة الافتراضية تلقائياً.
 
 ```yaml
 disable_waf:
@@ -401,7 +401,7 @@ advertise_custom:
 
 **النوع**: `object`
 
-يوفر قيود التحقق بما في ذلك حدود حجم المصفوفات، ونطاقات الأعداد الصحيحة، ومتطلبات التفرد، والبيانات التعريفية للاكتشاف.
+يوفر قيود التحقق بما في ذلك حدود حجم المصفوفات، ونطاقات الأعداد الصحيحة، ومتطلبات التفرد، وبيانات الاكتشاف الوصفية.
 
 ```yaml
 routes:
@@ -434,8 +434,8 @@ port:
 **النوع**: `string`
 
 يوفر أطوال وصف بديلة لحالات استخدام مختلفة:
-- `x-f5xc-description-short`: بحد أقصى 60 حرفاً (أعمدة سطر الأوامر، الشارات)
-- `x-f5xc-description-medium`: بحد أقصى 150 حرفاً (التلميحات، الملخصات)
+- `x-f5xc-description-short`: 60 حرفاً كحد أقصى (أعمدة واجهة سطر الأوامر، الشارات)
+- `x-f5xc-description-medium`: 150 حرفاً كحد أقصى (تلميحات الأدوات، الملخصات)
 
 ```yaml
 domains:
@@ -489,11 +489,11 @@ metadata.uid:
 ### ملفات التكوين
 
 | الملف | الغرض |
-|-------|--------|
-| `config/minimum_configs.yaml` | مصدر البيانات التعريفية للتكوين الأدنى |
+|-------|-------|
+| `config/minimum_configs.yaml` | مصدر بيانات الحد الأدنى من التكوين الوصفية |
 | `config/constraint_patterns.yaml` | تعريفات أنماط القيود |
 | `config/guided_workflows.yaml` | تعريفات خطوات سير العمل الموجّه |
-| `config/domain_descriptions.yaml` | البيانات التعريفية لأوصاف مستوى النطاق |
+| `config/domain_descriptions.yaml` | بيانات الوصف الوصفية على مستوى النطاق |
 
 ### المخططات المُثراة
 
@@ -506,11 +506,11 @@ metadata.uid:
 - [دليل التطوير - امتدادات OpenAPI](../development/#openapi-extensions) - تعريفات الامتدادات واستخدامها
 - [تحسينات فحص الصحة](./healthcheck-enhancements/) - إثراءات مخطط فحص الصحة (يتضمن `x-f5xc-recommended-oneof-variant`)
 - [تحسينات مجمع الأصل](./originpool-enhancements/) - إثراءات مخطط مجمع الأصل
-- [دليل البيانات التعريفية للقيود](../constraint-metadata/) - وثائق تفصيلية للتحقق من القيود
+- [دليل بيانات القيود الوصفية](../constraint-metadata/) - وثائق تفصيلية للتحقق من القيود
 
 ## سجل التغييرات
 
 | الإصدار | التاريخ | التغييرات |
 |---------|---------|-----------|
-| 2.0.46 | 2026-04-18 | إضافة القيم الافتراضية المطبقة من الخادم، وتكامل سير العمل الموجّه، وتوسيع قسم التكوين الأدنى |
+| 2.0.46 | 2026-04-18 | إضافة القيم الافتراضية المُطبقة من الخادم، وتكامل سير العمل الموجّه، وتوسيع قسم الحد الأدنى من التكوين |
 | 2.0.45 | 2026-01-20 | التوثيق الأولي لإثراءات http_loadbalancer |

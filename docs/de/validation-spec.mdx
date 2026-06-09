@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Dieses Dokument beschreibt die Struktur und den Inhalt der Validierungsspezifikation, die vom Projekt api-specs-enriched veröffentlicht wird.
+Dieses Dokument beschreibt die Struktur und den Inhalt der Validierungsspezifikation, die vom api-specs-enriched-Projekt veröffentlicht wird.
 
 ## Überblick
 
@@ -40,7 +40,7 @@ Die Validierungsspezifikation konsolidiert API-Validierungsbeschränkungen, Stan
 
 ### required_fields
 
-Gibt die erforderlichen Felder für jeden Operationstyp pro Ressource an.
+Gibt die für jeden Operationstyp pro Ressource erforderlichen Felder an.
 
 ```json
 {
@@ -83,7 +83,7 @@ Definiert zulässige Werte für eingeschränkte Felder.
 
 ### constraints
 
-Typbezogene Validierungsstandards und musterbasierte Regeln.
+Standardwerte für Typebene-Validierung und musterbasierte Regeln.
 
 ```json
 {
@@ -125,7 +125,7 @@ Feldnamen-musterbasierte Validierungsregeln mit Konfidenzwerten.
 
 ### defaults
 
-Alle Standardwerte nach Ressourcentyp in einer einheitlichen Struktur organisiert.
+Alle Standardwerte, organisiert nach Ressourcentyp in einer einheitlichen Struktur.
 
 ```json
 {
@@ -204,13 +204,13 @@ Alle Standardwerte nach Ressourcentyp in einer einheitlichen Struktur organisier
 
 | Kategorie | Beschreibung | Quelle |
 |----------|-------------|--------|
-| `server_applied` | Werte, die die API anwendet, wenn Felder ausgelassen werden | Live-API-Tests |
-| `recommended` | Von der F5 XC-Webkonsole vorausgefüllte Werte | UI-Analyse |
+| `server_applied` | Werte, die die API anwendet, wenn Felder weggelassen werden | Live-API-Tests |
+| `recommended` | Von der F5 XC Webkonsole vorausgefüllte Werte | UI-Analyse |
 | `advanced_options` | Verschachtelte Standardwerte innerhalb von advanced_options-Objekten | API-Entdeckung |
 | `oneof_choices` | Standard-OneOf-Variantenauswahl | API-Verhalten |
 | `oneof_recommended` | Empfohlene OneOf-Varianten | Konsolenstandards |
 | `nested_recommended` | Empfohlene Werte für verschachtelte Schemata | UI-Analyse |
-| `ui_vs_server` | Fälle, in denen UI-Standardwerte von API-Standardwerten abweichen | Vergleichsanalyse |
+| `ui_vs_server` | Fälle, in denen sich UI-Standards von API-Standards unterscheiden | Vergleichende Analyse |
 
 ### conditional_requirements
 
@@ -257,9 +257,9 @@ Minimale funktionsfähige Konfigurationen mit funktionierenden Beispielen.
 }
 ```
 
-## OpenAPI-Erweiterungszuordnung
+## OpenAPI-Erweiterungs-Zuordnung
 
-Die angereicherten OpenAPI-Spezifikationen betten Validierungsmetadaten über diese Erweiterungen ein:
+Die angereicherten OpenAPI-Spezifikationen betten Validierungsmetadaten mithilfe dieser Erweiterungen ein:
 
 | Erweiterung | Zweck | Ort |
 |-----------|---------|----------|
@@ -268,8 +268,8 @@ Die angereicherten OpenAPI-Spezifikationen betten Validierungsmetadaten über di
 | `x-f5xc-recommended-value` | Empfohlener Standardwert | Schema-Eigenschaften |
 | `x-f5xc-recommended-oneof-variant` | Empfohlene OneOf-Variante | Schema-Definitionen |
 | `x-f5xc-conditions` | Bedingte Anforderungen | Schema-Eigenschaften |
-| `x-f5xc-minimum-configuration` | Beispiele für Minimalkonfiguration | Schema-Definitionen |
-| `x-f5xc-validation` | Aus der Entdeckung abgeleitete Beschränkungen | Schema-Eigenschaften |
+| `x-f5xc-minimum-configuration` | Minimalkonfigurations-Beispiele | Schema-Definitionen |
+| `x-f5xc-validation` | Aus Entdeckung abgeleitete Einschränkungen | Schema-Eigenschaften |
 
 ## Datenzugriff
 
@@ -290,22 +290,22 @@ Die Validierungsspezifikation folgt der semantischen Versionierung im Feld `vers
 
 | Änderungstyp | Versionserhöhung | Beispiel |
 |-------------|--------------|---------|
-| Strukturbrechende Änderungen | Major | Feldumbenennungen, entfernte Abschnitte |
-| Neue Validierungsregeln oder Ressourcen | Minor | Neue Ressourcenstandards |
-| Fehlerbehebungen oder Beschreibungsaktualisierungen | Patch | Tippfehler-Korrekturen |
+| Strukturelle Breaking Changes | Major | Feldumbenennungen, entfernte Abschnitte |
+| Neue Validierungsregeln oder Ressourcen | Minor | Neue Ressourcen-Standardwerte |
+| Fehlerbehebungen oder Beschreibungsaktualisierungen | Patch | Tippfehlerkorrekturen |
 
-## Abstimmungspriorität
+## Abgleich-Priorität
 
-Wenn mehrere Quellen Beschränkungen liefern, gilt folgende Abstimmungspriorität:
+Wenn mehrere Quellen Einschränkungen bereitstellen, gilt folgende Abgleich-Priorität:
 
-1. **Bestehend** - Beschränkungen in der ursprünglichen OpenAPI-Spezifikation (höchste Priorität)
-2. **Entdeckung** - Beschränkungen aus der Live-API-Entdeckung
-3. **Abgeleitet** - Beschränkungen aus Mustererkennung (niedrigste Priorität)
+1. **Vorhandene** - Einschränkungen in der ursprünglichen OpenAPI-Spezifikation (höchste Priorität)
+2. **Entdeckung** - Einschränkungen aus der Live-API-Entdeckung
+3. **Abgeleitet** - Einschränkungen aus Musterabgleich (niedrigste Priorität)
 
 ## Verwandte Dokumentation
 
-- [Healthcheck-Erweiterungen](./Enhancements/healthcheck-enhancements/) - Anreicherungen des Healthcheck-Schemas
-- [Origin Pool-Erweiterungen](./Enhancements/originpool-enhancements/) - Anreicherungen des Origin Pool-Schemas
+- [Healthcheck-Erweiterungen](./Enhancements/healthcheck-enhancements/) - Healthcheck-Schema-Anreicherungen
+- [Origin-Pool-Erweiterungen](./Enhancements/originpool-enhancements/) - Origin-Pool-Schema-Anreicherungen
 - [CLAUDE.md](../../CLAUDE.md) - KI-Assistenten-Anweisungen
 - [DEVELOPMENT.md](./development/) - Entwicklerhandbuch
 
@@ -313,6 +313,6 @@ Wenn mehrere Quellen Beschränkungen liefern, gilt folgende Abstimmungsprioritä
 
 | Version | Datum | Änderungen |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | Als reine API-Referenz umgeschrieben; Kategorien oneof_recommended und nested_recommended hinzugefügt |
-| 2.1.0 | 2026-01-18 | Einheitliche Standardwert-Struktur als Ersatz für fragmentierte Abschnitte |
+| 2.1.2 | 2026-01-18 | Als reine API-Referenz umgeschrieben; oneof_recommended- und nested_recommended-Kategorien hinzugefügt |
+| 2.1.0 | 2026-01-18 | Einheitliche Standardwerte-Struktur ersetzt fragmentierte Abschnitte |
 | 2.0.0 | 2026-01-15 | Initiale Validierungsspezifikation |

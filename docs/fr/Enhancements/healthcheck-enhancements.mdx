@@ -1,6 +1,6 @@
 ---
-title: Améliorations du Healthcheck
-description: Métadonnées d'enrichissement pour les schémas liés au healthcheck
+title: Améliorations du bilan de santé
+description: Métadonnées d'enrichissement pour les schémas liés aux bilans de santé
 sidebar:
   order: 1
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Métadonnées d'enrichissement pour les schémas liés au healthcheck. Voir [Extensions OpenAPI](../development/#openapi-extensions) pour les définitions des extensions.
+Métadonnées d'enrichissement pour les schémas liés aux bilans de santé. Voir [Extensions OpenAPI](../development/#openapi-extensions) pour les définitions des extensions.
 
 ## Schémas enrichis
 
@@ -20,11 +20,11 @@ Tous les schémas correspondant à `healthcheck.*SpecType` reçoivent des enrich
 - `healthcheckReplaceSpecType`
 - `healthcheckGetSpecType`
 
-De plus, le schéma imbriqué `healthcheckHttpHealthCheck` contient des enrichissements pour la configuration du health check HTTP.
+De plus, le schéma imbriqué `healthcheckHttpHealthCheck` contient des enrichissements pour la configuration du bilan de santé HTTP.
 
 ## Valeurs par défaut appliquées par le serveur
 
-Les champs marqués avec `x-f5xc-server-default: true` voient leur valeur `default` appliquée par le serveur API F5 XC lorsqu'ils sont omis des requêtes.
+Les champs marqués avec `x-f5xc-server-default: true` ont leur valeur `default` appliquée par le serveur API F5 XC lorsqu'ils sont omis des requêtes.
 
 ### Champs de niveau supérieur
 
@@ -45,14 +45,14 @@ Les champs marqués avec `x-f5xc-server-default: true` voient leur valeur `defau
 
 ## Valeurs recommandées
 
-Les champs marqués avec `x-f5xc-recommended-value` indiquent les valeurs que la console web F5 XC pré-remplit lors de la création de nouvelles ressources.
+Les champs marqués avec `x-f5xc-recommended-value` indiquent des valeurs que la console web F5 XC pré-remplit lors de la création de nouvelles ressources.
 
 ### Champs de niveau supérieur
 
 | Champ | Valeur recommandée | Type | Description |
 |-------|---------------------|------|-------------|
-| `timeout` | `3` | integer | Délai d'expiration du health check en secondes |
-| `interval` | `15` | integer | Intervalle entre les health checks en secondes |
+| `timeout` | `3` | integer | Délai d'expiration du bilan de santé en secondes |
+| `interval` | `15` | integer | Intervalle entre les bilans de santé en secondes |
 | `unhealthy_threshold` | `1` | integer | Échecs consécutifs avant de marquer comme non sain |
 | `healthy_threshold` | `3` | integer | Succès consécutifs avant de marquer comme sain |
 | `jitter_percent` | `30` | integer | Pourcentage de gigue pour l'utilisation en production |
@@ -61,36 +61,36 @@ Les champs marqués avec `x-f5xc-recommended-value` indiquent les valeurs que la
 
 | Champ | Valeur recommandée | Type | Description |
 |-------|---------------------|------|-------------|
-| `path` | `"/"` | string | Chemin du point de terminaison du health check |
+| `path` | `"/"` | string | Chemin du point de terminaison du bilan de santé |
 | `use_http2` | `false` | boolean | Paramètre de prise en charge HTTP/2 |
 | `expected_status_codes` | `["200"]` | array | Codes de statut indiquant une origine saine |
 | `use_origin_server_name` | `{}` | object | Nom du serveur d'origine pour l'en-tête Host |
 
 ## Recommandations de variantes OneOf
 
-Les schémas contenant des groupes de champs mutuellement exclusifs (OneOf) incluent `x-f5xc-recommended-oneof-variant` pour indiquer quelle variante est la plus couramment utilisée. Cette métadonnée identifie le choix typique lorsque plusieurs options existent, basé sur les valeurs par défaut de la console F5 XC et les modèles d'utilisation courants.
+Les schémas contenant des groupes de champs mutuellement exclusifs (OneOf) incluent `x-f5xc-recommended-oneof-variant` pour indiquer quelle variante est la plus couramment utilisée. Ces métadonnées identifient le choix typique lorsque plusieurs options existent, en se basant sur les valeurs par défaut de la console F5 XC et les modèles d'utilisation courants.
 
 ### Groupes OneOf de niveau supérieur
 
 | Schéma | Groupe OneOf | Variante recommandée | Description |
 |--------|-------------|----------------------|-------------|
-| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | Type de health check HTTP |
-| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | Type de health check HTTP |
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | Type de bilan de santé HTTP |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | Type de bilan de santé HTTP |
 
 ### Groupes OneOf healthcheckHttpHealthCheck
 
 | Schéma | Groupe OneOf | Variante recommandée | Description |
 |--------|-------------|----------------------|-------------|
-| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | En-tête Host pour les requêtes de health check |
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | En-tête Host pour les requêtes de bilan de santé |
 
 #### Choix de l'en-tête Host
 
-Le groupe OneOf `host_header_choice` contrôle la manière dont l'en-tête Host est spécifié dans les requêtes HTTP de health check.
+Le groupe OneOf `host_header_choice` contrôle la manière dont l'en-tête Host est spécifié dans les requêtes HTTP de bilan de santé.
 
 | Variante | Type | Description |
 |----------|------|-------------|
-| `use_origin_server_name` | `object` (vide) | Utilise le nom du serveur d'origine comme en-tête Host. C'est la sélection par défaut dans la console F5 XC. |
-| `host_header` | `string` | Spécifie une valeur personnalisée d'en-tête Host pour les requêtes de health check. |
+| `use_origin_server_name` | `object` (vide) | Utiliser le nom du serveur d'origine comme en-tête Host. C'est la sélection par défaut dans la console F5 XC. |
+| `host_header` | `string` | Spécifier une valeur d'en-tête Host personnalisée pour les requêtes de bilan de santé. |
 
 **Référence du schéma API** : `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
 
@@ -102,7 +102,7 @@ Ces extensions propriétaires sont ajoutées au schéma OpenAPI standard pour tr
 
 **Type** : `boolean`
 
-Lorsque défini à `true`, indique que la valeur `default` associée est appliquée par le serveur API F5 XC. Les champs avec cette extension peuvent être omis en toute sécurité des requêtes API — le serveur applique automatiquement la valeur par défaut.
+Lorsque `true`, indique que la valeur `default` accompagnante est appliquée par le serveur API F5 XC. Les champs avec cette extension peuvent être omis en toute sécurité des requêtes API — le serveur applique automatiquement la valeur par défaut.
 
 ```yaml
 use_http2:
@@ -115,7 +115,7 @@ use_http2:
 
 **Type** : `any` (correspond au type du champ)
 
-Spécifie une valeur que la console web F5 XC utilise comme valeur par défaut pré-remplie. Cette valeur n'est pas appliquée par le serveur mais représente la configuration de départ typique pour les nouvelles ressources créées via la console.
+Spécifie une valeur que la console web F5 XC utilise comme valeur pré-remplie par défaut. Cette valeur n'est pas appliquée par le serveur mais représente la configuration de départ typique pour les nouvelles ressources créées via la console.
 
 ```yaml
 timeout:
@@ -125,7 +125,7 @@ timeout:
 
 ### x-f5xc-recommended-oneof-variant
 
-**Type** : `object` (correspondance entre nom de groupe et nom de variante)
+**Type** : `object` (correspondance du nom de groupe au nom de variante)
 
 Pour les schémas avec des groupes de champs mutuellement exclusifs, identifie quelle variante est le choix par défaut ou le plus courant. La clé est le nom du groupe OneOf et la valeur est le nom du champ de la variante recommandée.
 
@@ -154,20 +154,20 @@ defaults.resources.healthcheck
 └── nested_recommended  # Valeurs recommandées des schémas imbriqués
 ```
 
-## Documentation associée
+## Documentation connexe
 
 - [Guide de développement - Extensions OpenAPI](../development/#openapi-extensions) - Définitions et utilisation des extensions
 - [Spécification de validation](../validation-spec/) - Format et structure de validation.json
-- [Améliorations de l'Origin Pool](./originpool-enhancements/) - Enrichissements du schéma Origin Pool
+- [Améliorations du pool d'origines](./originpool-enhancements/) - Enrichissements du schéma du pool d'origines
 
 ## Journal des modifications
 
 | Version | Date | Modifications |
 |---------|------|---------------|
-| 2.1.4 | 2026-01-19 | Ajout de la documentation du groupe OneOf `host_header_choice` pour les paramètres de requête du health check HTTP |
+| 2.1.4 | 2026-01-19 | Ajout de la documentation du groupe OneOf `host_header_choice` pour les paramètres de requête de bilan de santé HTTP |
 | 2.1.3 | 2026-01-18 | Consolidation de la documentation globale des extensions dans DEVELOPMENT.md ; données spécifiques aux ressources uniquement |
 | 2.1.2 | 2026-01-18 | Réécrit en tant que référence API pure ; suppression des exemples en aval et du langage prescriptif |
 | 2.1.1 | 2026-01-18 | Ajout des valeurs recommandées imbriquées, des variantes OneOf recommandées, de l'extension `x-f5xc-recommended-oneof-variant` |
-| 2.1.0 | 2026-01-18 | Ajout de la structure unifiée des valeurs par défaut dans validation.json |
+| 2.1.0 | 2026-01-18 | Ajout de la structure de valeurs par défaut unifiée dans validation.json |
 | 2.0.30 | 2026-01-16 | Ajout des valeurs par défaut imbriquées pour les schémas `$ref` |
-| 2.0.29 | 2026-01-17 | Valeurs par défaut initiales du healthcheck |
+| 2.0.29 | 2026-01-17 | Valeurs par défaut initiales du bilan de santé |

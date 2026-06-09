@@ -1,6 +1,6 @@
 ---
 title: 約束條件元資料系統
-description: 用於確定性 AI 生成和驗證的完整約束條件元資料
+description: 用於確定性 AI 生成與驗證的完整約束條件元資料
 sidebar:
   order: 2
 i18n:
@@ -8,19 +8,19 @@ i18n:
   translator: machine
 ---
 
-**目的**：用於確定性 AI 生成、CLI 驗證和 Terraform 架構強制執行的完整約束條件元資料。
+**目的**：用於確定性 AI 生成、CLI 驗證及 Terraform schema 強制執行的完整約束條件元資料。
 
-**擴展**：`x-f5xc-constraints`
+**擴充欄位**：`x-f5xc-constraints`
 **版本**：3.3.0
-**狀態**：正式環境
-**使用者**：AI 助手、CLI 工具、Terraform 提供者、IDE 擴展、API 驗證器
+**狀態**：Production
+**使用者**：AI 助理、CLI 工具、Terraform 提供者、IDE 擴充套件、API 驗證器
 
 ---
 
 ## 目錄
 
-1. [概述](#overview)
-2. [擴展結構](#extension-structure)
+1. [概觀](#overview)
+2. [擴充結構](#extension-structure)
 3. [約束條件類型](#constraint-types)
 4. [自然語言描述](#natural-language-descriptions)
 5. [驗證範例](#validation-examples)
@@ -30,26 +30,26 @@ i18n:
 
 ---
 
-## 概述
+## 概觀
 
-`x-f5xc-constraints` 擴展提供有關欄位驗證約束條件的確定性知識，實現以下功能：
+`x-f5xc-constraints` 擴充欄位提供關於欄位驗證約束條件的確定性知識，實現以下功能：
 
-- **AI 助手**：無需使用者輸入約束條件細節即可生成有效配置
-- **CLI 工具**：提供準確的輸入提示、驗證和錯誤訊息
-- **Terraform**：在規劃階段而非套用階段強制執行約束條件
-- **IDE 擴展**：即時驗證和自動完成建議
+- **AI 助理**：無需使用者輸入約束條件細節即可生成有效配置
+- **CLI 工具**：提供準確的輸入提示、驗證及錯誤訊息
+- **Terraform**：在 plan 階段而非 apply 階段強制執行約束條件
+- **IDE 擴充套件**：即時驗證與自動完成建議
 - **API 驗證器**：提交前驗證以減少 API 錯誤
 
-### 覆蓋統計
+### 涵蓋統計
 
-- 跨所有 F5 XC API 規格共 **9,851 個約束條件**
+- 所有 F5 XC API 規格中有 **9,851 個約束條件**
 - **50+ 種模式類型**（字串、陣列、數值）
 - 高優先欄位（名稱、連接埠、識別碼）達 **95% 信心度**
-- **三層協調**：EXISTING > DISCOVERY > INFERRED
+- **三層調和**：EXISTING > DISCOVERY > INFERRED
 
 ---
 
-## 擴展結構
+## 擴充結構
 
 ### 頂層欄位
 
@@ -78,10 +78,10 @@ i18n:
 
 | 欄位 | 類型 | 描述 |
 |-------|------|-------------|
-| `constraintType` | string | 資料類型（string、array、number、object） |
+| `constraintType` | string | 資料型別（string、array、number、object） |
 | `deterministic` | boolean | 高信心度旗標（信心度 >= 0.9），用於 AI 生成 |
-| `category` | string | 約束條件類別，用於分組和報告 |
-| *（約束條件鍵）* | various | 類型特定的約束條件鍵，扁平化於頂層（例如 `minLength`、`maxItems`、`minimum`） |
+| `category` | string | 約束條件分類，用於分組與報告 |
+| *（約束條件鍵）* | 各種 | 型別特定的約束條件鍵，平展於頂層（例如 `minLength`、`maxItems`、`minimum`） |
 | `metadata` | object | 來源追蹤、信心度、驗證時間戳記 |
 
 ---
@@ -125,8 +125,8 @@ i18n:
 
 | 格式 | 描述 | 範例 |
 |--------|-------------|---------|
-| `dns-label` | RFC 1123 DNS 標籤（1-63 個字元） | `my-service` |
-| `fqdn` | 完全限定域名 | `api.example.com` |
+| `dns-label` | RFC 1123 DNS 標籤（1-63 字元） | `my-service` |
+| `fqdn` | 完整網域名稱 | `api.example.com` |
 | `email` | RFC 5322 電子郵件地址 | `user@example.com` |
 | `url` | RFC 3986 URI/URL | `https://example.com/api` |
 | `ipv4` | IPv4 位址 | `192.168.1.1` |
@@ -184,35 +184,35 @@ i18n:
 
 ### 字串格式約束條件
 
-**DNS 標籤**（`format: "dns-label"`）：
+**DNS 標籤** (`format: "dns-label"`)：
 - DNS 標籤名稱必須為 1-63 個小寫英數字元
-- 允許使用連字號但不可在開頭/結尾（RFC 1123）
+- 允許使用連字號但不可出現在開頭/結尾（RFC 1123）
 - 範例：`my-service`、`api-gateway`、`lb-prod-01`
 
-**電子郵件地址**（`format: "email"`）：
+**電子郵件地址** (`format: "email"`)：
 - 電子郵件地址必須符合 RFC 5322 規範
-- 最多 254 個字元
+- 最長 254 個字元
 - 範例：`admin@example.com`、`api+webhook@service.io`
 
-**完全限定域名**（`format: "fqdn"`）：
-- 完全限定域名必須為 1-253 個字元
-- 以點號分隔的 DNS 標籤
+**完整網域名稱** (`format: "fqdn"`)：
+- 完整網域名稱（FQDN）必須為 1-253 個字元
+- 以點分隔的 DNS 標籤
 - 範例：`api.example.com`、`service.production.internal`
 
-**URL**（`format: "url"`）：
+**URL** (`format: "url"`)：
 - URL 必須為符合 RFC 3986 的有效 URI
-- 必須包含通訊協定（http/https）
+- 必須包含協定（http/https）
 - 範例：`https://api.example.com/v1`、`http://localhost:8080`
 
-**IPv4 位址**（`format: "ipv4"`）：
+**IPv4 位址** (`format: "ipv4"`)：
 - IPv4 位址必須為點分十進位表示法
 - 範例：`192.168.1.1`、`10.0.0.1`
 
-**UUID**（`format: "uuid"`）：
+**UUID** (`format: "uuid"`)：
 - UUID 必須遵循 RFC 4122 格式
 - 範例：`550e8400-e29b-41d4-a716-446655440000`
 
-**時間戳記**（`format: "date-time"`）：
+**時間戳記** (`format: "date-time"`)：
 - 時間戳記必須為 ISO 8601 格式
 - 範例：`2026-01-19T12:00:00Z`、`2026-01-19T12:00:00+00:00`
 
@@ -226,7 +226,7 @@ i18n:
 - VLAN ID 必須為 1 到 4094 之間的整數（802.1Q 標準）
 
 **逾時時間**：
-- 逾時時間必須為 1-3600 秒（最大 1 小時）
+- 逾時時間必須為 1-3600 秒（最長 1 小時）
 
 ### 陣列約束條件
 
@@ -267,7 +267,7 @@ i18n:
 - ❌ `-my-service`（開頭為連字號）
 - ❌ `my-service-`（結尾為連字號）
 - ❌ `my_service`（不允許底線）
-- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（太長）
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（過長）
 
 ### 範例 2：連接埠號碼驗證
 
@@ -326,13 +326,13 @@ i18n:
 | 0.90-1.00 | **高信心度** | 啟用確定性旗標，用於 AI 生成 |
 | 0.70-0.89 | **中等信心度** | 建議性質，建議使用者確認 |
 | 0.50-0.69 | **低信心度** | 僅供參考，需要使用者驗證 |
-| < 0.50 | **極低** | 不包含在約束條件中 |
+| < 0.50 | **極低** | 不納入約束條件 |
 
 ### 確定性旗標
 
-`deterministic` 布林旗標在以下情況設定：
+`deterministic` 布林旗標在以下情況下設為啟用：
 - 信心分數 >= 0.9
-- 模式已根據探索資料進行驗證，或
+- 模式已根據探索資料驗證，或
 - 模式符合已確立的標準（RFC、ISO 等）
 
 **在 AI 生成中的用法**：
@@ -351,43 +351,43 @@ else:
 
 ### 來源優先順序
 
-約束條件使用三層優先順序進行協調：
+約束條件使用三層優先順序進行調和：
 
 1. **EXISTING**（信心度：1.0）
    - 在原始 OpenAPI 規格中明確設定
-   - 永不被覆寫
+   - 永不被覆蓋
 
 2. **DISCOVERY**（信心度：0.99）
    - 從即時 F5 XC API 回應中擷取
    - 包含來自 x-ves-validation-rules 的驗證規則
-   - 覆寫推斷的約束條件
+   - 覆蓋推斷的約束條件
 
 3. **INFERRED**（信心度：0.50-0.95）
-   - 從欄位名稱進行模式比對
-   - 最低優先順序，被探索或明確約束條件覆寫
+   - 根據欄位名稱進行模式比對
+   - 最低優先順序，被探索或明確約束條件覆蓋
 
 ### 探索資料來源
 
-探索約束條件從以下來源擷取：
+探索約束條件擷取自：
 
-1. **x-ves-validation-rules**：原生 F5 驗證擴展
+1. **x-ves-validation-rules**：原生 F5 驗證擴充
    - `ves.io.schema.rules.string.max_len` → `maxLength`
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
 
 2. **錯誤目錄**：指示約束條件違規的 API 錯誤訊息
-   - "name must be 1-63 characters" → minLength/maxLength
-   - "port must be between 1 and 65535" → minimum/maximum
+   - 「name must be 1-63 characters」→ minLength/maxLength
+   - 「port must be between 1 and 65535」→ minimum/maximum
 
 3. **回應驗證**：展示有效值的成功 API 回應
    - 觀察到的值範圍
-   - 實際的格式模式
+   - 實際格式模式
 
 ---
 
 ## 工具整合指南
 
-### AI 助手整合
+### AI 助理整合
 
 **生成有效的資源名稱**：
 ```python
@@ -395,14 +395,14 @@ def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
 
     if not constraints.get("deterministic"):
-        # Ask user for name
+        # 詢問使用者名稱
         return prompt_user("Enter resource name: ")
 
-    # Generate automatically
+    # 自動生成
     pattern = constraints.get("pattern")
     max_len = constraints.get("maxLength", 63)
 
-    # Generate valid name matching pattern
+    # 生成符合模式的有效名稱
     return generate_dns_label(max_length=max_len)
 ```
 
@@ -414,14 +414,14 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # Check length (constraint keys are at top level)
+    # 檢查長度（約束條件鍵位於頂層）
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
     if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
         return False, f"{field_name} must be at most {constraints['maxLength']} characters"
 
-    # Check pattern
+    # 檢查模式
     if "pattern" in constraints:
         import re
         if not re.match(constraints["pattern"], user_value):
@@ -434,7 +434,7 @@ def validate_cli_input(field_name, user_value, constraints):
 
 ### Terraform 提供者整合
 
-**架構生成**：
+**Schema 生成**：
 ```go
 func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
     constraints := property["x-f5xc-constraints"].(map[string]interface{})
@@ -443,7 +443,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // Constraint keys are at top level (no nested "string" wrapper)
+    // 約束條件鍵位於頂層（無巢狀 "string" 包裝器）
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -458,9 +458,9 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 }
 ```
 
-### IDE 擴展整合
+### IDE 擴充套件整合
 
-**自動完成和驗證**：
+**自動完成與驗證**：
 ```typescript
 function provideCompletions(field: FieldInfo): CompletionItem[] {
     const constraints = field.schema['x-f5xc-constraints'];
@@ -468,7 +468,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // Add format-specific completions
+    // 新增格式特定的自動完成
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -477,7 +477,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
         });
     }
 
-    // Add validation hint
+    // 新增驗證提示
     if (constraints.deterministic) {
         items.push({
             label: '✨ Auto-generate',
@@ -497,36 +497,36 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ### 高信心度模式（0.95-0.99）
 
-| 模式 | 欄位名稱正規表示式 | 約束條件類型 | 範例 |
+| 模式 | 欄位名稱正規表達式 | 約束條件類型 | 範例 |
 |---------|------------------|-----------------|---------|
-| DNS 標籤 | `\bname$` | 字串（1-63 個字元，dns-label） | `my-service` |
-| 命名空間 | `\bnamespace$` | 字串（1-63 個字元，dns-label） | `production` |
-| 連接埠 | `\bport$` | 數值（1-65535） | `443` |
-| VLAN ID | `\b(vlan)?_?id$` | 數值（1-4094） | `100` |
-| UUID | `\buuid$` | 字串（36 個字元，uuid 格式） | `550e8400-...` |
-| 電子郵件 | `\bemail$` | 字串（最多 254 個字元，email） | `user@example.com` |
-| 時間戳記 | `\b(timestamp\|created_at\|updated_at)$` | 字串（ISO 8601） | `2026-01-19T12:00:00Z` |
+| DNS 標籤 | `\bname$` | String（1-63 字元，dns-label） | `my-service` |
+| 命名空間 | `\bnamespace$` | String（1-63 字元，dns-label） | `production` |
+| 連接埠 | `\bport$` | Number（1-65535） | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | Number（1-4094） | `100` |
+| UUID | `\buuid$` | String（36 字元，uuid 格式） | `550e8400-...` |
+| 電子郵件 | `\bemail$` | String（最長 254 字元，email） | `user@example.com` |
+| 時間戳記 | `\b(timestamp\|created_at\|updated_at)$` | String（ISO 8601） | `2026-01-19T12:00:00Z` |
 
 ### 中等信心度模式（0.80-0.94）
 
-| 模式 | 欄位名稱正規表示式 | 約束條件類型 | 範例 |
+| 模式 | 欄位名稱正規表達式 | 約束條件類型 | 範例 |
 |---------|------------------|-----------------|---------|
-| 使用者名稱 | `\b(user\|username)$` | 字串（1-64 個字元，英數字） | `admin` |
-| 顯示名稱 | `\b(display_?)?name$` | 字串（1-256 個字元，自由文字） | `My Service` |
-| 描述 | `\b(comment\|description\|note)$` | 字串（最多 4096 個字元） | `Service description` |
-| 路徑 | `\bpath$` | 字串（最多 2048 個字元） | `/api/v1/resources` |
+| 使用者名稱 | `\b(user\|username)$` | String（1-64 字元，英數字元） | `admin` |
+| 顯示名稱 | `\b(display_?)?name$` | String（1-256 字元，自由文字） | `My Service` |
+| 描述 | `\b(comment\|description\|note)$` | String（最長 4096 字元） | `Service description` |
+| 路徑 | `\bpath$` | String（最長 2048 字元） | `/api/v1/resources` |
 
 ---
 
-## 支援與回饋
+## 支援與意見回饋
 
 - **問題回報**：在 https://github.com/f5xc-salesdemos/api-specs-enriched/issues 回報約束條件準確性問題
-- **文件**：完整 API 文件位於 https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **文件**：完整 API 文件請參閱 https://f5xc-salesdemos.github.io/api-specs-enriched/
 - **MCP 整合**：請參閱 `f5xc-api-mcp` 儲存庫以取得 MCP 伺服器整合範例
 
 ---
 
 **版本**：3.3.0
 **最後更新**：2026-01-19
-**已協調的約束條件**：9,851
-**模式覆蓋**：50+ 種類型
+**已調和約束條件數**：9,851
+**模式涵蓋範圍**：50+ 種類型

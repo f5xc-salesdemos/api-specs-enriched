@@ -1,6 +1,6 @@
 ---
-title: "\U0001F50F Blindfold API"
-description: 'सीक्रेट एन्क्रिप्शन, की पॉलिसीज़, और ऑडिट ट्रेल्स।'
+title: "\U0001F50F ब्लाइंडफोल्ड API"
+description: 'सीक्रेट एन्क्रिप्शन, कुंजी नीतियाँ, और ऑडिट ट्रेल्स।'
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-पॉलिसी-आधारित एक्सेस नियंत्रणों के साथ एन्क्रिप्शन की प्रबंधन। ऑडिट लॉगिंग और सुरक्षित डेटा सुरक्षा।
+नीति-आधारित एक्सेस नियंत्रणों के साथ एन्क्रिप्शन कुंजी प्रबंधन। ऑडिट लॉगिंग और सुरक्षित डेटा संरक्षण।
 
 - **श्रेणी**: सुरक्षा
 - **जटिलता**: मध्यम
@@ -18,52 +18,52 @@ i18n:
 
 ## उपयोग के मामले
 
-- एन्क्रिप्शन के लिए सीक्रेट पॉलिसीज़ कॉन्फ़िगर करें
+- एन्क्रिप्शन के लिए सीक्रेट नीतियाँ कॉन्फ़िगर करें
 - संवेदनशील डेटा एन्क्रिप्शन प्रबंधित करें
-- डेटा सुरक्षा पॉलिसीज़ लागू करें
+- डेटा संरक्षण नीतियाँ लागू करें
 
 ## प्राथमिक संसाधन
 
-- **blindfold_secret**: Blindfold एन्क्रिप्शन का उपयोग करके एन्क्रिप्टेड सीक्रेट
-- **secret_policy**: सीक्रेट प्रबंधन पॉलिसी कॉन्फ़िगरेशन
-- **policy_document**: एक्सेस नियंत्रण परिभाषाओं के लिए पॉलिसी दस्तावेज़
+- **blindfold_secret**: ब्लाइंडफोल्ड एन्क्रिप्शन का उपयोग करके एन्क्रिप्टेड सीक्रेट
+- **secret_policy**: सीक्रेट प्रबंधन नीति कॉन्फ़िगरेशन
+- **policy_document**: एक्सेस नियंत्रण परिभाषाओं के लिए नीति दस्तावेज़
 
 ## एंडपॉइंट्स
 
-| मेथड | पथ | विवरण |
+| विधि | पथ | विवरण |
 |--------|------|-------------|
-| GET | `/api/secret_management/get_public_key` | पब्लिक की। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | पॉलिसी दस्तावेज़। |
-| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | DecryptSecret। |
-| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | ProcessPolicyInformation। |
+| GET | `/api/secret_management/get_public_key` | सार्वजनिक कुंजी। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | नीति दस्तावेज़। |
+| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | सीक्रेट डिक्रिप्ट करें। |
+| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | नीति जानकारी प्रोसेस करें। |
 | POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | VoltShare एक्सेस काउंट क्वेरी। |
 | POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | ऑडिट लॉग क्वेरी। |
 | POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | ऑडिट लॉग एग्रीगेशन क्वेरी। |
 | GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | ऑडिट लॉग स्क्रॉल क्वेरी। |
 | POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | ऑडिट लॉग स्क्रॉल क्वेरी। |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | सीक्रेट मैनेजमेंट एक्सेस बनाएं। |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | सीक्रेट मैनेजमेंट एक्सेस प्रतिस्थापित करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | सीक्रेट मैनेजमेंट एक्सेस सूची। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | सीक्रेट मैनेजमेंट एक्सेस प्राप्त करें। |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | सीक्रेट मैनेजमेंट एक्सेस हटाएं। |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | सीक्रेट पॉलिसी बनाएं। |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | सीक्रेट पॉलिसी प्रतिस्थापित करें। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | सीक्रेट पॉलिसी सूची। |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | दिए गए पॉलिसी नाम के साथ सीक्रेट पॉलिसी पुनर्प्राप्त करें। |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | दिए गए पॉलिसी नाम के साथ सीक्रेट पॉलिसी हटाएं। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | सीक्रेट पॉलिसी सूची। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | सीक्रेट पॉलिसी प्राप्त करें। |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | सीक्रेट पॉलिसी हटाएं। |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | सीक्रेट पॉलिसी रूल बनाएं। |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | सीक्रेट पॉलिसी रूल प्रतिस्थापित करें। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | सीक्रेट पॉलिसी रूल सूची। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | सीक्रेट पॉलिसी रूल प्राप्त करें। |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | सीक्रेट पॉलिसी रूल हटाएं। |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | VoltShare एडमिन पॉलिसी बनाएं। |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | VoltShare एडमिन पॉलिसी प्रतिस्थापित करें। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | VoltShare एडमिन पॉलिसी सूची। |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | VoltShare एडमिन पॉलिसी प्राप्त करें। |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | VoltShare एडमिन पॉलिसी हटाएं। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | सीक्रेट प्रबंधन एक्सेस बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | सीक्रेट प्रबंधन एक्सेस बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | सीक्रेट प्रबंधन एक्सेस सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | सीक्रेट प्रबंधन एक्सेस प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | सीक्रेट प्रबंधन एक्सेस हटाएँ। |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | सीक्रेट नीति बनाएँ। |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | सीक्रेट नीति बदलें। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | सीक्रेट नीति सूची। |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | दिए गए नीति नाम से सीक्रेट नीति पुनर्प्राप्त करें। |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | दिए गए नीति नाम से सीक्रेट नीति हटाएँ। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | सीक्रेट नीति सूची। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | सीक्रेट नीति प्राप्त करें। |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | सीक्रेट नीति हटाएँ। |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | सीक्रेट नीति नियम बनाएँ। |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | सीक्रेट नीति नियम बदलें। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | सीक्रेट नीति नियम सूची। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | सीक्रेट नीति नियम प्राप्त करें। |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | सीक्रेट नीति नियम हटाएँ। |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | VoltShare एडमिन नीति बनाएँ। |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | VoltShare एडमिन नीति बदलें। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | VoltShare एडमिन नीति सूची। |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | VoltShare एडमिन नीति प्राप्त करें। |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | VoltShare एडमिन नीति हटाएँ। |
 
 ## लिंक
 

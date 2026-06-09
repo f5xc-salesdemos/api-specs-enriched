@@ -1,6 +1,6 @@
 ---
 title: 開發指南
-description: F5 XC API 增強管線的開發工作流程
+description: F5 XC API 擴充管線的開發工作流程
 sidebar:
   order: 1
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-本指南描述 F5 XC API 增強管線的開發工作流程。
+本指南描述 F5 XC API 擴充管線的開發工作流程。
 
 ## 快速開始
 
@@ -74,7 +74,7 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 | 目錄 | 用途 | Git 狀態 |
 |-----------|---------|------------|
 | `specs/original/` | F5 來源規格 | Gitignored |
-| `specs/discovered/` | API 探索輸出 | 已追蹤（openapi.json、session.json） |
+| `specs/discovered/` | API 探索輸出 | 已追蹤 (openapi.json, session.json) |
 | `docs/specifications/api/` | 產生的領域規格 | Gitignored |
 | `scripts/` | Python 管線腳本 | 已追蹤 |
 | `config/` | 管線設定 | 已追蹤 |
@@ -85,7 +85,7 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 ### 1. 探索工作流程
 
 **前置條件**：
-- 連線至 F5 XC 環境的 VPN 連線
+- 連線至 F5 XC 環境的 VPN
 - 有效的 API 憑證
 
 ```bash
@@ -103,20 +103,20 @@ jq '.statistics' specs/discovered/session.json
 make push-discovery
 ```
 
-**探索擷取的內容**：
+**探索會擷取**：
 - 實際的必填/選填欄位
 - 來自即時回應的列舉值
 - 預設值
 - 模式驗證
 - 回應範例
 
-### 2. 發布工作流程
+### 2. 發佈工作流程
 
-發布已自動化：
+發佈是自動化的：
 
-1. 每日排程（UTC 上午 6 點）或推送至 main 觸發工作流程
+1. 每日排程（UTC 6 AM）或推送至 main 會觸發工作流程
 2. ETag 檢查判斷 F5 規格是否有變更
-3. 管線處理並增強規格
+3. 管線處理並擴充規格
 4. 版本從 git 標籤計算：`git describe --tags --abbrev=0`
 5. 直接提交 + 建立標籤（無版本升級 PR）
 6. 建立 GitHub Release 與變更日誌
@@ -126,10 +126,10 @@ make push-discovery
 
 | 條件 | 升級類型 | 範例 |
 |-----------|-----------|---------|
-| 提交訊息中包含 `[major]` | 主版本 | 1.0.0 → 2.0.0 |
-| 提交訊息中包含 `BREAKING CHANGE` | 主版本 | 1.0.0 → 2.0.0 |
-| 新增領域規格 | 次版本 | 1.0.0 → 1.1.0 |
-| 任何其他變更 | 修補版本 | 1.0.0 → 1.0.1 |
+| 提交訊息中包含 `[major]` | 主要版本 | 1.0.0 → 2.0.0 |
+| 提交訊息中包含 `BREAKING CHANGE` | 主要版本 | 1.0.0 → 2.0.0 |
+| 新增領域規格 | 次要版本 | 1.0.0 → 1.1.0 |
+| 其他任何變更 | 修補版本 | 1.0.0 → 1.0.1 |
 
 ### 3. 開發工作流程
 
@@ -159,9 +159,9 @@ gh pr create
 探索會檢視即時的 F5 XC API 以尋找：
 
 - **未記錄的約束**：OpenAPI 中未標記的必填欄位
-- **實際列舉值**：在生產環境中看到的真實值
+- **實際列舉值**：在生產環境中實際出現的值
 - **預設行為**：欄位省略時伺服器套用的值
-- **回應模式**：實際的資料結構
+- **回應模式**：實際的資料形狀
 
 ### 探索設定
 
@@ -183,9 +183,9 @@ discovery:
     detect_constraints: true
 ```
 
-### 探索擴充屬性
+### 探索擴充
 
-探索會將 `x-discovered-*` 擴充屬性新增至規格中：
+探索會將 `x-discovered-*` 擴充加入規格中：
 
 ```json
 {
@@ -207,9 +207,9 @@ make constraint-report
 # Output: reports/constraint-analysis.md
 ```
 
-## 發布流程
+## 發佈流程
 
-### 發布套件內容
+### 發佈套件內容
 
 ```text
 f5xc-api-specs-v1.0.14.zip
@@ -233,7 +233,7 @@ gh run watch
 
 ## 設定指南
 
-### 增強設定
+### 擴充設定
 
 ```yaml
 # config/enrichment.yaml
@@ -268,7 +268,7 @@ normalization:
     enabled: true
 ```
 
-### Spectral 語法檢查規則
+### Spectral 檢查規則
 
 ```yaml
 # config/spectral.yaml
@@ -280,34 +280,34 @@ rules:
   operation-tags: warn
 ```
 
-## OpenAPI 擴充屬性
+## OpenAPI 擴充
 
-增強管線使用供應商擴充屬性來嵌入驗證和預設值的中繼資料。
+擴充管線使用供應商擴充來嵌入驗證和預設值中繼資料。
 
-### 擴充屬性分類
+### 擴充類別
 
-| 擴充屬性 | 意義 | 影響 |
+| 擴充 | 含義 | 影響 |
 |-----------|---------|-------------|
-| `x-f5xc-server-default` | F5 XC API 伺服器在欄位省略時套用此值 | 欄位為選填；省略它會產生文件記錄的預設行為 |
+| `x-f5xc-server-default` | F5 XC API 伺服器在欄位省略時套用此值 | 欄位為選填；省略時會產生文件記載的預設行為 |
 | `x-f5xc-recommended-value` | F5 XC 網頁主控台為新資源預先填入此值 | 欄位沒有伺服器預設值，但此值代表典型設定 |
-| `x-f5xc-recommended-oneof-variant` | F5 XC 主控台預先選取此 OneOf 變體 | 識別當存在多個互斥選項時的典型選擇 |
-| `x-f5xc-conflicts-with` | 列出無法與此欄位一起使用的其他屬性 | 屬性為 OneOf 群組的一部分；衝突屬性中只能指定一個 |
+| `x-f5xc-recommended-oneof-variant` | F5 XC 主控台預先選取此 OneOf 變體 | 當存在多個互斥選項時，識別典型的選擇 |
+| `x-f5xc-conflicts-with` | 列出不能與此欄位同時使用的其他屬性 | 屬性是 OneOf 群組的一部分；只能指定衝突屬性中的一個 |
 
-### 必填欄位擴充屬性
+### 必填欄位擴充
 
-| 擴充屬性 | 來源 | 用途 |
+| 擴充 | 來源 | 用途 |
 |-----------|--------|---------|
 | `x-ves-required: "true"` | F5 XC 原始規格 | 欄位需要非零/非空值 |
-| `x-f5xc-required-for` | 增強管線 | 情境特定的必填狀態 |
+| `x-f5xc-required-for` | 擴充管線 | 特定情境的必填狀態 |
 
 **x-f5xc-required-for 情境**：
 - `create`：建立資源時為必填
 - `update`：更新資源時為必填
-- `minimum_config`：最小可行設定所必需
+- `minimum_config`：最小可行設定時為必填
 
-### 預設值與 OneOf 擴充屬性
+### 預設值與 OneOf 擴充
 
-| 擴充屬性 | 用途 |
+| 擴充 | 用途 |
 |-----------|---------|
 | `x-f5xc-server-default: true` | 標記伺服器套用的預設值 |
 | `x-f5xc-recommended-value` | F5 XC 主控台預先填入的值 |
@@ -318,7 +318,7 @@ rules:
 
 **類型**：`boolean`
 
-當為 `true` 時，表示伴隨的 `default` 值由 F5 XC API 伺服器強制執行。具有此擴充屬性的欄位可以安全地從 API 請求中省略——伺服器會自動套用預設值。
+當為 `true` 時，表示附帶的 `default` 值由 F5 XC API 伺服器強制執行。具有此擴充的欄位可以安全地從 API 請求中省略 — 伺服器會自動套用預設值。
 
 ```yaml
 use_http2:
@@ -329,7 +329,7 @@ use_http2:
 
 #### x-f5xc-recommended-value
 
-**類型**：`any`（與欄位類型相符）
+**類型**：`any`（與欄位類型匹配）
 
 指定 F5 XC 網頁主控台用作預先填入預設值的值。此值不由伺服器強制執行，但代表透過主控台建立新資源時的典型起始設定。
 
@@ -341,7 +341,7 @@ timeout:
 
 #### x-f5xc-recommended-oneof-variant
 
-**類型**：`object`（群組名稱對應變體名稱的映射）
+**類型**：`object`（群組名稱到變體名稱的映射）
 
 對於具有互斥欄位群組的結構描述，識別哪個變體是預設或最常見的選擇。鍵是 OneOf 群組名稱，值是建議的變體欄位名稱。
 
@@ -356,9 +356,9 @@ healthcheckCreateSpecType:
 
 **類型**：字串 `array`
 
-**新增於**：v3.2.0（Issue #494）
+**新增於**：v3.2.0 (Issue #494)
 
-宣告 OneOf 群組成員之間的互斥關係。從 `x-ves-oneof-field-*` 擴充屬性自動衍生。這使下游工具（Terraform、CLI、MCP）能在結構描述層級而非執行時期驗證衝突。
+宣告 OneOf 群組成員之間的互斥關係。自動從 `x-ves-oneof-field-*` 擴充衍生而來。這使下游工具（Terraform、CLI、MCP）能夠在結構描述層級而非執行階段驗證衝突。
 
 ```yaml
 host_header:
@@ -373,14 +373,14 @@ use_origin_server_name:
 **使用案例**：
 - Terraform 提供者可以產生驗證規則
 - CLI 工具可以警告衝突的欄位組合
-- AI 助手可以產生正確的 OneOf 設定
+- AI 助理可以產生正確的 OneOf 設定
 - IDE 擴充套件可以提供衝突感知的自動完成
 
-**來源**：在管線增強期間從 F5 原生的 `x-ves-oneof-field-*` 擴充屬性自動衍生。
+**來源**：在管線擴充期間自動從 F5 原生 `x-ves-oneof-field-*` 擴充衍生。
 
 ### 驗證規則影響
 
-增強器會檢查 `x-ves-validation-rules` 以推斷必填狀態：
+擴充器會檢查 `x-ves-validation-rules` 以推斷必填狀態：
 
 | 規則 | 影響 |
 |------|-------------|
@@ -391,7 +391,7 @@ use_origin_server_name:
 
 ### 具有伺服器套用預設值的資源
 
-某些資源接受空規格，因為伺服器會套用預設值：
+部分資源接受空的規格，因為伺服器會套用預設值：
 
 | 資源 | 伺服器套用的預設值 |
 |----------|------------------------|
@@ -406,7 +406,7 @@ use_origin_server_name:
 
 | 模式 | 類型 | 範例 |
 |---------|------|---------|
-| `\{\}` | 空物件（選項選取） | `monitoring: \{\}` |
+| `\{\}` | 空物件（選擇選取） | `monitoring: \{\}` |
 | `[]` | 空陣列 | `expected_status_codes: []` |
 | `0` | 數值 | `jitter: 0` |
 | `""` | 字串 | `expected_response: ""` |
@@ -414,15 +414,15 @@ use_origin_server_name:
 
 ### 新增探索到的預設值
 
-1. 透過 API 在 F5 XC 中使用最小規格建立資源
-2. 回讀資源以查看伺服器套用的值
-3. 在 `config/discovered_defaults.yaml` 中記錄預設值
+1. 透過 API 以最小規格在 F5 XC 中建立資源
+2. 讀回資源以查看伺服器套用的值
+3. 將預設值記錄在 `config/discovered_defaults.yaml` 中
 4. 執行管線：`make pipeline`
 5. 驗證：`jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
 
 ## 疑難排解
 
-### Pre-commit 執行時間過長
+### Pre-commit 耗時過長
 
 管線在每次提交時執行以確保一致性。對於進行中的工作提交：
 
@@ -445,18 +445,18 @@ echo $F5XC_API_URL
 # Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### 產生的規格出現語法檢查錯誤
+### 產生的規格出現檢查錯誤
 
 ```bash
 # Check lint report
 cat reports/lint-report.json | jq '.errors'
 ```
 
-在增強/正規化設定中修正問題，而非在輸出檔案中修改。
+在擴充/正規化設定中修正問題，而非修改輸出檔案。
 
 ### 版本系統
 
-版本從 git 標籤衍生（例如 `v2.0.38`），消除了因並行 PR 造成的合併衝突的競爭條件。
+版本從 git 標籤衍生（例如 `v2.0.38`），消除了因並行 PR 造成合併衝突的競態條件。
 
 ```python
 # Version is calculated dynamically from git tags
@@ -466,7 +466,7 @@ version = get_version_from_tags()  # Returns "2.0.38"
 
 ### Clone 後缺少規格
 
-產生的規格已加入 gitignore：
+產生的規格已被 gitignore：
 
 ```bash
 make build  # Downloads and generates everything
@@ -474,7 +474,7 @@ make build  # Downloads and generates everything
 
 ### 大檔案被阻擋
 
-在 `.pre-commit-config.yaml` 中新增排除規則：
+在 `.pre-commit-config.yaml` 中新增排除項：
 
 ```yaml
 - id: check-added-large-files
@@ -491,8 +491,8 @@ make build  # Downloads and generates everything
 | `make rebuild` | 快速重建（跳過下載） |
 | `make download` | 下載規格（ETag 快取） |
 | `make download-force` | 強制下載 |
-| `make pipeline` | 執行增強管線 |
-| `make lint` | Spectral 語法檢查 |
+| `make pipeline` | 執行擴充管線 |
+| `make lint` | Spectral 檢查 |
 | `make serve` | 本地文件伺服器 |
 | `make discover` | API 探索（需要 VPN） |
 | `make push-discovery` | 提交探索資料 |
@@ -504,18 +504,18 @@ make build  # Downloads and generates everything
 | 變數 | 用途 |
 |----------|---------|
 | `F5XC_API_URL` | F5 XC 租戶 API URL |
-| `F5XC_API_TOKEN` | API 認證令牌 |
+| `F5XC_API_TOKEN` | API 驗證權杖 |
 
-### 重要檔案
+### 關鍵檔案
 
 | 檔案 | 用途 |
 |------|---------|
-| `.etag` | 最後下載的 ETag |
+| `.etag` | 上次下載的 ETag |
 | `CHANGELOG.md` | 自動產生的變更日誌 |
-| `config/enrichment.yaml` | 增強規則 |
+| `config/enrichment.yaml` | 擴充規則 |
 | `config/normalization.yaml` | 正規化規則 |
 | `config/discovery.yaml` | 探索設定 |
-| `config/spectral.yaml` | 語法檢查規則 |
+| `config/spectral.yaml` | 檢查規則 |
 | `scripts/utils/version_calculator.py` | 基於標籤的版本計算 |
 
-**注意**：版本從 git 標籤衍生（例如 `v2.0.38`），而非從 `.version` 檔案取得。
+**注意**：版本從 git 標籤衍生（例如 `v2.0.38`），而非從 `.version` 檔案。

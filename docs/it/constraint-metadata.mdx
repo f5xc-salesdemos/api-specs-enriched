@@ -1,8 +1,8 @@
 ---
-title: Sistema di Metadati dei Vincoli
+title: Sistema di Metadati per i Vincoli
 description: >-
-  Metadati completi sui vincoli per la generazione deterministica tramite AI e
-  la validazione
+  Metadati completi per i vincoli per la generazione AI deterministica e la
+  validazione
 sidebar:
   order: 2
 i18n:
@@ -10,7 +10,7 @@ i18n:
   translator: machine
 ---
 
-**Scopo**: Metadati completi sui vincoli per la generazione deterministica tramite AI, la validazione CLI e l'applicazione dello schema Terraform.
+**Scopo**: Metadati completi per i vincoli per la generazione AI deterministica, la validazione CLI e l'applicazione dello schema Terraform.
 
 **Estensione**: `x-f5xc-constraints`
 **Versione**: 3.3.0
@@ -26,8 +26,8 @@ i18n:
 3. [Tipi di Vincoli](#constraint-types)
 4. [Descrizioni in Linguaggio Naturale](#natural-language-descriptions)
 5. [Esempi di Validazione](#validation-examples)
-6. [Punteggi di Confidenza](#confidence-scores)
-7. [Integrazione Discovery](#discovery-integration)
+6. [Punteggi di Affidabilità](#confidence-scores)
+7. [Integrazione con la Discovery](#discovery-integration)
 8. [Guida all'Integrazione degli Strumenti](#tool-integration-guide)
 
 ---
@@ -36,17 +36,17 @@ i18n:
 
 L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli di validazione dei campi, abilitando:
 
-- **Assistenti AI**: Generazione di configurazioni valide senza richiedere all'utente dettagli sui vincoli
-- **Strumenti CLI**: Suggerimenti di input accurati, validazione e messaggi di errore
-- **Terraform**: Applicazione dei vincoli in fase di pianificazione, non di applicazione
+- **Assistenti AI**: Generare configurazioni valide senza input dell'utente per i dettagli dei vincoli
+- **Strumenti CLI**: Fornire suggerimenti di input accurati, validazione e messaggi di errore
+- **Terraform**: Applicare i vincoli nella fase di plan, non nella fase di apply
 - **Estensioni IDE**: Validazione in tempo reale e suggerimenti di autocompletamento
 - **Validatori API**: Validazione pre-invio per ridurre gli errori API
 
 ### Statistiche di Copertura
 
-- **9.851 vincoli** su tutte le specifiche API F5 XC
+- **9.851 vincoli** in tutte le specifiche API di F5 XC
 - **50+ tipi di pattern** (stringa, array, numerico)
-- **95% di confidenza** sui campi ad alta priorità (nomi, porte, identificatori)
+- **95% di affidabilità** sui campi ad alta priorità (nomi, porte, identificatori)
 - **Riconciliazione a 3 livelli**: ESISTENTE > DISCOVERY > INFERITO
 
 ---
@@ -76,21 +76,21 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 }
 ```
 
-### Descrizione dei Campi
+### Descrizioni dei Campi
 
 | Campo | Tipo | Descrizione |
 |-------|------|-------------|
 | `constraintType` | string | Tipo di dato (string, array, number, object) |
-| `deterministic` | boolean | Flag di alta confidenza (confidenza >= 0.9) per la generazione AI |
+| `deterministic` | boolean | Flag di alta affidabilità (confidence >= 0.9) per la generazione AI |
 | `category` | string | Categoria del vincolo per raggruppamento e reportistica |
-| *(chiavi del vincolo)* | vario | Chiavi del vincolo specifiche per tipo appiattite al livello superiore (es. `minLength`, `maxItems`, `minimum`) |
-| `metadata` | object | Tracciamento dell'origine, confidenza, timestamp di validazione |
+| *(chiavi dei vincoli)* | vari | Chiavi di vincolo specifiche per tipo appiattite al livello superiore (es., `minLength`, `maxItems`, `minimum`) |
+| `metadata` | object | Tracciamento della fonte, affidabilità, timestamp di validazione |
 
 ---
 
 ## Tipi di Vincoli
 
-### Vincoli Stringa
+### Vincoli per Stringhe
 
 ```json
 {
@@ -128,7 +128,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 | Formato | Descrizione | Esempio |
 |---------|-------------|---------|
 | `dns-label` | Etichetta DNS RFC 1123 (1-63 caratteri) | `my-service` |
-| `fqdn` | Nome di dominio completo (Fully Qualified Domain Name) | `api.example.com` |
+| `fqdn` | Nome di dominio completamente qualificato | `api.example.com` |
 | `email` | Indirizzo email RFC 5322 | `user@example.com` |
 | `url` | URI/URL RFC 3986 | `https://example.com/api` |
 | `ipv4` | Indirizzo IPv4 | `192.168.1.1` |
@@ -144,7 +144,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 | `mac-address` | Indirizzo MAC | `00:1A:2B:3C:4D:5E` |
 | `phone` | Numero di telefono E.164 | `+1-555-123-4567` |
 
-### Vincoli Array
+### Vincoli per Array
 
 ```json
 {
@@ -184,10 +184,10 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 
 ## Descrizioni in Linguaggio Naturale
 
-### Vincoli di Formato Stringa
+### Vincoli di Formato per Stringhe
 
 **Etichette DNS** (`format: "dns-label"`):
-- I nomi delle etichette DNS devono essere composti da 1-63 caratteri alfanumerici minuscoli
+- I nomi delle etichette DNS devono contenere da 1 a 63 caratteri alfanumerici minuscoli
 - I trattini sono consentiti ma non all'inizio/fine (RFC 1123)
 - Esempio: `my-service`, `api-gateway`, `lb-prod-01`
 
@@ -197,7 +197,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 - Esempio: `admin@example.com`, `api+webhook@service.io`
 
 **FQDN** (`format: "fqdn"`):
-- I nomi di dominio completi devono essere composti da 1-253 caratteri
+- I nomi di dominio completamente qualificati devono contenere da 1 a 253 caratteri
 - Etichette DNS separate da punti
 - Esempio: `api.example.com`, `service.production.internal`
 
@@ -230,7 +230,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 **Timeout**:
 - I timeout devono essere compresi tra 1 e 3600 secondi (massimo 1 ora)
 
-### Vincoli Array
+### Vincoli per Array
 
 **Pool di Origine**:
 - L'array dei pool di origine richiede almeno 1 elemento, massimo 50 elementi
@@ -244,7 +244,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 
 ## Esempi di Validazione
 
-### Esempio 1: Validazione Nome Etichetta DNS
+### Esempio 1: Validazione del Nome come Etichetta DNS
 
 **Vincolo**:
 ```json
@@ -271,7 +271,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 - ❌ `my_service` (underscore non consentito)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (troppo lungo)
 
-### Esempio 2: Validazione Numero di Porta
+### Esempio 2: Validazione del Numero di Porta
 
 **Vincolo**:
 ```json
@@ -290,12 +290,12 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 - ✅ `65535` (porta massima)
 
 **Valori Non Validi**:
-- ❌ `0` (inferiore al minimo)
-- ❌ `65536` (superiore al massimo)
+- ❌ `0` (sotto il minimo)
+- ❌ `65536` (sopra il massimo)
 - ❌ `-1` (negativo)
 - ❌ `"80"` (stringa, non numero)
 
-### Esempio 3: Validazione Dimensione Array
+### Esempio 3: Validazione della Dimensione dell'Array
 
 **Vincolo**:
 ```json
@@ -313,27 +313,27 @@ L'estensione `x-f5xc-constraints` fornisce conoscenza deterministica sui vincoli
 - ✅ `["origin-1", "origin-2", "origin-3"]` (3 elementi, tutti unici)
 
 **Valori Non Validi**:
-- ❌ `[]` (inferiore al minimo)
+- ❌ `[]` (sotto il minimo)
 - ❌ `["origin-1", "origin-1"]` (elementi duplicati)
-- ❌ `[array con 51 elementi]` (superiore al massimo)
+- ❌ `[array con 51 elementi]` (sopra il massimo)
 
 ---
 
-## Punteggi di Confidenza
+## Punteggi di Affidabilità
 
 ### Interpretazione dei Punteggi
 
 | Intervallo | Interpretazione | Utilizzo |
 |------------|-----------------|----------|
-| 0.90-1.00 | **Alta confidenza** | Flag deterministico abilitato, utilizzare per la generazione AI |
-| 0.70-0.89 | **Media confidenza** | Consultivo, si raccomanda la conferma dell'utente |
-| 0.50-0.69 | **Bassa confidenza** | Solo informativo, richiede la validazione dell'utente |
+| 0.90-1.00 | **Alta affidabilità** | Flag deterministico abilitato, utilizzare per la generazione AI |
+| 0.70-0.89 | **Media affidabilità** | Consigliativo, si raccomanda la conferma dell'utente |
+| 0.50-0.69 | **Bassa affidabilità** | Solo informativo, richiede la validazione dell'utente |
 | < 0.50 | **Molto bassa** | Non incluso nei vincoli |
 
 ### Flag Deterministico
 
 Il flag booleano `deterministic` viene impostato quando:
-- Il punteggio di confidenza è >= 0.9
+- Il punteggio di affidabilità è >= 0.9
 - Il pattern è stato validato rispetto ai dati di discovery OPPURE
 - Il pattern corrisponde a standard ben consolidati (RFC, ISO, ecc.)
 
@@ -349,28 +349,28 @@ else:
 
 ---
 
-## Integrazione Discovery
+## Integrazione con la Discovery
 
 ### Priorità delle Fonti
 
 I vincoli vengono riconciliati utilizzando una priorità a 3 livelli:
 
-1. **ESISTENTE** (Confidenza: 1.0)
+1. **ESISTENTE** (Affidabilità: 1.0)
    - Impostato esplicitamente nella specifica OpenAPI originale
    - Non viene mai sovrascritto
 
-2. **DISCOVERY** (Confidenza: 0.99)
+2. **DISCOVERY** (Affidabilità: 0.99)
    - Estratto dalle risposte live dell'API F5 XC
-   - Include regole di validazione da x-ves-validation-rules
+   - Include le regole di validazione da x-ves-validation-rules
    - Sovrascrive i vincoli inferiti
 
-3. **INFERITO** (Confidenza: 0.50-0.95)
-   - Corrispondenza di pattern basata sui nomi dei campi
-   - Priorità più bassa, sovrascritto da discovery o esplicito
+3. **INFERITO** (Affidabilità: 0.50-0.95)
+   - Individuato tramite pattern matching sui nomi dei campi
+   - Priorità più bassa, sovrascritto dalla discovery o dall'esplicito
 
-### Fonti Dati Discovery
+### Fonti dei Dati di Discovery
 
-I vincoli discovery vengono estratti da:
+I vincoli di discovery vengono estratti da:
 
 1. **x-ves-validation-rules**: Estensioni di validazione native F5
    - `ves.io.schema.rules.string.max_len` → `maxLength`
@@ -381,7 +381,7 @@ I vincoli discovery vengono estratti da:
    - "name must be 1-63 characters" → minLength/maxLength
    - "port must be between 1 and 65535" → minimum/maximum
 
-3. **Validazione delle Risposte**: Risposte API riuscite che dimostrano valori validi
+3. **Validazione delle Risposte**: Risposte API di successo che dimostrano valori validi
    - Intervalli di valori osservati
    - Pattern di formato effettivi
 
@@ -497,26 +497,26 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ## Appendice: Catalogo dei Pattern di Vincolo
 
-### Pattern ad Alta Confidenza (0.95-0.99)
+### Pattern ad Alta Affidabilità (0.95-0.99)
 
-| Pattern | Regex Nome Campo | Tipo di Vincolo | Esempio |
-|---------|------------------|-----------------|---------|
-| Etichetta DNS | `\bname$` | Stringa (1-63 caratteri, dns-label) | `my-service` |
-| Namespace | `\bnamespace$` | Stringa (1-63 caratteri, dns-label) | `production` |
+| Pattern | Regex del Nome Campo | Tipo di Vincolo | Esempio |
+|---------|----------------------|-----------------|---------|
+| Etichetta DNS | `\bname$` | Stringa (1-63 car., dns-label) | `my-service` |
+| Namespace | `\bnamespace$` | Stringa (1-63 car., dns-label) | `production` |
 | Porta | `\bport$` | Numero (1-65535) | `443` |
 | ID VLAN | `\b(vlan)?_?id$` | Numero (1-4094) | `100` |
-| UUID | `\buuid$` | Stringa (36 caratteri, formato uuid) | `550e8400-...` |
-| Email | `\bemail$` | Stringa (max 254 caratteri, email) | `user@example.com` |
+| UUID | `\buuid$` | Stringa (36 car., formato uuid) | `550e8400-...` |
+| Email | `\bemail$` | Stringa (max 254 car., email) | `user@example.com` |
 | Timestamp | `\b(timestamp\|created_at\|updated_at)$` | Stringa (ISO 8601) | `2026-01-19T12:00:00Z` |
 
-### Pattern a Media Confidenza (0.80-0.94)
+### Pattern a Media Affidabilità (0.80-0.94)
 
-| Pattern | Regex Nome Campo | Tipo di Vincolo | Esempio |
-|---------|------------------|-----------------|---------|
-| Nome Utente | `\b(user\|username)$` | Stringa (1-64 caratteri, alfanumerico) | `admin` |
-| Nome Visualizzato | `\b(display_?)?name$` | Stringa (1-256 caratteri, testo libero) | `My Service` |
-| Descrizione | `\b(comment\|description\|note)$` | Stringa (max 4096 caratteri) | `Service description` |
-| Percorso | `\bpath$` | Stringa (max 2048 caratteri) | `/api/v1/resources` |
+| Pattern | Regex del Nome Campo | Tipo di Vincolo | Esempio |
+|---------|----------------------|-----------------|---------|
+| Nome Utente | `\b(user\|username)$` | Stringa (1-64 car., alfanumerico) | `admin` |
+| Nome Visualizzato | `\b(display_?)?name$` | Stringa (1-256 car., testo libero) | `My Service` |
+| Descrizione | `\b(comment\|description\|note)$` | Stringa (max 4096 car.) | `Service description` |
+| Percorso | `\bpath$` | Stringa (max 2048 car.) | `/api/v1/resources` |
 
 ---
 
@@ -529,6 +529,6 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 ---
 
 **Versione**: 3.3.0
-**Ultimo Aggiornamento**: 2026-01-19
+**Ultimo Aggiornamento**: 19-01-2026
 **Vincoli Riconciliati**: 9.851
-**Copertura Pattern**: 50+ tipi
+**Copertura dei Pattern**: 50+ tipi
