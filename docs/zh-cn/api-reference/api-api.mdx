@@ -1,0 +1,92 @@
+---
+title: "\U0001F510 Api API"
+description: 接口定义、模式验证和分组。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 0b685fbf7c03
+  translator: machine
+---
+
+资源编目，支持自动分类和安全画像。组织层级结构按功能或保护策略划分访问权限。
+
+- **类别**：安全
+- **复杂度**：高级
+- **路径数**：45 | **模式数**：279
+- **层级**：高级
+- **相关领域**：`virtual`、`network_security`
+
+## 使用场景
+
+- 发现和编目 API
+- 测试 API 安全性和行为
+- 管理 API 凭据
+- 定义 API 分组和测试策略
+
+## 主要资源
+
+- **api_definition**：用于发现和保护的 API 模式定义
+- **api_endpoint**：单个 API 端点配置和保护
+- **api_rate_limit**：用于流量控制的 API 速率限制配置
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers` | 创建 API 爬虫。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers/&#123;metadata.name&#125;` | 替换 API 爬虫。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers` | 列出 API 爬虫。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | 获取 API 爬虫。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | 删除 API 爬虫。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions` | 创建 API 定义。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions/&#123;metadata.name&#125;` | 替换 API 定义。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions` | 列出 API 定义。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | 获取 API 定义。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | 删除 API 定义。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/loadbalancers` | 获取引用的负载均衡器。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/mark_as_non_api` | 标记为非 API。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/move_to_inventory` | 移至 API 清单。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/remove_from_inventory` | 从 API 清单中移除。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/unmark_as_non_api` | 取消标记为非 API。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions_without_shared` | 列出可用的 API 定义。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys` | 创建 API 发现。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys/&#123;metadata.name&#125;` | 替换 API 发现。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys` | 列出 API 发现。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | 获取 API 发现。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | 删除 API 发现。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups` | 列出 API 分组。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups/&#123;name&#125;` | 获取 API 分组。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements` | 列出 API 分组元素。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements/&#123;name&#125;` | 获取 API 分组元素。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings` | 创建 API 测试。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings/&#123;metadata.name&#125;` | 替换 API 测试。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings` | 列出 API 测试。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | 获取 API 测试。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | 删除 API 测试。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups` | 创建 API 分组。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups/&#123;metadata.name&#125;` | 替换 API 分组。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups` | 列出应用 API 分组。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/evaluate` | 评估 API 分组。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/stats` | 评估 API 分组。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | 获取 API 分组。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | 删除应用 API 分组。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/api_endpoint_protection` | 建议 API 端点保护规则。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/data_exposure` | 建议敏感数据规则。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/oas_validation` | 建议 Open API 规范验证规则。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/rate_limit` | 建议速率限制规则。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations` | 创建代码库集成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations/&#123;metadata.name&#125;` | 替换代码库集成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations` | 列出代码库集成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | 获取代码库集成。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | 删除代码库集成。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys` | 创建发现。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys/&#123;metadata.name&#125;` | 替换发现。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/discovery/&#123;name&#125;/download_certificates` | 下载证书。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys` | 列出发现。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | 获取发现。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | 删除发现。 |
+
+## 链接
+
+- [交互式 API 参考](./api/)
+- [OpenAPI 规范 JSON](../specifications/api/api.json)

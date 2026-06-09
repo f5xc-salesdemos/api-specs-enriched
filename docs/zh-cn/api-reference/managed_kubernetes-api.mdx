@@ -1,0 +1,65 @@
+---
+title: ⚙️ 托管 Kubernetes API
+description: 集群 RBAC、Pod 安全和容器镜像仓库。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 17accfbbab41
+  translator: machine
+---
+
+Kubernetes 角色绑定和准入策略。适用于 EKS、AKS 和 GKE 工作负载的镜像仓库集成。
+
+- **类别**：基础设施
+- **复杂度**：中等
+- **路径数**：20 | **模式数**：95
+- **层级**：高级
+- **相关领域**：`container_services`、`sites`、`service_mesh`
+
+## 使用场景
+
+- 管理 XCKS（托管 Kubernetes）集群 RBAC 和安全性
+- 配置 Pod 安全策略和准入控制器
+- 管理企业部署的容器镜像仓库
+- 与外部 Kubernetes 集群（EKS、AKS、GKE）集成
+
+## 主要资源
+
+- **mk8s_cluster**：托管 Kubernetes 集群配置
+- **k8s_cluster_role**：Kubernetes 集群 RBAC 角色配置
+- **container_registry**：用于工作负载镜像的容器镜像仓库
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys` | 创建容器镜像仓库。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys/&#123;metadata.name&#125;` | 替换容器镜像仓库。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | 列出容器镜像仓库。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | 获取容器镜像仓库。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | 删除容器镜像仓库。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | 创建配置规范。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | 替换配置规范。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | 列出 K8s 集群角色。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | 获取配置规范。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | 删除 K8s 集群角色。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | 创建配置规范。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | 替换配置规范。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | 列出 K8s 集群角色绑定。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | 获取配置规范。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | 删除 K8s 集群角色绑定。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | 创建配置规范。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | 替换配置规范。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | 列出 K8s Pod 安全准入。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | 获取配置规范。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | 删除 K8s Pod 安全准入。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | 创建配置规范。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | 替换配置规范。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | 列出 K8s Pod 安全策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | 获取配置规范。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | 删除 K8s Pod 安全策略。 |
+
+## 链接
+
+- [交互式 API 参考](./managed_kubernetes/)
+- [OpenAPI 规范 JSON](../specifications/api/managed_kubernetes.json)

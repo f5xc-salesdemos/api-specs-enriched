@@ -1,0 +1,71 @@
+---
+title: "\U0001F50F Blindfold API"
+description: การเข้ารหัสลับ นโยบายคีย์ และบันทึกการตรวจสอบ
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: df593022ff97
+  translator: machine
+---
+
+การจัดการคีย์เข้ารหัสด้วยการควบคุมการเข้าถึงตามนโยบาย การบันทึกการตรวจสอบและการปกป้องข้อมูลอย่างปลอดภัย
+
+- **หมวดหมู่**: ความปลอดภัย
+- **ความซับซ้อน**: ปานกลาง
+- **เส้นทาง**: 27 | **สคีมา**: 163
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `client_side_defense`, `certificates`
+
+## กรณีการใช้งาน
+
+- กำหนดค่านโยบายลับสำหรับการเข้ารหัส
+- จัดการการเข้ารหัสข้อมูลที่มีความละเอียดอ่อน
+- บังคับใช้นโยบายการปกป้องข้อมูล
+
+## ทรัพยากรหลัก
+
+- **blindfold_secret**: ข้อมูลลับที่เข้ารหัสโดยใช้การเข้ารหัส Blindfold
+- **secret_policy**: การกำหนดค่านโยบายการจัดการข้อมูลลับ
+- **policy_document**: เอกสารนโยบายสำหรับการกำหนดการควบคุมการเข้าถึง
+
+## ปลายทาง
+
+| วิธีการ | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| GET | `/api/secret_management/get_public_key` | คีย์สาธารณะ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | เอกสารนโยบาย |
+| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | ถอดรหัสข้อมูลลับ |
+| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | ประมวลผลข้อมูลนโยบาย |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | คำค้นจำนวนการเข้าถึง VoltShare |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | คำค้นบันทึกการตรวจสอบ |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | คำค้นการรวมบันทึกการตรวจสอบ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | คำค้นเลื่อนบันทึกการตรวจสอบ |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | คำค้นเลื่อนบันทึกการตรวจสอบ |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | สร้างการเข้าถึงการจัดการข้อมูลลับ |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | แทนที่การเข้าถึงการจัดการข้อมูลลับ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | แสดงรายการการเข้าถึงการจัดการข้อมูลลับ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | ดึงข้อมูลการเข้าถึงการจัดการข้อมูลลับ |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | ลบการเข้าถึงการจัดการข้อมูลลับ |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | สร้างนโยบายข้อมูลลับ |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | แทนที่นโยบายข้อมูลลับ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | แสดงรายการนโยบายข้อมูลลับ |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | กู้คืนนโยบายข้อมูลลับตามชื่อนโยบายที่กำหนด |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | ลบนโยบายข้อมูลลับตามชื่อนโยบายที่กำหนด |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | แสดงรายการนโยบายข้อมูลลับ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | ดึงข้อมูลนโยบายข้อมูลลับ |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | ลบนโยบายข้อมูลลับ |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | สร้างกฎนโยบายข้อมูลลับ |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | แทนที่กฎนโยบายข้อมูลลับ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | แสดงรายการกฎนโยบายข้อมูลลับ |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | ดึงข้อมูลกฎนโยบายข้อมูลลับ |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | ลบกฎนโยบายข้อมูลลับ |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | สร้างนโยบายผู้ดูแล VoltShare |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | แทนที่นโยบายผู้ดูแล VoltShare |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | แสดงรายการนโยบายผู้ดูแล VoltShare |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | ดึงข้อมูลนโยบายผู้ดูแล VoltShare |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | ลบนโยบายผู้ดูแล VoltShare |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./blindfold/)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/blindfold.json)

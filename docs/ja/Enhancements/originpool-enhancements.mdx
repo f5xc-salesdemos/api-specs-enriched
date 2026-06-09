@@ -1,0 +1,265 @@
+---
+title: オリジンプールの拡張
+description: オリジンプールスキーマのエンリッチメントメタデータ
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+origin_pool関連スキーマのエンリッチメントメタデータ。拡張定義については[OpenAPI拡張](../development/#openapi-extensions)を参照してください。
+
+## 拡張対象スキーマ
+
+### パターン
+
+`origin_pool.*SpecType` に一致するすべてのスキーマがエンリッチメントを受けます：
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## 必須フィールド
+
+| フィールド | 必須対象 | 備考 |
+|-------|--------------|-------|
+| `metadata.name` | すべての操作 | 1-63文字、小文字英数字、パターン: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | すべての操作 | 名前空間識別子 |
+| `spec.origin_servers` | 作成 | 最低1項目 |
+| `spec.port` | 作成 | 1-65535、サーバーデフォルトなし |
+
+## 最小構成
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## サーバー適用デフォルト
+
+`x-f5xc-server-default: true` が付与されたフィールドは、リクエストから省略された場合にF5 XC APIサーバーによって `default` 値が適用されます。
+
+### トップレベルフィールド
+
+| フィールド | デフォルト値 | 型 | 説明 |
+|-------|---------------|------|-------------|
+| `no_tls` | `{}` | object | オリジンへのTLSが無効 |
+| `healthcheck` | `[]` | array | ヘルスチェック未設定 |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | ラウンドロビン負荷分散 |
+| `endpoint_selection` | `DISTRIBUTED` | enum | すべてのエンドポイントを使用（ローカル＋リモート） |
+
+### advanced_options のデフォルト
+
+`advanced_options` が指定されていない場合、サーバーはこれらの値が設定されているかのように動作します：
+
+| フィールド | デフォルト値 | 型 | 説明 |
+|-------|---------------|------|-------------|
+| `connection_timeout` | `2000` | integer | 接続タイムアウト（ミリ秒） |
+| `http_idle_timeout` | `300000` | integer | HTTPアイドルタイムアウト（ミリ秒、5分） |
+| `same_as_endpoint_port` | `{}` | object | ヘルスチェックがエンドポイントポートを使用 |
+| `default_circuit_breaker` | `{}` | object | デフォルトのサーキットブレーカー設定 |
+| `disable_outlier_detection` | `{}` | object | 外れ値検出が無効 |
+| `no_panic_threshold` | `{}` | object | パニック閾値なし |
+| `disable_subsets` | `{}` | object | サブセット負荷分散が無効 |
+| `auto_http_config` | `{}` | object | 自動HTTPプロトコルネゴシエーション |
+| `disable_proxy_protocol` | `{}` | object | プロキシプロトコルが無効 |
+| `disable_lb_source_ip_persistance` | `{}` | object | LBソースIP永続性が無効 |
+
+### ネストされたオブジェクトのデフォルト
+
+| パス | デフォルト値 | 説明 |
+|------|---------------|-------------|
+| `origin_servers[].labels` | `{}` | 空のラベルオブジェクト |
+| `origin_servers[].public_name.refresh_interval` | `0` | システムデフォルトのDNSリフレッシュを使用 |
+
+## UIとサーバーデフォルトの不一致
+
+F5 XC WebUIは、フィールドが省略された場合にAPIが適用する値とは異なる値を事前選択します。
+
+| フィールド | UI事前選択値 | サーバー適用値 | 備考 |
+|-------|-----------------|----------------|------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | フィールド省略時、UIで作成されたリソースとAPIで作成されたリソースは異なる |
+
+## 列挙値
+
+### loadbalancer_algorithm
+
+| 値 | 説明 | 備考 |
+|-------|-------------|-------|
+| `ROUND_ROBIN` | 各正常エンドポイントをラウンドロビン順に選択 | サーバーデフォルト |
+| `LEAST_REQUEST` | アクティブリクエスト数が最も少ないエンドポイントを選択 | |
+| `RING_HASH` | エンドポイント名のリングハッシュによる一貫性ハッシュ | |
+| `RANDOM` | 正常なエンドポイントをランダム選択 | |
+| `LB_OVERRIDE` | 親ロードバランサーからハッシュポリシーを継承 | UIデフォルト |
+
+### endpoint_selection
+
+| 値 | 説明 | 備考 |
+|-------|-------------|-------|
+| `DISTRIBUTED` | リモートとローカルの両方のエンドポイントを考慮 | サーバーデフォルト |
+| `LOCAL_ONLY` | ローカルエンドポイントのみ使用 | |
+| `LOCAL_PREFERRED` | ローカルを優先し、利用不可の場合はリモートにフォールバック | |
+
+## OneOfフィールドグループ
+
+相互排他的なフィールドグループ。各グループからは1つのフィールドのみ指定可能です：
+
+| グループ | フィールド | サーバーデフォルト |
+|-------|--------|----------------|
+| ポート設定 | `port`, `automatic_port`, `lb_port` | `port`（明示的） |
+| オリジンへのTLS | `no_tls`, `use_tls` | `no_tls` |
+| ヘルスチェックポート | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
+| サーキットブレーカー | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
+| 外れ値検出 | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| パニック閾値 | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
+| サブセットLB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
+| HTTPプロトコル | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
+| プロキシプロトコル | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
+| LBソースIP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| 接続プール | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## フィールド制約
+
+| フィールド | 型 | 制約 |
+|-------|------|------------|
+| `spec.port` | integer | 1-65535 |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms |
+| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 ms |
+| `spec.advanced_options.panic_threshold` | integer | 0-100（パーセンテージ） |
+| `metadata.name` | string | 1-63文字、パターン: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## UI設定オプション
+
+F5 XC Webコンソールは、オリジンプール用に15の設定オプションを提供します：
+
+| # | UIラベル | APIフィールドパス | 型 | サーバーデフォルト |
+|---|----------|----------------|------|----------------|
+| 1 | オリジンサーバーポート | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port`（明示的） |
+| 2 | 接続プール再利用 | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | ヘルスチェックポート | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | ロードバランサーアルゴリズム | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
+| 5 | エンドポイント選択 | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
+| 6 | オリジンへのTLS | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | 接続タイムアウト | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
+| 8 | HTTPアイドルタイムアウト | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
+| 9 | サーキットブレーカー | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | 外れ値検出 | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | パニック閾値 | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | サブセット負荷分散 | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | HTTPプロトコル | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | プロキシプロトコル | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | LBソースIP永続性 | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## データアクセス
+
+### OpenAPI仕様
+
+| ファイル | 内容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | すべてのスキーマを含むマージ済み仕様 |
+
+### validation.json の構造
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # x-f5xc-server-default: true のフィールド
+├── recommended         # x-f5xc-recommended-value のフィールド
+├── advanced_options    # ネストされた advanced_options のデフォルト
+├── oneof_choices       # OneOf のデフォルト選択
+└── ui_vs_server        # UI とサーバーの不一致
+```
+
+## オリジンサーバータイプ
+
+オリジンサーバーは、異なるタイプバリアントを使用して指定できます。タイプによって必要な追加フィールドが決まります。
+
+### 実装済みタイプ
+
+| タイプ | 説明 | 必須フィールド | ステータス |
+|------|-------------|-----------------|--------|
+| `public_name` | パブリックDNS名によるオリジンサーバー | `dns_name` | ✅ 完了 |
+| `public_ip` | パブリックIPアドレスによるオリジンサーバー | `ip`（IPv4） | ✅ 完了 |
+
+### 例: public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### 例: public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## TODO: サイト依存のオリジンサーバータイプ
+
+以下のオリジンサーバータイプは、実装前に「site」リソースロジックの開発が必要です：
+
+| タイプ | 説明 | 必須フィールド | ステータス |
+|------|-------------|-----------------|--------|
+| `private_ip` | プライベート/パブリックIPとサイト情報によるオリジンサーバー | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 サイトロジック待ち |
+| `private_name` | DNS名とサイト情報によるオリジンサーバー | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 サイトロジック待ち |
+| `k8s_service` | サイト情報を持つKubernetesサービス | `service_name`, `site_locator`, `network_choice` | 🔲 サイトロジック待ち |
+| `consul_service` | サイト情報を持つHashiCorp Consulサービス | `service_name`, `site_locator`, `network_choice` | 🔲 サイトロジック待ち |
+
+### 実装要件
+
+これらのタイプを完全にドキュメント化する前に、以下が必要です：
+
+1. **サイトリソースの調査** - `site` リソーススキーマとsite_locatorパターンのドキュメント化
+2. **Network Choice列挙** - `network_choice` の制約値（site_local_inside、site_local_outsideなど）のドキュメント化
+3. **SNATプールオプション** - SNATプール設定パターンのドキュメント化
+4. **クロスリソース参照** - origin_poolがsiteリソースを参照する方法の定義
+
+### トラッキング
+
+- 設定プレースホルダー: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- 関連スプリント: サイトリソーススキーマのエンリッチメント
+
+## 関連ドキュメント
+
+- [開発ガイド - OpenAPI拡張](../development/#openapi-extensions) - 拡張の定義と使用方法
+- [バリデーション仕様](../validation-spec/) - validation.jsonのフォーマットと構造
+- [ヘルスチェックの拡張](./healthcheck-enhancements/) - ヘルスチェックスキーマのエンリッチメント
+
+## 変更履歴
+
+| バージョン | 日付 | 変更内容 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | public_name/public_ipを含むオリジンサーバータイプセクションを追加、サイト依存タイプのTODOマーカーを追加 |
+| 2.1.1 | 2026-01-18 | 純粋なAPIリファレンスとして書き直し、ダウンストリームコード例を削除 |
+| 2.1.0 | 2026-01-18 | validation.jsonの統合デフォルト構造に更新 |
+| 2.0.33 | 2026-01-17 | オリジンプール拡張ドキュメントの初版 |

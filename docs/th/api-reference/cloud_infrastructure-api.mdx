@@ -1,0 +1,76 @@
+---
+title: ☁️ API โครงสร้างพื้นฐานคลาวด์
+description: 'ตัวเชื่อมต่อ AWS, Azure, GCP และการแนบ VPC'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: ff903a0f3c99
+  translator: machine
+---
+
+การเชื่อมต่อผู้ให้บริการมัลติคลาวด์พร้อมการเพียริ่งเกตเวย์และการกำหนดค่าเส้นทางเครือข่าย การรวมระบบ credential vault และการแจกแจง subnet
+
+- **หมวดหมู่**: โครงสร้างพื้นฐาน
+- **ความซับซ้อน**: ปานกลาง
+- **เส้นทาง**: 31 | **สคีมา**: 208
+- **ระดับ**: มาตรฐาน
+- **โดเมนที่เกี่ยวข้อง**: `sites`, `customer_edge`
+
+## กรณีการใช้งาน
+
+- เชื่อมต่อกับผู้ให้บริการคลาวด์ (AWS, Azure, GCP)
+- จัดการข้อมูลรับรองคลาวด์และการยืนยันตัวตน
+- กำหนดค่าการเชื่อมต่อคลาวด์และการจัดเตรียมแบบยืดหยุ่น
+- เชื่อมโยงและจัดการภูมิภาคคลาวด์
+
+## ทรัพยากรหลัก
+
+- **aws_vpc_site**: การปรับใช้ไซต์ AWS VPC พร้อมการจัดเตรียมโหนดเอดจ์
+- **azure_vnet_site**: การปรับใช้ไซต์ Azure VNet พร้อมการจัดเตรียมโหนดเอดจ์
+- **gcp_vpc_site**: การปรับใช้ไซต์ Google Cloud VPC พร้อมการจัดเตรียมโหนดเอดจ์
+- **cloud_credentials**: ข้อมูลรับรองการยืนยันตัวตนของผู้ให้บริการคลาวด์สำหรับการปรับใช้ไซต์
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | แสดงรายการฮาร์ดแวร์ที่ได้รับการรับรอง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | ดึงข้อมูลฮาร์ดแวร์ที่ได้รับการรับรอง |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | นำ VPCAttachment กลับมาใช้ใหม่ |
+| POST | `/api/data/namespaces/system/cloud_connects/metrics` | เมตริก Cloud Connect ทั้งหมด |
+| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | เมตริกเซ็กเมนต์ Cloud Connect ทั้งหมด |
+| POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | เมตริก Cloud Connect |
+| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | การค้นพบ VPC ของ Cloud Connect |
+| POST | `/api/config/namespaces/system/edge_credentials` | ข้อมูลรับรองคลาวด์ |
+| GET | `/api/config/namespaces/system/edge_list` | รายการเอดจ์ |
+| POST | `/api/data/namespaces/system/top/cloud_connects` | Cloud Connect สูงสุด |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | สร้าง Cloud Connect |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | แทนที่ Cloud Connect |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | แสดงรายการ Cloud Connect |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | ดึงข้อมูล Cloud Connect |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | ลบ Cloud Connect |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | สร้างข้อมูลรับรองคลาวด์ |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | แทนที่ข้อมูลรับรองคลาวด์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | แสดงรายการข้อมูลรับรองคลาวด์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | ดึงข้อมูลรับรองคลาวด์ |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | ลบข้อมูลรับรองคลาวด์ |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | บังคับลบ Cloud Elastic IP |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | สร้าง Cloud Elastic IP |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | แทนที่ Cloud Elastic IP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | แสดงรายการ Cloud Elastic IP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | ดึงข้อมูล Cloud Elastic IP |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | ลบ Cloud Elastic IP |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | แทนที่ภูมิภาคคลาวด์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | แสดงรายการภูมิภาคคลาวด์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | ดึงข้อมูลภูมิภาคคลาวด์ |
+| POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | CloudLink |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | สร้าง CloudLink |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | แทนที่ CloudLink |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | แสดงรายการ CloudLink |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | ดึงข้อมูล CloudLink |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | ลบ CloudLink |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./cloud_infrastructure/)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/cloud_infrastructure.json)

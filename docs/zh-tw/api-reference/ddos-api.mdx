@@ -1,0 +1,108 @@
+---
+title: "\U0001F6D1 DDoS API"
+description: 大量流量攻擊緩解與流量清洗。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: e560f0ed4570
+  translator: machine
+---
+
+拒絕清單、防火牆規則群組以及基於通道的安全防護。針對網路邊界安全的速率限制與模式分析。
+
+- **類別**：安全
+- **複雜度**：進階
+- **路徑數**：60 | **結構描述**：246
+- **層級**：進階
+- **相關領域**：`network_security`、`virtual`
+
+## 使用案例
+
+- 設定 DDoS 防護策略
+- 監控與分析 DDoS 威脅
+- 設定基礎設施防護
+
+## 主要資源
+
+- **ddos_protection**：用於流量清洗的 DDoS 防護設定
+- **ddos_mitigation_rule**：用於攻擊回應的 DDoS 緩解規則
+
+## 端點
+
+| 方法 | 路徑 | 說明 |
+|--------|------|-------------|
+| GET | `/api/infraprotect/namespaces/system/infraprotect/access` | 客戶存取。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;` | DDoS 警報。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;/to_event` | 將警報連結至事件。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alerts` | DDoS 警報。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/bgp_peer_status` | BGP 對等節點狀態。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | 事件詳細資訊。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | 編輯事件。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/alerts` | 事件警報。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/attachments` | 事件附件。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | 刪除事件詳細資訊。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | 編輯事件詳細資訊。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | 事件詳細資訊清單。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | 新增事件詳細資訊。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/mitigation_annotations` | 事件緩解註釋。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events` | 事件清單。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | 簡易事件檢視。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;` | 緩解詳細資訊。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/annotations` | 緩解註釋。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/ips` | 緩解 IP。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigations` | 緩解清單。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | 列出網路。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/report/&#123;report_id&#125;` | 報告詳細資訊。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/reports` | 列出報告。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/transit_usage` | 傳輸使用量。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/suggest-values` | 建議值。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns` | 建立 DDoS 傳輸 ASN。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns/&#123;metadata.name&#125;` | 取代 DDoS 傳輸 ASN。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns` | 列出基礎設施防護 ASN。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/update-asn-review-status` | 更新 ASN 審查狀態。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | 取得基礎設施防護 ASN。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | 刪除基礎設施防護 ASN。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs` | 建立 DDoS 傳輸前綴。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs/&#123;metadata.name&#125;` | 取代 DDoS 傳輸前綴。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-irr-override` | 更新 ASN 前綴 IRR 覆寫。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-review-status` | 更新 ASN 前綴審查狀態。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs` | 列出基礎設施防護 ASN 前綴。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | 取得基礎設施防護 ASN 前綴。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | 刪除基礎設施防護 ASN 前綴。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules` | 建立 DDoS 傳輸拒絕清單規則。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules/&#123;metadata.name&#125;` | 取代 DDoS 傳輸拒絕清單規則。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules` | 列出基礎設施防護拒絕清單規則。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | 取得基礎設施防護拒絕清單規則。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | 刪除基礎設施防護拒絕清單規則。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules` | 建立 DDoS 傳輸防火牆規則。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules/&#123;metadata.name&#125;` | 取代 DDoS 傳輸防火牆規則。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules` | 列出基礎設施防護防火牆規則。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | 取得基礎設施防護防火牆規則。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | 刪除基礎設施防護防火牆規則。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups` | 取代 DDoS 傳輸防火牆規則群組。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups/&#123;metadata.name&#125;` | 取代 DDoS 傳輸防火牆規則群組。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | 列出基礎設施防護防火牆規則群組。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | 取得基礎設施防護防火牆規則群組。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | 刪除基礎設施防護防火牆規則群組。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | 緩解反制措施。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | 取代 DDoS 傳輸防火牆規則集。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | 列出基礎設施防護防火牆規則集。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | 取得基礎設施防護防火牆規則集。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_informations/&#123;name&#125;` | 取得基礎設施防護資訊。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements` | 建立 DDoS 傳輸網際網路前綴。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;metadata.name&#125;` | 取代 DDoS 傳輸網際網路前綴。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements` | 列出基礎設施防護網際網路前綴通告。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | 更新基礎設施防護網際網路前綴通告。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | 取得基礎設施防護網際網路前綴。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | 刪除基礎設施防護網際網路前綴通告。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | 建立 DDoS 傳輸通道。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | 取代 DDoS 傳輸通道。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | 列出通道。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | 更新通道狀態。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | 取得通道。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | 刪除通道。 |
+
+## 連結
+
+- [互動式 API 參考](./ddos/)
+- [OpenAPI 規格 JSON](../specifications/api/ddos.json)

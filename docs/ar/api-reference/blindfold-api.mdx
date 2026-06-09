@@ -1,0 +1,71 @@
+---
+title: "\U0001F50F واجهة برمجة تطبيقات Blindfold"
+description: تشفير الأسرار، وسياسات المفاتيح، ومسارات التدقيق.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: df593022ff97
+  translator: machine
+---
+
+إدارة مفاتيح التشفير مع ضوابط الوصول المبنية على السياسات. تسجيل التدقيق وحماية البيانات الآمنة.
+
+- **الفئة**: الأمان
+- **التعقيد**: متوسط
+- **المسارات**: 27 | **المخططات**: 163
+- **المستوى**: متقدم
+- **المجالات ذات الصلة**: `client_side_defense`، `certificates`
+
+## حالات الاستخدام
+
+- تكوين سياسات الأسرار للتشفير
+- إدارة تشفير البيانات الحساسة
+- فرض سياسات حماية البيانات
+
+## الموارد الأساسية
+
+- **blindfold_secret**: سر مشفر باستخدام تشفير Blindfold
+- **secret_policy**: تكوين سياسة إدارة الأسرار
+- **policy_document**: مستند السياسة لتعريفات التحكم في الوصول
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| GET | `/api/secret_management/get_public_key` | المفتاح العام. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | مستند السياسة. |
+| POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | فك تشفير السر. |
+| POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | معالجة معلومات السياسة. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | استعلام عدد الوصول في VoltShare. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | استعلام سجل التدقيق. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | استعلام تجميع سجل التدقيق. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | استعلام تمرير سجل التدقيق. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | استعلام تمرير سجل التدقيق. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | إنشاء وصول إدارة الأسرار. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | استبدال وصول إدارة الأسرار. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | قائمة وصول إدارة الأسرار. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | الحصول على وصول إدارة الأسرار. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | حذف وصول إدارة الأسرار. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | إنشاء سياسة الأسرار. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | استبدال سياسة الأسرار. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | قائمة سياسات الأسرار. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | استعادة سياسة الأسرار باسم السياسة المحدد. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | حذف سياسة الأسرار باسم السياسة المحدد. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | قائمة سياسات الأسرار. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | الحصول على سياسة الأسرار. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | حذف سياسة الأسرار. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | إنشاء قاعدة سياسة الأسرار. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | استبدال قاعدة سياسة الأسرار. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | قائمة قواعد سياسة الأسرار. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | الحصول على قاعدة سياسة الأسرار. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | حذف قاعدة سياسة الأسرار. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | إنشاء سياسة مسؤول VoltShare. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | استبدال سياسة مسؤول VoltShare. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | قائمة سياسات مسؤول VoltShare. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | الحصول على سياسة مسؤول VoltShare. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | حذف سياسة مسؤول VoltShare. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./blindfold/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/blindfold.json)

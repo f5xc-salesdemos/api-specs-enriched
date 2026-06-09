@@ -1,0 +1,96 @@
+---
+title: "\U0001F3AB सपोर्ट API"
+description: 'टिकट, एस्केलेशन, और नेटवर्क डायग्नोस्टिक्स।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 91ad994f8afb
+  translator: machine
+---
+
+टिप्पणियों, गंभीरता परिवर्तनों, और समाधान ट्रैकिंग के साथ समस्या जीवनचक्र। कनेक्शन विश्लेषण के लिए पैकेट कैप्चर।
+
+- **श्रेणी**: संचालन
+- **जटिलता**: मध्यम
+- **पथ**: 53 | **स्कीमा**: 167
+- **टियर**: मानक
+- **संबंधित डोमेन**: `statistics`, `observability`
+
+## उपयोग के मामले
+
+- सपोर्ट टिकट सबमिट और प्रबंधित करें
+- ग्राहक सपोर्ट अनुरोधों को ट्रैक करें
+- संचालन सपोर्ट दस्तावेज़ीकरण तक पहुँचें
+
+## प्राथमिक संसाधन
+
+- **support_case**: समस्या ट्रैकिंग और समाधान के लिए सपोर्ट केस
+- **alert**: संचालन सूचनाओं के लिए सिस्टम अलर्ट
+- **audit_log**: अनुपालन और सुरक्षा ट्रैकिंग के लिए ऑडिट लॉग
+
+## एंडपॉइंट
+
+| मेथड | पथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | CRL पुनः सिंक करें। |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | चाइल्ड टेनेंट के लिए बनाए गए सपोर्ट टिकटों की सूची। |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | कर छूट सत्यापन अनुरोध। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | ग्राहक सपोर्ट बनाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | सभी टेनेंट टिकटों की सूची। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | ग्राहक सपोर्ट टिकट बंद करें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | ग्राहक सपोर्ट टिकट पर टिप्पणी जोड़ें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | टिकट एस्केलेट करें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | टिकट की प्राथमिकता बदलें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | बंद ग्राहक सपोर्ट टिकट पुनः खोलें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | ग्राहक सपोर्ट की सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | ग्राहक सपोर्ट प्राप्त करें। |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | अटैचमेंट प्राप्त करें। |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | डीबग जानकारी संग्रह जाँचें। |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | निदान |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | डीबग जानकारी संग्रह डाउनलोड करें। |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | स्वास्थ्य |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | पासवर्ड बदलें। |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | डीबग जानकारी संग्रह शुरू करें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | F5XC सेवाओं की सूची। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | स्थिति |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | निष्पादन |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | निष्पादन लॉग |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | उपयोगकर्ता निष्पादन |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | होस्ट पिंग |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | नोड रीबूट करें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | लॉग |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | सॉफ्ट रीस्टार्ट। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | DHCP लीज़ दिखाएँ। |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | F5 SSH अनुमति दें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE कॉन्फ़िगरेशन प्राप्त करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE कॉन्फ़िगरेशन अपडेट करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | डिस्कनेक्ट करें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | LTE जानकारी दिखाएँ। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | पिंग |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | डंप प्राप्त करें |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | Tcpdump की सूची। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | Tcpdump रोकें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA प्रोजेक्ट और समस्या प्रकार। |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | टिकट ट्रैकिंग सिस्टम सत्यापित करें। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | टिकट ट्रैकिंग सिस्टम बनाएँ। |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | टिकट ट्रैकिंग सिस्टम बदलें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | टिकट ट्रैकिंग सिस्टम की सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | टिकट ट्रैकिंग सिस्टम प्राप्त करें। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | टिकट ट्रैकिंग सिस्टम हटाएँ। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB कॉन्फ़िगरेशन प्राप्त करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB कॉन्फ़िगरेशन अपडेट करें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | USB डिवाइसों की सूची। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | USB सक्षमता नियमों की सूची। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | USB सक्षमता नियम जोड़ें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | USB सक्षमता नियम हटाएँ। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WIFI कॉन्फ़िगरेशन प्राप्त करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WIFI कॉन्फ़िगरेशन अपडेट करें। |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | डिस्कनेक्ट करें। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | WIFI जानकारी दिखाएँ। |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | WIFI नेटवर्कों की सूची। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./support/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/support.json)

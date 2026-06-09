@@ -1,0 +1,318 @@
+---
+title: Especificação de Validação
+description: Estrutura e conteúdo da especificação de validação
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+Este documento descreve a estrutura e o conteúdo da especificação de validação publicada pelo projeto api-specs-enriched.
+
+## Visão Geral
+
+A especificação de validação consolida restrições de validação de API, valores padrão e metadados de configuração em um único arquivo JSON. Esta especificação é gerada a partir das especificações OpenAPI enriquecidas e publicada junto com elas.
+
+**Local de publicação**: `docs/specifications/api/validation.json`
+
+## Estrutura da Especificação
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## Seções
+
+### required_fields
+
+Especifica os campos obrigatórios para cada tipo de operação por recurso.
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+Define os valores permitidos para campos com restrições.
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+Padrões de validação em nível de tipo e regras baseadas em padrões.
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+Regras de validação baseadas em padrões de nomes de campos com pontuações de confiança.
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+Todos os valores padrão organizados por tipo de recurso em uma estrutura unificada.
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### Categorias de Valores Padrão
+
+| Categoria | Descrição | Origem |
+|----------|-------------|--------|
+| `server_applied` | Valores que a API aplica quando campos são omitidos | Testes em API ao vivo |
+| `recommended` | Valores pré-preenchidos no console web F5 XC | Análise da interface |
+| `advanced_options` | Valores padrão aninhados dentro de objetos advanced_options | Descoberta de API |
+| `oneof_choices` | Seleções padrão de variantes OneOf | Comportamento da API |
+| `oneof_recommended` | Variantes OneOf recomendadas | Padrões do console |
+| `nested_recommended` | Valores recomendados para schemas aninhados | Análise da interface |
+| `ui_vs_server` | Casos em que os padrões da interface diferem dos padrões da API | Análise comparativa |
+
+### conditional_requirements
+
+Campos mutuamente exclusivos e dependências condicionais.
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+Configurações mínimas viáveis com exemplos funcionais.
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Mapeamento de Extensões OpenAPI
+
+As especificações OpenAPI enriquecidas incorporam metadados de validação usando estas extensões:
+
+| Extensão | Finalidade | Localização |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | Campos obrigatórios específicos por contexto | Propriedades do schema |
+| `x-f5xc-server-default` | Marca valores padrão aplicados pelo servidor | Propriedades do schema |
+| `x-f5xc-recommended-value` | Valor padrão recomendado | Propriedades do schema |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf recomendada | Definições do schema |
+| `x-f5xc-conditions` | Requisitos condicionais | Propriedades do schema |
+| `x-f5xc-minimum-configuration` | Exemplos de configuração mínima | Definições do schema |
+| `x-f5xc-validation` | Restrições derivadas de descoberta | Propriedades do schema |
+
+## Acesso aos Dados
+
+### URLs de Publicação
+
+| Origem | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### Caminho Local
+
+Após executar o pipeline: `docs/specifications/api/validation.json`
+
+## Versionamento
+
+A especificação de validação segue o versionamento semântico no campo `version`:
+
+| Tipo de Alteração | Incremento de Versão | Exemplo |
+|-------------|--------------|---------|
+| Alterações estruturais incompatíveis | Major | Renomeação de campos, seções removidas |
+| Novas regras de validação ou recursos | Minor | Novos valores padrão de recursos |
+| Correções de bugs ou atualizações de descrição | Patch | Correções de digitação |
+
+## Prioridade de Reconciliação
+
+Quando múltiplas fontes fornecem restrições, a prioridade de reconciliação é:
+
+1. **Existente** - Restrições na especificação OpenAPI original (prioridade mais alta)
+2. **Descoberta** - Restrições provenientes da descoberta de API ao vivo
+3. **Inferida** - Restrições provenientes de correspondência de padrões (prioridade mais baixa)
+
+## Documentação Relacionada
+
+- [Melhorias de Healthcheck](./Enhancements/healthcheck-enhancements/) - Enriquecimentos do schema de healthcheck
+- [Melhorias de Origin Pool](./Enhancements/originpool-enhancements/) - Enriquecimentos do schema de origin pool
+- [CLAUDE.md](../../CLAUDE.md) - Instruções do assistente de IA
+- [DEVELOPMENT.md](./development/) - Guia do desenvolvedor
+
+## Registro de Alterações
+
+| Versão | Data | Alterações |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | Reescrito como referência de API pura; adicionadas categorias oneof_recommended e nested_recommended |
+| 2.1.0 | 2026-01-18 | Estrutura unificada de valores padrão substituindo seções fragmentadas |
+| 2.0.0 | 2026-01-15 | Especificação de validação inicial |

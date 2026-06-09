@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 统计 API"
+description: 告警、日志、流量分析和报告。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+告警策略与接收器集成。日志聚合、拓扑视图和站点健康跟踪。
+
+- **类别**：运维
+- **复杂度**：高级
+- **路径数**：77 | **Schema 数**：575
+- **层级**：标准
+- **相关领域**：`observability`、`support`
+
+## 使用场景
+
+- 访问流量统计和分析
+- 管理告警和告警策略
+- 查看日志和日志接收器
+- 生成报告和图表
+- 跟踪拓扑和服务发现
+- 监控站点状态
+
+## 主要资源
+
+- **dashboard**：用于指标可视化的仪表板
+- **saved_query**：用于指标和日志分析的已保存查询
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | 创建告警策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | 替换告警策略。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | 获取告警策略匹配。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | 列出告警策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | 获取告警策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | 删除告警策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | 创建告警接收器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | 替换告警接收器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | 列出告警接收器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | 获取告警接收器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | 删除告警接收器。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | 确认告警接收器。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | 测试告警接收器。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | 验证告警接收器。 |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | 获取告警。 |
+| PUT | `/api/web/namespaces/system/catalogs` | 列出 |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | 列出特定类型的已发现服务。 |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | 列出已发现服务。 |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | 获取已发现服务对象。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | 创建 HTTP/HTTPS 负载均衡器。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | 创建 TCP 负载均衡器。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | 在所有工作空间中禁用可见性。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | 在所有工作空间中启用可见性。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | 建议值。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | 列出流量异常。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | 获取流量异常。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | 显示匹配流量。 |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | 订阅流量采集。 |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | 检查流量采集订阅状态。 |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | 取消订阅流量采集。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | 创建全局日志接收器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | 替换全局日志接收器。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | 全局日志接收器状态。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | 列出全局日志接收器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | 获取全局日志接收器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | 删除全局日志接收器。 |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | 测试全局日志接收器。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | 创建日志接收器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | 替换日志接收器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | 列出日志接收器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | 获取日志接收器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | 删除日志接收器。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | 测试日志接收器。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | 防火墙日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | 防火墙日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | 防火墙日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s 审计日志滚动查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | 平台事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | 平台事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | 平台事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s 审计日志查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s 审计日志聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s 审计日志滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s 事件查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s 事件聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s 事件滚动查询。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | 获取报告。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | 下载报告。 |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | 创建报告配置。 |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | 替换报告配置。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | 列出报告配置。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | 列出报告历史。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | 列出 Bot 防护报告历史。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | 列出 WAAP 报告历史。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | 获取报告配置。 |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | 删除报告配置。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | 立即生成报告。 |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | 所有命名空间服务图查询。 |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DC 集群拓扑。 |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DC 集群组摘要。 |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | 获取网络路由表。 |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | 获取路由表。 |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | 站点 Mesh 拓扑。 |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | 站点 Mesh 组摘要。 |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | 获取 TGW 路由表。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | L3L4 应用流量查询。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | L3L4 缓解流量查询。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | L3L4 网络流量查询。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | L3L4 区域流量查询。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | L3L4 事件计数。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | L3L4 Top Talkers 查询。 |
+
+## 链接
+
+- [交互式 API 参考](./statistics/)
+- [OpenAPI 规范 JSON](../specifications/api/statistics.json)

@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 統計 API"
+description: アラート、ログ、フローアナリティクス、およびレポーティング。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+レシーバー統合を含むアラートポリシー。ログ集約、トポロジービュー、およびサイトヘルストラッキング。
+
+- **カテゴリ**: オペレーション
+- **複雑度**: 上級
+- **パス数**: 77 | **スキーマ数**: 575
+- **ティア**: スタンダード
+- **関連ドメイン**: `observability`, `support`
+
+## ユースケース
+
+- フロー統計とアナリティクスへのアクセス
+- アラートとアラートポリシーの管理
+- ログとログレシーバーの表示
+- レポートとグラフの生成
+- トポロジーとサービスディスカバリーの追跡
+- サイトでのステータス監視
+
+## 主要リソース
+
+- **dashboard**: メトリクス可視化のためのダッシュボード
+- **saved_query**: メトリクスおよびログ分析のための保存済みクエリ
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | アラートポリシーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | アラートポリシーを置換。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | アラートポリシーマッチを取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | アラートポリシーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | アラートポリシーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | アラートポリシーを削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | アラートレシーバーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | アラートレシーバーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | アラートレシーバーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | アラートレシーバーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | アラートレシーバーを削除。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | アラートレシーバーを確認。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | アラートレシーバーをテスト。 |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | アラートレシーバーを検証。 |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | アラートを取得。 |
+| PUT | `/api/web/namespaces/system/catalogs` | 一覧表示 |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | 特定タイプの検出済みサービスを一覧表示。 |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | 検出済みサービスを一覧表示。 |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | 検出済みサービスオブジェクトを取得。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | HTTP/HTTPSロードバランサーを作成。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | TCPロードバランサーを作成。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | すべてのワークスペースでの可視性を無効化。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | すべてのワークスペースでの可視性を有効化。 |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | 値を提案。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | フローアノマリーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | フローアノマリーを取得。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | マッチングフローを表示。 |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | フローコレクションをサブスクライブ。 |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | フローコレクションのサブスクリプションステータスを確認。 |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | フローコレクションをアンサブスクライブ。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | グローバルログレシーバーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | グローバルログレシーバーを置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | グローバルログレシーバーのステータス。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | グローバルログレシーバーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | グローバルログレシーバーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | グローバルログレシーバーを削除。 |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | グローバルログレシーバーをテスト。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | ログレシーバーを作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | ログレシーバーを置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | ログレシーバーを一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | ログレシーバーを取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | ログレシーバーを削除。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | ログレシーバーをテスト。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | ファイアウォールログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | ファイアウォールログ集約クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s監査ログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | プラットフォームイベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | プラットフォームイベント集約クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s監査ログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s監査ログ集約クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8sイベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8sイベント集約クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8sイベントスクロールクエリ。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | レポートを取得。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | レポートをダウンロード。 |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | レポート設定を作成。 |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | レポート設定を置換。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | レポート設定を一覧表示。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | レポート履歴を一覧表示。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | Bot Defenceレポート履歴を一覧表示。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | WAAPレポート履歴を一覧表示。 |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | レポート設定を取得。 |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | レポート設定を削除。 |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | レポートを即時生成。 |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | 全ネームスペースのサービスグラフクエリ。 |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DCクラスタートポロジー。 |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DCクラスターグループサマリー。 |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | ネットワークルートテーブルを取得。 |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | ルートテーブルを取得。 |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | サイトメッシュトポロジー。 |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | サイトメッシュグループサマリー。 |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | TGWルートテーブルを取得。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | L3L4アプリケーショントラフィッククエリ。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | L3L4ミティゲーショントラフィッククエリ。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | L3L4ネットワークトラフィッククエリ。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | L3L4ゾーントラフィッククエリ。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | L3L4イベントカウント。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | L3L4トップトーカークエリ。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./statistics/)
+- [OpenAPI仕様JSON](../specifications/api/statistics.json)

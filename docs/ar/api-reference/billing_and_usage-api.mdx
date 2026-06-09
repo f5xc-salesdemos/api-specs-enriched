@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 واجهة برمجة تطبيقات الفوترة والاستخدام"
+description: خطط الاشتراك وطرق الدفع والحصص.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+انتقالات الخطط والفواتير واستهلاك الموارد. حدود الحصص على مستوى مساحة الأسماء وتتبع الاستخدام.
+
+- **الفئة**: المنصة
+- **التعقيد**: متوسط
+- **المسارات**: 25 | **المخططات**: 101
+- **المستوى**: قياسي
+- **النطاقات ذات الصلة**: `system`، `users`
+
+## حالات الاستخدام
+
+- إدارة خطط الاشتراك وانتقالات الفوترة
+- تكوين طرق الدفع والفواتير
+- تتبع استخدام حصص الموارد عبر مساحات الأسماء
+- مراقبة حدود الاستخدام والسعة
+
+## الموارد الأساسية
+
+- **subscription**: الاشتراك لاستحقاقات الخدمة
+- **quota**: حصة الموارد لحدود الاستخدام
+- **usage_report**: تقرير الاستخدام لتتبع الاستهلاك
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | ملخص استخدام الفوترة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | الحصول على ملف PDF للفاتورة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | سرد الفواتير. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | جعل بطاقة الائتمان أساسية. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | جعل طريقة الدفع ثانوية. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | جعل طريقة الدفع ثانوية. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | إنشاء مواصفات طريقة الدفع. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | حذف طريقة الدفع المحددة. |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | الحصول على انتقال الخطة. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | بدء انتقال الخطة. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | إنشاء حصة. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | استبدال الحصة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | الحصول المخصص على حدود الحصة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | الحصول على استخدام الحصة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | سرد الحصص. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | الحصول على الحصة. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | حذف الحصة. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | سرد الاشتراكات. |
+| POST | `/api/web/namespaces/system/addon/subscribe` | الاشتراك في خدمات XC الإضافية. |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | إلغاء الاشتراك في خدمات XC الإضافية. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | سرد تفاصيل الاستخدام الحالي. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | سرد تفاصيل الاستخدام بالساعة. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | سرد تفاصيل الاستخدام الشهري. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | سرد تفاصيل الاستخدام. |
+| GET | `/api/web/namespaces/system/usage_plans/current` | الحصول على خطة الاستخدام الحالية. |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | سرد خطط الاستخدام. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./billing_and_usage/)
+- [ملف JSON لمواصفات OpenAPI](../specifications/api/billing_and_usage.json)

@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 API de Estadísticas"
+description: 'Alertas, registros, análisis de flujo e informes.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+Políticas de alertas con integraciones de receptores. Agregación de registros, vistas de topología y seguimiento del estado de los sitios.
+
+- **Categoría**: Operaciones
+- **Complejidad**: avanzada
+- **Rutas**: 77 | **Esquemas**: 575
+- **Nivel**: Estándar
+- **Dominios relacionados**: `observability`, `support`
+
+## Casos de Uso
+
+- Acceder a estadísticas y análisis de flujo
+- Gestionar alertas y políticas de alertas
+- Visualizar registros y receptores de registros
+- Generar informes y gráficos
+- Rastrear topología y descubrimiento de servicios
+- Monitorear el estado en los sitios
+
+## Recursos Principales
+
+- **dashboard**: Panel de control para visualización de métricas
+- **saved_query**: Consulta guardada para análisis de métricas y registros
+
+## Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | Crear Política de Alertas. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | Reemplazar Política de Alertas. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | Obtener Coincidencia de Política de Alertas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | Listar Políticas de Alertas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | Obtener Política de Alertas. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | Eliminar Política de Alertas. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | Crear Receptor de Alertas. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | Reemplazar Receptor de Alertas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | Listar Receptores de Alertas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | Obtener Receptor de Alertas. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | Eliminar Receptor de Alertas. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | Confirmar Receptor de Alertas. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | Probar Receptor de Alertas. |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | Verificar Receptor de Alertas. |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | Obtener Alertas. |
+| PUT | `/api/web/namespaces/system/catalogs` | Listar |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | Listar servicios descubiertos de tipo específico. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | Listar Servicios Descubiertos. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | Obtener Objeto de Servicio Descubierto. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | Crear balanceador de carga HTTP/HTTPS. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | Crear balanceador de carga TCP. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | Deshabilitar visibilidad en todos los espacios de trabajo. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | Habilitar visibilidad en todos los espacios de trabajo. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | Sugerir Valores. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | Listar Anomalías de Flujo. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | Obtener Anomalía de Flujo. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | Mostrar Flujos Coincidentes. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | Suscribirse a la Recopilación de Flujos. |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | Verificar estado de suscripción para Recopilación de Flujos. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | Cancelar suscripción a la Recopilación de Flujos. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | Crear Receptor de Registros Global. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | Reemplazar Receptor de Registros Global. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | Estado del Receptor de Registros Global. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | Listar Receptores de Registros Globales. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | Obtener Receptor de Registros Global. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | Eliminar Receptor de Registros Global. |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | Probar Receptor de Registros Global. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | Crear Receptor de Registros. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | Reemplazar Receptor de Registros. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | Listar Receptores de Registros. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | Obtener Receptor de Registros. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | Eliminar Receptor de Registros. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | Probar Receptor de Registros. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | Consulta de Registros de Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | Consulta de Agregación de Registros de Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de Desplazamiento de Registros de Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de Desplazamiento de Registros de Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de Desplazamiento de Registros de Auditoría K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de Desplazamiento de Registros de Auditoría K8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de Desplazamiento de Eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de Desplazamiento de Eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | Consulta de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Consulta de Agregación de Eventos de Plataforma. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de Desplazamiento de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de Desplazamiento de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | Consulta de Registros de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | Consulta de Agregación de Registros de Auditoría VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de Desplazamiento de Registros de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de Desplazamiento de Registros de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | Consulta de Eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | Consulta de Agregación de Eventos VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de Desplazamiento de Eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de Desplazamiento de Eventos VK8s. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | Obtener Informe. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | Descargar Informe. |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | Crear Configuración de Informe. |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | Reemplazar Configuración de Informe. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | Listar Configuraciones de Informe. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | Listar Historial de Informes. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | Listar Historial de Informes de Defensa contra Bots. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | Listar Historial de Informes Waap. |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | Obtener Configuración de Informe. |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | Eliminar Configuración de Informe. |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | Generar Informe Ahora. |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | Consulta de Grafo de Servicios en Todos los Namespaces. |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | Topología de Clúster DC. |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | Resumen de Grupos de Clúster DC. |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | Obtener Tablas de Rutas de Red. |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | Obtener Tabla de Rutas. |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | Topología de Malla de Sitios. |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | Resumen de Grupos de Malla de Sitios. |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | Obtener Tablas de Rutas TGW. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | Consulta de Tráfico de Aplicación L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | Consulta de Tráfico de Mitigación L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | Consulta de Tráfico de Red L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | Consulta de Tráfico de Zona L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | Conteo de Eventos L3l4. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | Consulta de Principales Emisores L3l4. |
+
+## Enlaces
+
+- [Referencia Interactiva de la API](./statistics/)
+- [Especificación OpenAPI en JSON](../specifications/api/statistics.json)

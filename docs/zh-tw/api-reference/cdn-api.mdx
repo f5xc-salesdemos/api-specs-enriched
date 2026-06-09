@@ -1,0 +1,71 @@
+---
+title: "\U0001F680 Cdn API"
+description: 內容傳遞與邊緣快取網路。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 32441b5d4a4b
+  translator: machine
+---
+
+全球分發，支援快取規則與清除操作。效能監控與分析。
+
+- **類別**：網路
+- **複雜度**：進階
+- **路徑**：29 | **結構描述**：592
+- **層級**：進階
+- **相關領域**：`virtual`
+
+## 使用案例
+
+- 設定 CDN 負載平衡
+- 管理內容傳遞網路服務
+- 設定快取策略
+- 管理資料傳遞與分發
+
+## 主要資源
+
+- **cdn_loadbalancer**：用於邊緣快取的內容傳遞網路負載平衡器
+- **cdn_origin_pool**：用於 CDN 內容來源的原始伺服器池
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/block_client/suggestion` | 建議封鎖用戶端規則。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | 建議 CDN DDoS 緩解規則。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/trust_client/suggestion` | 建議信任用戶端規則。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | 建議 WAF 排除規則。 |
+| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/subscribe` | 訂閱 CDN 負載平衡器。 |
+| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/unsubscribe` | 取消訂閱 CDN 負載平衡器。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_loadbalancers` | 建立 CDN 負載平衡器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_loadbalancers/&#123;metadata.name&#125;` | 取代 CDN 負載平衡器。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs` | 取得 CDN 存取日誌。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs/aggregation` | CDN 存取日誌彙總查詢。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/get-service-operation-status` | 取得服務操作狀態。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/list-service-operations-status` | CDN 操作命令清單。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/metrics` | 取得 CDN 指標。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/&#123;name&#125;/cache-purge` | 清除 CDN 快取。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers` | 列出 CDN 負載平衡器。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/get_security_config` | 取得 CDN 負載平衡器的安全設定。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | 取得 CDN 負載平衡器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | 刪除 CDN 負載平衡器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | 取得 CDN 負載平衡器的 DoS 自動緩解規則。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | 刪除 CDN 負載平衡器的 DoS 自動緩解規則。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules` | 建立 CDN 快取規則。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules/&#123;metadata.name&#125;` | 取代 CDN 快取規則。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules` | 列出 CDN 快取規則。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules/&#123;name&#125;` | 取得 CDN 快取規則。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules/&#123;name&#125;` | 刪除 CDN 快取規則。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_purge_commands` | 建立 CDN 快取清除命令。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands` | 列出 CDN 快取清除命令。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | 取得 CDN 快取清除命令。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | 刪除 CDN 快取清除命令。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/get-service-operation-status` | 取得啟用快取時 HTTPLB 的服務操作狀態。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/list-service-operations-status` | 列出啟用快取時 HTTPLB 的操作命令。 |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/&#123;name&#125;/cache-purge` | 清除 LB 快取。 |
+
+## 連結
+
+- [互動式 API 參考](./cdn/)
+- [OpenAPI 規格 JSON](../specifications/api/cdn.json)

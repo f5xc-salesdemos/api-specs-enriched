@@ -1,0 +1,141 @@
+---
+title: "\U0001F50C API di Rete"
+description: 'Peering BGP, tunnel IPsec e policy di segmento.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 5737a59da5b8
+  translator: machine
+---
+
+Protocollo Border Gateway con gestione ASN e relazioni tra sistemi autonomi. VPN site-to-site che collega datacenter attraverso canali crittografati.
+
+- **Categoria**: Rete
+- **Complessità**: avanzata
+- **Percorsi**: 81 | **Schemi**: 449
+- **Livello**: Avanzato
+- **Domini correlati**: `virtual`, `network_security`, `dns`
+
+## Casi d'Uso
+
+- Configurare il routing BGP e la gestione ASN
+- Gestire tunnel IPsec e fasi IKE
+- Configurare connettori di rete e rotte
+- Gestire SRv6 e subnetting
+- Definire connessioni e policy di segmento
+- Configurare set di prefissi IP
+
+## Risorse Principali
+
+- **virtual_network**: Rete virtuale per connettività e segmentazione dei siti
+- **network_connector**: Connettore di rete per connettività site-to-site o cloud
+- **site_mesh_group**: Configurazione della connettività mesh tra più siti
+
+## Endpoint
+
+| Metodo | Percorso | Descrizione |
+|--------|----------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/address_allocators` | Crea Address Allocator. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators` | Elenca Address Allocator. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | Ottieni Address Allocator. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | Elimina Address Allocator. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys` | Crea Advertise Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys/&#123;metadata.name&#125;` | Sostituisci Advertise Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys` | Elenca Advertise Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | Ottieni Advertise Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | Elimina Advertise Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps` | Crea BGP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps/&#123;metadata.name&#125;` | Sostituisci BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps` | Elenca BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | Ottieni BGP |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | Elimina BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgpstatus/&#123;view_name&#125;` | Ottieni stato BGP per vista. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets` | Crea BGP ASN Set. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets/&#123;metadata.name&#125;` | Sostituisci BGP ASN Set. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets` | Elenca BGP ASN Set. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | Ottieni BGP ASN Set. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | Elimina BGP ASN Set. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_peers` | Mostra informazioni peer BGP. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_routes` | Mostra rotte BGP. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys` | Crea BGP Routing Policy. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys/&#123;metadata.name&#125;` | Sostituisci BGP Routing Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys` | Elenca BGP Routing Policy. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | Ottieni BGP Routing Policy. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | Elimina BGP Routing Policy. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups` | Crea DC Cluster Group. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups/&#123;metadata.name&#125;` | Sostituisci DC Cluster Group. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups` | Elenca DC Cluster Group. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dc_cluster_groups/metrics` | Metriche |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | Ottieni DC Cluster Group. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | Elimina DC Cluster Group. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs` | Crea Forwarding Class. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs/&#123;metadata.name&#125;` | Sostituisci Forwarding Class. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs` | Elenca Forwarding Class. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | Ottieni Forwarding Class. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | Elimina Forwarding Class. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s` | Crea profilo IKE Phase1. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s/&#123;metadata.name&#125;` | Sostituisci configurazione profilo IKE Phase1. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s` | Elenca profilo IKE Phase 1. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | Ottieni configurazione profilo IKE Phase1. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | Elimina profilo IKE Phase 1. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles` | Crea profilo IKE Phase1. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles/&#123;metadata.name&#125;` | Sostituisci configurazione profilo IKE Phase1. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles` | Elenca profilo IKE Phase 1. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | Ottieni configurazione profilo IKE Phase1. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | Elimina profilo IKE Phase 1. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s` | Crea profilo IKE Phase2. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s/&#123;metadata.name&#125;` | Sostituisci configurazione profilo IKE Phase2. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s` | Elenca profilo IKE Phase 2. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | Ottieni configurazione profilo IKE Phase2. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | Elimina profilo IKE Phase 2. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles` | Crea profilo IKE Phase2. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles/&#123;metadata.name&#125;` | Sostituisci configurazione profilo IKE Phase2. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles` | Elenca profilo IKE Phase 2. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | Ottieni configurazione profilo IKE Phase2. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | Elimina profilo IKE Phase 2. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets` | Crea IP Prefix Set. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets/&#123;metadata.name&#125;` | Sostituisci IP Prefix Set. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets` | Elenca IP Prefix Set. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | Ottieni IP Prefix Set. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | Elimina IP Prefix Set. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors` | Crea Network Connector. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors/&#123;metadata.name&#125;` | Sostituisci Network Connector. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors` | Elenca Network Connector. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | Ottieni Network Connector. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | Elimina Network Connector. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/public_ips/&#123;metadata.name&#125;` | Sostituisci IP Pubblico. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips` | Elenca IP Pubblico. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips/&#123;name&#125;` | Ottieni IP Pubblico. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes` | Crea Rotta. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes/&#123;metadata.name&#125;` | Sostituisci Rotta. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes` | Elenca Rotta. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | Ottieni Rotta |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | Elimina Rotta. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/routes` | Mostra Rotte. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/simplified_routes` | Mostra Rotte Semplificate. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices` | Crea SRv6 Network Slice. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices/&#123;metadata.name&#125;` | Sostituisci SRv6 Network Slice. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices` | Elenca SRv6 Network Slice. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | Ottieni SRv6 Network Slice. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | Elimina SRv6 Network Slice. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets` | Crea Subnet. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets/&#123;metadata.name&#125;` | Sostituisci Subnet. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets` | Elenca Subnet. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | Ottieni Subnet. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | Elimina Subnet. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/traceroute` | Traceroute. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels` | Crea Tunnel. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels/&#123;metadata.name&#125;` | Sostituisci Tunnel. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels` | Elenca Tunnel. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | Ottieni Tunnel. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | Elimina Tunnel. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | Crea Virtual Network. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | Sostituisci Virtual Network. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | Elenca Virtual Network. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Ottieni Virtual Network. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Elimina Virtual Network. |
+
+## Link
+
+- [Riferimento API Interattivo](./network/)
+- [Specifica OpenAPI JSON](../specifications/api/network.json)

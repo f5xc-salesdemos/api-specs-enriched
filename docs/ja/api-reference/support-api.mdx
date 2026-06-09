@@ -1,0 +1,96 @@
+---
+title: "\U0001F3AB サポート API"
+description: チケット、エスカレーション、およびネットワーク診断。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 91ad994f8afb
+  translator: machine
+---
+
+コメント、重大度変更、および解決追跡を含むイシューライフサイクル。接続分析のためのパケットキャプチャ。
+
+- **カテゴリ**: オペレーション
+- **複雑度**: 中程度
+- **パス数**: 53 | **スキーマ数**: 167
+- **ティア**: Standard
+- **関連ドメイン**: `statistics`, `observability`
+
+## ユースケース
+
+- サポートチケットの送信と管理
+- カスタマーサポートリクエストの追跡
+- 運用サポートドキュメントへのアクセス
+
+## 主要リソース
+
+- **support_case**: イシュー追跡と解決のためのサポートケース
+- **alert**: 運用通知のためのシステムアラート
+- **audit_log**: コンプライアンスとセキュリティ追跡のための監査ログ
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | CRL の再同期。 |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | 子テナントに作成されたサポートチケットの一覧。 |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | 免税確認リクエスト。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | カスタマーサポートの作成。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | すべてのテナントチケットの一覧。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | カスタマーサポートチケットのクローズ。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | カスタマーサポートチケットへのコメント追加。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | チケットのエスカレーション。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | チケットの優先度変更。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | クローズされたカスタマーサポートチケットの再オープン。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | カスタマーサポートの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | カスタマーサポートの取得。 |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 添付ファイルの取得。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | デバッグ情報収集の確認。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | 診断 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | デバッグ情報収集のダウンロード。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | ヘルス |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | パスワード変更。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | デバッグ情報収集の開始。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | F5XC サービスの一覧。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | ステータス |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | 実行 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | 実行ログ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | ユーザー実行 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | ホスト Ping |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | ノードの再起動。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | ログ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | ソフトリスタート。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | DHCP リースの表示。 |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | F5 SSH の許可。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE 設定の取得。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE 設定の更新。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | 切断。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | LTE 情報の表示。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | ダンプ取得 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | Tcpdump の一覧。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | Tcpdump の停止。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA プロジェクトとイシュータイプ。 |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | チケット追跡システムの検証。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | チケット追跡システムの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | チケット追跡システムの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | チケット追跡システムの一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | チケット追跡システムの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | チケット追跡システムの削除。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB 設定の取得。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB 設定の更新。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | USB デバイスの一覧。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | USB 有効化ルールの一覧。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | USB 有効化ルールの追加。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | USB 有効化ルールの削除。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WIFI 設定の取得。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WIFI 設定の更新。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | 切断。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | WIFI 情報の表示。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | WIFI ネットワークの一覧。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./support/)
+- [OpenAPI 仕様 JSON](../specifications/api/support.json)

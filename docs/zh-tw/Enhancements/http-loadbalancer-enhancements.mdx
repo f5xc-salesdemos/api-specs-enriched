@@ -1,0 +1,516 @@
+---
+title: HTTP 負載平衡器增強功能
+description: HTTP 負載平衡器結構描述的擴充中繼資料
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+HTTP 負載平衡器結構描述的擴充中繼資料。請參閱 [OpenAPI 擴充](../development/#openapi-extensions) 以取得擴充定義。
+
+## 已擴充的結構描述
+
+### 模式
+
+所有符合 `viewshttp_loadbalancer.*SpecType` 的結構描述都會接收擴充：
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## 最小組態中繼資料
+
+`x-f5xc-minimum-configuration` 擴充提供全面的 CLI 中繼資料，用於建立最小可行的 HTTP 負載平衡器。
+
+### 必要欄位
+
+| 欄位 | 限制條件 | 描述 |
+|-------|-----------|-------------|
+| `metadata.name` | DNS 標籤格式：`[a-z0-9]([-a-z0-9]*[a-z0-9])?` | 資源名稱 |
+| `metadata.namespace` | DNS 標籤格式 | 命名空間 |
+| `spec.domains` | 陣列，min_items: 1 | 要服務的網域 |
+
+### 負載平衡器類型（必須指定其一）
+
+必須指定下列其中一種負載平衡器類型：
+
+| 變體 | 描述 |
+|---------|-------------|
+| `spec.http` | 僅 HTTP |
+| `spec.https` | HTTPS 搭配手動憑證 |
+| `spec.https_auto_cert` | HTTPS 搭配自動憑證 |
+| `spec.http_https` | 同時支援 HTTP 和 HTTPS |
+
+**注意**：負載平衡器類型 OneOf 群組被稱為：
+- 組態檔案中的 `lb_type`（`config/minimum_configs.yaml` 中的簡短形式）
+- OpenAPI 規格原生擴充中的 `loadbalancer_type`（原生欄位名稱）
+
+**API 結構描述參考**：`x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### 最小可行組態
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## 伺服器套用的預設值
+
+標記為 `x-f5xc-server-default: true` 的欄位，其 `default` 值會在請求中省略時由 F5 XC API 伺服器套用。HTTP 負載平衡器具有大量伺服器套用的預設值，因為大多數安全功能和通訊協定選項預設為停用或安全狀態。
+
+### HTTPS 自動憑證預設值
+
+當指定 `https_auto_cert` 時，伺服器會對省略的欄位套用以下預設值：
+
+| 欄位 | 預設值 | 類型 | 描述 |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS 監聽埠 |
+| `http_redirect` | `false` | boolean | HTTP 到 HTTPS 重新導向 |
+| `add_hsts` | `false` | boolean | HTTP 嚴格傳輸安全標頭 |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ 搭配強加密套件 |
+| `no_mtls` | `{}` | object | 雙向 TLS 已停用 |
+| `default_header` | `{}` | object | 預設伺服器名稱標頭處理 |
+| `enable_path_normalize` | `{}` | object | 路徑正規化已啟用 |
+| `default_loadbalancer` | `{}` | object | 預設負載平衡器設定 |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | 舊版標頭轉換 |
+| `connection_idle_timeout` | `120000` | integer | 連線閒置逾時（毫秒，2 分鐘） |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | 已啟用 HTTP/1.1 和 HTTP/2 |
+| `coalescing_options.default_coalescing` | `{}` | object | 預設 HTTP/2 連線合併 |
+
+### 安全功能預設值
+
+所有安全功能在省略時預設為停用：
+
+| 欄位 | 預設值 | 描述 |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | Web 應用程式防火牆已停用 |
+| `disable_bot_defense` | `{}` | 機器人防禦已停用 |
+| `disable_rate_limit` | `{}` | 速率限制已停用 |
+| `disable_api_discovery` | `{}` | API 探索已停用 |
+| `disable_api_testing` | `{}` | API 測試已停用 |
+| `disable_api_definition` | `{}` | API 定義已停用 |
+| `disable_malware_protection` | `{}` | 惡意軟體防護已停用 |
+| `disable_client_side_defense` | `{}` | 用戶端防禦已停用 |
+| `disable_ip_reputation` | `{}` | IP 信譽已停用 |
+| `disable_threat_mesh` | `{}` | 威脅網格已停用 |
+| `disable_malicious_user_detection` | `{}` | 惡意使用者偵測已停用 |
+
+### DDoS 和存取控制預設值
+
+| 欄位 | 預設值 | 描述 |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | 阻擋 DDoS 流量（預設緩解動作） |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | 使用預設 RPS 閾值 |
+| `l7_ddos_protection.clientside_action_none` | `{}` | 無用戶端 DDoS 驗證 |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | 無 DDoS 原則參考 |
+| `no_challenge` | `{}` | 無用戶端挑戰 |
+| `user_id_client_ip` | `{}` | 透過用戶端 IP 識別使用者 |
+| `disable_trust_client_ip_headers` | `{}` | 不信任用戶端 IP 標頭 |
+
+### 其他伺服器套用的預設值
+
+| 欄位 | 預設值 | 類型 | 描述 |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | 在公開預設 VIP 上發佈 |
+| `round_robin` | `{}` | object | 輪詢負載平衡演算法 |
+| `add_location` | `true` | boolean | 在回應中新增位置標頭 |
+| `system_default_timeouts` | `{}` | object | 使用系統預設逾時 |
+| `service_policies_from_namespace` | `{}` | object | 從命名空間繼承服務原則 |
+| `default_sensitive_data_policy` | `{}` | object | 使用預設敏感資料原則 |
+
+## 互斥欄位群組
+
+標記為 `x-f5xc-conflicts-with` 的欄位表示 OneOf 模式。每個群組中只能指定一個欄位。
+
+### 核心組態群組
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | 負載平衡器通訊協定類型 |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | 負載平衡器的發佈方式 |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | 流量分配演算法 |
+
+### HTTPS 組態群組（10 個群組）
+
+#### TLS 組態
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS 安全等級 |
+| `mtls` | `no_mtls`, `use_mtls` | 雙向 TLS 啟用或停用 |
+
+#### 通訊協定和標頭
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP 通訊協定版本 |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP 標頭轉換類型 |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | 伺服器名稱標頭處理 |
+
+#### 連線管理
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | 路徑正規化啟用或停用 |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | 預設或非預設負載平衡器 |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 連線合併選項 |
+
+### 安全功能群組（11 個群組）
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | Web 應用程式防火牆 |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | 機器人偵測和緩解 |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | 速率限制 |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API 探索 |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API 測試 |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API 定義 |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | 惡意軟體防護 |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | 用戶端防禦 |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP 信譽 |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | 威脅網格 |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | 惡意使用者偵測 |
+
+### DDoS 防護群組（4 個群組）
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS 緩解動作 |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | 每秒請求數閾值 |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | 用戶端 DDoS 驗證動作 |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS 原則參考或無 |
+
+### 其他設定群組（6 個群組）
+
+| 群組名稱 | 欄位 | 描述 |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | 用於機器人偵測的用戶端挑戰類型 |
+| `user_identification` | `user_id_client_ip`, `user_identification` | 使用者識別方法 |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | 是否信任用戶端 IP 標頭 |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | 使用系統預設或自訂逾時 |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | 從命名空間取得服務原則或使用作用中清單 |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | 使用預設或自訂敏感資料原則 |
+
+## OneOf 變體建議（未來擴充）
+
+**狀態**：尚未套用至 http_loadbalancer 結構描述。
+
+與包含 `x-f5xc-recommended-oneof-variant` 來指示 OneOf 群組最常見選擇的 healthcheck 不同，http_loadbalancer 目前缺少此擴充。
+
+### 與 Healthcheck 的比較
+
+**Healthcheck**（已實作）：
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP 負載平衡器**（尚未實作）：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
+```
+
+### 未來實作
+
+要為 http_loadbalancer 新增此擴充：
+1. 觀察 F5 XC 主控台的預設選擇（例如，UI 中預先選取的 lb_type）
+2. 將組態新增至 `config/discovered_defaults.yaml`
+3. 重新執行擴充管線以套用擴充
+
+**新增後的預期結構**：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # Example - requires verification
+```
+
+此擴充將使下游工具能夠在向使用者呈現組態選項時預先選取最常用的變體。
+
+## 限制條件中繼資料
+
+標記為 `x-f5xc-constraints` 的欄位包含從 API 分析中發現的驗證限制條件。
+
+### 陣列限制條件
+
+| 欄位 | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### 整數限制條件
+
+| 欄位 | 最小值 | 最大值 | 預設值 | 描述 |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS 埠號 |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | 連線閒置逾時（毫秒，1 秒到 1 小時） |
+
+### 列舉限制條件
+
+| 欄位 | 值 | 預設值 | 描述 |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS 安全等級 |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP 標頭轉換 |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP 通訊協定版本 |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 連線合併 |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | 負載平衡演算法 |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | 第 7 層 DDoS 緩解動作 |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | DDoS 偵測的 RPS 閾值 |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | 用戶端 DDoS 驗證 |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | 用戶端挑戰類型 |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | 負載平衡器發佈方式 |
+
+## 引導式工作流程整合
+
+擴充管線在規格層級新增 `x-f5xc-guided-workflows` 中繼資料。這些工作流程提供逐步部署指引，供 AI 助理和 CLI 工具使用。
+
+### 部署 HTTP 負載平衡器
+
+一個 5 步驟的工作流程，用於建立具有後端來源集區的完整組態 HTTP 負載平衡器（定義於 `config/guided_workflows.yaml`）：
+
+| 步驟 | 動作 | 資源 | 必要欄位 | 選用 |
+|------|--------|----------|-----------------|----------|
+| 1 | 建立來源集區 | `origin_pool` | `name`, `origin_servers`, `port` | 否 |
+| 2 | 組態健康檢查 | `healthcheck` | `name`, `http_health_check` | 是 |
+| 3 | 附加健康檢查 | - | - | 是 |
+| 4 | 建立 HTTP 負載平衡器 | `http_loadbalancer` | `name`, `domains`, `http.port` | 否 |
+| 5 | 驗證部署 | - | - | 否 |
+
+**先決條件**：目標租戶中的有效命名空間、可透過 IP 或 DNS 連線的後端應用程式、SSL 憑證（HTTPS 選用）。
+
+### 部署含 TLS 的 HTTPS 負載平衡器
+
+一個 7 步驟的工作流程，用於建立具有 SSL/TLS 終止的 HTTPS 負載平衡器：
+
+| 步驟 | 動作 | 資源 | 必要欄位 | 選用 |
+|------|--------|----------|-----------------|----------|
+| 1 | 上傳 SSL 憑證 | `certificate` | `name`, `certificate_chain`, `private_key` | 否 |
+| 2 | 建立來源集區 | `origin_pool` | `name`, `origin_servers` | 否 |
+| 3 | 組態健康檢查 | `healthcheck` | - | 是 |
+| 4 | 組態 WAF 原則 | `app_firewall` | - | 是 |
+| 5 | 建立 HTTPS 負載平衡器 | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | 否 |
+| 6 | 附加 WAF 原則 | - | - | 是 |
+| 7 | 驗證 HTTPS 部署 | - | - | 否 |
+
+**先決條件**：目標租戶中的有效命名空間、SSL 憑證和私密金鑰、可連線的後端應用程式。
+
+### 工作流程使用
+
+下游工具使用這些工作流程引導使用者完成多步驟部署：
+
+- **xcsh CLI**：將工作流程呈現為互動式引導命令（例如 `xcsh deploy http-lb`）
+- **VS Code 擴充功能**：在側邊欄面板中顯示工作流程步驟和進度追蹤
+- **AI 助理**：依序遵循工作流程步驟，建立每個資源並驗證相依性
+
+## OpenAPI 擴充參考
+
+這些供應商擴充被新增至標準 OpenAPI 結構描述，用以傳達 F5 XC 特定的中繼資料。
+
+### x-f5xc-cli-domain
+
+**類型**：`string`
+
+指示 CLI 和工具組織的領域分類。
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**類型**：`object`
+
+提供全面的中繼資料，用於建立最小可行組態。包含：
+- 描述
+- 具有限制條件的必要欄位
+- 互斥群組
+- 範例組態（YAML、JSON）
+- curl 命令範例
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**類型**：`boolean`
+
+當值為 `true` 時，表示伴隨的 `default` 值由 F5 XC API 伺服器強制執行。具有此擴充的欄位可以安全地從 API 請求中省略——伺服器會自動套用預設值。
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**類型**：`array of strings`
+
+列出與目前欄位互斥的欄位名稱，表示 OneOf 模式。
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**類型**：`object`
+
+提供驗證限制條件，包括陣列大小限制、整數範圍、唯一性要求和探索中繼資料。
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short 和 x-f5xc-description-medium
+
+**類型**：`string`
+
+為不同使用情境提供替代描述長度：
+- `x-f5xc-description-short`：最多 60 個字元（CLI 欄位、標記）
+- `x-f5xc-description-medium`：最多 150 個字元（工具提示、摘要）
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**類型**：`any`（符合欄位類型）
+
+為文件和工具提供具體的欄位範例。
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**類型**：`array of strings`
+
+使用旗標指示特定情境的要求：`minimum_config`、`create`、`update`、`read`。
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## 資料存取
+
+### OpenAPI 規格
+
+| 檔案 | 內容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | 所有含擴充的 http_loadbalancer 結構描述 |
+| `docs/specifications/api/openapi.json` | 包含所有結構描述的合併規格 |
+
+### 組態檔案
+
+| 檔案 | 用途 |
+|------|---------|
+| `config/minimum_configs.yaml` | 最小組態中繼資料來源 |
+| `config/constraint_patterns.yaml` | 限制條件模式定義 |
+| `config/guided_workflows.yaml` | 引導式工作流程步驟定義 |
+| `config/domain_descriptions.yaml` | 領域層級描述中繼資料 |
+
+### 已擴充的結構描述
+
+- `viewshttp_loadbalancerCreateSpecType` - 建立操作結構描述
+- `viewshttp_loadbalancerReplaceSpecType` - 更新操作結構描述
+- `viewshttp_loadbalancerGetSpecType` - 讀取操作結構描述
+
+## 相關文件
+
+- [開發指南 - OpenAPI 擴充](../development/#openapi-extensions) - 擴充定義和使用方式
+- [健康檢查增強功能](./healthcheck-enhancements/) - 健康檢查結構描述擴充（包含 `x-f5xc-recommended-oneof-variant`）
+- [來源集區增強功能](./originpool-enhancements/) - 來源集區結構描述擴充
+- [限制條件中繼資料指南](../constraint-metadata/) - 詳細的限制條件驗證文件
+
+## 變更紀錄
+
+| 版本 | 日期 | 變更 |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | 新增伺服器套用的預設值、引導式工作流程整合，以及擴展的最小組態章節 |
+| 2.0.45 | 2026-01-20 | 初始 http_loadbalancer 擴充文件 |

@@ -1,0 +1,54 @@
+---
+title: ⏱️ API การจำกัดอัตรา
+description: การควบคุมคำขอ โควตา และกฎ policer
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 8ccf40c73340
+  translator: machine
+---
+
+การบังคับใช้โควตาตามเวลาด้วยหน้าต่างเวลาที่กำหนดค่าได้เป็นชั่วโมง นาที หรือวินาที การควบคุมเฉพาะโปรโตคอลสำหรับการปรับรูปแบบทราฟฟิก
+
+- **หมวดหมู่**: เครือข่าย
+- **ความซับซ้อน**: ง่าย
+- **เส้นทาง**: 12 | **สคีมา**: 70
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `virtual`, `network_security`
+
+## กรณีการใช้งาน
+
+- กำหนดค่านโยบายตัวจำกัดอัตรา
+- จัดการการกำหนดค่า policer
+- ควบคุมการไหลของทราฟฟิกและการจัดคิว
+
+## ทรัพยากรหลัก
+
+- **rate_limiter**: ตัวจำกัดอัตราสำหรับการควบคุมและป้องกันทราฟฟิก
+- **rate_limiter_policy**: นโยบายตัวจำกัดอัตราพร้อมกฎการควบคุมโดยละเอียด
+- **rate_limit_threshold**: การกำหนดค่าเกณฑ์จำกัดอัตราสำหรับการควบคุมทราฟฟิก
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policers` | สร้าง Policer |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policers/&#123;metadata.name&#125;` | แทนที่ Policer |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policers` | แสดงรายการ Policer |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policers/&#123;name&#125;` | ดึงข้อมูล Policer |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policers/&#123;name&#125;` | ลบ Policer |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_policers` | สร้าง Protocol Policer |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_policers/&#123;metadata.name&#125;` | แทนที่ Protocol Policer |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_policers` | แสดงรายการ Protocol Policer |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_policers/&#123;name&#125;` | ดึงข้อมูล Protocol Policer |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_policers/&#123;name&#125;` | ลบ Protocol Policer |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiters` | สร้าง Rate Limiter |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiters/&#123;metadata.name&#125;` | แทนที่ Rate Limiter |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiters` | แสดงรายการ Rate Limiter |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiters/&#123;name&#125;` | ดึงข้อมูล Rate Limiter |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiters/&#123;name&#125;` | ลบ Rate Limiter |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./rate_limiting/)
+- [ไฟล์ข้อกำหนด OpenAPI JSON](../specifications/api/rate_limiting.json)

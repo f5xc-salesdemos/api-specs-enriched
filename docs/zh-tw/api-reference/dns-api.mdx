@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: 權威區域與記錄管理。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+具備區域傳輸和健康檢查的名稱解析。記錄類型與委派支援。
+
+- **類別**：網路
+- **複雜度**：進階
+- **路徑數**：49 | **結構描述數**：285
+- **層級**：標準
+- **相關領域**：`virtual`、`network`
+
+## 使用案例
+
+- 設定 DNS 負載平衡
+- 管理 DNS 區域和網域
+- 設定 DNS 合規性政策
+- 管理資源記錄集 (RRSets)
+
+## 主要資源
+
+- **dns_zone**：具有記錄管理功能的權威 DNS 區域
+- **dns_domain**：DNS 網域委派與組態設定
+- **dns_load_balancer**：基於 DNS 的流量分配，支援地理路由和故障轉移
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | 建立 DNS 合規性檢查。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | 取代 DNS 合規性檢查。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | 列出設定 DNS 合規性檢查。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | 取得 DNS 合規性檢查。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | 刪除設定 DNS 合規性檢查。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | 建立 DNS Proxy。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | 取代 DNS Proxy。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | 列出設定 DNS Proxy。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | 取得 DNS Proxy。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | 刪除設定 DNS Proxy。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | 建立 DNS 網域。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | 取代 DNS 網域。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | 驗證 DNS 網域。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | 列出 DNS 網域。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | 取得 DNS 網域。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | 刪除 DNS 網域。 |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | 建議值。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | 建立 DNS 負載平衡器。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | 取代 DNS 負載平衡器。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | 列出 DNS 負載平衡器。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | DNS 負載平衡器健康狀態列表。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | DNS 負載平衡器池成員健康狀態列表。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | DNS 負載平衡器池健康狀態。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | DNS 負載平衡器池成員健康狀態變更事件。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | 取得 DNS 負載平衡器。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | 刪除 DNS 負載平衡器。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | DNS 負載平衡器健康狀態。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | 建立 DNS 負載平衡器健康檢查。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | 取代 DNS 負載平衡器健康檢查。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | 列出 DNS 負載平衡器健康檢查。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | 取得 DNS 負載平衡器健康檢查。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | 刪除 DNS 負載平衡器健康檢查。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | 建立 DNS 負載平衡器池。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | 取代 DNS 負載平衡器池。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | 列出 DNS 負載平衡器池。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | 取得 DNS 負載平衡器池。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | 刪除 DNS 負載平衡器池。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | 從 DNSDomain 複製。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | 匯入 F5 Cloud Services DNS 區域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | 匯入 DNS 區域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | 匯入 BIND 檔案。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | 驗證 BIND 檔案。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | 建立 DNS 區域。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | 取代 DNS 區域。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | 取得本機區域檔案。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | 取得遠端區域檔案。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | 匯出區域檔案。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | 列出 DNS 區域。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | DNS 區域指標。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | 取得 DNS 區域請求日誌。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | 取得 DNS 區域。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | 刪除 DNS 區域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | 建立 |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 取得 |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 刪除 |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 取代 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | 訂閱 DNS 管理。 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | 取消訂閱 DNS 管理。 |
+
+## 連結
+
+- [互動式 API 參考](./dns/)
+- [OpenAPI 規格 JSON](../specifications/api/dns.json)

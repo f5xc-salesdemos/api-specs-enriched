@@ -1,0 +1,54 @@
+---
+title: "\U0001F465 واجهة برمجة تطبيقات المستخدمين"
+description: رموز الحسابات، والتسميات، وتكوين cloud-init.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 3c986acf344c
+  translator: machine
+---
+
+بيانات اعتماد تسجيل الموقع مع انتهاء صلاحية تلقائي. تحدد مفاتيح التصنيف التصنيفات المسموح بها بينما تُطبَّق العلامات المشتقة تلقائيًا بشكل ديناميكي.
+
+- **الفئة**: المنصة
+- **التعقيد**: بسيط
+- **المسارات**: 13 | **المخططات**: 50
+- **المستوى**: قياسي
+- **النطاقات ذات الصلة**: `system`، `admin`
+
+## حالات الاستخدام
+
+- إدارة حسابات المستخدمين والرموز
+- تكوين تعريف المستخدم
+- إدارة إعدادات المستخدم وتفضيلاته
+- تكوين التسميات الضمنية والمعروفة
+
+## الموارد الأساسية
+
+- **user**: حساب مستخدم للوصول إلى المنصة
+- **user_role**: دور المستخدم لإدارة الأذونات
+- **namespace_role**: دور محدد النطاق لأذونات دقيقة
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| GET | `/api/config/namespaces/system/implicit_labels` | الحصول على التسميات الضمنية. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/create` | إنشاء |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/delete` | حذف |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_labels` | الحصول |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/create` | إنشاء |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/delete` | حذف |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_label_keys` | الحصول |
+| GET | `/api/register/namespaces/system/get-cloud-init-config` | الحصول على تكوين Cloud Init. |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens` | إنشاء رمز. |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens/&#123;metadata.name&#125;` | استبدال رمز. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens` | قائمة الرموز. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | الحصول على رمز |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | حذف رمز. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;/state` | تعيين حالة الرمز. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./users/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/users.json)

@@ -1,0 +1,516 @@
+---
+title: HTTP 负载均衡器增强
+description: HTTP 负载均衡器模式的富化元数据
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+HTTP 负载均衡器模式的富化元数据。有关扩展定义，请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
+
+## 富化模式
+
+### 匹配模式
+
+所有匹配 `viewshttp_loadbalancer.*SpecType` 的模式都会接收富化：
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## 最小配置元数据
+
+`x-f5xc-minimum-configuration` 扩展为创建最小可行 HTTP 负载均衡器提供了全面的 CLI 元数据。
+
+### 必填字段
+
+| 字段 | 约束 | 描述 |
+|-------|-----------|-------------|
+| `metadata.name` | DNS 标签格式：`[a-z0-9]([-a-z0-9]*[a-z0-9])?` | 资源名称 |
+| `metadata.namespace` | DNS 标签格式 | 命名空间 |
+| `spec.domains` | 数组，min_items: 1 | 要服务的域名 |
+
+### 负载均衡器类型（OneOf 必选）
+
+必须指定以下负载均衡器类型之一：
+
+| 变体 | 描述 |
+|---------|-------------|
+| `spec.http` | 仅 HTTP |
+| `spec.https` | 使用手动证书的 HTTPS |
+| `spec.https_auto_cert` | 使用自动证书的 HTTPS |
+| `spec.http_https` | 同时支持 HTTP 和 HTTPS |
+
+**注意**：负载均衡器类型 OneOf 组被称为：
+- `lb_type` 在配置文件中（`config/minimum_configs.yaml` 中的简写形式）
+- `loadbalancer_type` 在 OpenAPI 规范原生扩展中（原生字段名）
+
+**API 模式参考**：`x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### 最小可行配置
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## 服务器应用的默认值
+
+标记为 `x-f5xc-server-default: true` 的字段，其 `default` 值会在请求中省略时由 F5 XC API 服务器自动应用。HTTP 负载均衡器有大量服务器应用的默认值，因为大多数安全功能和协议选项默认为禁用或安全状态。
+
+### HTTPS 自动证书默认值
+
+指定 `https_auto_cert` 时，服务器会为省略的字段应用以下默认值：
+
+| 字段 | 默认值 | 类型 | 描述 |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS 监听端口 |
+| `http_redirect` | `false` | boolean | HTTP 到 HTTPS 重定向 |
+| `add_hsts` | `false` | boolean | HTTP 严格传输安全头 |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ 配合强密码套件 |
+| `no_mtls` | `{}` | object | 双向 TLS 已禁用 |
+| `default_header` | `{}` | object | 默认服务器名称头处理 |
+| `enable_path_normalize` | `{}` | object | 路径规范化已启用 |
+| `default_loadbalancer` | `{}` | object | 默认负载均衡器设置 |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | 旧版头转换 |
+| `connection_idle_timeout` | `120000` | integer | 连接空闲超时（毫秒，2 分钟） |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | 已启用 HTTP/1.1 和 HTTP/2 |
+| `coalescing_options.default_coalescing` | `{}` | object | 默认 HTTP/2 连接合并 |
+
+### 安全功能默认值
+
+省略时所有安全功能默认为禁用：
+
+| 字段 | 默认值 | 描述 |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | Web 应用防火墙已禁用 |
+| `disable_bot_defense` | `{}` | Bot 防御已禁用 |
+| `disable_rate_limit` | `{}` | 速率限制已禁用 |
+| `disable_api_discovery` | `{}` | API 发现已禁用 |
+| `disable_api_testing` | `{}` | API 测试已禁用 |
+| `disable_api_definition` | `{}` | API 定义已禁用 |
+| `disable_malware_protection` | `{}` | 恶意软件防护已禁用 |
+| `disable_client_side_defense` | `{}` | 客户端防御已禁用 |
+| `disable_ip_reputation` | `{}` | IP 信誉已禁用 |
+| `disable_threat_mesh` | `{}` | 威胁网格已禁用 |
+| `disable_malicious_user_detection` | `{}` | 恶意用户检测已禁用 |
+
+### DDoS 和访问控制默认值
+
+| 字段 | 默认值 | 描述 |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | 阻止 DDoS 流量（默认缓解动作） |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | 使用默认 RPS 阈值 |
+| `l7_ddos_protection.clientside_action_none` | `{}` | 无客户端 DDoS 验证 |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | 无 DDoS 策略引用 |
+| `no_challenge` | `{}` | 无客户端质询 |
+| `user_id_client_ip` | `{}` | 通过客户端 IP 识别用户 |
+| `disable_trust_client_ip_headers` | `{}` | 不信任客户端 IP 头 |
+
+### 其他服务器应用的默认值
+
+| 字段 | 默认值 | 类型 | 描述 |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | 在公共默认 VIP 上发布 |
+| `round_robin` | `{}` | object | 轮询负载均衡算法 |
+| `add_location` | `true` | boolean | 在响应中添加 location 头 |
+| `system_default_timeouts` | `{}` | object | 使用系统默认超时 |
+| `service_policies_from_namespace` | `{}` | object | 从命名空间继承服务策略 |
+| `default_sensitive_data_policy` | `{}` | object | 使用默认敏感数据策略 |
+
+## 互斥字段组
+
+标记为 `x-f5xc-conflicts-with` 的字段表示 OneOf 模式。每组中只能指定一个字段。
+
+### 核心配置组
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | 负载均衡器协议类型 |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | 如何发布负载均衡器 |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | 流量分配算法 |
+
+### HTTPS 配置组（10 组）
+
+#### TLS 配置
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS 安全级别 |
+| `mtls` | `no_mtls`, `use_mtls` | 双向 TLS 启用或禁用 |
+
+#### 协议和头
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP 协议版本 |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP 头转换类型 |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | 服务器名称头处理 |
+
+#### 连接管理
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | 路径规范化启用或禁用 |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | 默认或非默认负载均衡器 |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 连接合并选项 |
+
+### 安全功能组（11 组）
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | Web 应用防火墙 |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | Bot 检测和缓解 |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | 速率限制 |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API 发现 |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API 测试 |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API 定义 |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | 恶意软件防护 |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | 客户端防御 |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP 信誉 |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | 威胁网格 |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | 恶意用户检测 |
+
+### DDoS 防护组（4 组）
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS 缓解动作 |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | 每秒请求数阈值 |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | 客户端 DDoS 验证动作 |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS 策略引用或无 |
+
+### 其他设置组（6 组）
+
+| 组名 | 字段 | 描述 |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | 用于 Bot 检测的客户端质询类型 |
+| `user_identification` | `user_id_client_ip`, `user_identification` | 用户识别方法 |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | 是否信任客户端 IP 头 |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | 使用系统默认或自定义超时 |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | 从命名空间或活动列表获取服务策略 |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | 使用默认或自定义敏感数据策略 |
+
+## OneOf 变体推荐（未来扩展）
+
+**状态**：尚未应用于 http_loadbalancer 模式。
+
+与包含 `x-f5xc-recommended-oneof-variant` 来指示 OneOf 组最常见选择的 healthcheck 不同，http_loadbalancer 目前缺少此扩展。
+
+### 与 Healthcheck 的比较
+
+**Healthcheck**（已实现）：
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP 负载均衡器**（尚未实现）：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
+```
+
+### 未来实现
+
+要为 http_loadbalancer 添加此扩展：
+1. 观察 F5 XC 控制台的默认选择（例如，UI 中预选的 lb_type）
+2. 将配置添加到 `config/discovered_defaults.yaml`
+3. 重新运行富化管道以应用扩展
+
+**添加后的预期结构**：
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # Example - requires verification
+```
+
+此扩展将使下游工具在向用户展示配置选项时能够预选最常用的变体。
+
+## 约束元数据
+
+标记为 `x-f5xc-constraints` 的字段包含通过 API 分析发现的验证约束。
+
+### 数组约束
+
+| 字段 | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### 整数约束
+
+| 字段 | 最小值 | 最大值 | 默认值 | 描述 |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS 端口号 |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | 连接空闲超时（毫秒，1 秒到 1 小时） |
+
+### 枚举约束
+
+| 字段 | 值 | 默认值 | 描述 |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS 安全级别 |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP 头转换 |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP 协议版本 |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 连接合并 |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | 负载均衡算法 |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | 第 7 层 DDoS 缓解动作 |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | DDoS 检测的 RPS 阈值 |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | 客户端 DDoS 验证 |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | 客户端质询类型 |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | 负载均衡器发布方式 |
+
+## 引导式工作流集成
+
+富化管道在规范级别添加 `x-f5xc-guided-workflows` 元数据。这些工作流提供分步部署指导，供 AI 助手和 CLI 工具使用。
+
+### 部署 HTTP 负载均衡器
+
+一个 5 步工作流，用于创建带有后端源池的完整配置 HTTP 负载均衡器（定义在 `config/guided_workflows.yaml` 中）：
+
+| 步骤 | 操作 | 资源 | 必填字段 | 可选 |
+|------|--------|----------|-----------------|----------|
+| 1 | 创建源池 | `origin_pool` | `name`, `origin_servers`, `port` | 否 |
+| 2 | 配置健康检查 | `healthcheck` | `name`, `http_health_check` | 是 |
+| 3 | 附加健康检查 | - | - | 是 |
+| 4 | 创建 HTTP 负载均衡器 | `http_loadbalancer` | `name`, `domains`, `http.port` | 否 |
+| 5 | 验证部署 | - | - | 否 |
+
+**前提条件**：目标租户中有效的命名空间、可通过 IP 或 DNS 访问的后端应用程序、SSL 证书（HTTPS 可选）。
+
+### 部署带 TLS 的 HTTPS 负载均衡器
+
+一个 7 步工作流，用于创建带有 SSL/TLS 终止的 HTTPS 负载均衡器：
+
+| 步骤 | 操作 | 资源 | 必填字段 | 可选 |
+|------|--------|----------|-----------------|----------|
+| 1 | 上传 SSL 证书 | `certificate` | `name`, `certificate_chain`, `private_key` | 否 |
+| 2 | 创建源池 | `origin_pool` | `name`, `origin_servers` | 否 |
+| 3 | 配置健康检查 | `healthcheck` | - | 是 |
+| 4 | 配置 WAF 策略 | `app_firewall` | - | 是 |
+| 5 | 创建 HTTPS 负载均衡器 | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | 否 |
+| 6 | 附加 WAF 策略 | - | - | 是 |
+| 7 | 验证 HTTPS 部署 | - | - | 否 |
+
+**前提条件**：目标租户中有效的命名空间、SSL 证书和私钥、可访问的后端应用程序。
+
+### 工作流使用
+
+下游工具使用这些工作流来引导用户完成多步骤部署：
+
+- **xcsh CLI**：将工作流呈现为交互式引导命令（例如 `xcsh deploy http-lb`）
+- **VS Code 扩展**：在侧边栏面板中显示工作流步骤并跟踪进度
+- **AI 助手**：按顺序执行工作流步骤，创建每个资源并验证依赖关系
+
+## OpenAPI 扩展参考
+
+这些供应商扩展被添加到标准 OpenAPI 模式中，以传达 F5 XC 特定的元数据。
+
+### x-f5xc-cli-domain
+
+**类型**：`string`
+
+指示用于 CLI 和工具组织的域分类。
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**类型**：`object`
+
+为创建最小可行配置提供全面的元数据。包括：
+- 描述
+- 带约束的必填字段
+- 互斥组
+- 示例配置（YAML、JSON）
+- curl 命令示例
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**类型**：`boolean`
+
+当为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。具有此扩展的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**类型**：`array of strings`
+
+列出与当前字段互斥的字段名称，表示 OneOf 模式。
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**类型**：`object`
+
+提供验证约束，包括数组大小限制、整数范围、唯一性要求和发现元数据。
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short 和 x-f5xc-description-medium
+
+**类型**：`string`
+
+为不同用例提供不同长度的描述：
+- `x-f5xc-description-short`：最多 60 个字符（CLI 列、徽章）
+- `x-f5xc-description-medium`：最多 150 个字符（工具提示、摘要）
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**类型**：`any`（与字段类型匹配）
+
+为文档和工具提供具体的字段示例。
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**类型**：`array of strings`
+
+使用标志指示特定上下文的要求：`minimum_config`、`create`、`update`、`read`。
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## 数据访问
+
+### OpenAPI 规范
+
+| 文件 | 内容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | 包含富化的所有 http_loadbalancer 模式 |
+| `docs/specifications/api/openapi.json` | 包含所有模式的合并规范 |
+
+### 配置文件
+
+| 文件 | 用途 |
+|------|---------|
+| `config/minimum_configs.yaml` | 最小配置元数据来源 |
+| `config/constraint_patterns.yaml` | 约束模式定义 |
+| `config/guided_workflows.yaml` | 引导式工作流步骤定义 |
+| `config/domain_descriptions.yaml` | 域级别描述元数据 |
+
+### 富化的模式
+
+- `viewshttp_loadbalancerCreateSpecType` - 创建操作模式
+- `viewshttp_loadbalancerReplaceSpecType` - 更新操作模式
+- `viewshttp_loadbalancerGetSpecType` - 读取操作模式
+
+## 相关文档
+
+- [开发指南 - OpenAPI 扩展](../development/#openapi-extensions) - 扩展定义和用法
+- [健康检查增强](./healthcheck-enhancements/) - 健康检查模式富化（包含 `x-f5xc-recommended-oneof-variant`）
+- [源池增强](./originpool-enhancements/) - 源池模式富化
+- [约束元数据指南](../constraint-metadata/) - 详细的约束验证文档
+
+## 更新日志
+
+| 版本 | 日期 | 变更 |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | 添加了服务器应用的默认值、引导式工作流集成和扩展的最小配置部分 |
+| 2.0.45 | 2026-01-20 | 初始 http_loadbalancer 富化文档 |

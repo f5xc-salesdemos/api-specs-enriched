@@ -1,0 +1,173 @@
+---
+title: 헬스체크 개선 사항
+description: 헬스체크 관련 스키마를 위한 보강 메타데이터
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+헬스체크 관련 스키마를 위한 보강 메타데이터입니다. 확장 정의는 [OpenAPI 확장](../development/#openapi-extensions)을 참조하세요.
+
+## 보강된 스키마
+
+### 패턴
+
+`healthcheck.*SpecType`과 일치하는 모든 스키마에 보강이 적용됩니다:
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+추가로, 중첩 스키마 `healthcheckHttpHealthCheck`에는 HTTP 헬스체크 구성을 위한 보강이 포함됩니다.
+
+## 서버 적용 기본값
+
+`x-f5xc-server-default: true`로 표시된 필드는 요청에서 생략될 때 F5 XC API 서버에 의해 `default` 값이 적용됩니다.
+
+### 최상위 필드
+
+| 필드 | 기본값 | 타입 | 설명 |
+|------|--------|------|------|
+| `jitter` | `0` | integer | 타이밍 랜덤화를 위한 절대 지터 값 |
+| `jitter_percent` | `0` | integer | 타이밍 랜덤화를 위한 백분율 기반 지터 |
+
+### healthcheckHttpHealthCheck 스키마
+
+| 필드 | 기본값 | 타입 | 설명 |
+|------|--------|------|------|
+| `use_origin_server_name` | `{}` | object | Host 헤더에 사용할 오리진 서버 이름 |
+| `headers` | `{}` | object | 사용자 지정 헤더 |
+| `request_headers_to_remove` | `[]` | array | 요청에서 제거할 헤더 |
+| `use_http2` | `false` | boolean | HTTP/2 지원 |
+| `expected_status_codes` | `[]` | array | 허용되는 상태 코드 (비어 있으면 200-299) |
+
+## 권장 값
+
+`x-f5xc-recommended-value`로 표시된 필드는 F5 XC 웹 콘솔이 새 리소스를 생성할 때 미리 채워 넣는 값을 나타냅니다.
+
+### 최상위 필드
+
+| 필드 | 권장 값 | 타입 | 설명 |
+|------|---------|------|------|
+| `timeout` | `3` | integer | 헬스체크 타임아웃 (초) |
+| `interval` | `15` | integer | 헬스체크 간격 (초) |
+| `unhealthy_threshold` | `1` | integer | 비정상으로 표시되기까지의 연속 실패 횟수 |
+| `healthy_threshold` | `3` | integer | 정상으로 표시되기까지의 연속 성공 횟수 |
+| `jitter_percent` | `30` | integer | 프로덕션 사용을 위한 지터 백분율 |
+
+### healthcheckHttpHealthCheck 스키마
+
+| 필드 | 권장 값 | 타입 | 설명 |
+|------|---------|------|------|
+| `path` | `"/"` | string | 헬스체크 엔드포인트 경로 |
+| `use_http2` | `false` | boolean | HTTP/2 지원 설정 |
+| `expected_status_codes` | `["200"]` | array | 오리진이 정상임을 나타내는 상태 코드 |
+| `use_origin_server_name` | `{}` | object | Host 헤더에 사용할 오리진 서버 이름 |
+
+## OneOf 변형 권장 사항
+
+상호 배타적 필드 그룹(OneOf)을 포함하는 스키마에는 가장 일반적으로 사용되는 변형을 나타내는 `x-f5xc-recommended-oneof-variant`가 포함됩니다. 이 메타데이터는 F5 XC 콘솔 기본값 및 일반적인 사용 패턴을 기반으로, 여러 옵션이 존재할 때 전형적인 선택을 식별합니다.
+
+### 최상위 OneOf 그룹
+
+| 스키마 | OneOf 그룹 | 권장 변형 | 설명 |
+|--------|-----------|-----------|------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP 헬스체크 유형 |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP 헬스체크 유형 |
+
+### healthcheckHttpHealthCheck OneOf 그룹
+
+| 스키마 | OneOf 그룹 | 권장 변형 | 설명 |
+|--------|-----------|-----------|------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | 헬스체크 요청의 Host 헤더 |
+
+#### Host 헤더 선택
+
+`host_header_choice` OneOf 그룹은 헬스체크 HTTP 요청에서 Host 헤더를 지정하는 방법을 제어합니다.
+
+| 변형 | 타입 | 설명 |
+|------|------|------|
+| `use_origin_server_name` | `object` (비어 있음) | 오리진 서버 이름을 Host 헤더로 사용합니다. F5 XC 콘솔에서의 기본 선택입니다. |
+| `host_header` | `string` | 헬스체크 요청에 사용할 사용자 지정 Host 헤더 값을 지정합니다. |
+
+**API 스키마 참조**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## OpenAPI 확장 참조
+
+이러한 벤더 확장은 F5 XC 고유의 기본 동작을 전달하기 위해 표준 OpenAPI 스키마에 추가됩니다.
+
+### x-f5xc-server-default
+
+**타입**: `boolean`
+
+`true`인 경우, 함께 제공된 `default` 값이 F5 XC API 서버에 의해 적용됨을 나타냅니다. 이 확장이 있는 필드는 API 요청에서 안전하게 생략할 수 있으며, 서버가 자동으로 기본값을 적용합니다.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**타입**: `any` (필드 타입과 일치)
+
+F5 XC 웹 콘솔이 미리 채워진 기본값으로 사용하는 값을 지정합니다. 이 값은 서버에 의해 강제되지는 않지만 콘솔을 통해 생성된 새 리소스의 전형적인 초기 구성을 나타냅니다.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**타입**: `object` (그룹 이름에서 변형 이름으로의 맵)
+
+상호 배타적 필드 그룹이 있는 스키마의 경우, 어떤 변형이 기본 또는 가장 일반적인 선택인지를 식별합니다. 키는 OneOf 그룹 이름이고 값은 권장 변형 필드 이름입니다.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## 데이터 접근
+
+### OpenAPI 명세
+
+| 파일 | 내용 |
+|------|------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | 모든 스키마가 포함된 병합 명세 |
+
+### validation.json 구조
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # x-f5xc-server-default: true인 필드
+├── recommended         # x-f5xc-recommended-value가 있는 필드
+├── oneof_recommended   # OneOf 변형 권장 사항
+└── nested_recommended  # 중첩 스키마 권장 값
+```
+
+## 관련 문서
+
+- [개발 가이드 - OpenAPI 확장](../development/#openapi-extensions) - 확장 정의 및 사용법
+- [검증 명세](../validation-spec/) - validation.json 형식 및 구조
+- [오리진 풀 개선 사항](./originpool-enhancements/) - 오리진 풀 스키마 보강
+
+## 변경 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|-----------|
+| 2.1.4 | 2026-01-19 | HTTP 헬스체크 요청 매개변수에 대한 `host_header_choice` OneOf 그룹 문서 추가 |
+| 2.1.3 | 2026-01-18 | 전역 확장 문서를 DEVELOPMENT.md로 통합; 리소스별 데이터만 유지 |
+| 2.1.2 | 2026-01-18 | 순수 API 참조로 재작성; 다운스트림 예시 및 지시적 표현 제거 |
+| 2.1.1 | 2026-01-18 | 중첩 권장 값, OneOf 권장 변형, `x-f5xc-recommended-oneof-variant` 확장 추가 |
+| 2.1.0 | 2026-01-18 | validation.json에 통합 기본값 구조 추가 |
+| 2.0.30 | 2026-01-16 | `$ref` 스키마에 대한 중첩 기본값 추가 |
+| 2.0.29 | 2026-01-17 | 초기 헬스체크 기본값 |

@@ -1,0 +1,65 @@
+---
+title: "\U0001F4C9 Telemetrie- und Insights-API"
+description: 'Metrikerfassung, -analyse und -visualisierung.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: b1575fd57188
+  translator: machine
+---
+
+Erfassungsendpunkte, Metrikspeicherung und Insight-Generierung für Observability-Workflows.
+
+- **Kategorie**: Betrieb
+- **Komplexität**: mittel
+- **Pfade**: 27 | **Schemas**: 181
+- **Stufe**: Standard
+- **Verwandte Domänen**: `observability`, `statistics`
+
+## Anwendungsfälle
+
+- Telemetriedaten erfassen und analysieren
+- Umsetzbare Erkenntnisse aus Metriken generieren
+- Richtlinien zur Telemetrieerfassung konfigurieren
+
+## Primäre Ressourcen
+
+- **telemetry_receiver**: Telemetrieempfänger zur Datenerfassung
+- **insight_query**: Insight-Abfrage für Analysen
+
+## Endpunkte
+
+| Methode | Pfad | Beschreibung |
+|---------|------|--------------|
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity` | Konnektivitätsgraph-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity/edge` | Konnektivitätskanten-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity/node` | Konnektivitätsknoten-Abfrage. |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | Erkannte Dienste eines bestimmten Typs auflisten. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | Erkannte Dienste auflisten. |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | Erkanntes Dienst-Objekt abrufen. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | HTTP/HTTPS-Load-Balancer erstellen. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | TCP-Load-Balancer erstellen. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | Sichtbarkeit in allen Arbeitsbereichen deaktivieren. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | Sichtbarkeit in allen Arbeitsbereichen aktivieren. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/health_status` | Gesundheitsstatus erkannter Dienste. |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | Werte vorschlagen. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | Flow-Erfassung abonnieren. |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | Abonnementstatus der Flow-Erfassung prüfen. |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | Flow-Erfassung abbestellen. |
+| POST | `/api/data/namespaces/system/flows/flow_collection` | Flow-Erfassung. |
+| POST | `/api/data/namespaces/system/flows/top_flow_anomalies` | Flow-Anomalieerkennung. |
+| POST | `/api/data/namespaces/system/flows/top_talkers` | Top-Kommunikatoren. |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | Dienstgraph-Abfrage für alle Namespaces. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/lb_cache_content` | Cachebarkeits-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service` | Dienstgraph-Abfrage. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/graph/service/app_types` | Anwendungstypen. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/edge` | Dienstkanten-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node` | Dienstknoten-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node/instance` | Dienstinstanz-Abfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node/instances` | Dienstinstanzen-Abfrage. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/&#123;kind&#125;/&#123;name&#125;/status_at_site` | Status abrufen. |
+
+## Links
+
+- [Interaktive API-Referenz](./telemetry_and_insights/)
+- [OpenAPI-Spezifikation JSON](../specifications/api/telemetry_and_insights.json)

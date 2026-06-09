@@ -1,0 +1,318 @@
+---
+title: 유효성 검사 명세
+description: 유효성 검사 명세의 구조 및 내용
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+이 문서는 api-specs-enriched 프로젝트에서 게시하는 유효성 검사 명세의 구조와 내용을 설명합니다.
+
+## 개요
+
+유효성 검사 명세는 API 유효성 검사 제약 조건, 기본값 및 구성 메타데이터를 단일 JSON 파일로 통합합니다. 이 명세는 강화된 OpenAPI 스펙에서 생성되며 함께 게시됩니다.
+
+**게시 위치**: `docs/specifications/api/validation.json`
+
+## 명세 구조
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## 섹션
+
+### required_fields
+
+각 리소스별 작업 유형에 필요한 필드를 지정합니다.
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+제약된 필드에 허용되는 값을 정의합니다.
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+타입 수준의 유효성 검사 기본값 및 패턴 기반 규칙입니다.
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+신뢰도 점수가 포함된 필드 이름 패턴 기반 유효성 검사 규칙입니다.
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+통합된 구조로 리소스 유형별로 정리된 모든 기본값입니다.
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### 기본값 카테고리
+
+| 카테고리 | 설명 | 출처 |
+|----------|-------------|--------|
+| `server_applied` | 필드가 생략될 때 API가 적용하는 값 | 라이브 API 테스트 |
+| `recommended` | F5 XC 웹 콘솔에서 미리 입력되는 값 | UI 분석 |
+| `advanced_options` | advanced_options 객체 내의 중첩 기본값 | API 검색 |
+| `oneof_choices` | 기본 OneOf 변형 선택 | API 동작 |
+| `oneof_recommended` | 권장 OneOf 변형 | 콘솔 기본값 |
+| `nested_recommended` | 중첩 스키마의 권장 값 | UI 분석 |
+| `ui_vs_server` | UI 기본값이 API 기본값과 다른 경우 | 비교 분석 |
+
+### conditional_requirements
+
+상호 배타적 필드 및 조건부 종속성입니다.
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+작동하는 예제가 포함된 최소 실행 가능 구성입니다.
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## OpenAPI 확장 매핑
+
+강화된 OpenAPI 스펙은 다음 확장을 사용하여 유효성 검사 메타데이터를 임베드합니다:
+
+| 확장 | 목적 | 위치 |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | 컨텍스트별 필수 필드 | 스키마 속성 |
+| `x-f5xc-server-default` | 서버 적용 기본값 표시 | 스키마 속성 |
+| `x-f5xc-recommended-value` | 권장 기본값 | 스키마 속성 |
+| `x-f5xc-recommended-oneof-variant` | 권장 OneOf 변형 | 스키마 정의 |
+| `x-f5xc-conditions` | 조건부 요구 사항 | 스키마 속성 |
+| `x-f5xc-minimum-configuration` | 최소 구성 예제 | 스키마 정의 |
+| `x-f5xc-validation` | 검색 파생 제약 조건 | 스키마 속성 |
+
+## 데이터 접근
+
+### 게시 URL
+
+| 출처 | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### 로컬 경로
+
+파이프라인 실행 후: `docs/specifications/api/validation.json`
+
+## 버전 관리
+
+유효성 검사 명세는 `version` 필드에서 시맨틱 버전 관리를 따릅니다:
+
+| 변경 유형 | 버전 증가 | 예시 |
+|-------------|--------------|---------|
+| 구조 변경 (호환성 파괴) | 메이저 | 필드 이름 변경, 섹션 제거 |
+| 새로운 유효성 검사 규칙 또는 리소스 | 마이너 | 새 리소스 기본값 |
+| 버그 수정 또는 설명 업데이트 | 패치 | 오타 수정 |
+
+## 조정 우선순위
+
+여러 출처에서 제약 조건을 제공할 때 조정 우선순위는 다음과 같습니다:
+
+1. **기존(Existing)** - 원본 OpenAPI 스펙의 제약 조건 (최고 우선순위)
+2. **검색(Discovery)** - 라이브 API 검색에서 얻은 제약 조건
+3. **추론(Inferred)** - 패턴 매칭에서 얻은 제약 조건 (최저 우선순위)
+
+## 관련 문서
+
+- [헬스체크 강화](./Enhancements/healthcheck-enhancements/) - 헬스체크 스키마 강화 내용
+- [오리진 풀 강화](./Enhancements/originpool-enhancements/) - 오리진 풀 스키마 강화 내용
+- [CLAUDE.md](../../CLAUDE.md) - AI 어시스턴트 지침
+- [DEVELOPMENT.md](./development/) - 개발자 가이드
+
+## 변경 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | 순수 API 레퍼런스로 재작성; oneof_recommended 및 nested_recommended 카테고리 추가 |
+| 2.1.0 | 2026-01-18 | 분산된 섹션을 대체하는 통합 기본값 구조 |
+| 2.0.0 | 2026-01-15 | 초기 유효성 검사 명세 |

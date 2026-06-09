@@ -1,0 +1,141 @@
+---
+title: "\U0001F50C API เครือข่าย"
+description: 'BGP peering, IPsec tunnels และนโยบายเซกเมนต์'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 5737a59da5b8
+  translator: machine
+---
+
+โปรโตคอล Border Gateway พร้อมการจัดการ ASN และความสัมพันธ์ของระบบอัตโนมัส VPN แบบ Site-to-Site เชื่อมต่อศูนย์ข้อมูลผ่านช่องทางที่เข้ารหัส
+
+- **หมวดหมู่**: เครือข่าย
+- **ความซับซ้อน**: ขั้นสูง
+- **เส้นทาง**: 81 | **สคีมา**: 449
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `virtual`, `network_security`, `dns`
+
+## กรณีการใช้งาน
+
+- กำหนดค่าการเราต์ BGP และการจัดการ ASN
+- จัดการอุโมงค์ IPsec และเฟส IKE
+- กำหนดค่าตัวเชื่อมต่อเครือข่ายและเส้นทาง
+- จัดการ SRv6 และการแบ่งซับเน็ต
+- กำหนดการเชื่อมต่อเซกเมนต์และนโยบาย
+- กำหนดค่าชุดคำนำหน้า IP
+
+## ทรัพยากรหลัก
+
+- **virtual_network**: เครือข่ายเสมือนสำหรับการเชื่อมต่อไซต์และการแบ่งส่วน
+- **network_connector**: ตัวเชื่อมต่อเครือข่ายสำหรับการเชื่อมต่อแบบ Site-to-Site หรือคลาวด์
+- **site_mesh_group**: การกำหนดค่าการเชื่อมต่อแบบ Mesh ระหว่างหลายไซต์
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/address_allocators` | สร้าง Address Allocator |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators` | แสดงรายการ Address Allocator |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | ดึงข้อมูล Address Allocator |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | ลบ Address Allocator |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys` | สร้าง Advertise Policy |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys/&#123;metadata.name&#125;` | แทนที่ Advertise Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys` | แสดงรายการ Advertise Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | ดึงข้อมูล Advertise Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | ลบ Advertise Policy |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps` | สร้าง BGP |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps/&#123;metadata.name&#125;` | แทนที่ BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps` | แสดงรายการ BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | ดึงข้อมูล BGP |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | ลบ BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgpstatus/&#123;view_name&#125;` | ดึงข้อมูลสถานะ BGP สำหรับมุมมอง |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets` | สร้าง BGP ASN Set |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets/&#123;metadata.name&#125;` | แทนที่ BGP ASN Set |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets` | แสดงรายการ BGP ASN Set |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | ดึงข้อมูล BGP ASN Set |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | ลบ BGP ASN Set |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_peers` | แสดงข้อมูล BGP Peer |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_routes` | แสดงเส้นทาง BGP |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys` | สร้าง BGP Routing Policy |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys/&#123;metadata.name&#125;` | แทนที่ BGP Routing Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys` | แสดงรายการ BGP Routing Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | ดึงข้อมูล BGP Routing Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | ลบ BGP Routing Policy |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups` | สร้าง DC Cluster Group |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups/&#123;metadata.name&#125;` | แทนที่ DC Cluster Group |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups` | แสดงรายการ DC Cluster Group |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dc_cluster_groups/metrics` | เมตริก |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | ดึงข้อมูล DC Cluster Group |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | ลบ DC Cluster Group |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs` | สร้าง Forwarding Class |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs/&#123;metadata.name&#125;` | แทนที่ Forwarding Class |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs` | แสดงรายการ Forwarding Class |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | ดึงข้อมูล Forwarding Class |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | ลบ Forwarding Class |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s` | สร้าง IKE Phase1 Profile |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า IKE Phase1 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s` | แสดงรายการ IKE Phase 1 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | ดึงข้อมูลการกำหนดค่า IKE Phase1 Profile |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | ลบ IKE Phase 1 Profile |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles` | สร้าง IKE Phase1 Profile |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า IKE Phase1 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles` | แสดงรายการ IKE Phase 1 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | ดึงข้อมูลการกำหนดค่า IKE Phase1 Profile |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | ลบ IKE Phase 1 Profile |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s` | สร้าง IKE Phase2 Profile |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า IKE Phase2 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s` | แสดงรายการ IKE Phase 2 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | ดึงข้อมูลการกำหนดค่า IKE Phase2 Profile |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | ลบ IKE Phase 2 Profile |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles` | สร้าง IKE Phase2 Profile |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า IKE Phase2 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles` | แสดงรายการ IKE Phase 2 Profile |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | ดึงข้อมูลการกำหนดค่า IKE Phase2 Profile |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | ลบ IKE Phase 2 Profile |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets` | สร้าง IP Prefix Set |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets/&#123;metadata.name&#125;` | แทนที่ IP Prefix Set |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets` | แสดงรายการ IP Prefix Set |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | ดึงข้อมูล IP Prefix Set |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | ลบ IP Prefix Set |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors` | สร้าง Network Connector |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors/&#123;metadata.name&#125;` | แทนที่ Network Connector |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors` | แสดงรายการ Network Connector |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | ดึงข้อมูล Network Connector |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | ลบ Network Connector |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/public_ips/&#123;metadata.name&#125;` | แทนที่ Public IP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips` | แสดงรายการ Public IP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips/&#123;name&#125;` | ดึงข้อมูล Public IP |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes` | สร้าง Route |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes/&#123;metadata.name&#125;` | แทนที่ Route |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes` | แสดงรายการ Route |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | ดึงข้อมูล Route |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | ลบ Route |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/routes` | แสดงเส้นทาง |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/simplified_routes` | แสดงเส้นทางแบบย่อ |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices` | สร้าง SRv6 Network Slice |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices/&#123;metadata.name&#125;` | แทนที่ SRv6 Network Slice |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices` | แสดงรายการ SRv6 Network Slice |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | ดึงข้อมูล SRv6 Network Slice |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | ลบ SRv6 Network Slice |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets` | สร้าง Subnet |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets/&#123;metadata.name&#125;` | แทนที่ Subnet |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets` | แสดงรายการ Subnet |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | ดึงข้อมูล Subnet |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | ลบ Subnet |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/traceroute` | Traceroute |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels` | สร้าง Tunnel |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels/&#123;metadata.name&#125;` | แทนที่ Tunnel |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels` | แสดงรายการ Tunnel |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | ดึงข้อมูล Tunnel |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | ลบ Tunnel |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | สร้าง Virtual Network |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | แทนที่ Virtual Network |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | แสดงรายการ Virtual Network |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | ดึงข้อมูล Virtual Network |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | ลบ Virtual Network |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./network/)
+- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/network.json)

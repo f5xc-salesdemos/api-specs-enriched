@@ -1,0 +1,59 @@
+---
+title: "\U0001F9A0 API การป้องกันบอทและภัยคุกคาม"
+description: การตรวจจับบอท หมวดหมู่ภัยคุกคาม และอินสแตนซ์การป้องกัน
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 500350b552b3
+  translator: machine
+---
+
+การจำแนกประเภทภัยคุกคามด้วยการวิเคราะห์พฤติกรรมและการจับคู่ลายเซ็น การบล็อกอัตโนมัติสำหรับรูปแบบทราฟฟิกที่เป็นอันตราย
+
+- **หมวดหมู่**: ความปลอดภัย
+- **ความซับซ้อน**: ปานกลาง
+- **เส้นทาง**: 19 | **สคีมา**: 74
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `bot_defense`, `shape`, `virtual`
+
+## กรณีการใช้งาน
+
+- กำหนดค่าอินสแตนซ์การป้องกันบอทต่อเนมสเปซ
+- จัดการหมวดหมู่ภัยคุกคาม TPM สำหรับการจำแนกประเภท
+- จัดเตรียมคีย์ API สำหรับระบบป้องกันอัตโนมัติ
+- รวมบริการข่าวกรองภัยคุกคาม
+
+## ทรัพยากรหลัก
+
+- **bot_defense_instance**: อินสแตนซ์การป้องกันบอทสำหรับการปรับใช้
+- **threat_category**: หมวดหมู่ภัยคุกคามสำหรับการจำแนกประเภท
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bot_defense_app_infrastructures` | สร้างโครงสร้างพื้นฐานแอปป้องกันบอท |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bot_defense_app_infrastructures/&#123;metadata.name&#125;` | แทนที่โครงสร้างพื้นฐานแอปป้องกันบอท |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bot_defense_app_infrastructures` | แสดงรายการโครงสร้างพื้นฐานแอปป้องกันบอท |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bot_defense_app_infrastructures/&#123;name&#125;` | โครงสร้างพื้นฐานแอปป้องกันบอท |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bot_defense_app_infrastructures/&#123;name&#125;` | ลบโครงสร้างพื้นฐานแอปป้องกันบอท |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/shape_bot_defense_instances` | แสดงรายการอินสแตนซ์การป้องกันบอท Shape |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/shape_bot_defense_instances/&#123;name&#125;` | ดึงข้อมูล Virtual Host |
+| POST | `/api/tpm/namespaces/&#123;metadata.namespace&#125;/tpm_api_keys` | สร้างคีย์ API ของ TPM |
+| PUT | `/api/tpm/namespaces/&#123;metadata.namespace&#125;/tpm_api_keys/&#123;metadata.name&#125;` | แทนที่คีย์ API ของ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_api_keys` | แสดงรายการคีย์ API ของ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_api_keys/&#123;name&#125;` | ดึงข้อมูลคีย์ API ของ TPM |
+| POST | `/api/tpm/namespaces/&#123;metadata.namespace&#125;/tpm_categorys` | สร้างหมวดหมู่ TPM |
+| PUT | `/api/tpm/namespaces/&#123;metadata.namespace&#125;/tpm_categorys/&#123;metadata.name&#125;` | แทนที่หมวดหมู่ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_categorys` | แสดงรายการหมวดหมู่ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_categorys/&#123;name&#125;` | ดึงข้อมูลหมวดหมู่ TPM |
+| POST | `/api/tpm/namespaces/&#123;metadata.namespace&#125;/tpm_managers` | สร้างตัวจัดการ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_managers` | แสดงรายการตัวจัดการ TPM |
+| GET | `/api/tpm/namespaces/&#123;namespace&#125;/tpm_managers/&#123;name&#125;` | ดึงข้อมูลตัวจัดการ TPM |
+| POST | `/api/tpm/tpm/preauth` | การยืนยันตัวตนเบื้องต้น |
+| POST | `/api/tpm/tpm/provision` | การจัดเตรียม |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./bot_and_threat_defense/)
+- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/bot_and_threat_defense.json)

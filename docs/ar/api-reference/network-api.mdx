@@ -1,0 +1,141 @@
+---
+title: "\U0001F50C واجهة برمجة تطبيقات الشبكة"
+description: نظير BGP، وأنفاق IPsec، وسياسات الشرائح.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 5737a59da5b8
+  translator: machine
+---
+
+بروتوكول بوابة الحدود مع إدارة ASN وعلاقات الأنظمة المستقلة. شبكة VPN من موقع إلى موقع تربط مراكز البيانات عبر قنوات مشفرة.
+
+- **الفئة**: الشبكات
+- **التعقيد**: متقدم
+- **المسارات**: 81 | **المخططات**: 449
+- **المستوى**: متقدم
+- **النطاقات ذات الصلة**: `virtual`, `network_security`, `dns`
+
+## حالات الاستخدام
+
+- تكوين توجيه BGP وإدارة ASN
+- إدارة أنفاق IPsec ومراحل IKE
+- تكوين موصلات الشبكة والمسارات
+- إدارة SRv6 والشبكات الفرعية
+- تعريف اتصالات الشرائح والسياسات
+- تكوين مجموعات بادئات IP
+
+## الموارد الرئيسية
+
+- **virtual_network**: شبكة افتراضية لاتصال المواقع والتجزئة
+- **network_connector**: موصل شبكة للاتصال من موقع إلى موقع أو الاتصال السحابي
+- **site_mesh_group**: تكوين الاتصال الشبكي بين مواقع متعددة
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/address_allocators` | إنشاء مخصص العناوين. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators` | عرض قائمة مخصصات العناوين. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | الحصول على مخصص العناوين. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/address_allocators/&#123;name&#125;` | حذف مخصص العناوين. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys` | إنشاء سياسة الإعلان. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/advertise_policys/&#123;metadata.name&#125;` | استبدال سياسة الإعلان. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys` | عرض قائمة سياسات الإعلان. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | الحصول على سياسة الإعلان. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/advertise_policys/&#123;name&#125;` | حذف سياسة الإعلان. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps` | إنشاء BGP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgps/&#123;metadata.name&#125;` | استبدال BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps` | عرض قائمة BGP |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | الحصول على BGP |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgps/&#123;name&#125;` | حذف BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgpstatus/&#123;view_name&#125;` | الحصول على حالة BGP للعرض. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets` | إنشاء مجموعة BGP ASN. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_asn_sets/&#123;metadata.name&#125;` | استبدال مجموعة BGP ASN. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets` | عرض قائمة مجموعات BGP ASN. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | الحصول على مجموعة BGP ASN. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_asn_sets/&#123;name&#125;` | حذف مجموعة BGP ASN. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_peers` | عرض معلومات نظير BGP. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/bgp_routes` | عرض مسارات BGP. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys` | إنشاء سياسة توجيه BGP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/bgp_routing_policys/&#123;metadata.name&#125;` | استبدال سياسة توجيه BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys` | عرض قائمة سياسات توجيه BGP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | الحصول على سياسة توجيه BGP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/bgp_routing_policys/&#123;name&#125;` | حذف سياسة توجيه BGP. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups` | إنشاء مجموعة عناقيد مركز البيانات. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dc_cluster_groups/&#123;metadata.name&#125;` | استبدال مجموعة عناقيد مركز البيانات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups` | عرض قائمة مجموعات عناقيد مركز البيانات. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dc_cluster_groups/metrics` | المقاييس |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | الحصول على مجموعة عناقيد مركز البيانات. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dc_cluster_groups/&#123;name&#125;` | حذف مجموعة عناقيد مركز البيانات. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs` | إنشاء فئة التوجيه. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forwarding_classs/&#123;metadata.name&#125;` | استبدال فئة التوجيه. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs` | عرض قائمة فئات التوجيه. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | الحصول على فئة التوجيه. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forwarding_classs/&#123;name&#125;` | حذف فئة التوجيه. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s` | إنشاء ملف تعريف المرحلة الأولى لـ IKE. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike1s/&#123;metadata.name&#125;` | استبدال تكوين ملف تعريف المرحلة الأولى لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s` | عرض قائمة ملفات تعريف المرحلة الأولى لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | الحصول على تكوين ملف تعريف المرحلة الأولى لـ IKE. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike1s/&#123;name&#125;` | حذف ملف تعريف المرحلة الأولى لـ IKE. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles` | إنشاء ملف تعريف المرحلة الأولى لـ IKE. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase1_profiles/&#123;metadata.name&#125;` | استبدال تكوين ملف تعريف المرحلة الأولى لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles` | عرض قائمة ملفات تعريف المرحلة الأولى لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | الحصول على تكوين ملف تعريف المرحلة الأولى لـ IKE. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase1_profiles/&#123;name&#125;` | حذف ملف تعريف المرحلة الأولى لـ IKE. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s` | إنشاء ملف تعريف المرحلة الثانية لـ IKE. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike2s/&#123;metadata.name&#125;` | استبدال تكوين ملف تعريف المرحلة الثانية لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s` | عرض قائمة ملفات تعريف المرحلة الثانية لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | الحصول على تكوين ملف تعريف المرحلة الثانية لـ IKE. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike2s/&#123;name&#125;` | حذف ملف تعريف المرحلة الثانية لـ IKE. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles` | إنشاء ملف تعريف المرحلة الثانية لـ IKE. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ike_phase2_profiles/&#123;metadata.name&#125;` | استبدال تكوين ملف تعريف المرحلة الثانية لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles` | عرض قائمة ملفات تعريف المرحلة الثانية لـ IKE. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | الحصول على تكوين ملف تعريف المرحلة الثانية لـ IKE. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ike_phase2_profiles/&#123;name&#125;` | حذف ملف تعريف المرحلة الثانية لـ IKE. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets` | إنشاء مجموعة بادئات IP. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/ip_prefix_sets/&#123;metadata.name&#125;` | استبدال مجموعة بادئات IP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets` | عرض قائمة مجموعات بادئات IP. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | الحصول على مجموعة بادئات IP. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/ip_prefix_sets/&#123;name&#125;` | حذف مجموعة بادئات IP. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors` | إنشاء موصل الشبكة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_connectors/&#123;metadata.name&#125;` | استبدال موصل الشبكة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors` | عرض قائمة موصلات الشبكة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | الحصول على موصل الشبكة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_connectors/&#123;name&#125;` | حذف موصل الشبكة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/public_ips/&#123;metadata.name&#125;` | استبدال عنوان IP العام. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips` | عرض قائمة عناوين IP العامة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/public_ips/&#123;name&#125;` | الحصول على عنوان IP العام. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes` | إنشاء مسار. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/routes/&#123;metadata.name&#125;` | استبدال المسار. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes` | عرض قائمة المسارات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | الحصول على المسار |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/routes/&#123;name&#125;` | حذف المسار. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/routes` | عرض المسارات. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/simplified_routes` | عرض المسارات المبسطة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices` | إنشاء شريحة شبكة SRv6. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/srv6_network_slices/&#123;metadata.name&#125;` | استبدال شريحة شبكة SRv6. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices` | عرض قائمة شرائح شبكة SRv6. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | الحصول على شريحة شبكة SRv6. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/srv6_network_slices/&#123;name&#125;` | حذف شريحة شبكة SRv6. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets` | إنشاء شبكة فرعية. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/subnets/&#123;metadata.name&#125;` | استبدال الشبكة الفرعية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets` | عرض قائمة الشبكات الفرعية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | الحصول على الشبكة الفرعية. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/subnets/&#123;name&#125;` | حذف الشبكة الفرعية. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/traceroute` | تتبع المسار. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels` | إنشاء نفق. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tunnels/&#123;metadata.name&#125;` | استبدال النفق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels` | عرض قائمة الأنفاق. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | الحصول على النفق. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tunnels/&#123;name&#125;` | حذف النفق. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | إنشاء شبكة افتراضية. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | استبدال الشبكة الافتراضية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | عرض قائمة الشبكات الافتراضية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | الحصول على الشبكة الافتراضية. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | حذف الشبكة الافتراضية. |
+
+## الروابط
+
+- [مرجع واجهة برمجة التطبيقات التفاعلي](./network/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/network.json)

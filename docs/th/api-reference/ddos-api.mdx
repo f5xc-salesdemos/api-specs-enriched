@@ -1,0 +1,108 @@
+---
+title: "\U0001F6D1 Ddos API"
+description: การบรรเทาการโจมตีแบบ Volumetric และการกรองทราฟฟิก
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: e560f0ed4570
+  translator: machine
+---
+
+รายการปฏิเสธ กลุ่มกฎไฟร์วอลล์ และการป้องกันผ่านอุโมงค์ การจำกัดอัตราและการวิเคราะห์รูปแบบสำหรับความปลอดภัยขอบเขตเครือข่าย
+
+- **หมวดหมู่**: ความปลอดภัย
+- **ความซับซ้อน**: ขั้นสูง
+- **เส้นทาง**: 60 | **สกีมา**: 246
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `network_security`, `virtual`
+
+## กรณีการใช้งาน
+
+- กำหนดค่านโยบายการป้องกัน DDoS
+- ตรวจสอบและวิเคราะห์ภัยคุกคาม DDoS
+- กำหนดค่าการป้องกันโครงสร้างพื้นฐาน
+
+## ทรัพยากรหลัก
+
+- **ddos_protection**: การกำหนดค่าการป้องกัน DDoS สำหรับการกรองทราฟฟิก
+- **ddos_mitigation_rule**: กฎการบรรเทา DDoS สำหรับการตอบสนองต่อการโจมตี
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| GET | `/api/infraprotect/namespaces/system/infraprotect/access` | การเข้าถึงของลูกค้า |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;` | การแจ้งเตือน DDoS |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;/to_event` | เชื่อมโยงการแจ้งเตือนกับเหตุการณ์ |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alerts` | การแจ้งเตือน DDoS |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/bgp_peer_status` | สถานะ BGP Peer |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | รายละเอียดเหตุการณ์ |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | แก้ไขเหตุการณ์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/alerts` | การแจ้งเตือนของเหตุการณ์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/attachments` | ไฟล์แนบของเหตุการณ์ |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | ลบรายละเอียดเหตุการณ์ |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | แก้ไขรายละเอียดเหตุการณ์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | รายการรายละเอียดเหตุการณ์ |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | เพิ่มรายละเอียดเหตุการณ์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/mitigation_annotations` | หมายเหตุการบรรเทาเหตุการณ์ |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events` | รายการเหตุการณ์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | มุมมองเหตุการณ์แบบย่อ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;` | รายละเอียดการบรรเทา |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/annotations` | หมายเหตุการบรรเทา |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/ips` | IP ของการบรรเทา |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigations` | รายการการบรรเทา |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | รายการเครือข่าย |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/report/&#123;report_id&#125;` | รายละเอียดรายงาน |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/reports` | รายการรายงาน |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/transit_usage` | การใช้งาน Transit |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/suggest-values` | ค่าที่แนะนำ |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns` | สร้าง DDoS transit ASN |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns/&#123;metadata.name&#125;` | แทนที่ DDoS transit ASN |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns` | รายการ Infraprotect ASN |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/update-asn-review-status` | อัปเดตสถานะการตรวจสอบ ASN |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | ดึงข้อมูล Infraprotect ASN |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | ลบ Infraprotect ASN |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs` | สร้าง DDoS transit Prefix |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs/&#123;metadata.name&#125;` | แทนที่ DDoS transit Prefix |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-irr-override` | อัปเดตการแทนที่ IRR ของ ASN Prefix |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-review-status` | อัปเดตสถานะการตรวจสอบ ASN Prefix |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs` | รายการ Infraprotect ASN Prefix |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | ดึงข้อมูล Infraprotect ASN Prefix |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | ลบ Infraprotect ASN Prefix |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules` | สร้างกฎรายการปฏิเสธ DDoS transit |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules/&#123;metadata.name&#125;` | แทนที่กฎรายการปฏิเสธ DDoS transit |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules` | รายการกฎรายการปฏิเสธ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | ดึงข้อมูลกฎรายการปฏิเสธ Infraprotect |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | ลบกฎรายการปฏิเสธ Infraprotect |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules` | สร้างกฎไฟร์วอลล์ DDoS transit |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules/&#123;metadata.name&#125;` | แทนที่กฎไฟร์วอลล์ DDoS transit |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules` | รายการกฎไฟร์วอลล์ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | ดึงข้อมูลกฎไฟร์วอลล์ Infraprotect |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | ลบกฎไฟร์วอลล์ Infraprotect |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups` | แทนที่กลุ่มกฎไฟร์วอลล์ DDoS transit |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups/&#123;metadata.name&#125;` | แทนที่กลุ่มกฎไฟร์วอลล์ DDoS transit |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | รายการกลุ่มกฎไฟร์วอลล์ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | ดึงข้อมูลกลุ่มกฎไฟร์วอลล์ Infraprotect |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | ลบกลุ่มกฎไฟร์วอลล์ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | มาตรการตอบโต้การบรรเทา |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | แทนที่ชุดกฎไฟร์วอลล์ DDoS transit |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | รายการชุดกฎไฟร์วอลล์ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | ดึงข้อมูลชุดกฎไฟร์วอลล์ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_informations/&#123;name&#125;` | ดึงข้อมูล Infraprotect Information |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements` | สร้าง DDoS transit Internet Prefix |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;metadata.name&#125;` | แทนที่ DDoS transit Internet Prefix |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements` | รายการการประกาศ Internet Prefix ของ Infraprotect |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | อัปเดตการประกาศ Internet Prefix ของ Infraprotect |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | ดึงข้อมูล Infraprotect Internet Prefix |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | ลบการประกาศ Internet Prefix ของ Infraprotect |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | สร้าง DDoS Transit Tunnel |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | แทนที่ DDoS Transit Tunnel |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | รายการอุโมงค์ |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | อัปเดตสถานะอุโมงค์ |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | ดึงข้อมูลอุโมงค์ |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | ลบอุโมงค์ |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./ddos/)
+- [ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/ddos.json)

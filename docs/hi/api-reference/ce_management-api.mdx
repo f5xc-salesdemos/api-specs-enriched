@@ -1,0 +1,72 @@
+---
+title: "\U0001F527 Ce Management API"
+description: 'नेटवर्क इंटरफेस, फ्लीट, और साइट पंजीकरण।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 7ca801568779
+  translator: machine
+---
+
+इमेज डाउनलोड और प्री-अपग्रेड सत्यापन के साथ टोकन-आधारित प्रोविज़निंग। फ्लीट ग्रुपिंग वितरित स्थानों पर बल्क ऑपरेशन सक्षम करती है।
+
+- **श्रेणी**: इन्फ्रास्ट्रक्चर
+- **जटिलता**: मध्यम
+- **पाथ**: 28 | **स्कीमा**: 231
+- **टियर**: स्टैंडर्ड
+- **संबंधित डोमेन**: `customer_edge`, `sites`
+
+## उपयोग के मामले
+
+- Customer Edge साइट जीवनचक्र प्रबंधित करें
+- नेटवर्क इंटरफेस और फ्लीट सेटिंग्स कॉन्फ़िगर करें
+- साइट पंजीकरण और टोकन वर्कफ़्लो संभालें
+- प्री-अपग्रेड जाँच के साथ साइट अपग्रेड निष्पादित करें
+
+## प्राथमिक संसाधन
+
+- **site_config**: एज नोड सेटिंग्स के लिए साइट कॉन्फ़िगरेशन
+- **fleet_config**: मल्टी-साइट प्रबंधन के लिए फ्लीट कॉन्फ़िगरेशन
+- **registration_token**: साइट ऑनबोर्डिंग के लिए पंजीकरण टोकन
+
+## एंडपॉइंट
+
+| मेथड | पाथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets` | फ्लीट बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets/&#123;metadata.name&#125;` | फ्लीट बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets` | फ्लीट सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | फ्लीट प्राप्त करें |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | फ्लीट हटाएँ। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | मॉड्यूल प्रबंधन सेटिंग्स। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | नेटवर्क इंटरफेस बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | नेटवर्क इंटरफेस बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | नेटवर्क इंटरफेस सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | नेटवर्क इंटरफेस प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | नेटवर्क इंटरफेस हटाएँ। |
+| POST | `/api/register/namespaces/system/get-image-download-url` | इमेज डाउनलोड URL प्राप्त करें। |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | साइट टोकन द्वारा पंजीकरण UID प्राप्त करें। |
+| POST | `/api/register/namespaces/system/suggest-values` | मान सुझाव। |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | पंजीकरण बनाएँ। |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | पंजीकरण बदलें। |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | स्थिति के अनुसार पंजीकरण सूची। |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | पंजीकरण स्वीकृति। |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | पंजीकरण सूची। |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | पंजीकरण प्राप्त करें। |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | पंजीकरण हटाएँ। |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | साइट के अनुसार पंजीकरण सूची। |
+| POST | `/api/register/registerBootstrap` | पंजीकरण बनाएँ। |
+| POST | `/api/register/requestConfig` | पंजीकरण कॉन्फ़िग। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | USB नीति बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | USB नीति बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | USB नीति सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | USB नीति प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | USB नीति हटाएँ। |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | प्री-अपग्रेड जाँच। |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | अपग्रेड स्थिति प्राप्त करें। |
+| GET | `/api/maurice/upgradable_sw_versions` | अपग्रेड योग्य SW संस्करण प्राप्त करें। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./ce_management/)
+- [OpenAPI विनिर्देश JSON](../specifications/api/ce_management.json)

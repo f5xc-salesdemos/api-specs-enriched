@@ -1,0 +1,54 @@
+---
+title: "\U0001F465 API de Usuarios"
+description: 'Tokens de cuenta, etiquetas y configuración cloud-init.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 3c986acf344c
+  translator: machine
+---
+
+Credenciales de inscripción de sitio con expiración automática. Las claves de taxonomía definen la categorización permitida mientras que las etiquetas auto-derivadas se aplican dinámicamente.
+
+- **Categoría**: Plataforma
+- **Complejidad**: simple
+- **Rutas**: 13 | **Esquemas**: 50
+- **Nivel**: Estándar
+- **Dominios relacionados**: `system`, `admin`
+
+## Casos de Uso
+
+- Gestionar cuentas de usuario y tokens
+- Configurar la identificación de usuarios
+- Gestionar configuraciones y preferencias de usuario
+- Configurar etiquetas implícitas y conocidas
+
+## Recursos Principales
+
+- **user**: Cuenta de usuario para acceso a la plataforma
+- **user_role**: Rol de usuario para gestión de permisos
+- **namespace_role**: Rol con alcance de namespace para permisos detallados
+
+## Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/system/implicit_labels` | Obtener Etiquetas Implícitas. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/create` | Crear |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/delete` | ELIMINAR |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_labels` | OBTENER |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/create` | Crear |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/delete` | ELIMINAR |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_label_keys` | OBTENER |
+| GET | `/api/register/namespaces/system/get-cloud-init-config` | Obtener Configuración Cloud Init. |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens` | Crear Token. |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens/&#123;metadata.name&#125;` | Reemplazar Token. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens` | Listar Token. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | Obtener Token |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | ELIMINAR Token. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;/state` | Establecer Estado del Token. |
+
+## Enlaces
+
+- [Referencia Interactiva de la API](./users/)
+- [Especificación OpenAPI en JSON](../specifications/api/users.json)

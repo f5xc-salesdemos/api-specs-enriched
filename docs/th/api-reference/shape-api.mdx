@@ -1,0 +1,327 @@
+---
+title: "\U0001F3AD Shape API"
+description: การป้องกันบอท การป้องกันการฉ้อโกง และความสมบูรณ์ของไคลเอนต์
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09077d724f15
+  translator: machine
+---
+
+การจดจำภัยคุกคามด้วยการวิเคราะห์พฤติกรรมและการพิมพ์ลายนิ้วมืออุปกรณ์ การรวม Mobile SDK สำหรับการป้องกันแอปพลิเคชัน
+
+- **หมวดหมู่**: ความปลอดภัย
+- **ความซับซ้อน**: ขั้นสูง
+- **เส้นทาง**: 271 | **สคีมา**: 813
+- **ระดับ**: ขั้นสูง
+- **โดเมนที่เกี่ยวข้อง**: `bot_defense`, `virtual`
+
+## กรณีการใช้งาน
+
+- กำหนดค่านโยบาย Shape Security
+- จัดการการป้องกันบอทและภัยคุกคาม
+- กำหนดค่านโยบาย SafeAP
+- เปิดใช้งานการจดจำภัยคุกคาม
+
+## ทรัพยากรหลัก
+
+- **shape_app_firewall**: ไฟร์วอลล์แอปพลิเคชัน Shape สำหรับการป้องกันขั้นสูง
+- **shape_recognizer**: ตัวจดจำ Shape สำหรับการวิเคราะห์รูปแบบทราฟฟิก
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/shape/dip/namespaces/system/app_provision` | การจัดเตรียมแอปพลิเคชัน |
+| DELETE | `/api/shape/dip/namespaces/system/application` | ลบแอปพลิเคชัน |
+| POST | `/api/shape/dip/namespaces/system/application` | อัปเดตแอปพลิเคชัน |
+| GET | `/api/shape/dip/namespaces/system/applications` | รับแอปพลิเคชัน |
+| POST | `/api/shape/dip/namespaces/system/bot/asn` | รับการประเมินบอทตาม ASN อันดับต้น |
+| POST | `/api/shape/dip/namespaces/system/bot/transactions` | รับการประเมินบอทสำหรับธุรกรรม |
+| POST | `/api/shape/dip/namespaces/system/bot/urls` | รับการประเมินบอทตาม URL อันดับต้น |
+| POST | `/api/shape/dip/namespaces/system/dashboard/age` | รับอุปกรณ์ตามอายุ |
+| POST | `/api/shape/dip/namespaces/system/dashboard/applications` | รับข้อมูลตามแอปพลิเคชัน |
+| POST | `/api/shape/dip/namespaces/system/dashboard/asn` | รับอุปกรณ์ตาม ASN |
+| POST | `/api/shape/dip/namespaces/system/dashboard/country` | รับอุปกรณ์ตามประเทศ |
+| POST | `/api/shape/dip/namespaces/system/dashboard/session` | รับอุปกรณ์ตามเซสชัน |
+| POST | `/api/shape/dip/namespaces/system/dashboard/ua` | รับอุปกรณ์ตาม User-Agent |
+| POST | `/api/shape/dip/namespaces/system/dashboard/unique` | รับอุปกรณ์ตามการเข้าถึงเฉพาะ |
+| POST | `/api/shape/dip/namespaces/system/enable` | เปิดใช้งานข้อมูลเชิงลึกทราฟฟิกแอปพลิเคชัน |
+| GET | `/api/shape/dip/namespaces/system/provision/regions` | รับภูมิภาคที่พร้อมใช้งานสำหรับข้อมูลเชิงลึกทราฟฟิกแอปพลิเคชัน |
+| GET | `/api/shape/dip/namespaces/system/status` | รับสถานะข้อมูลเชิงลึกทราฟฟิกแอปพลิเคชัน |
+| POST | `/api/shape/dip/namespaces/system/validate/src_tag_injection` | ตรวจสอบการแทรก JS |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys` | สร้างนโยบายการสร้างการแจ้งเตือน |
+| PUT | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys/&#123;metadata.name&#125;` | แทนที่นโยบายการสร้างการแจ้งเตือน |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policy/&#123;name&#125;/status` | โคลนเทมเพลตการแจ้งเตือน |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys` | แสดงรายการนโยบายการสร้างการแจ้งเตือน BRM |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | รับนโยบายการสร้างการแจ้งเตือน |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | ลบนโยบายการสร้างการแจ้งเตือน BRM |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_templates` | สร้างโดเมนที่จะป้องกัน |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates` | แสดงรายการเทมเพลตการแจ้งเตือน BRM |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | รับโดเมนที่ได้รับการป้องกัน |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | ลบเทมเพลตการแจ้งเตือน BRM |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | โคลนเทมเพลตการแจ้งเตือน |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | ปรับใช้กฎการตรวจจับบอท |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | รับรายการการปรับใช้กฎการตรวจจับบอท |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | รับรายละเอียดของการปรับใช้กฎการตรวจจับบอท |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | รับกฎการตรวจจับบอทที่อยู่ในสถานะร่าง |
+| DELETE | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | ยกเลิกร่าง |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | บันทึกร่าง |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/summary` | รับสรุปกฎการตรวจจับบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | แสดงรายการกฎการตรวจจับบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | รับประวัติการเปลี่ยนแปลงสำหรับกฎการตรวจจับบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | รับกฎการตรวจจับบอท |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | แนะนำค่า |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | รับอัปเดตการตรวจจับบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | ดาวน์โหลดบันทึกรุ่นของอัปเดตการตรวจจับบอท |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | แสดงรายการนโยบายเอนด์พอยต์บอททั้งหมดและเวอร์ชัน |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | แทนที่นโยบายเอนด์พอยต์บอทแบบกำหนดเอง |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | แทนที่นโยบายเอนด์พอยต์บอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | เวอร์ชันนโยบายเอนด์พอยต์บอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | แสดงรายการนโยบายเอนด์พอยต์บอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | รับนโยบายเอนด์พอยต์บอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | รับเนื้อหา |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | สร้างโครงสร้างพื้นฐานบอท |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | แทนที่โครงสร้างพื้นฐานบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | แสดงรายการโครงสร้างพื้นฐานบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | รับโครงสร้างพื้นฐานบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | ประวัติการปรับใช้ |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | สถานะการปรับใช้ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | ปรับใช้นโยบายไปยังโครงสร้างพื้นฐานบอท |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | แสดงรายการนโยบายรายการอนุญาตบอททั้งหมดและเวอร์ชัน |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | แทนที่นโยบายรายการอนุญาตบอทแบบกำหนดเอง |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | แทนที่นโยบายรายการอนุญาตบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | เวอร์ชันนโยบายรายการอนุญาตบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | แสดงรายการนโยบายรายการอนุญาตบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | รับนโยบายรายการอนุญาตบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | รับเนื้อหา |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | รับไฟล์การกำหนดค่าพื้นฐานมือถือ |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | แสดงรายการนโยบายเครือข่ายบอททั้งหมดและเวอร์ชัน |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | แทนที่นโยบายเครือข่ายบอทแบบกำหนดเอง |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | แทนที่นโยบายเครือข่ายบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | เวอร์ชันนโยบายเครือข่ายบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | แสดงรายการนโยบายเครือข่ายบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | รับนโยบายเครือข่ายบอท |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | รับเนื้อหา |
+| POST | `/api/shape/csd/namespaces/system/init` | เปิดใช้งานการป้องกันฝั่งไคลเอนต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | รับโดเมนที่ตรวจพบ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | รับรายละเอียดโดเมน |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | แสดงรายการฟิลด์แบบฟอร์มทั้งหมดด้วยเมธอด GET |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | แสดงรายการฟิลด์แบบฟอร์มทั้งหมด |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | อัปเดตการวิเคราะห์ฟิลด์แบบฟอร์ม |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | รับฟิลด์แบบฟอร์ม |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | รับการกำหนดค่าการแทรก JS |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | ลบเหตุผลสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | แสดงรายการสคริปต์ |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | แสดงรายการสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | แสดงรายการพฤติกรรมตามสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | รับภาพรวมสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | แสดงรายการฟิลด์แบบฟอร์มตามสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | แสดงรายการปฏิสัมพันธ์เครือข่ายตามสคริปต์ |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | อัปเดตสถานะการอ่านฟิลด์แบบฟอร์มสคริปต์ |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | แสดงรายการผู้ใช้ที่ได้รับผลกระทบ |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | อัปเดตเหตุผลสคริปต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | รับสถานะ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | รับสรุป |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/testjs` | ทดสอบ JS |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/update_domains` | อัปเดตโดเมน |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/allowed_domains` | สร้างโดเมนที่อนุญาต |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains` | แสดงรายการโดเมนที่อนุญาตของการป้องกันฝั่งไคลเอนต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | รับโดเมนที่อนุญาต |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | ลบโดเมนที่อนุญาตของการป้องกันฝั่งไคลเอนต์ |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/protected_domains` | สร้างโดเมนที่จะป้องกัน |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains` | แสดงรายการโดเมนที่จะป้องกันของการป้องกันฝั่งไคลเอนต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | รับโดเมนที่ได้รับการป้องกัน |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | ลบโดเมนที่จะป้องกันของการป้องกันฝั่งไคลเอนต์ |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/mitigated_domains` | สร้างโดเมนที่ได้รับการบรรเทา |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | แสดงรายการโดเมนที่ได้รับการบรรเทาของการป้องกันฝั่งไคลเอนต์ |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | รับโดเมนที่ได้รับการบรรเทา |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | ลบโดเมนที่ได้รับการบรรเทาของการป้องกันฝั่งไคลเอนต์ |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | แสดงรายการโดเมนที่ตรวจพบทั้งหมด |
+| POST | `/api/shape/csd/namespaces/system/subscribe` | สมัครสมาชิกการป้องกันฝั่งไคลเอนต์ |
+| POST | `/api/shape/csd/namespaces/system/unsubscribe` | ยกเลิกสมาชิกการป้องกันฝั่งไคลเอนต์ |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | สมัครสมาชิก Mobile App Shield |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | ยกเลิกสมาชิก Mobile App Shield |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | สมัครสมาชิก Mobile Integrator |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/unsubscribe` | ยกเลิกสมาชิก Mobile Integrator |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk` | รับรายการ Mobile SDK |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk/&#123;name&#125;/&#123;version&#125;` | รับ Mobile SDK |
+| POST | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs` | สร้างการกำหนดค่าพื้นฐาน Mobile SDK |
+| PUT | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs/&#123;metadata.name&#125;` | แทนที่การกำหนดค่าพื้นฐาน Mobile SDK |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_config_file/&#123;name&#125;` | รับไฟล์การกำหนดค่าพื้นฐานมือถือ |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs` | แสดงรายการการกำหนดค่าพื้นฐาน Mobile SDK |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | รับการกำหนดค่าพื้นฐาน Mobile SDK |
+| DELETE | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | ลบการกำหนดค่าพื้นฐาน Mobile SDK |
+| GET | `/api/shape/bot/namespaces/system/apikey` | คีย์ API |
+| GET | `/api/shape/bot/namespaces/system/regions` | ภูมิภาค |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications` | สร้างแอปพลิเคชันที่ได้รับการป้องกัน |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications/&#123;metadata.name&#125;` | แทนที่แอปพลิเคชันที่ได้รับการป้องกัน |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications` | แสดงรายการแอปพลิเคชันที่ได้รับการป้องกัน |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | รับแอปพลิเคชันที่ได้รับการป้องกัน |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | ลบแอปพลิเคชันที่ได้รับการป้องกัน |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/config` | การกำหนดค่าคอนเนกเตอร์ |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/template` | เทมเพลตคอนเนกเตอร์ |
+| POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | ตรวจสอบสถานะเพียร์ |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | สถานะ ATB |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | สรุปการใช้งาน |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | หมวดหมู่เอนด์พอยต์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | ป้ายกำกับหมวดหมู่เอนด์พอยต์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/list` | เอนด์พอยต์ที่ได้รับการป้องกันทั้งหมด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/summary` | สรุปเอนด์พอยต์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoints` | รายงานเอนด์พอยต์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/credential-stuffing-attack` | เหตุการณ์ข้อมูลเชิงลึก: การโจมตี Credential Stuffing |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/bad-bot-reduction` | ข้อมูลเชิงลึกการลดบอทที่ไม่ดี |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/unaddressed-automations` | ข้อมูลเชิงลึกระบบอัตโนมัติที่ยังไม่ได้จัดการ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/personal-stats` | ข้อมูลเชิงลึกสถิติส่วนบุคคล |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/total-automation` | เหตุการณ์ข้อมูลเชิงลึก: ระบบอัตโนมัติทั้งหมด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/endpoints` | รายงานเอนด์พอยต์ที่เป็นอันตราย |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/asn` | รายงานธุรกรรมที่เป็นอันตราย ASN |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/browser` | รายงานธุรกรรมที่เป็นอันตราย เบราว์เซอร์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ip` | รายงานธุรกรรมที่เป็นอันตราย IP |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/os` | รายงานธุรกรรมที่เป็นอันตราย OS |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ua` | รายงานธุรกรรมที่เป็นอันตราย UA |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/endpoints` | เอนด์พอยต์ที่ถูกโจมตีมากที่สุด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview` | ภาพรวมเวลาแฝงอันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview/apps` | แอปภาพรวมเวลาแฝงอันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/asorg` | บอทที่เป็นอันตรายอันดับต้นตาม ASOrg |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/automation` | ประเภทระบบอัตโนมัติบอทที่เป็นอันตรายอันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ip` | บอทที่เป็นอันตรายอันดับต้นตามที่อยู่ IP |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ua` | บอทที่เป็นอันตรายอันดับต้นตามสตริง User Agent |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/app` | ธุรกรรมอันดับต้นตามแอปพลิเคชัน |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/categories` | หมวดหมู่อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/endpointlabels` | ป้ายกำกับเอนด์พอยต์อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/good` | บอทที่ดีอันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/browser` | เบราว์เซอร์มนุษย์อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/device` | อุปกรณ์มนุษย์อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/geolocation` | ตำแหน่งภูมิศาสตร์มนุษย์อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/platform` | แพลตฟอร์มมนุษย์อันดับต้น |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/app` | บอทที่เป็นอันตรายอันดับต้นตามแอปพลิเคชัน |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/apps/timeseries` | รายงานอนุกรมเวลาแอปที่เป็นอันตราย |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg` | บอทที่เป็นอันตรายอันดับต้นตาม ASOrg v2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | ASN อันดับต้นของเจตนาโจมตี |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/attackintent` | บอทที่เป็นอันตรายอันดับต้นตามเจตนาโจมตี |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/automation` | ประเภทระบบอัตโนมัติบอทที่เป็นอันตรายอันดับต้น v2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/bfp` | BFP ที่ถูกโจมตีมากที่สุด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/endpoints` | เอนด์พอยต์ที่ถูกโจมตีมากที่สุด v2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip` | บอทที่เป็นอันตรายอันดับต้นตามที่อยู่ IP v2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | IP ต้นทางอันดับต้นของเจตนาโจมตี |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua` | บอทที่เป็นอันตรายอันดับต้นตามสตริง User Agent v2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | User Agent อันดับต้นของเจตนาโจมตี |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/attackintent/timeseries` | อนุกรมเวลาเจตนาโจมตีสำหรับทราฟฟิกทั้งหมด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/categories/timeseries` | อนุกรมเวลาหมวดหมู่สำหรับทราฟฟิกทั้งหมด |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/dimension/attackintent/timeseries` | อนุกรมเวลาเจตนาโจมตีบอทที่เป็นอันตราย |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/actions` | ภาพรวมทราฟฟิกที่เป็นอันตรายในการดำเนินการ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/metrics` | ตัวชี้วัดภาพรวมทราฟฟิกที่เป็นอันตราย |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/timeseries/actions` | อนุกรมเวลาภาพรวมทราฟฟิกที่เป็นอันตรายในการดำเนินการ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview` | ภาพรวมทราฟฟิก |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/expanded` | ภาพรวมทราฟฟิกแบบขยาย |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/timeseries` | อนุกรมเวลาภาพรวมทราฟฟิก |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | สรุปการใช้งาน |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | ฟิลด์นิติวิทยาศาสตร์ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | ภาพรวมทราฟฟิกอัตโนมัติในการดำเนินการ |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | สรุปเอนด์พอยต์ V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | รายงานเอนด์พอยต์ที่เป็นอันตราย V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | รายงานธุรกรรมที่เป็นอันตราย ASN V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/browser` | รายงานธุรกรรมที่เป็นอันตราย เบราว์เซอร์ V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | รายงานธุรกรรมที่เป็นอันตราย IP V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | รายงานธุรกรรมที่เป็นอันตราย OS V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | รายงานธุรกรรมที่เป็นอันตราย UA V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | บอทที่ดีอันดับต้น V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | เบราว์เซอร์มนุษย์อันดับต้น V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | อุปกรณ์มนุษย์อันดับต้น V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/geolocation` | ตำแหน่งภูมิศาสตร์มนุษย์อันดับต้น V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/platform` | แพลตฟอร์มมนุษย์อันดับต้น V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/apps/timeseries` | รายงานอนุกรมเวลาแอปที่เป็นอันตราย V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | ASN อันดับต้นของเจตนาโจมตี V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/attackintent` | บอทที่เป็นอันตรายอันดับต้นตามเจตนาโจมตี V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/endpoints` | เอนด์พอยต์ที่ถูกโจมตีมากที่สุด v3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | IP ต้นทางอันดับต้นของเจตนาโจมตี V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | User Agent อันดับต้นของเจตนาโจมตี V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/dimension/attackintent/timeseries` | อนุกรมเวลาเจตนาโจมตีบอทที่เป็นอันตราย V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/actions` | ภาพรวมทราฟฟิกที่เป็นอันตรายในการดำเนินการ V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/metrics` | ตัวชี้วัดภาพรวมทราฟฟิกที่เป็นอันตราย V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/timeseries/actions` | อนุกรมเวลาภาพรวมทราฟฟิกที่เป็นอันตรายในการดำเนินการ V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview` | ภาพรวมทราฟฟิก V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/expanded` | ภาพรวมทราฟฟิกแบบขยาย V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/timeseries` | อนุกรมเวลาภาพรวมทราฟฟิก V2 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/good` | บอทที่ดีอันดับต้น V3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/asorg` | บอทที่เป็นอันตรายอันดับต้นตาม ASOrg v3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/automation` | ประเภทระบบอัตโนมัติบอทที่เป็นอันตรายอันดับต้น v3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ip` | บอทที่เป็นอันตรายอันดับต้นตามที่อยู่ IP v3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ua` | บอทที่เป็นอันตรายอันดับต้นตามสตริง User Agent v3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview` | ภาพรวมทราฟฟิก V3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/expanded` | ภาพรวมทราฟฟิกแบบขยาย V3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/timeseries` | อนุกรมเวลาภาพรวมทราฟฟิก V3 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/endpoints` | เอนด์พอยต์ที่ถูกโจมตีมากที่สุด v4 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/ua` | บอทที่เป็นอันตรายอันดับต้นตามสตริง User Agent v4 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/expanded` | ภาพรวมทราฟฟิกแบบขยายในตัววิเคราะห์ทราฟฟิก |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/timeseries` | อนุกรมเวลาภาพรวมทราฟฟิก V4 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/top/type/malicious/dimension/endpoints` | เอนด์พอยต์ที่ถูกโจมตีมากที่สุด v5 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/traffic/overview/expanded` | ภาพรวมทราฟฟิกแบบขยาย V5 |
+| POST | `/api/shape/bot/reporting/peers/threat-types` | กลุ่มเพียร์ตามประเภทภัยคุกคาม |
+| POST | `/api/shape/bot/reporting/peers/top-good-bots` | บอทที่ดีอันดับต้นของกลุ่มเพียร์ |
+| POST | `/api/shape/bot/reporting/peers/top-reason-codes` | รหัสเหตุผลอันดับต้นของกลุ่มเพียร์ |
+| POST | `/api/shape/bot/reporting/peers/traffic/overview` | ภาพรวมทราฟฟิกกลุ่มเพียร์ |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/subscribe` | สมัครสมาชิก Shape Bot Defense |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | ยกเลิกสมาชิก Shape Bot Defense |
+| POST | `/api/shape/bot/subscribe` | สมัครสมาชิก Shape Bot Defense |
+| POST | `/api/shape/bot/unsubscribe` | ยกเลิกสมาชิก Shape Bot Defense |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | แดชบอร์ดช่องทาง |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | แดชบอร์ดการแปลง |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | แดชบอร์ด Enjoy |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | แดชบอร์ดการรวมแรงเสียดทาน |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | แดชบอร์ดฮิสโตแกรมแรงเสียดทาน |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | ตรวจสอบสุขภาพ |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | แดชบอร์ด Lift |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | แดชบอร์ด Rescue |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | รหัสเหตุผลอันดับต้น |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | รับสถานะการจัดเตรียม Recognize ส่วนเสริม |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | สถานะ |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | สมัครสมาชิก Shape Recognize |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | ยกเลิกสมาชิก Shape Recognize |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | ตรวจสอบการแทรกแท็กต้นทาง ส่วนเสริม |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | สมัครสมาชิก Safe AP |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | ยกเลิกสมาชิก Safe AP |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | รับข้อมูลการฉ้อโกงปัจจุบัน |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | รับบัญชีที่มีความเสี่ยงอันดับต้น |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | รับอุปกรณ์ที่มีความเสี่ยงอันดับต้น |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | รับที่อยู่ IP ที่มีความเสี่ยงอันดับต้น |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | รับเหตุผลที่มีความเสี่ยงอันดับต้น |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | รับข้อมูลธุรกรรม |
+| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | ตรวจสอบสุขภาพ |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | รับข้อมูล SafeCubeJS |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | รับรายการตารางบล็อก SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | รับการตรวจสอบบล็อกนักวิเคราะห์ SAFE เป็นไฟล์ CSV |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | รับตารางบล็อกนักวิเคราะห์ SAFE เป็นไฟล์ CSV |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | รับรายละเอียดบล็อก SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | ส่งข้อเสนอแนะบล็อก SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | ส่งกฎบล็อก SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | รับรายการตารางบล็อก SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | ส่ง SAFE EP |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | อัปเดตข้อเสนอแนะการฉ้อโกง |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | อัปเดตข้อเสนอแนะการฉ้อโกง |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | คำขอตรวจสอบสุขภาพ |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | ส่งการจัดเตรียม SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | รับภาพรวม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | ส่งภาพรวม SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | รับตำแหน่งอันดับต้น SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | ส่งตำแหน่งอันดับต้น SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | รับแหล่งที่มาอันดับต้น SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | ส่งแหล่งที่มาอันดับต้น SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | ส่งธุรกรรม SAFE ตามเวลา |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | รับสรุปนักวิเคราะห์ SAFE |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | รับรายละเอียดธุรกรรมนักวิเคราะห์ SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | ส่งรายละเอียดธุรกรรม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | ส่งประวัติอุปกรณ์ธุรกรรม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | ส่งตำแหน่งธุรกรรม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | ส่งเซสชันที่เกี่ยวข้องกับธุรกรรม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | ส่งไทม์ไลน์ธุรกรรม SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | แสดงรายการธุรกรรมนักวิเคราะห์ SAFE |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | รับธุรกรรมนักวิเคราะห์ SAFE เป็นไฟล์ CSV |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | การกำหนดค่าองค์กร |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./shape/)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/shape.json)

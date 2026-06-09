@@ -1,0 +1,327 @@
+---
+title: "\U0001F3AD Shape API"
+description: '봇 방어, 사기 방지 및 클라이언트 무결성.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09077d724f15
+  translator: machine
+---
+
+행동 분석 및 디바이스 핑거프린팅을 통한 위협 인식. 애플리케이션 보호를 위한 모바일 SDK 통합.
+
+- **카테고리**: 보안
+- **복잡도**: 고급
+- **경로**: 271 | **스키마**: 813
+- **등급**: 고급
+- **관련 도메인**: `bot_defense`, `virtual`
+
+## 사용 사례
+
+- Shape Security 정책 구성
+- 봇 및 위협 방지 관리
+- SafeAP 정책 구성
+- 위협 인식 활성화
+
+## 주요 리소스
+
+- **shape_app_firewall**: 고급 보호를 위한 Shape 애플리케이션 방화벽
+- **shape_recognizer**: 트래픽 패턴 분석을 위한 Shape 인식기
+
+## 엔드포인트
+
+| 메서드 | 경로 | 설명 |
+|--------|------|-------------|
+| POST | `/api/shape/dip/namespaces/system/app_provision` | 애플리케이션 프로비저닝. |
+| DELETE | `/api/shape/dip/namespaces/system/application` | 애플리케이션 삭제. |
+| POST | `/api/shape/dip/namespaces/system/application` | 애플리케이션 업데이트. |
+| GET | `/api/shape/dip/namespaces/system/applications` | 애플리케이션 목록 조회. |
+| POST | `/api/shape/dip/namespaces/system/bot/asn` | 상위 ASN별 봇 평가 조회. |
+| POST | `/api/shape/dip/namespaces/system/bot/transactions` | 트랜잭션별 봇 평가 조회. |
+| POST | `/api/shape/dip/namespaces/system/bot/urls` | 상위 URL별 봇 평가 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/age` | 기간별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/applications` | 애플리케이션별 정보 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/asn` | ASN별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/country` | 국가별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/session` | 세션별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/ua` | User-Agent별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/unique` | 고유 액세스별 디바이스 조회. |
+| POST | `/api/shape/dip/namespaces/system/enable` | 애플리케이션 트래픽 인사이트 활성화. |
+| GET | `/api/shape/dip/namespaces/system/provision/regions` | 애플리케이션 트래픽 인사이트에 사용 가능한 리전 조회. |
+| GET | `/api/shape/dip/namespaces/system/status` | 애플리케이션 트래픽 인사이트 상태 조회. |
+| POST | `/api/shape/dip/namespaces/system/validate/src_tag_injection` | JS 주입 검증. |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys` | 알림 생성 정책 생성. |
+| PUT | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys/&#123;metadata.name&#125;` | 알림 생성 정책 교체. |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policy/&#123;name&#125;/status` | 알림 템플릿 복제. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys` | BRM 알림 생성 정책 목록 조회. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | 알림 생성 정책 조회. |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | BRM 알림 생성 정책 삭제. |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_templates` | 보호 도메인 생성. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates` | BRM 알림 템플릿 목록 조회. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | 보호 도메인 조회. |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | BRM 알림 템플릿 삭제. |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | 알림 템플릿 복제. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | 봇 탐지 규칙 배포. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | 봇 탐지 규칙 배포 목록 조회. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | 봇 탐지 규칙 배포 상세 조회. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 초안 상태의 봇 탐지 규칙 조회. |
+| DELETE | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 초안 삭제. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 초안 저장. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/summary` | 봇 탐지 규칙 요약 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | 봇 탐지 규칙 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | 봇 탐지 규칙 변경 이력 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | 봇 탐지 규칙 조회. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | 값 제안. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | 봇 탐지 업데이트 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | 봇 탐지 업데이트 릴리스 노트 다운로드. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | 모든 봇 엔드포인트 정책 및 버전 목록 조회. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 사용자 정의 봇 엔드포인트 정책 교체. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | 봇 엔드포인트 정책 교체. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | 봇 엔드포인트 정책 버전. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | 봇 엔드포인트 정책 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 봇 엔드포인트 정책 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | 콘텐츠 조회. |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | 봇 인프라 생성. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | 봇 인프라 교체. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | 봇 인프라 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | 봇 인프라 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | 배포 이력. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | 배포 상태. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | 봇 인프라에 정책 배포. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | 모든 봇 허용 목록 정책 및 버전 목록 조회. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 사용자 정의 봇 허용 목록 정책 교체. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | 봇 허용 목록 정책 교체. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | 봇 허용 목록 정책 버전. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | 봇 허용 목록 정책 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 봇 허용 목록 정책 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | 콘텐츠 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | 모바일 기본 구성 파일 조회. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | 모든 봇 네트워크 정책 및 버전 목록 조회. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 사용자 정의 봇 네트워크 정책 교체. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | 봇 네트워크 정책 교체. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | 봇 네트워크 정책 버전. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | 봇 네트워크 정책 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 봇 네트워크 정책 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | 콘텐츠 조회. |
+| POST | `/api/shape/csd/namespaces/system/init` | 클라이언트 측 방어 활성화. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | 탐지된 도메인 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | 도메인 상세 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | GET 메서드로 모든 폼 필드 목록 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | 모든 폼 필드 목록 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | 폼 필드 분석 업데이트. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | 폼 필드 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | JS 주입 구성 조회. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | 스크립트 정당성 삭제. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 스크립트 목록 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 스크립트 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | 스크립트별 동작 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | 스크립트 개요 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | 스크립트별 폼 필드 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | 스크립트별 네트워크 상호작용 목록 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | 스크립트 폼 필드 읽기 상태 업데이트. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | 영향받는 사용자 목록 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | 스크립트 정당성 업데이트. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | 상태 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | 요약 조회. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/testjs` | JS 테스트 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/update_domains` | 도메인 업데이트. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/allowed_domains` | 허용 도메인 생성. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains` | 클라이언트 측 방어 허용 도메인 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 허용 도메인 조회. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 클라이언트 측 방어 허용 도메인 삭제. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/protected_domains` | 보호 도메인 생성. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains` | 클라이언트 측 방어 보호 도메인 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 보호 도메인 조회. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 클라이언트 측 방어 보호 도메인 삭제. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/mitigated_domains` | 완화 도메인 생성. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | 클라이언트 측 방어 완화 도메인 목록 조회. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 완화 도메인 조회. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 클라이언트 측 방어 완화 도메인 삭제. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | 모든 탐지된 도메인 목록 조회. |
+| POST | `/api/shape/csd/namespaces/system/subscribe` | 클라이언트 측 방어 구독. |
+| POST | `/api/shape/csd/namespaces/system/unsubscribe` | 클라이언트 측 방어 구독 해제. |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | 모바일 앱 보호 구독. |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | 모바일 앱 보호 구독 해제. |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | 모바일 통합기 구독. |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/unsubscribe` | 모바일 통합기 구독 해제. |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk` | 모바일 SDK 목록 조회. |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk/&#123;name&#125;/&#123;version&#125;` | 모바일 SDK 조회. |
+| POST | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs` | 모바일 SDK 기본 구성 생성. |
+| PUT | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs/&#123;metadata.name&#125;` | 모바일 SDK 기본 구성 교체. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_config_file/&#123;name&#125;` | 모바일 기본 구성 파일 조회. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs` | 모바일 SDK 기본 구성 목록 조회. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 모바일 SDK 기본 구성 조회. |
+| DELETE | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 모바일 SDK 기본 구성 삭제. |
+| GET | `/api/shape/bot/namespaces/system/apikey` | API 키 |
+| GET | `/api/shape/bot/namespaces/system/regions` | 리전 |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications` | 보호 애플리케이션 생성. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications/&#123;metadata.name&#125;` | 보호 애플리케이션 교체. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications` | 보호 애플리케이션 목록 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 보호 애플리케이션 조회. |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 보호 애플리케이션 삭제. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/config` | 커넥터 구성. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/template` | 템플릿 커넥터. |
+| POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | 피어 상태 확인. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB 상태. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | 사용량 요약. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | 엔드포인트 카테고리. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | 엔드포인트 카테고리 레이블. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/list` | 모든 보호 엔드포인트. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/summary` | 엔드포인트 요약. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoints` | 엔드포인트 보고. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/credential-stuffing-attack` | 인사이트 이벤트: 크리덴셜 스터핑 공격. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/bad-bot-reduction` | 인사이트 악성 봇 감소. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/unaddressed-automations` | 인사이트 미처리 자동화. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/personal-stats` | 인사이트 개인 통계. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/total-automation` | 인사이트 이벤트: 전체 자동화. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/endpoints` | 악성 보고 엔드포인트. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/asn` | 악성 보고 트랜잭션 ASN. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/browser` | 악성 보고 트랜잭션 브라우저. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ip` | 악성 보고 트랜잭션 IP. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/os` | 악성 보고 트랜잭션 OS. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ua` | 악성 보고 트랜잭션 UA. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/endpoints` | 상위 공격 대상 엔드포인트. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview` | 상위 지연 시간 개요. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview/apps` | 상위 지연 시간 개요 앱. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/asorg` | ASOrg별 상위 악성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/automation` | 상위 악성 봇 자동화 유형. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ip` | IP 주소별 상위 악성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ua` | User Agent 문자열별 상위 악성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/app` | 애플리케이션별 상위 트랜잭션. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/categories` | 상위 카테고리. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/endpointlabels` | 상위 엔드포인트 레이블. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/good` | 상위 양성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/browser` | 상위 사용자 브라우저. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/device` | 상위 사용자 디바이스. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/geolocation` | 상위 사용자 지리적 위치. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/platform` | 상위 사용자 플랫폼. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/app` | 애플리케이션별 상위 악성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/apps/timeseries` | 악성 보고 앱 시계열. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg` | ASOrg별 상위 악성 봇 v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 공격 의도별 상위 ASN. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/attackintent` | 공격 의도별 상위 악성 봇. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/automation` | 상위 악성 봇 자동화 유형 v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/bfp` | 상위 공격 대상 BFP. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/endpoints` | 상위 공격 대상 엔드포인트 v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip` | IP 주소별 상위 악성 봇 v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 공격 의도별 상위 소스 IP. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua` | User Agent 문자열별 상위 악성 봇 v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 공격 의도별 상위 User Agent. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/attackintent/timeseries` | 전체 트래픽의 공격 의도 시계열. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/categories/timeseries` | 전체 트래픽의 카테고리 시계열. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/dimension/attackintent/timeseries` | 악성 봇 공격 의도 시계열. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/actions` | 악성 트래픽 개요 (조치별). |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/metrics` | 악성 트래픽 개요 메트릭. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/timeseries/actions` | 악성 트래픽 개요 시계열 (조치별). |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview` | 트래픽 개요. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/expanded` | 확장 트래픽 개요. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/timeseries` | 트래픽 개요 시계열. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | 사용량 요약. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | 포렌식 필드. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | 자동화 트래픽 개요 (조치별). |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | 엔드포인트 요약 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | 악성 보고 엔드포인트 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | 악성 보고 트랜잭션 ASN V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/browser` | 악성 보고 트랜잭션 브라우저 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | 악성 보고 트랜잭션 IP V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | 악성 보고 트랜잭션 OS V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | 악성 보고 트랜잭션 UA V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | 상위 양성 봇 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | 상위 사용자 브라우저 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | 상위 사용자 디바이스 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/geolocation` | 상위 사용자 지리적 위치 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/platform` | 상위 사용자 플랫폼 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/apps/timeseries` | 악성 보고 앱 시계열 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 공격 의도별 상위 ASN V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/attackintent` | 공격 의도별 상위 악성 봇 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/endpoints` | 상위 공격 대상 엔드포인트 v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 공격 의도별 상위 소스 IP V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 공격 의도별 상위 User Agent V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/dimension/attackintent/timeseries` | 악성 봇 공격 의도 시계열 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/actions` | 악성 트래픽 개요 (조치별) V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/metrics` | 악성 트래픽 개요 메트릭 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/timeseries/actions` | 악성 트래픽 개요 시계열 (조치별) V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview` | 트래픽 개요 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/expanded` | 확장 트래픽 개요 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/timeseries` | 트래픽 개요 시계열 V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/good` | 상위 양성 봇 V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/asorg` | ASOrg별 상위 악성 봇 v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/automation` | 상위 악성 봇 자동화 유형 v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ip` | IP 주소별 상위 악성 봇 v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ua` | User Agent 문자열별 상위 악성 봇 v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview` | 트래픽 개요 V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/expanded` | 확장 트래픽 개요 V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/timeseries` | 트래픽 개요 시계열 V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/endpoints` | 상위 공격 대상 엔드포인트 v4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/ua` | User Agent 문자열별 상위 악성 봇 v4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/expanded` | 트래픽 분석기의 확장 트래픽 개요. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/timeseries` | 트래픽 개요 시계열 V4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/top/type/malicious/dimension/endpoints` | 상위 공격 대상 엔드포인트 v5. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/traffic/overview/expanded` | 확장 트래픽 개요 V5. |
+| POST | `/api/shape/bot/reporting/peers/threat-types` | 위협 유형별 피어 그룹. |
+| POST | `/api/shape/bot/reporting/peers/top-good-bots` | 피어 그룹 상위 양성 봇. |
+| POST | `/api/shape/bot/reporting/peers/top-reason-codes` | 피어 그룹 상위 사유 코드. |
+| POST | `/api/shape/bot/reporting/peers/traffic/overview` | 피어 그룹 트래픽 개요. |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/subscribe` | Shape 봇 방어 구독. |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | Shape 봇 방어 구독 해제. |
+| POST | `/api/shape/bot/subscribe` | Shape 봇 방어 구독. |
+| POST | `/api/shape/bot/unsubscribe` | Shape 봇 방어 구독 해제. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | 채널 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | 전환 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | 체험 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | 마찰 집계 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | 마찰 히스토그램 대시보드. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | 헬스 체크. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | 리프트 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | 복구 대시보드. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | 상위 사유 코드. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | Recognize 프로비저닝 상태 애드온 조회. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | 상태 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | Shape Recognize 구독. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | Shape Recognize 구독 해제. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | SrcTagInjection 검증 애드온. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | Safe AP 구독. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | Safe AP 구독 해제. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | 현재 사기 데이터 조회. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | 상위 위험 계정 조회. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | 상위 위험 디바이스 조회. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | 상위 위험 IP 주소 조회. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | 상위 위험 사유 조회. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | 트랜잭션 데이터 조회. |
+| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | 헬스 체크. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | SafeCubeJS 데이터 조회. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | SAFE 차단 테이블 목록 조회. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | SAFE 분석가 차단 감사를 CSV 파일로 조회. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | SAFE 분석가 차단 테이블을 CSV 파일로 조회. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | SAFE 차단 상세 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | SAFE 차단 피드백 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | SAFE 차단 규칙 등록. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | SAFE 차단 테이블 목록 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | SAFE 엔드포인트 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | 사기 피드백 업데이트. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | 사기 피드백 업데이트. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | 헬스 요청 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | SAFE 프로비저닝 등록. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | SAFE 개요 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | SAFE 개요 등록. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | SAFE 상위 위치 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | SAFE 상위 위치 등록. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | SAFE 상위 소스 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | SAFE 상위 소스 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | SAFE 시간별 트랜잭션 등록. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | SAFE 분석가 요약 조회. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | SAFE 분석가 트랜잭션 상세 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | SAFE 트랜잭션 상세 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | SAFE 트랜잭션 디바이스 이력 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | SAFE 트랜잭션 위치 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | SAFE 트랜잭션 관련 세션 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | SAFE 트랜잭션 타임라인 등록. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | SAFE 분석가 트랜잭션 목록 조회. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | SAFE 분석가 트랜잭션을 CSV 파일로 조회. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | 엔터프라이즈 구성. |
+
+## 링크
+
+- [대화형 API 레퍼런스](./shape/)
+- [OpenAPI 사양 JSON](../specifications/api/shape.json)

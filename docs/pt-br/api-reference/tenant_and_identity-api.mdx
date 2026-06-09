@@ -1,0 +1,272 @@
+---
+title: "\U0001FAAA API de Tenant e Identidade"
+description: 'Perfis de usuário, sessões e configurações de OTP.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 90c322c43087
+  translator: machine
+---
+
+Configurações de visualização de conta e canais de alerta administrativo. Redefinições de senha única, fluxos de provisionamento e monitoramento de conexões ativas.
+
+- **Categoria**: Plataforma
+- **Complexidade**: avançada
+- **Caminhos**: 183 | **Esquemas**: 511
+- **Nível**: Standard
+- **Domínios relacionados**: `users`, `authentication`, `system`
+
+## Casos de Uso
+
+- Gerenciar perfis de usuário e preferências de notificação
+- Configurar controles de sessão e configurações de OTP
+- Lidar com operações de gerenciamento de identidade
+- Processar solicitações de acesso inicial de usuário
+
+## Recursos Principais
+
+- **user_profile**: Perfil de usuário com configurações pessoais
+- **session**: Sessão de usuário para estado de autenticação
+- **otp_policy**: Política de OTP para autenticação multifator
+
+## Endpoints
+
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | GET Acesso ao Tenant de Suporte. |
+| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | Atualizar Acesso ao Tenant de Suporte. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | Criar Tenant Permitido. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | Substituir Tenant Permitido. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | Listar Tenant Permitido. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | GET Tenant Permitido. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | DELETE Tenant Permitido. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | Criar Autenticação. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | Substituir Autenticação. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | Listar Autenticação. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | GET Autenticação. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | DELETE Autenticação. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | Criar Servidor de Autorização. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | Substituir Servidor de Autorização. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | Listar Servidor de Autorização. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | GET Servidor de Autorização. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | DELETE Servidor de Autorização. |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | Atualizar Servidor de Autorização. |
+| GET | `/api/web/namespaces/system/partner-management/child_tenants` | Lista de Tenants Filhos. |
+| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | Migrar Tenants Filhos. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports` | Listar todos os tickets de suporte criados no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | Criar ticket de suporte ao cliente no tenant filho. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | GET ticket de suporte ao cliente no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | Fechar um ticket de suporte ao cliente no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | Adicionar comentário a um ticket de suporte ao cliente no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | Escalar um ticket no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | Alterar prioridade de um ticket no tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | Reabrir um ticket de suporte ao cliente fechado no tenant filho. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | Tenant Filho. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | Substituir Tenant Filho. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | Listar Tenant Filho. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | GET Tenant Filho. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | DELETE Tenant Filho. |
+| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | Listar tenants filhos para um determinado gerenciador de tenant filho. |
+| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | Migrar tenants filhos do CTM. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | Gerenciador de Tenant Filho. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | Substituir Gerenciador de Tenant Filho. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | Listar Gerenciador de Tenant Filho. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | GET Gerenciador de Tenant Filho. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | DELETE Gerenciador de Tenant Filho. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET anexo. |
+| POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | Descobrir Redes Cloud. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | Criar Contato. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | Substituir Contato. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | Listar Contato. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | GET Contato. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | DELETE Contato. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports` | Listar tickets do tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | Criar ticket de suporte ao cliente no tenant gerenciado. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | GET ticket de suporte ao cliente no tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | Fechar um ticket de suporte ao cliente no tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | Adicionar comentário a um ticket de suporte ao cliente no tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | Escalar um ticket no tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | Prioridade de um ticket no tenant gerenciado. |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | Reabrir um ticket de suporte ao cliente fechado no tenant gerenciado. |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | GET Lista de Tenant Gerenciado por Usuário. |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | GET Lista de Tenant Gerenciado. |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | Lista de Tenant Gerenciado por Usuário para Operações de Suporte. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | Criar Tenant Gerenciado. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | Substituir Tenant Gerenciado. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | Listar Tenant Gerenciado. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | GET Tenant Gerenciado. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | DELETE Tenant Gerenciado. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET anexo. |
+| GET | `/api/web/namespaces` | Listar Namespace. |
+| POST | `/api/web/namespaces` | Criar Namespace. |
+| POST | `/api/config/namespaces/system/all_application_inventory` | Inventário de Todos os Objetos de Aplicação. |
+| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | Inventário de Todos os Objetos de Aplicação com Filtros WAF. |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | GET Estatísticas de Endpoints de API para Todos os Namespaces. |
+| POST | `/api/web/namespaces/system/evaluate-api-access` | Avaliar Acesso à API. |
+| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | Avaliar Acesso à API em Lote. |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | Consultar Funções do Usuário. |
+| POST | `/api/config/namespaces/system/networking_inventory` | Inventário de Objetos de Rede. |
+| POST | `/api/cloud-data/namespaces/system/suggest-values` | Sugerir Valores. |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | Atualizar permissão de anúncio em público. |
+| POST | `/api/config/namespaces/system/validate_rules` | Validar Regras. |
+| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | Substituir Namespace. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | GET Políticas de Alerta Ativas. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | Definir Políticas de Alerta Ativas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | GET Políticas de Rede Ativas. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | Definir Políticas de Rede Ativas. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | GET Políticas de Serviço Ativas. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | Definir Políticas de Serviço Ativas. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | GET Estatísticas de Endpoints de API para Namespace. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | Inventário de Objetos de Aplicação. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | GET FastACLs para VIPs de Internet. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | Definir FastACLs para VIPs de Internet. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | Sugerir Valores. |
+| GET | `/api/web/namespaces/&#123;name&#125;` | GET Namespace. |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | DELETE em Cascata. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | Listar Função de Namespace. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | GET Função de Namespace. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | Dados Dinâmicos. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | Listar Política RBAC. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | GET Política RBAC. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Listar Funções Personalizadas. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Criar Função Personalizada. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | GET Função Personalizada. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Substituir Função Personalizada. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | Criar Função. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | Substituir Função. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | Listar Função |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | GET Função |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | DELETE Função. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | GET |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | DELETE |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | Listar |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | Criar |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | GET |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Substituir |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Substituir |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | DELETE |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | GET mapeadores OIDC. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | Atualizar mapeadores OIDC. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | Atualizar Integração SCIM do provedor OIDC. |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | Listar estados. |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | Listar cidades. |
+| GET | `/no_auth/countries/&#123;prefix&#125;` | Listar países. |
+| POST | `/no_auth/login/validate_registration` | Validar Registro. |
+| POST | `/no_auth/send_password_email` | Enviar E-mail de Senha. |
+| GET | `/no_auth/signup/&#123;name&#125;` | Ler Cadastro. |
+| POST | `/no_auth/validate_contact` | Validar contato. |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | Listar estados. |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | Listar cidades. |
+| GET | `/api/web/custom/countries/&#123;prefix&#125;` | Listar países. |
+| GET | `/api/scim/namespaces/system/v2/Groups` | Listar grupo com base em filtros. |
+| POST | `/api/scim/namespaces/system/v2/Groups` | Criar grupo com usuários. |
+| GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Listar grupo com base no ID. |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | DELETE grupo com base no ID. |
+| PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | Substituir grupo com base no ID. |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | PATCH grupo com base no ID. |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | GET tipos de recursos suportados. |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | GET tipos de recursos suportados. |
+| GET | `/api/scim/namespaces/system/v2/Schemas` | Esquemas |
+| GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | Esquemas por ID. |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | Listar configurações do provedor de serviço. |
+| GET | `/api/scim/namespaces/system/v2/Users` | GET todos os usuários. |
+| POST | `/api/scim/namespaces/system/v2/Users` | Criar Usuário com Atribuição de Função. |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | GET Usuário por ID. |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | DELETE usuário por ID. |
+| PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | Atualizar Usuário e Atribuições de Função. |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | PATCH Usuário. |
+| GET | `/no_auth/cname/lookup` | Consultar cname. |
+| GET | `/no_auth/tenant/idm/settings/password_policy` | GetPasswordPolicy. |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | Atribuir proprietário de domínio. |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | Desatribuir proprietário de domínio. |
+| GET | `/api/web/namespaces/system/tenant/idm/events/last_login` | GetLastLoginMap. |
+| GET | `/api/web/namespaces/system/tenant/idm/events/login` | GetLoginEvents. |
+| POST | `/api/web/namespaces/system/tenant/idm/events/login_in_time` | GetLoginEventsInTimeFrame. |
+| GET | `/api/web/namespaces/system/tenant/idm/settings` | GetIDMSettings. |
+| PUT | `/api/web/namespaces/system/tenant/idm/settings` | UpdateIDMSettings. |
+| GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | ListInactiveUsers. |
+| GET | `/api/web/namespaces/system/tenant/lookup` | Consultar cname. |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | DELETE Tenant. |
+| GET | `/api/web/namespaces/system/tenant/settings` | Configurações do Tenant. |
+| PUT | `/api/web/namespaces/system/tenant/settings` | Configurações do Tenant. |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | Desabilitar OTP no nível do tenant. |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | Habilitar OTP no nível do tenant. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | Favicon do tenant. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | Imagem de perfil do tenant. |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | DELETE imagem de perfil do tenant. |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | Atualizar imagem de perfil do tenant. |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | Logo do tenant. |
+| GET | `/api/web/namespaces/system/tenant/support-info` | Informações de Suporte. |
+| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | Documento de escalação do tenant. |
+| PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | DeactivateTenant. |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | Favicon do tenant. |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | Imagem de perfil do tenant. |
+| GET | `/api/config/tenants/&#123;tenant&#125;/summary` | Resumo |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | Criar configuração de tenant. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | Substituir configuração de tenant. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | Listar Configuração de Tenant. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | GET configuração de tenant. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | DELETE Configuração de Tenant. |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | Assinar Serviço Addon de Acesso Delegado. |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | Cancelar Assinatura do Serviço Addon de Acesso Delegado. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | Criar Perfil de Tenant. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | Substituir Perfil de Tenant. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | Listar Perfil de Tenant. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | GET Perfil de Tenant. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | DELETE Perfil de Tenant. |
+| POST | `/api/web/custom/idm/user/sync` | Sincronizar usuário |
+| PUT | `/api/web/custom/namespaces/system/users/group_add` | Adicionar usuário a grupos. |
+| PUT | `/api/web/custom/namespaces/system/users/group_remove` | Remover usuário de grupos. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | Aceitar TOS. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | Atribuir função ao Usuário. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | Enviar E-mail de Senha. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | GET TOS |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | GET Usuário e Atribuições de Função. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Criar Usuário com Atribuição de Função. |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Atualizar Usuário e Atribuições de Função. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | Atualizar Usuário e Atribuições de Função. |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | DELETE Usuário e Objetos Relacionados. |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | GET Detalhes do Usuário. |
+| POST | `/api/web/custom/password/admin_reset` | Redefinir senha pelo administrador. |
+| POST | `/api/web/custom/password/reset` | Redefinir senha. |
+| GET | `/api/web/custom/namespaces/system/user_groups` | GET todos os Grupos de Usuários do tenant. |
+| POST | `/api/web/custom/namespaces/system/user_groups` | Criar Grupo de Usuários. |
+| POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | Analisar para Exclusão. |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | Buscar todos os detalhes de um grupo fornecendo o ID do grupo. |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | DELETE um grupo fornecendo o ID do grupo. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | Substituir campos / acessos / associações do Grupo de Usuários. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | Atribuir função ao Grupo de Usuários. |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | Remover função do Grupo de Usuários. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | Listar Grupo de Usuários. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | GET Grupo de Usuários. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | Criar Identificação de Usuário. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | Substituir Identificação de Usuário. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | Listar Identificação de Usuário. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | GET Identificação de Usuário. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | DELETE Identificação de Usuário. |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | GET preferências de notificação de admin. |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | Atualizar preferências de notificação de admin. |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | Remover preferência de notificação de admin. |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | GET preferências de notificação combinadas. |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | Atualizar preferências de notificação combinadas. |
+| GET | `/api/web/namespaces/system/user/notifications` | GET preferências de notificação. |
+| PUT | `/api/web/namespaces/system/user/notifications` | Atualizar preferências de notificação. |
+| PUT | `/api/web/namespaces/system/user/notifications/unset` | Remover preferência de notificação. |
+| PUT | `/api/web/namespaces/system/user/otp/admin_reset` | ResetOtpDeviceByAdmin. |
+| GET | `/api/web/namespaces/system/user/sessions` | GetUserSessions. |
+| GET | `/api/web/namespaces/system/user/settings` | GET |
+| PUT | `/api/web/namespaces/system/user/settings` | Atualizar |
+| PUT | `/api/web/namespaces/system/user/settings/idm/disable` | DisableUserInIDM. |
+| PUT | `/api/web/namespaces/system/user/settings/idm/enable` | EnableUserInIDM. |
+| GET | `/api/web/namespaces/system/user/settings/image` | GetUserProfileImage. |
+| DELETE | `/api/web/namespaces/system/user/settings/image` | DeleteUserImage. |
+| PUT | `/api/web/namespaces/system/user/settings/image` | UpdateUserImage. |
+| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | Solicitar Acesso Inicial. |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | GET preferência de visualização. |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | Definir preferência de visualização. |
+| GET | `/api/config/namespaces/system/was/user_token` | GET Token de Usuário do Serviço de Varredura de Aplicação Web. |
+
+## Links
+
+- [Referência Interativa da API](./tenant_and_identity/)
+- [JSON da Especificação OpenAPI](../specifications/api/tenant_and_identity.json)

@@ -1,0 +1,272 @@
+---
+title: "\U0001FAAA 租戶與身分識別 API"
+description: 使用者個人檔案、工作階段與 OTP 設定。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 90c322c43087
+  translator: machine
+---
+
+帳戶檢視配置與管理員警示通道。一次性密碼重設、佈建流程與活躍連線監控。
+
+- **類別**: 平台
+- **複雜度**: 進階
+- **路徑**: 183 | **結構描述**: 511
+- **層級**: 標準
+- **相關領域**: `users`、`authentication`、`system`
+
+## 使用案例
+
+- 管理使用者個人檔案與通知偏好設定
+- 配置工作階段控制與 OTP 設定
+- 處理身分識別管理操作
+- 處理初始使用者存取請求
+
+## 主要資源
+
+- **user_profile**: 包含個人設定的使用者個人檔案
+- **session**: 用於驗證狀態的使用者工作階段
+- **otp_policy**: 用於多因素驗證的 OTP 政策
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | 取得支援租戶存取權。 |
+| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | 更新支援租戶存取權。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | 建立允許的租戶。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | 取代允許的租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | 列出允許的租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | 取得允許的租戶。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | 刪除允許的租戶。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | 建立驗證。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | 取代驗證。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | 列出驗證。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | 取得驗證。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | 刪除驗證。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | 建立授權伺服器。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | 取代授權伺服器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | 列出授權伺服器。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | 取得授權伺服器。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | 刪除授權伺服器。 |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | 更新授權伺服器。 |
+| GET | `/api/web/namespaces/system/partner-management/child_tenants` | 子租戶列表。 |
+| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | 遷移子租戶。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports` | 列出在子租戶中建立的所有支援工單。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | 在子租戶中建立客戶支援工單。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | 取得子租戶中的客戶支援工單。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | 關閉子租戶中的客戶支援工單。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | 在子租戶中的客戶支援工單新增評論。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | 升級子租戶中的工單。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | 變更子租戶中工單的優先順序。 |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | 重新開啟子租戶中已關閉的客戶支援工單。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | 子租戶。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | 取代子租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | 列出子租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | 取得子租戶。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | 刪除子租戶。 |
+| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | 列出指定子租戶管理員的子租戶。 |
+| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | 遷移 CTM 子租戶。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | 子租戶管理員。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | 取代子租戶管理員。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | 列出子租戶管理員。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | 取得子租戶管理員。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | 刪除子租戶管理員。 |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 取得附件。 |
+| POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | 探索雲端網路。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | 建立聯絡人。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | 取代聯絡人。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | 列出聯絡人。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | 取得聯絡人。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | 刪除聯絡人。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports` | 列出受管租戶的工單。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | 在受管租戶中建立客戶支援工單。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | 取得受管租戶中的客戶支援工單。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | 關閉受管租戶中的客戶支援工單。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | 在受管租戶中的客戶支援工單新增評論。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | 升級受管租戶中的工單。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | 受管租戶中工單的優先順序。 |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | 重新開啟受管租戶中已關閉的客戶支援工單。 |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | 依使用者取得受管租戶列表。 |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | 取得受管租戶列表。 |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | 依使用者取得支援操作的受管租戶列表。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | 建立受管租戶。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | 取代受管租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | 列出受管租戶。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | 取得受管租戶。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | 刪除受管租戶。 |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 取得附件。 |
+| GET | `/api/web/namespaces` | 列出命名空間。 |
+| POST | `/api/web/namespaces` | 建立命名空間。 |
+| POST | `/api/config/namespaces/system/all_application_inventory` | 所有應用程式物件清單。 |
+| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | 包含 WAF 篩選器的所有應用程式物件清單。 |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | 取得所有命名空間的 API 端點統計資訊。 |
+| POST | `/api/web/namespaces/system/evaluate-api-access` | 評估 API 存取權。 |
+| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | 評估批次 API 存取權。 |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | 查詢使用者角色。 |
+| POST | `/api/config/namespaces/system/networking_inventory` | 網路物件清單。 |
+| POST | `/api/cloud-data/namespaces/system/suggest-values` | 建議值。 |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | 更新允許在公開環境上公告。 |
+| POST | `/api/config/namespaces/system/validate_rules` | 驗證規則。 |
+| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | 取代命名空間。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | 取得作用中的警示政策。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | 設定作用中的警示政策。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | 取得作用中的網路政策。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | 設定作用中的網路政策。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | 取得作用中的服務政策。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | 設定作用中的服務政策。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | 取得命名空間的 API 端點統計資訊。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | 應用程式物件清單。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | 取得網際網路 VIP 的 FastACL。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | 設定網際網路 VIP 的 FastACL。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | 建議值。 |
+| GET | `/api/web/namespaces/&#123;name&#125;` | 取得命名空間。 |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | 串聯刪除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | 列出命名空間角色。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | 取得命名空間角色。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | 動態資料。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | 列出 RBAC 政策。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | 取得 RBAC 政策。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | 自訂列出角色。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | 自訂建立角色。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | 自訂取得角色。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | 自訂取代角色。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | 建立角色。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | 取代角色。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | 列出角色 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | 取得角色 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | 刪除角色。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | 取得 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | 刪除 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | 列出 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | 建立 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 取得 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 取代 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | 取代 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | 刪除 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | 取得 OIDC 對應器。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | 更新 OIDC 對應器。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | 更新 OIDC 提供者 SCIM 整合。 |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | 列出州/省。 |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | 列出城市。 |
+| GET | `/no_auth/countries/&#123;prefix&#125;` | 列出國家。 |
+| POST | `/no_auth/login/validate_registration` | 驗證註冊。 |
+| POST | `/no_auth/send_password_email` | 傳送密碼電子郵件。 |
+| GET | `/no_auth/signup/&#123;name&#125;` | 讀取註冊。 |
+| POST | `/no_auth/validate_contact` | 驗證聯絡人。 |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | 列出州/省。 |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | 列出城市。 |
+| GET | `/api/web/custom/countries/&#123;prefix&#125;` | 列出國家。 |
+| GET | `/api/scim/namespaces/system/v2/Groups` | 依篩選條件列出群組。 |
+| POST | `/api/scim/namespaces/system/v2/Groups` | 建立包含使用者的群組。 |
+| GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | 依 ID 列出群組。 |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | 依 ID 刪除群組。 |
+| PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | 依 ID 取代群組。 |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | 依 ID 修補群組。 |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | 取得支援的資源類型。 |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | 取得支援的資源類型。 |
+| GET | `/api/scim/namespaces/system/v2/Schemas` | 結構描述 |
+| GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | 依 ID 取得結構描述。 |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | 列出服務提供者配置。 |
+| GET | `/api/scim/namespaces/system/v2/Users` | 取得所有使用者。 |
+| POST | `/api/scim/namespaces/system/v2/Users` | 建立包含角色指派的使用者。 |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | 依 ID 取得使用者。 |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | 依 ID 刪除使用者。 |
+| PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | 更新使用者與角色指派。 |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | 修補使用者。 |
+| GET | `/no_auth/cname/lookup` | 查詢 CNAME。 |
+| GET | `/no_auth/tenant/idm/settings/password_policy` | 取得密碼政策。 |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | 指派網域擁有者。 |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | 取消指派網域擁有者。 |
+| GET | `/api/web/namespaces/system/tenant/idm/events/last_login` | 取得最後登入對應。 |
+| GET | `/api/web/namespaces/system/tenant/idm/events/login` | 取得登入事件。 |
+| POST | `/api/web/namespaces/system/tenant/idm/events/login_in_time` | 取得時間範圍內的登入事件。 |
+| GET | `/api/web/namespaces/system/tenant/idm/settings` | 取得 IDM 設定。 |
+| PUT | `/api/web/namespaces/system/tenant/idm/settings` | 更新 IDM 設定。 |
+| GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | 列出非活躍使用者。 |
+| GET | `/api/web/namespaces/system/tenant/lookup` | 查詢 CNAME。 |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | 刪除租戶。 |
+| GET | `/api/web/namespaces/system/tenant/settings` | 租戶設定。 |
+| PUT | `/api/web/namespaces/system/tenant/settings` | 租戶設定。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | 停用租戶層級 OTP。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | 啟用租戶層級 OTP。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | 租戶網站圖示。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | 租戶個人檔案圖片。 |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | 刪除租戶個人檔案圖片。 |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | 更新租戶個人檔案圖片。 |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | 租戶標誌。 |
+| GET | `/api/web/namespaces/system/tenant/support-info` | 支援資訊。 |
+| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | 租戶升級文件。 |
+| PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | 停用租戶。 |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | 租戶網站圖示。 |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | 租戶個人檔案圖片。 |
+| GET | `/api/config/tenants/&#123;tenant&#125;/summary` | 摘要 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | 建立租戶配置。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | 取代租戶配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | 列出租戶配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | 取得租戶配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | 刪除租戶配置。 |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | 訂閱委派存取附加服務。 |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | 取消訂閱委派存取附加服務。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | 建立租戶設定檔。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | 取代租戶設定檔。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | 列出租戶設定檔。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | 取得租戶設定檔。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | 刪除租戶設定檔。 |
+| POST | `/api/web/custom/idm/user/sync` | 同步使用者 |
+| PUT | `/api/web/custom/namespaces/system/users/group_add` | 將使用者新增至群組。 |
+| PUT | `/api/web/custom/namespaces/system/users/group_remove` | 將使用者從群組移除。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | 接受服務條款。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | 將角色指派給使用者。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | 傳送密碼電子郵件。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | 取得服務條款 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | 取得使用者與角色指派。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | 建立包含角色指派的使用者。 |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | 更新使用者與角色指派。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | 更新使用者與角色指派。 |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | 刪除使用者與相關物件。 |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | 取得使用者詳細資訊。 |
+| POST | `/api/web/custom/password/admin_reset` | 由管理員重設密碼。 |
+| POST | `/api/web/custom/password/reset` | 重設密碼。 |
+| GET | `/api/web/custom/namespaces/system/user_groups` | 取得租戶的所有使用者群組。 |
+| POST | `/api/web/custom/namespaces/system/user_groups` | 建立使用者群組。 |
+| POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | 刪除前分析。 |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | 依群組 ID 擷取群組的所有詳細資訊。 |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | 依群組 ID 刪除群組。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | 取代使用者群組欄位 / 存取權 / 關聯。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | 將角色指派給使用者群組。 |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | 從使用者群組移除角色。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | 列出使用者群組。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | 取得使用者群組。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | 建立使用者識別。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | 取代使用者識別。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | 列出使用者識別。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | 取得使用者識別。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | 刪除使用者識別。 |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | 取得管理員通知偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | 更新管理員通知偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | 取消設定管理員通知偏好。 |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | 取得合併通知偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | 更新合併通知偏好設定。 |
+| GET | `/api/web/namespaces/system/user/notifications` | 取得通知偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/notifications` | 更新通知偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/notifications/unset` | 取消設定通知偏好。 |
+| PUT | `/api/web/namespaces/system/user/otp/admin_reset` | 由管理員重設 OTP 裝置。 |
+| GET | `/api/web/namespaces/system/user/sessions` | 取得使用者工作階段。 |
+| GET | `/api/web/namespaces/system/user/settings` | 取得 |
+| PUT | `/api/web/namespaces/system/user/settings` | 更新 |
+| PUT | `/api/web/namespaces/system/user/settings/idm/disable` | 在 IDM 中停用使用者。 |
+| PUT | `/api/web/namespaces/system/user/settings/idm/enable` | 在 IDM 中啟用使用者。 |
+| GET | `/api/web/namespaces/system/user/settings/image` | 取得使用者個人檔案圖片。 |
+| DELETE | `/api/web/namespaces/system/user/settings/image` | 刪除使用者圖片。 |
+| PUT | `/api/web/namespaces/system/user/settings/image` | 更新使用者圖片。 |
+| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | 請求初始存取權。 |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | 取得檢視偏好設定。 |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | 設定檢視偏好設定。 |
+| GET | `/api/config/namespaces/system/was/user_token` | 取得 Web 應用程式掃描服務使用者權杖。 |
+
+## 連結
+
+- [互動式 API 參考](./tenant_and_identity/)
+- [OpenAPI 規格 JSON](../specifications/api/tenant_and_identity.json)

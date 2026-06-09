@@ -1,0 +1,92 @@
+---
+title: "\U0001F510 واجهة برمجة التطبيقات Api"
+description: تعريفات الواجهة، والتحقق من المخططات، والتجميع.
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 0b685fbf7c03
+  translator: machine
+---
+
+فهرسة الموارد مع التصنيف التلقائي وتحديد ملفات الأمان. تقوم التسلسلات الهرمية التنظيمية بتقسيم الوصول حسب الوظيفة أو سياسة الحماية.
+
+- **الفئة**: الأمان
+- **التعقيد**: متقدم
+- **المسارات**: 45 | **المخططات**: 279
+- **المستوى**: متقدم
+- **النطاقات ذات الصلة**: `virtual`, `network_security`
+
+## حالات الاستخدام
+
+- اكتشاف وفهرسة واجهات برمجة التطبيقات
+- اختبار أمان وسلوك واجهات برمجة التطبيقات
+- إدارة بيانات اعتماد واجهات برمجة التطبيقات
+- تعريف مجموعات واجهات برمجة التطبيقات وسياسات الاختبار
+
+## الموارد الأساسية
+
+- **api_definition**: تعريف مخطط واجهة برمجة التطبيقات للاكتشاف والحماية
+- **api_endpoint**: تكوين وحماية نقطة نهاية فردية لواجهة برمجة التطبيقات
+- **api_rate_limit**: تكوين تحديد معدل واجهة برمجة التطبيقات للتحكم في حركة المرور
+
+## نقاط النهاية
+
+| الطريقة | المسار | الوصف |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers` | إنشاء زاحف API. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers/&#123;metadata.name&#125;` | استبدال زاحف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers` | قائمة زواحف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | الحصول على زاحف API. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_crawlers/&#123;name&#125;` | حذف زاحف API. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions` | إنشاء تعريف API. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_definitions/&#123;metadata.name&#125;` | استبدال تعريف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions` | قائمة تعريفات API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | الحصول على تعريف API. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | حذف تعريف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/loadbalancers` | الحصول على موازنات الحمل المرجعية. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/mark_as_non_api` | وضع علامة كغير API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/move_to_inventory` | نقل إلى مخزون API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/remove_from_inventory` | إزالة من مخزون API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/unmark_as_non_api` | إزالة علامة غير API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions_without_shared` | قائمة تعريفات API المتاحة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys` | إنشاء اكتشاف API. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys/&#123;metadata.name&#125;` | استبدال اكتشاف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys` | قائمة اكتشاف API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | الحصول على اكتشاف API. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys/&#123;name&#125;` | حذف اكتشاف API. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups` | قائمة مجموعات API. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_groups/&#123;name&#125;` | الحصول على مجموعة API. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements` | قائمة عناصر مجموعة API. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_group_elements/&#123;name&#125;` | الحصول على عنصر مجموعة API. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings` | إنشاء اختبار API. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_testings/&#123;metadata.name&#125;` | استبدال اختبار API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings` | قائمة اختبارات API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | الحصول على اختبار API. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_testings/&#123;name&#125;` | حذف اختبار API. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups` | إنشاء مجموعة API. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_api_groups/&#123;metadata.name&#125;` | استبدال مجموعة API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups` | قائمة مجموعات API للتطبيق. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/evaluate` | تقييم مجموعة API. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_api_groups/stats` | تقييم مجموعة API. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | الحصول على مجموعة API. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | حذف مجموعة API للتطبيق. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/api_endpoint_protection` | اقتراح قاعدة حماية نقطة نهاية API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/data_exposure` | اقتراح قاعدة البيانات الحساسة. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/oas_validation` | اقتراح قاعدة التحقق من مواصفات Open API. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/rate_limit` | اقتراح قاعدة تحديد المعدل. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations` | إنشاء تكامل قاعدة الشفرة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations/&#123;metadata.name&#125;` | استبدال تكامل قاعدة الشفرة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations` | قائمة تكاملات قاعدة الشفرة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | الحصول على تكامل قاعدة الشفرة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/code_base_integrations/&#123;name&#125;` | حذف تكامل قاعدة الشفرة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys` | إنشاء اكتشاف. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/discoverys/&#123;metadata.name&#125;` | استبدال اكتشاف. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/discovery/&#123;name&#125;/download_certificates` | تنزيل الشهادات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys` | قائمة الاكتشافات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | الحصول على اكتشاف. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/discoverys/&#123;name&#125;` | حذف اكتشاف. |
+
+## الروابط
+
+- [مرجع API التفاعلي](./api/)
+- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/api.json)

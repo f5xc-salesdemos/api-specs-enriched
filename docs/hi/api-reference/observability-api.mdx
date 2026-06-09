@@ -1,0 +1,106 @@
+---
+title: "\U0001F4CA ऑब्ज़र्वेबिलिटी API"
+description: सिंथेटिक हेल्थ चेक और DNS रिज़ॉल्यूशन सत्यापन।
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 6a6373e33031
+  translator: machine
+---
+
+विलंबता मापन के साथ HTTP उपलब्धता प्रोब। प्रमाणपत्र समाप्ति अलर्ट और इन्फ्रास्ट्रक्चर स्वास्थ्य के लिए वैश्विक स्थिति डैशबोर्ड।
+
+- **श्रेणी**: ऑपरेशंस
+- **जटिलता**: मध्यम
+- **पथ**: 56 | **स्कीमा**: 196
+- **टियर**: स्टैंडर्ड
+- **संबंधित डोमेन**: `statistics`, `support`
+
+## उपयोग के मामले
+
+- सिंथेटिक मॉनिटरिंग कॉन्फ़िगर करें
+- मॉनिटरिंग और परीक्षण नीतियाँ परिभाषित करें
+- ऑब्ज़र्वेबिलिटी डैशबोर्ड प्रबंधित करें
+
+## प्राथमिक संसाधन
+
+- **log_receiver**: केंद्रीकृत लॉग संग्रह के लिए लॉग रिसीवर
+- **metrics_receiver**: केंद्रीकृत मेट्रिक्स संग्रह के लिए मेट्रिक्स रिसीवर
+- **alert_policy**: मॉनिटरिंग और अधिसूचना के लिए अलर्ट नीति
+
+## एंडपॉइंट
+
+| मेथड | पथ | विवरण |
+|--------|------|-------------|
+| GET | `/api/data/namespaces/system/all_ns_alerts` | अलर्ट प्राप्त करें। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | अलर्ट प्राप्त करें। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | अलर्ट इतिहास प्राप्त करें। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | अलर्ट इतिहास एग्रीगेशन। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | अलर्ट इतिहास स्क्रॉल। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | अलर्ट इतिहास स्क्रॉल। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | DNS मॉनिटर बनाएँ। |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | DNS मॉनिटर प्रतिस्थापित करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | फ़िल्टर किया गया DNS मॉनिटर सूची प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | DNS मॉनिटर सूचीबद्ध करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | DNS मॉनिटर प्राप्त करें। |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | DNS मॉनिटर हटाएँ। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | HTTP मॉनिटर बनाएँ। |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | HTTP मॉनिटर अपडेट करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | फ़िल्टर किया गया HTTP मॉनिटर सूची प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | HTTP मॉनिटर सूचीबद्ध करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | HTTP मॉनिटर प्राप्त करें। |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | HTTP मॉनिटर हटाएँ। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | एक्सेस लॉग क्वेरी V2। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | एक्सेस लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | एक्सेस लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | एक्सेस लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | ऑडिट लॉग क्वेरी V2। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | ऑडिट लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | फ़ायरवॉल लॉग क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | फ़ायरवॉल लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | फ़ायरवॉल लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | फ़ायरवॉल लॉग स्क्रॉल क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | प्लेटफ़ॉर्म इवेंट क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | प्लेटफ़ॉर्म इवेंट एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | प्लेटफ़ॉर्म इवेंट स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | प्लेटफ़ॉर्म इवेंट स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s ऑडिट लॉग क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s ऑडिट लॉग एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s ऑडिट लॉग स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8s इवेंट्स क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8s इवेंट्स एग्रीगेशन क्वेरी। |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8s इवेंट्स स्क्रॉल क्वेरी। |
+| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | ऑब्ज़र्वेबिलिटी सेवा की सदस्यता लें। |
+| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | ऑब्ज़र्वेबिलिटी सिंथेटिक मॉनिटर की सदस्यता रद्द करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | प्रमाणपत्र रिपोर्ट विवरण प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | प्रमाणपत्र सारांश प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | DNS मॉनिटर सारांश प्राप्त करें। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | DNS मॉनिटर स्वास्थ्य प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | वैश्विक इतिहास प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | वैश्विक सारांश प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | सिंथेटिक मॉनिटरिंग हेल्थ चेक प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | HTTP मॉनिटर विवरण प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | HTTP मॉनिटर सारांश प्राप्त करें। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | HTTP मॉनिटर स्वास्थ्य प्राप्त करें। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | मेट्रिक क्वेरी डेटा प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | मॉनिटर इवेंट्स प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | मॉनिटर इतिहास प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | रिकॉर्ड प्रकार सारांश प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | स्रोत सारांश प्राप्त करें। |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | मान सुझाएँ। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | TLS रिपोर्ट विवरण प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | TLS रिपोर्ट सारांश प्राप्त करें। |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | TLS सारांश प्राप्त करें। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./observability/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/observability.json)

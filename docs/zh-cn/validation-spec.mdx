@@ -1,0 +1,318 @@
+---
+title: 验证规范
+description: 验证规范的结构和内容
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+本文档描述了由 api-specs-enriched 项目发布的验证规范的结构和内容。
+
+## 概述
+
+验证规范将 API 验证约束、默认值和配置元数据整合到一个 JSON 文件中。该规范从增强的 OpenAPI 规范生成，并与之一起发布。
+
+**发布位置**：`docs/specifications/api/validation.json`
+
+## 规范结构
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## 各节说明
+
+### required_fields
+
+指定每种资源的各操作类型所需的必填字段。
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+定义受约束字段的允许值。
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+类型级别的验证默认值和基于模式的规则。
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+基于字段名称模式的验证规则，附带置信度评分。
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+所有默认值按资源类型以统一结构组织。
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### 默认值类别
+
+| 类别 | 描述 | 来源 |
+|----------|-------------|--------|
+| `server_applied` | 省略字段时 API 应用的值 | 实时 API 测试 |
+| `recommended` | F5 XC Web 控制台预填充的值 | UI 分析 |
+| `advanced_options` | advanced_options 对象内的嵌套默认值 | API 发现 |
+| `oneof_choices` | 默认的 OneOf 变体选择 | API 行为 |
+| `oneof_recommended` | 推荐的 OneOf 变体 | 控制台默认值 |
+| `nested_recommended` | 嵌套模式的推荐值 | UI 分析 |
+| `ui_vs_server` | UI 默认值与 API 默认值不同的情况 | 对比分析 |
+
+### conditional_requirements
+
+互斥字段和条件依赖关系。
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+最小可行配置及工作示例。
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## OpenAPI 扩展映射
+
+增强的 OpenAPI 规范使用以下扩展嵌入验证元数据：
+
+| 扩展 | 用途 | 位置 |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | 上下文相关的必填字段 | Schema 属性 |
+| `x-f5xc-server-default` | 标记服务器应用的默认值 | Schema 属性 |
+| `x-f5xc-recommended-value` | 推荐的默认值 | Schema 属性 |
+| `x-f5xc-recommended-oneof-variant` | 推荐的 OneOf 变体 | Schema 定义 |
+| `x-f5xc-conditions` | 条件要求 | Schema 属性 |
+| `x-f5xc-minimum-configuration` | 最小配置示例 | Schema 定义 |
+| `x-f5xc-validation` | 发现衍生的约束 | Schema 属性 |
+
+## 数据访问
+
+### 发布 URL
+
+| 来源 | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### 本地路径
+
+运行管道后：`docs/specifications/api/validation.json`
+
+## 版本控制
+
+验证规范在 `version` 字段中遵循语义化版本控制：
+
+| 变更类型 | 版本升级 | 示例 |
+|-------------|--------------|---------|
+| 破坏性结构变更 | 主版本号 | 字段重命名、删除章节 |
+| 新增验证规则或资源 | 次版本号 | 新增资源默认值 |
+| 错误修复或描述更新 | 修订版本号 | 拼写纠正 |
+
+## 协调优先级
+
+当多个来源提供约束时，协调优先级为：
+
+1. **现有** - 原始 OpenAPI 规范中的约束（最高优先级）
+2. **发现** - 来自实时 API 发现的约束
+3. **推断** - 来自模式匹配的约束（最低优先级）
+
+## 相关文档
+
+- [健康检查增强](./Enhancements/healthcheck-enhancements/) - 健康检查模式增强
+- [源站池增强](./Enhancements/originpool-enhancements/) - 源站池模式增强
+- [CLAUDE.md](../../CLAUDE.md) - AI 助手指引
+- [DEVELOPMENT.md](./development/) - 开发者指南
+
+## 变更日志
+
+| 版本 | 日期 | 变更内容 |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | 重写为纯 API 参考；新增 oneof_recommended 和 nested_recommended 类别 |
+| 2.1.0 | 2026-01-18 | 统一默认值结构，替代分散的章节 |
+| 2.0.0 | 2026-01-15 | 初始验证规范 |

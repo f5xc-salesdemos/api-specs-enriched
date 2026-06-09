@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 API การเรียกเก็บเงินและการใช้งาน"
+description: แผนการสมัครสมาชิก วิธีการชำระเงิน และโควตา
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+การเปลี่ยนแผน การออกใบแจ้งหนี้ และการใช้ทรัพยากร ขีดจำกัดโควตาระดับเนมสเปซและการติดตามการใช้งาน
+
+- **หมวดหมู่**: แพลตฟอร์ม
+- **ความซับซ้อน**: ปานกลาง
+- **เส้นทาง**: 25 | **สคีมา**: 101
+- **ระดับ**: มาตรฐาน
+- **โดเมนที่เกี่ยวข้อง**: `system`, `users`
+
+## กรณีการใช้งาน
+
+- จัดการแผนการสมัครสมาชิกและการเปลี่ยนแผนการเรียกเก็บเงิน
+- กำหนดค่าวิธีการชำระเงินและใบแจ้งหนี้
+- ติดตามการใช้โควตาทรัพยากรข้ามเนมสเปซ
+- ตรวจสอบขีดจำกัดการใช้งานและความจุ
+
+## ทรัพยากรหลัก
+
+- **subscription**: การสมัครสมาชิกสำหรับสิทธิ์การใช้บริการ
+- **quota**: โควตาทรัพยากรสำหรับขีดจำกัดการใช้งาน
+- **usage_report**: รายงานการใช้งานสำหรับการติดตามการใช้ทรัพยากร
+
+## จุดปลายทาง
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | สรุปการใช้งานการเรียกเก็บเงิน |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | รับ PDF ใบแจ้งหนี้ |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | แสดงรายการใบแจ้งหนี้ |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | ตั้งบัตรเครดิตเป็นหลัก |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | ตั้งวิธีการชำระเงินเป็นรอง |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | ตั้งวิธีการชำระเงินเป็นรอง |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | สร้างข้อกำหนดวิธีการชำระเงิน |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | ลบวิธีการชำระเงินที่ระบุ |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | รับการเปลี่ยนแผน |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | เริ่มต้นการเปลี่ยนแผน |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | สร้างโควตา |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | แทนที่โควตา |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | รับขีดจำกัดโควตาแบบกำหนดเอง |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | รับการใช้โควตา |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | แสดงรายการโควตา |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | รับโควตา |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ลบโควตา |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | แสดงรายการการสมัครสมาชิก |
+| POST | `/api/web/namespaces/system/addon/subscribe` | สมัครบริการเสริม XC |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | ยกเลิกการสมัครบริการเสริม XC |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | แสดงรายละเอียดการใช้งานปัจจุบัน |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | แสดงรายละเอียดการใช้งานรายชั่วโมง |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | แสดงรายละเอียดการใช้งานรายเดือน |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | แสดงรายละเอียดการใช้งาน |
+| GET | `/api/web/namespaces/system/usage_plans/current` | รับแผนการใช้งานปัจจุบัน |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | แสดงรายการแผนการใช้งาน |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./billing_and_usage/)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/billing_and_usage.json)

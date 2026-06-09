@@ -1,0 +1,534 @@
+---
+title: Constraint-Metadatensystem
+description: >-
+  Umfassende Constraint-Metadaten für deterministische KI-Generierung und
+  Validierung
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**Zweck**: Umfassende Constraint-Metadaten für deterministische KI-Generierung, CLI-Validierung und Terraform-Schema-Durchsetzung.
+
+**Erweiterung**: `x-f5xc-constraints`
+**Version**: 3.3.0
+**Status**: Produktion
+**Konsumenten**: KI-Assistenten, CLI-Tools, Terraform-Provider, IDE-Erweiterungen, API-Validatoren
+
+---
+
+## Inhaltsverzeichnis
+
+1. [Überblick](#überblick)
+2. [Erweiterungsstruktur](#erweiterungsstruktur)
+3. [Constraint-Typen](#constraint-typen)
+4. [Natürlichsprachliche Beschreibungen](#natürlichsprachliche-beschreibungen)
+5. [Validierungsbeispiele](#validierungsbeispiele)
+6. [Konfidenzwerte](#konfidenzwerte)
+7. [Discovery-Integration](#discovery-integration)
+8. [Leitfaden zur Tool-Integration](#leitfaden-zur-tool-integration)
+
+---
+
+## Überblick
+
+Die `x-f5xc-constraints`-Erweiterung stellt deterministisches Wissen über Feldvalidierungs-Constraints bereit und ermöglicht:
+
+- **KI-Assistenten**: Gültige Konfigurationen ohne Benutzereingabe für Constraint-Details generieren
+- **CLI-Tools**: Genaue Eingabehinweise, Validierung und Fehlermeldungen bereitstellen
+- **Terraform**: Constraints zur Planungszeit durchsetzen, nicht zur Anwendungszeit
+- **IDE-Erweiterungen**: Echtzeit-Validierung und Autovervollständigungsvorschläge
+- **API-Validatoren**: Vor-Absendung-Validierung zur Reduzierung von API-Fehlern
+
+### Abdeckungsstatistiken
+
+- **9.851 Constraints** über alle F5 XC API-Spezifikationen
+- **50+ Mustertypen** (String, Array, numerisch)
+- **95% Konfidenz** bei Feldern hoher Priorität (Namen, Ports, Bezeichner)
+- **3-stufige Abstimmung**: BESTEHEND > DISCOVERY > ABGELEITET
+
+---
+
+## Erweiterungsstruktur
+
+### Felder der obersten Ebene
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### Feldbeschreibungen
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `constraintType` | string | Datentyp (string, array, number, object) |
+| `deterministic` | boolean | Hochkonfidenz-Flag (Konfidenz >= 0,9) für KI-Generierung |
+| `category` | string | Constraint-Kategorie für Gruppierung und Berichterstattung |
+| *(Constraint-Schlüssel)* | verschiedene | Typspezifische Constraint-Schlüssel auf oberster Ebene abgeflacht (z. B. `minLength`, `maxItems`, `minimum`) |
+| `metadata` | object | Quellenverfolgung, Konfidenz, Validierungszeitstempel |
+
+---
+
+## Constraint-Typen
+
+### String-Constraints
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### Unterstützte Formate
+
+| Format | Beschreibung | Beispiel |
+|--------|--------------|----------|
+| `dns-label` | RFC 1123 DNS-Label (1-63 Zeichen) | `my-service` |
+| `fqdn` | Vollqualifizierter Domainname | `api.example.com` |
+| `email` | RFC 5322 E-Mail-Adresse | `user@example.com` |
+| `url` | RFC 3986 URI/URL | `https://example.com/api` |
+| `ipv4` | IPv4-Adresse | `192.168.1.1` |
+| `ipv6` | IPv6-Adresse | `2001:db8::1` |
+| `uuid` | RFC 4122 UUID | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | ISO 8601 Zeitstempel | `2026-01-19T12:00:00Z` |
+| `date` | ISO 8601 Datum | `2026-01-19` |
+| `time` | ISO 8601 Uhrzeit | `12:00:00` |
+| `json` | JSON-String (parsbar) | `{"key": "value"}` |
+| `yaml` | YAML-String (parsbar) | `key: value` |
+| `base64` | Base64-kodierter String | `SGVsbG8gV29ybGQ=` |
+| `hex` | Hexadezimaler String | `48656c6c6f` |
+| `mac-address` | MAC-Adresse | `00:1A:2B:3C:4D:5E` |
+| `phone` | E.164 Telefonnummer | `+1-555-123-4567` |
+
+### Array-Constraints
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### Numerische Constraints
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## Natürlichsprachliche Beschreibungen
+
+### String-Format-Constraints
+
+**DNS-Labels** (`format: "dns-label"`):
+- DNS-Label-Namen müssen 1-63 Zeichen lang sein und aus Kleinbuchstaben und Ziffern bestehen
+- Bindestriche sind erlaubt, aber nicht am Anfang/Ende (RFC 1123)
+- Beispiel: `my-service`, `api-gateway`, `lb-prod-01`
+
+**E-Mail-Adressen** (`format: "email"`):
+- E-Mail-Adressen müssen gemäß RFC 5322 gültig sein
+- Maximal 254 Zeichen
+- Beispiel: `admin@example.com`, `api+webhook@service.io`
+
+**FQDNs** (`format: "fqdn"`):
+- Vollqualifizierte Domainnamen müssen 1-253 Zeichen lang sein
+- Durch Punkte getrennte DNS-Labels
+- Beispiel: `api.example.com`, `service.production.internal`
+
+**URLs** (`format: "url"`):
+- URLs müssen gültige URIs gemäß RFC 3986 sein
+- Müssen ein Schema enthalten (http/https)
+- Beispiel: `https://api.example.com/v1`, `http://localhost:8080`
+
+**IPv4-Adressen** (`format: "ipv4"`):
+- IPv4-Adressen müssen in Punkt-Dezimal-Notation angegeben werden
+- Beispiel: `192.168.1.1`, `10.0.0.1`
+
+**UUIDs** (`format: "uuid"`):
+- UUIDs müssen dem RFC 4122 Format entsprechen
+- Beispiel: `550e8400-e29b-41d4-a716-446655440000`
+
+**Zeitstempel** (`format: "date-time"`):
+- Zeitstempel müssen im ISO 8601 Format vorliegen
+- Beispiel: `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
+
+### Numerische Constraints
+
+**Portnummern**:
+- Portnummern müssen Ganzzahlen zwischen 1 und 65535 sein
+- Standardports: 80 (HTTP), 443 (HTTPS), 22 (SSH)
+
+**VLAN-IDs**:
+- VLAN-IDs müssen Ganzzahlen zwischen 1 und 4094 sein (802.1Q-Standard)
+
+**Timeouts**:
+- Timeouts müssen zwischen 1 und 3600 Sekunden liegen (maximal 1 Stunde)
+
+### Array-Constraints
+
+**Origin-Pools**:
+- Das Array der Origin-Pools erfordert mindestens 1 Element, maximal 50 Elemente
+- Jedes Element muss eindeutig sein
+
+**Tags**:
+- Das Tags-Array erlaubt 0-100 Elemente
+- Elemente müssen nicht eindeutig sein
+
+---
+
+## Validierungsbeispiele
+
+### Beispiel 1: DNS-Label-Namensvalidierung
+
+**Constraint**:
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**Gültige Werte**:
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**Ungültige Werte**:
+- ❌ `My-Service` (Großbuchstaben nicht erlaubt)
+- ❌ `-my-service` (Bindestrich am Anfang)
+- ❌ `my-service-` (Bindestrich am Ende)
+- ❌ `my_service` (Unterstrich nicht erlaubt)
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (zu lang)
+
+### Beispiel 2: Portnummer-Validierung
+
+**Constraint**:
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**Gültige Werte**:
+- ✅ `80` (HTTP)
+- ✅ `443` (HTTPS)
+- ✅ `8080` (gängige alternative HTTP-Portnummer)
+- ✅ `65535` (maximaler Port)
+
+**Ungültige Werte**:
+- ❌ `0` (unter dem Minimum)
+- ❌ `65536` (über dem Maximum)
+- ❌ `-1` (negativ)
+- ❌ `"80"` (String, keine Zahl)
+
+### Beispiel 3: Array-Größen-Validierung
+
+**Constraint**:
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**Gültige Werte**:
+- ✅ `["origin-1"]` (1 Element)
+- ✅ `["origin-1", "origin-2", "origin-3"]` (3 Elemente, alle eindeutig)
+
+**Ungültige Werte**:
+- ❌ `[]` (unter dem Minimum)
+- ❌ `["origin-1", "origin-1"]` (doppelte Elemente)
+- ❌ `[Array mit 51 Elementen]` (über dem Maximum)
+
+---
+
+## Konfidenzwerte
+
+### Interpretation der Bewertungen
+
+| Bereich | Interpretation | Verwendung |
+|---------|----------------|------------|
+| 0,90-1,00 | **Hohe Konfidenz** | Deterministisches Flag aktiviert, für KI-Generierung verwenden |
+| 0,70-0,89 | **Mittlere Konfidenz** | Beratend, Benutzerbestätigung empfohlen |
+| 0,50-0,69 | **Niedrige Konfidenz** | Nur informativ, Benutzervalidierung erforderlich |
+| < 0,50 | **Sehr niedrig** | Nicht in Constraints enthalten |
+
+### Deterministisches Flag
+
+Das boolesche `deterministic`-Flag wird gesetzt, wenn:
+- Der Konfidenzwert >= 0,9 ist
+- Das Muster gegen Discovery-Daten validiert wurde ODER
+- Das Muster etablierten Standards entspricht (RFC, ISO usw.)
+
+**Verwendung in der KI-Generierung**:
+```python
+if constraint.get("deterministic"):
+    # Wert automatisch generieren, ohne den Benutzer zu fragen
+    value = generate_from_pattern(constraint)
+else:
+    # Benutzer mit Constraint-Hinweisen zur Eingabe auffordern
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## Discovery-Integration
+
+### Quellenpriorität
+
+Constraints werden mithilfe einer 3-stufigen Priorität abgestimmt:
+
+1. **BESTEHEND** (Konfidenz: 1,0)
+   - Explizit in der ursprünglichen OpenAPI-Spezifikation festgelegt
+   - Wird nie überschrieben
+
+2. **DISCOVERY** (Konfidenz: 0,99)
+   - Aus Live-F5-XC-API-Antworten extrahiert
+   - Enthält Validierungsregeln aus x-ves-validation-rules
+   - Überschreibt abgeleitete Constraints
+
+3. **ABGELEITET** (Konfidenz: 0,50-0,95)
+   - Musterbasiert aus Feldnamen abgeglichen
+   - Niedrigste Priorität, wird durch Discovery oder Explizit überschrieben
+
+### Discovery-Datenquellen
+
+Discovery-Constraints werden extrahiert aus:
+
+1. **x-ves-validation-rules**: Native F5-Validierungserweiterungen
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **Fehlerkatalog**: API-Fehlermeldungen, die auf Constraint-Verletzungen hinweisen
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **Antwortvalidierung**: Erfolgreiche API-Antworten, die gültige Werte demonstrieren
+   - Beobachtete Wertebereiche
+   - Tatsächliche Formatmuster
+
+---
+
+## Leitfaden zur Tool-Integration
+
+### KI-Assistenten-Integration
+
+**Gültige Ressourcennamen generieren**:
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # Benutzer nach Namen fragen
+        return prompt_user("Enter resource name: ")
+
+    # Automatisch generieren
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # Gültigen Namen generieren, der dem Muster entspricht
+    return generate_dns_label(max_length=max_len)
+```
+
+### CLI-Tool-Integration
+
+**Eingabevalidierung bereitstellen**:
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # Länge prüfen (Constraint-Schlüssel sind auf oberster Ebene)
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # Muster prüfen
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### Terraform-Provider-Integration
+
+**Schema-Generierung**:
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // Constraint-Schlüssel sind auf oberster Ebene (kein verschachtelter "string"-Wrapper)
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### IDE-Erweiterungs-Integration
+
+**Autovervollständigung und Validierung**:
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // Formatspezifische Vervollständigungen hinzufügen
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // Validierungshinweis hinzufügen
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## Anhang: Constraint-Musterkatalog
+
+### Hochkonfidenz-Muster (0,95-0,99)
+
+| Muster | Feldnamen-Regex | Constraint-Typ | Beispiel |
+|--------|-----------------|----------------|----------|
+| DNS-Label | `\bname$` | String (1-63 Zeichen, dns-label) | `my-service` |
+| Namespace | `\bnamespace$` | String (1-63 Zeichen, dns-label) | `production` |
+| Port | `\bport$` | Number (1-65535) | `443` |
+| VLAN-ID | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
+| UUID | `\buuid$` | String (36 Zeichen, UUID-Format) | `550e8400-...` |
+| E-Mail | `\bemail$` | String (max. 254 Zeichen, E-Mail) | `user@example.com` |
+| Zeitstempel | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
+
+### Mittlere-Konfidenz-Muster (0,80-0,94)
+
+| Muster | Feldnamen-Regex | Constraint-Typ | Beispiel |
+|--------|-----------------|----------------|----------|
+| Benutzername | `\b(user\|username)$` | String (1-64 Zeichen, alphanumerisch) | `admin` |
+| Anzeigename | `\b(display_?)?name$` | String (1-256 Zeichen, Freitext) | `My Service` |
+| Beschreibung | `\b(comment\|description\|note)$` | String (max. 4096 Zeichen) | `Service description` |
+| Pfad | `\bpath$` | String (max. 2048 Zeichen) | `/api/v1/resources` |
+
+---
+
+## Support und Feedback
+
+- **Probleme**: Melden Sie Probleme mit der Constraint-Genauigkeit unter https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **Dokumentation**: Vollständige API-Dokumentation unter https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **MCP-Integration**: Siehe das `f5xc-api-mcp`-Repository für Beispiele zur MCP-Server-Integration
+
+---
+
+**Version**: 3.3.0
+**Zuletzt aktualisiert**: 19.01.2026
+**Abgestimmte Constraints**: 9.851
+**Musterabdeckung**: 50+ Typen

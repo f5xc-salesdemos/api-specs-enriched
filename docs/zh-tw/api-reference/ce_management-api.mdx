@@ -1,0 +1,72 @@
+---
+title: "\U0001F527 Ce Management API"
+description: 網路介面、機群和站點註冊。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 7ca801568779
+  translator: machine
+---
+
+基於令牌的佈建，支援映像下載和升級前驗證。機群分組功能可跨分散式位置執行批次操作。
+
+- **類別**：基礎架構
+- **複雜度**：中等
+- **路徑數**：28 | **結構描述數**：231
+- **層級**：標準
+- **相關領域**：`customer_edge`、`sites`
+
+## 使用案例
+
+- 管理 Customer Edge 站點生命週期
+- 設定網路介面和機群設定
+- 處理站點註冊和令牌工作流程
+- 執行站點升級並進行升級前檢查
+
+## 主要資源
+
+- **site_config**：邊緣節點設定的站點配置
+- **fleet_config**：多站點管理的機群配置
+- **registration_token**：站點上線的註冊令牌
+
+## 端點
+
+| 方法 | 路徑 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets` | 建立機群。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets/&#123;metadata.name&#125;` | 取代機群。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets` | 列出機群。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | 取得機群 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | 刪除機群。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | 模組管理設定。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | 建立網路介面。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | 取代網路介面。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | 列出網路介面。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | 取得網路介面。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | 刪除網路介面。 |
+| POST | `/api/register/namespaces/system/get-image-download-url` | 取得映像下載 URL。 |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | 透過站點令牌取得註冊 UID。 |
+| POST | `/api/register/namespaces/system/suggest-values` | 建議值。 |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | 建立註冊。 |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | 取代註冊。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | 依狀態列出註冊。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | 核准註冊。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | 列出註冊。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | 取得註冊。 |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | 刪除註冊。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | 依站點列出註冊。 |
+| POST | `/api/register/registerBootstrap` | 建立註冊。 |
+| POST | `/api/register/requestConfig` | 註冊配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | 建立 USB 政策。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | 取代 USB 政策。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | 列出 USB 政策。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | 取得 USB 政策。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | 刪除 USB 政策。 |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | 升級前檢查。 |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | 取得升級狀態。 |
+| GET | `/api/maurice/upgradable_sw_versions` | 取得可升級軟體版本。 |
+
+## 連結
+
+- [互動式 API 參考](./ce_management/)
+- [OpenAPI 規格 JSON](../specifications/api/ce_management.json)

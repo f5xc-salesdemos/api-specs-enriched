@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA マーケットプレイス API"
+description: アドオンサービス、コネクタ、および TPM ポリシー。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+DPD タイマーを使用したサードパーティの GRE および IPSec トンネルプロビジョニング。タイル配置制御によるネームスペース間の共有リソース割り当て。
+
+- **カテゴリ**: プラットフォーム
+- **複雑度**: 中程度
+- **パス数**: 36 | **スキーマ数**: 183
+- **ティア**: アドバンスド
+- **関連ドメイン**: `bigip`, `admin`
+
+## ユースケース
+
+- サードパーティの統合およびアドオンへのアクセス
+- マーケットプレイス拡張機能の管理
+- Terraform および外部統合の設定
+- TPM ポリシーの管理
+
+## 主要リソース
+
+- **marketplace_item**: サービスカタログのマーケットプレイスアイテム
+- **subscription**: サービスエンタイトルメントのサブスクリプション
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | アドオンサービスの詳細を取得。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | アドオンサービスのアクティベーションステータス。 |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | すべてのアドオンサービスのアクティベーションステータス。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | アドオンサービスの一覧取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | アドオンサービスの取得。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | アドオンサブスクリプションの作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | アドオンサブスクリプションの置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | アドオンサブスクリプションの一覧取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | アドオンサブスクリプションの取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | アドオンサブスクリプションの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | Central Manager インスタンスの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | Central Manager インスタンスの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | Central Manager インスタンスの一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Central Manager インスタンスの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Central Manager インスタンスの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | external_connector 設定の作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | external_connector 設定の置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | 外部コネクタ設定の一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | external_connector 設定の取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | 外部コネクタ設定の削除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | ナビゲーションタイルの一覧取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | ナビゲーションタイルの取得。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | 新規 AWS アカウントの登録。 |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | AWS アカウントのサインアップ。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | プランの一覧取得 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | プランの取得 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | サードパーティアプリケーションの置換。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | サードパーティアプリケーションのセキュリティ設定を取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | サードパーティアプリケーションの一覧取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | サードパーティアプリケーションの取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | トークンの生成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | ビューの内部オブジェクトを取得。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | ビューの強制削除。 |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | ビューの Terraform アクションを実行。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | ビューの Terraform パラメータを取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | ビューの Terraform ステータスを取得。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | XC SaaS のサインアップ。 |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | 登録詳細の取得。 |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | サインアップメールの送信。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./marketplace/)
+- [OpenAPI 仕様 JSON](../specifications/api/marketplace.json)

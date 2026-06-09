@@ -1,0 +1,516 @@
+---
+title: Mejoras del HTTP LoadBalancer
+description: Metadatos de enriquecimiento para esquemas del balanceador de carga HTTP
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+Metadatos de enriquecimiento para esquemas del balanceador de carga HTTP. Consulte [Extensiones OpenAPI](../development/#openapi-extensions) para las definiciones de extensiones.
+
+## Esquemas enriquecidos
+
+### Patrón
+
+Todos los esquemas que coinciden con `viewshttp_loadbalancer.*SpecType` reciben enriquecimientos:
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## Metadatos de configuración mínima
+
+La extensión `x-f5xc-minimum-configuration` proporciona metadatos CLI completos para crear balanceadores de carga HTTP mínimos viables.
+
+### Campos obligatorios
+
+| Campo | Restricción | Descripción |
+|-------|-----------|-------------|
+| `metadata.name` | Formato de etiqueta DNS: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Nombre del recurso |
+| `metadata.namespace` | Formato de etiqueta DNS | Espacio de nombres |
+| `spec.domains` | Array, min_items: 1 | Dominios a servir |
+
+### Tipo de balanceador de carga (OneOf obligatorio)
+
+Se debe especificar uno de los siguientes tipos de balanceador de carga:
+
+| Variante | Descripción |
+|---------|-------------|
+| `spec.http` | Solo HTTP |
+| `spec.https` | HTTPS con certificado manual |
+| `spec.https_auto_cert` | HTTPS con certificado automático |
+| `spec.http_https` | Tanto HTTP como HTTPS |
+
+**Nota**: El grupo OneOf del tipo de balanceador de carga se denomina como:
+- `lb_type` en archivos de configuración (forma abreviada en `config/minimum_configs.yaml`)
+- `loadbalancer_type` en extensiones nativas de la especificación OpenAPI (nombre de campo nativo)
+
+**Referencia del esquema API**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### Configuración mínima viable
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## Valores predeterminados aplicados por el servidor
+
+Los campos marcados con `x-f5xc-server-default: true` tienen su valor `default` aplicado por el servidor API de F5 XC cuando se omiten en las solicitudes. El balanceador de carga HTTP tiene una gran cantidad de valores predeterminados aplicados por el servidor porque la mayoría de las funciones de seguridad y opciones de protocolo tienen como valor predeterminado un estado deshabilitado o seguro.
+
+### Valores predeterminados de HTTPS Auto-Cert
+
+Cuando se especifica `https_auto_cert`, el servidor aplica estos valores predeterminados para los campos omitidos:
+
+| Campo | Valor predeterminado | Tipo | Descripción |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | Puerto de escucha HTTPS |
+| `http_redirect` | `false` | boolean | Redirección de HTTP a HTTPS |
+| `add_hsts` | `false` | boolean | Encabezado HTTP Strict Transport Security |
+| `tls_config.default_security` | `{}` | object | TLS 1.2+ con cifrados fuertes |
+| `no_mtls` | `{}` | object | TLS mutuo deshabilitado |
+| `default_header` | `{}` | object | Manejo predeterminado del encabezado de nombre de servidor |
+| `enable_path_normalize` | `{}` | object | Normalización de ruta habilitada |
+| `default_loadbalancer` | `{}` | object | Configuración predeterminada del balanceador de carga |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | Transformación de encabezados heredada |
+| `connection_idle_timeout` | `120000` | integer | Tiempo de espera de conexión inactiva en milisegundos (2 minutos) |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 y HTTP/2 habilitados |
+| `coalescing_options.default_coalescing` | `{}` | object | Coalescencia de conexiones HTTP/2 predeterminada |
+
+### Valores predeterminados de funciones de seguridad
+
+Todas las funciones de seguridad están deshabilitadas de forma predeterminada cuando se omiten:
+
+| Campo | Valor predeterminado | Descripción |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | Firewall de aplicaciones web deshabilitado |
+| `disable_bot_defense` | `{}` | Defensa contra bots deshabilitada |
+| `disable_rate_limit` | `{}` | Limitación de tasa deshabilitada |
+| `disable_api_discovery` | `{}` | Descubrimiento de API deshabilitado |
+| `disable_api_testing` | `{}` | Pruebas de API deshabilitadas |
+| `disable_api_definition` | `{}` | Definición de API deshabilitada |
+| `disable_malware_protection` | `{}` | Protección contra malware deshabilitada |
+| `disable_client_side_defense` | `{}` | Defensa del lado del cliente deshabilitada |
+| `disable_ip_reputation` | `{}` | Reputación de IP deshabilitada |
+| `disable_threat_mesh` | `{}` | Malla de amenazas deshabilitada |
+| `disable_malicious_user_detection` | `{}` | Detección de usuarios maliciosos deshabilitada |
+
+### Valores predeterminados de DDoS y control de acceso
+
+| Campo | Valor predeterminado | Descripción |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | Bloquear tráfico DDoS (acción de mitigación predeterminada) |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | Usar umbral de RPS predeterminado |
+| `l7_ddos_protection.clientside_action_none` | `{}` | Sin validación DDoS del lado del cliente |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | Sin referencia a política DDoS |
+| `no_challenge` | `{}` | Sin desafío al cliente |
+| `user_id_client_ip` | `{}` | Identificar usuarios por IP del cliente |
+| `disable_trust_client_ip_headers` | `{}` | No confiar en los encabezados de IP del cliente |
+
+### Otros valores predeterminados aplicados por el servidor
+
+| Campo | Valor predeterminado | Tipo | Descripción |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | Publicar en VIP público predeterminado |
+| `round_robin` | `{}` | object | Algoritmo de balanceo de carga round-robin |
+| `add_location` | `true` | boolean | Agregar encabezado de ubicación a las respuestas |
+| `system_default_timeouts` | `{}` | object | Usar tiempos de espera predeterminados del sistema |
+| `service_policies_from_namespace` | `{}` | object | Heredar políticas de servicio del espacio de nombres |
+| `default_sensitive_data_policy` | `{}` | object | Usar política de datos sensibles predeterminada |
+
+## Grupos de campos mutuamente excluyentes
+
+Los campos marcados con `x-f5xc-conflicts-with` indican patrones OneOf. Solo se puede especificar un campo de cada grupo.
+
+### Grupos de configuración principal
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | Tipo de protocolo del balanceador de carga |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | Cómo publicar el balanceador de carga |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | Algoritmo de distribución de tráfico |
+
+### Grupos de configuración HTTPS (10 grupos)
+
+#### Configuración TLS
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | Nivel de seguridad TLS |
+| `mtls` | `no_mtls`, `use_mtls` | TLS mutuo habilitado o deshabilitado |
+
+#### Protocolo y encabezados
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | Versiones del protocolo HTTP |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | Tipo de transformación de encabezados HTTP |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | Manejo del encabezado de nombre de servidor |
+
+#### Gestión de conexiones
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | Normalización de ruta habilitada o deshabilitada |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | Balanceador de carga predeterminado o no predeterminado |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | Opciones de coalescencia de conexiones HTTP/2 |
+
+### Grupos de funciones de seguridad (11 grupos)
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | Firewall de aplicaciones web |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | Detección y mitigación de bots |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | Limitación de tasa |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | Descubrimiento de API |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | Pruebas de API |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | Definición de API |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | Protección contra malware |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | Defensa del lado del cliente |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | Reputación de IP |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | Malla de amenazas |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | Detección de usuarios maliciosos |
+
+### Grupos de protección DDoS (4 grupos)
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | Acción de mitigación DDoS |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | Umbral de solicitudes por segundo |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | Acción de validación DDoS del lado del cliente |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | Referencia a política DDoS o ninguna |
+
+### Otros grupos de configuración (6 grupos)
+
+| Nombre del grupo | Campos | Descripción |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | Tipo de desafío al cliente para detección de bots |
+| `user_identification` | `user_id_client_ip`, `user_identification` | Método de identificación de usuario |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | Confiar o no en los encabezados de IP del cliente |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | Usar tiempos de espera predeterminados del sistema o personalizados |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | Políticas de servicio del espacio de nombres o lista activa |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | Usar política de datos sensibles predeterminada o personalizada |
+
+## Recomendaciones de variantes OneOf (extensión futura)
+
+**Estado**: Aún no aplicado a los esquemas de http_loadbalancer.
+
+A diferencia de healthcheck, que incluye `x-f5xc-recommended-oneof-variant` para indicar la opción más común para grupos OneOf, http_loadbalancer actualmente carece de esta extensión.
+
+### Comparación con Healthcheck
+
+**Healthcheck** (implementado):
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP LoadBalancer** (aún no implementado):
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
+```
+
+### Implementación futura
+
+Para agregar esta extensión para http_loadbalancer:
+1. Observar las selecciones predeterminadas de la consola F5 XC (por ejemplo, qué lb_type está preseleccionado en la interfaz)
+2. Agregar la configuración a `config/discovered_defaults.yaml`
+3. Volver a ejecutar el pipeline de enriquecimiento para aplicar la extensión
+
+**Estructura esperada cuando se agregue**:
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # Example - requires verification
+```
+
+Esta extensión permitiría a las herramientas posteriores preseleccionar la variante más comúnmente utilizada al presentar opciones de configuración a los usuarios.
+
+## Metadatos de restricciones
+
+Los campos marcados con `x-f5xc-constraints` incluyen restricciones de validación descubiertas a partir del análisis de la API.
+
+### Restricciones de arrays
+
+| Campo | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### Restricciones de enteros
+
+| Campo | Mínimo | Máximo | Predeterminado | Descripción |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | Número de puerto HTTPS |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | Tiempo de espera de conexión inactiva (milisegundos, 1s a 1h) |
+
+### Restricciones de enumeración
+
+| Campo | Valores | Predeterminado | Descripción |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | Nivel de seguridad TLS |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | Transformación de encabezados HTTP |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | Versiones del protocolo HTTP |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | Coalescencia de conexiones HTTP/2 |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | Algoritmo de balanceo de carga |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | Acción de mitigación DDoS de capa 7 |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | Umbral de RPS para detección DDoS |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | Validación DDoS del lado del cliente |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | Tipo de desafío al cliente |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Publicación del balanceador de carga |
+
+## Integración de flujos de trabajo guiados
+
+El pipeline de enriquecimiento agrega metadatos `x-f5xc-guided-workflows` a nivel de especificación. Estos flujos de trabajo proporcionan orientación de despliegue paso a paso consumida por asistentes de IA y herramientas CLI.
+
+### Desplegar balanceador de carga HTTP
+
+Un flujo de trabajo de 5 pasos para crear un balanceador de carga HTTP completamente configurado con pool de origen backend (definido en `config/guided_workflows.yaml`):
+
+| Paso | Acción | Recurso | Campos obligatorios | Opcional |
+|------|--------|----------|-----------------|----------|
+| 1 | Crear pool de origen | `origin_pool` | `name`, `origin_servers`, `port` | No |
+| 2 | Configurar verificación de salud | `healthcheck` | `name`, `http_health_check` | Sí |
+| 3 | Adjuntar verificación de salud | - | - | Sí |
+| 4 | Crear balanceador de carga HTTP | `http_loadbalancer` | `name`, `domains`, `http.port` | No |
+| 5 | Verificar despliegue | - | - | No |
+
+**Requisitos previos**: Espacio de nombres válido en el tenant de destino, aplicación backend accesible por IP o DNS, certificado SSL (opcional para HTTPS).
+
+### Desplegar balanceador de carga HTTPS con TLS
+
+Un flujo de trabajo de 7 pasos para crear un balanceador de carga HTTPS con terminación SSL/TLS:
+
+| Paso | Acción | Recurso | Campos obligatorios | Opcional |
+|------|--------|----------|-----------------|----------|
+| 1 | Cargar certificado SSL | `certificate` | `name`, `certificate_chain`, `private_key` | No |
+| 2 | Crear pool de origen | `origin_pool` | `name`, `origin_servers` | No |
+| 3 | Configurar verificación de salud | `healthcheck` | - | Sí |
+| 4 | Configurar política WAF | `app_firewall` | - | Sí |
+| 5 | Crear balanceador de carga HTTPS | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | No |
+| 6 | Adjuntar política WAF | - | - | Sí |
+| 7 | Verificar despliegue HTTPS | - | - | No |
+
+**Requisitos previos**: Espacio de nombres válido en el tenant de destino, certificado SSL y clave privada, aplicación backend accesible.
+
+### Consumo de flujos de trabajo
+
+Las herramientas posteriores utilizan estos flujos de trabajo para guiar a los usuarios a través de despliegues de múltiples pasos:
+
+- **xcsh CLI**: Presenta los flujos de trabajo como comandos guiados interactivos (por ejemplo, `xcsh deploy http-lb`)
+- **Extensión VS Code**: Muestra los pasos del flujo de trabajo en un panel lateral con seguimiento de progreso
+- **Asistentes de IA**: Siguen los pasos del flujo de trabajo secuencialmente, creando cada recurso y validando dependencias
+
+## Referencia de extensiones OpenAPI
+
+Estas extensiones de proveedor se agregan al esquema OpenAPI estándar para transmitir metadatos específicos de F5 XC.
+
+### x-f5xc-cli-domain
+
+**Tipo**: `string`
+
+Indica la clasificación de dominio para la organización de CLI y herramientas.
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**Tipo**: `object`
+
+Proporciona metadatos completos para crear configuraciones mínimas viables. Incluye:
+- Descripción
+- Campos obligatorios con restricciones
+- Grupos mutuamente excluyentes
+- Configuraciones de ejemplo (YAML, JSON)
+- Ejemplos de comandos curl
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**Tipo**: `boolean`
+
+Cuando es `true`, indica que el valor `default` acompañante es aplicado por el servidor API de F5 XC. Los campos con esta extensión pueden omitirse de forma segura en las solicitudes API; el servidor aplica el valor predeterminado automáticamente.
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**Tipo**: `array of strings`
+
+Lista los nombres de campos que son mutuamente excluyentes con el campo actual, indicando patrones OneOf.
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**Tipo**: `object`
+
+Proporciona restricciones de validación que incluyen límites de tamaño de arrays, rangos de enteros, requisitos de unicidad y metadatos de descubrimiento.
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short y x-f5xc-description-medium
+
+**Tipo**: `string`
+
+Proporciona longitudes de descripción alternativas para diferentes casos de uso:
+- `x-f5xc-description-short`: máximo 60 caracteres (columnas CLI, insignias)
+- `x-f5xc-description-medium`: máximo 150 caracteres (tooltips, resúmenes)
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**Tipo**: `any` (coincide con el tipo de campo)
+
+Proporciona ejemplos concretos de campos para documentación y herramientas.
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**Tipo**: `array of strings`
+
+Indica requisitos específicos del contexto usando indicadores: `minimum_config`, `create`, `update`, `read`.
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## Acceso a datos
+
+### Especificaciones OpenAPI
+
+| Archivo | Contenido |
+|------|---------|
+| `docs/specifications/api/virtual.json` | Todos los esquemas de http_loadbalancer con enriquecimientos |
+| `docs/specifications/api/openapi.json` | Especificación fusionada con todos los esquemas |
+
+### Archivos de configuración
+
+| Archivo | Propósito |
+|------|---------|
+| `config/minimum_configs.yaml` | Fuente de metadatos de configuración mínima |
+| `config/constraint_patterns.yaml` | Definiciones de patrones de restricciones |
+| `config/guided_workflows.yaml` | Definiciones de pasos de flujos de trabajo guiados |
+| `config/domain_descriptions.yaml` | Metadatos de descripción a nivel de dominio |
+
+### Esquemas enriquecidos
+
+- `viewshttp_loadbalancerCreateSpecType` - Esquema de operación de creación
+- `viewshttp_loadbalancerReplaceSpecType` - Esquema de operación de actualización
+- `viewshttp_loadbalancerGetSpecType` - Esquema de operación de lectura
+
+## Documentación relacionada
+
+- [Guía de desarrollo - Extensiones OpenAPI](../development/#openapi-extensions) - Definiciones y uso de extensiones
+- [Mejoras de Healthcheck](./healthcheck-enhancements/) - Enriquecimientos del esquema de verificación de salud (incluye `x-f5xc-recommended-oneof-variant`)
+- [Mejoras de Origin Pool](./originpool-enhancements/) - Enriquecimientos del esquema de pool de origen
+- [Guía de metadatos de restricciones](../constraint-metadata/) - Documentación detallada de validación de restricciones
+
+## Registro de cambios
+
+| Versión | Fecha | Cambios |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | Se agregaron valores predeterminados aplicados por el servidor, integración de flujos de trabajo guiados y sección ampliada de configuración mínima |
+| 2.0.45 | 2026-01-20 | Documentación inicial de enriquecimientos de http_loadbalancer |

@@ -1,0 +1,532 @@
+---
+title: 制約メタデータシステム
+description: 決定論的AI生成とバリデーションのための包括的な制約メタデータ
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**目的**: 決定論的AI生成、CLIバリデーション、およびTerraformスキーマ適用のための包括的な制約メタデータ。
+
+**拡張**: `x-f5xc-constraints`
+**バージョン**: 3.3.0
+**ステータス**: 本番環境
+**利用者**: AIアシスタント、CLIツール、Terraformプロバイダー、IDE拡張機能、APIバリデーター
+
+---
+
+## 目次
+
+1. [概要](#overview)
+2. [拡張構造](#extension-structure)
+3. [制約タイプ](#constraint-types)
+4. [自然言語での説明](#natural-language-descriptions)
+5. [バリデーション例](#validation-examples)
+6. [信頼度スコア](#confidence-scores)
+7. [ディスカバリー統合](#discovery-integration)
+8. [ツール統合ガイド](#tool-integration-guide)
+
+---
+
+## 概要
+
+`x-f5xc-constraints` 拡張は、フィールドバリデーション制約に関する決定論的知識を提供し、以下を実現します：
+
+- **AIアシスタント**: 制約の詳細についてユーザー入力なしで有効な設定を生成
+- **CLIツール**: 正確な入力ヒント、バリデーション、エラーメッセージの提供
+- **Terraform**: apply時ではなくplan時に制約を適用
+- **IDE拡張機能**: リアルタイムのバリデーションとオートコンプリート候補
+- **APIバリデーター**: APIエラーを削減するための送信前バリデーション
+
+### カバレッジ統計
+
+- すべてのF5 XC API仕様にわたる **9,851の制約**
+- **50以上のパターンタイプ**（文字列、配列、数値）
+- 優先度の高いフィールド（名前、ポート、識別子）で **95%の信頼度**
+- **3層の調整**: EXISTING > DISCOVERY > INFERRED
+
+---
+
+## 拡張構造
+
+### トップレベルフィールド
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### フィールドの説明
+
+| フィールド | 型 | 説明 |
+|-------|------|-------------|
+| `constraintType` | string | データ型（string、array、number、object） |
+| `deterministic` | boolean | AI生成のための高信頼度フラグ（confidence >= 0.9） |
+| `category` | string | グルーピングとレポートのための制約カテゴリ |
+| *(制約キー)* | various | トップレベルにフラット化された型固有の制約キー（例：`minLength`、`maxItems`、`minimum`） |
+| `metadata` | object | ソース追跡、信頼度、バリデーションタイムスタンプ |
+
+---
+
+## 制約タイプ
+
+### 文字列制約
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### サポートされるフォーマット
+
+| フォーマット | 説明 | 例 |
+|--------|-------------|---------|
+| `dns-label` | RFC 1123 DNSラベル（1-63文字） | `my-service` |
+| `fqdn` | 完全修飾ドメイン名 | `api.example.com` |
+| `email` | RFC 5322 メールアドレス | `user@example.com` |
+| `url` | RFC 3986 URI/URL | `https://example.com/api` |
+| `ipv4` | IPv4アドレス | `192.168.1.1` |
+| `ipv6` | IPv6アドレス | `2001:db8::1` |
+| `uuid` | RFC 4122 UUID | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | ISO 8601 タイムスタンプ | `2026-01-19T12:00:00Z` |
+| `date` | ISO 8601 日付 | `2026-01-19` |
+| `time` | ISO 8601 時刻 | `12:00:00` |
+| `json` | JSON文字列（パース可能） | `{"key": "value"}` |
+| `yaml` | YAML文字列（パース可能） | `key: value` |
+| `base64` | Base64エンコード文字列 | `SGVsbG8gV29ybGQ=` |
+| `hex` | 16進数文字列 | `48656c6c6f` |
+| `mac-address` | MACアドレス | `00:1A:2B:3C:4D:5E` |
+| `phone` | E.164 電話番号 | `+1-555-123-4567` |
+
+### 配列制約
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### 数値制約
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## 自然言語での説明
+
+### 文字列フォーマット制約
+
+**DNSラベル** (`format: "dns-label"`):
+- DNSラベル名は1-63文字の小文字英数字でなければなりません
+- ハイフンは許可されますが、先頭/末尾には使用できません（RFC 1123）
+- 例: `my-service`、`api-gateway`、`lb-prod-01`
+
+**メールアドレス** (`format: "email"`):
+- メールアドレスはRFC 5322に準拠した有効な形式でなければなりません
+- 最大254文字
+- 例: `admin@example.com`、`api+webhook@service.io`
+
+**FQDN** (`format: "fqdn"`):
+- 完全修飾ドメイン名は1-253文字でなければなりません
+- ドットで区切られたDNSラベル
+- 例: `api.example.com`、`service.production.internal`
+
+**URL** (`format: "url"`):
+- URLはRFC 3986に準拠した有効なURIでなければなりません
+- スキーム（http/https）を含める必要があります
+- 例: `https://api.example.com/v1`、`http://localhost:8080`
+
+**IPv4アドレス** (`format: "ipv4"`):
+- IPv4アドレスはドット付き10進表記でなければなりません
+- 例: `192.168.1.1`、`10.0.0.1`
+
+**UUID** (`format: "uuid"`):
+- UUIDはRFC 4122フォーマットに従う必要があります
+- 例: `550e8400-e29b-41d4-a716-446655440000`
+
+**タイムスタンプ** (`format: "date-time"`):
+- タイムスタンプはISO 8601フォーマットでなければなりません
+- 例: `2026-01-19T12:00:00Z`、`2026-01-19T12:00:00+00:00`
+
+### 数値制約
+
+**ポート番号**:
+- ポート番号は1から65535の間の整数でなければなりません
+- 標準ポート: 80 (HTTP)、443 (HTTPS)、22 (SSH)
+
+**VLAN ID**:
+- VLAN IDは1から4094の間の整数でなければなりません（802.1Q標準）
+
+**タイムアウト**:
+- タイムアウトは1-3600秒（最大1時間）でなければなりません
+
+### 配列制約
+
+**オリジンプール**:
+- オリジンプールの配列は最低1項目、最大50項目が必要です
+- 各項目は一意でなければなりません
+
+**タグ**:
+- タグ配列は0-100項目を許可します
+- 項目は一意である必要はありません
+
+---
+
+## バリデーション例
+
+### 例 1: DNSラベル名のバリデーション
+
+**制約**:
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**有効な値**:
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**無効な値**:
+- ❌ `My-Service` （大文字は許可されません）
+- ❌ `-my-service` （先頭にハイフン）
+- ❌ `my-service-` （末尾にハイフン）
+- ❌ `my_service` （アンダースコアは許可されません）
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` （長すぎます）
+
+### 例 2: ポート番号のバリデーション
+
+**制約**:
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**有効な値**:
+- ✅ `80` (HTTP)
+- ✅ `443` (HTTPS)
+- ✅ `8080` （一般的な代替HTTPポート）
+- ✅ `65535` （最大ポート番号）
+
+**無効な値**:
+- ❌ `0` （最小値未満）
+- ❌ `65536` （最大値超過）
+- ❌ `-1` （負の値）
+- ❌ `"80"` （数値ではなく文字列）
+
+### 例 3: 配列サイズのバリデーション
+
+**制約**:
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**有効な値**:
+- ✅ `["origin-1"]` （1項目）
+- ✅ `["origin-1", "origin-2", "origin-3"]` （3項目、すべて一意）
+
+**無効な値**:
+- ❌ `[]` （最小値未満）
+- ❌ `["origin-1", "origin-1"]` （重複項目）
+- ❌ `[51項目の配列]` （最大値超過）
+
+---
+
+## 信頼度スコア
+
+### スコアの解釈
+
+| 範囲 | 解釈 | 用途 |
+|-------|----------------|-------|
+| 0.90-1.00 | **高信頼度** | deterministicフラグが有効、AI生成に使用 |
+| 0.70-0.89 | **中信頼度** | アドバイザリー、ユーザー確認を推奨 |
+| 0.50-0.69 | **低信頼度** | 情報提供のみ、ユーザーバリデーションが必要 |
+| < 0.50 | **非常に低い** | 制約に含まれません |
+
+### deterministicフラグ
+
+`deterministic` ブーリアンフラグは以下の場合に設定されます：
+- 信頼度スコアが0.9以上
+- パターンがディスカバリーデータに対して検証済み、または
+- パターンが確立された標準規格（RFC、ISOなど）に一致
+
+**AI生成での使用方法**:
+```python
+if constraint.get("deterministic"):
+    # ユーザーに確認せず自動的に値を生成
+    value = generate_from_pattern(constraint)
+else:
+    # 制約のヒントを提示してユーザーに入力を求める
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## ディスカバリー統合
+
+### ソース優先順位
+
+制約は3層の優先順位を使用して調整されます：
+
+1. **EXISTING** （信頼度: 1.0）
+   - 元のOpenAPI仕様で明示的に設定
+   - 決してオーバーライドされない
+
+2. **DISCOVERY** （信頼度: 0.99）
+   - ライブF5 XC APIレスポンスから抽出
+   - x-ves-validation-rulesからのバリデーションルールを含む
+   - 推論された制約をオーバーライド
+
+3. **INFERRED** （信頼度: 0.50-0.95）
+   - フィールド名からパターンマッチング
+   - 最低優先度、ディスカバリーまたは明示的な制約によりオーバーライド
+
+### ディスカバリーデータソース
+
+ディスカバリー制約は以下から抽出されます：
+
+1. **x-ves-validation-rules**: ネイティブF5バリデーション拡張
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **エラーカタログ**: 制約違反を示すAPIエラーメッセージ
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **レスポンスバリデーション**: 有効な値を示す成功したAPIレスポンス
+   - 観測された値の範囲
+   - 実際のフォーマットパターン
+
+---
+
+## ツール統合ガイド
+
+### AIアシスタント統合
+
+**有効なリソース名の生成**:
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # ユーザーに名前を尋ねる
+        return prompt_user("Enter resource name: ")
+
+    # 自動生成
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # パターンに一致する有効な名前を生成
+    return generate_dns_label(max_length=max_len)
+```
+
+### CLIツール統合
+
+**入力バリデーションの提供**:
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # 長さチェック（制約キーはトップレベルにあります）
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # パターンチェック
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### Terraformプロバイダー統合
+
+**スキーマ生成**:
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // 制約キーはトップレベルにあります（ネストされた "string" ラッパーなし）
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### IDE拡張機能統合
+
+**オートコンプリートとバリデーション**:
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // フォーマット固有のコンプリートを追加
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // バリデーションヒントを追加
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## 付録: 制約パターンカタログ
+
+### 高信頼度パターン (0.95-0.99)
+
+| パターン | フィールド名の正規表現 | 制約タイプ | 例 |
+|---------|------------------|-----------------|---------|
+| DNSラベル | `\bname$` | String（1-63文字、dns-label） | `my-service` |
+| ネームスペース | `\bnamespace$` | String（1-63文字、dns-label） | `production` |
+| ポート | `\bport$` | Number（1-65535） | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | Number（1-4094） | `100` |
+| UUID | `\buuid$` | String（36文字、uuidフォーマット） | `550e8400-...` |
+| メール | `\bemail$` | String（最大254文字、email） | `user@example.com` |
+| タイムスタンプ | `\b(timestamp\|created_at\|updated_at)$` | String（ISO 8601） | `2026-01-19T12:00:00Z` |
+
+### 中信頼度パターン (0.80-0.94)
+
+| パターン | フィールド名の正規表現 | 制約タイプ | 例 |
+|---------|------------------|-----------------|---------|
+| ユーザー名 | `\b(user\|username)$` | String（1-64文字、英数字） | `admin` |
+| 表示名 | `\b(display_?)?name$` | String（1-256文字、自由テキスト） | `My Service` |
+| 説明 | `\b(comment\|description\|note)$` | String（最大4096文字） | `Service description` |
+| パス | `\bpath$` | String（最大2048文字） | `/api/v1/resources` |
+
+---
+
+## サポートとフィードバック
+
+- **問題報告**: 制約の精度に関する問題は https://github.com/f5xc-salesdemos/api-specs-enriched/issues で報告してください
+- **ドキュメント**: 完全なAPIドキュメントは https://f5xc-salesdemos.github.io/api-specs-enriched/ で入手できます
+- **MCP統合**: MCPサーバー統合の例については `f5xc-api-mcp` リポジトリを参照してください
+
+---
+
+**バージョン**: 3.3.0
+**最終更新**: 2026-01-19
+**調整済み制約数**: 9,851
+**パターンカバレッジ**: 50以上のタイプ

@@ -1,0 +1,54 @@
+---
+title: "\U0001F465 API Utilisateurs"
+description: 'Jetons de compte, étiquettes et configuration cloud-init.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 3c986acf344c
+  translator: machine
+---
+
+Identifiants d'inscription de site avec expiration automatique. Les clés de taxonomie définissent la catégorisation autorisée tandis que les étiquettes dérivées automatiquement s'appliquent de manière dynamique.
+
+- **Catégorie** : Platform
+- **Complexité** : simple
+- **Chemins** : 13 | **Schémas** : 50
+- **Niveau** : Standard
+- **Domaines associés** : `system`, `admin`
+
+## Cas d'utilisation
+
+- Gérer les comptes utilisateurs et les jetons
+- Configurer l'identification des utilisateurs
+- Gérer les paramètres et préférences utilisateurs
+- Configurer les étiquettes implicites et connues
+
+## Ressources principales
+
+- **user** : Compte utilisateur pour l'accès à la plateforme
+- **user_role** : Rôle utilisateur pour la gestion des permissions
+- **namespace_role** : Rôle à portée de namespace pour des permissions granulaires
+
+## Points de terminaison
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| GET | `/api/config/namespaces/system/implicit_labels` | Obtenir les étiquettes implicites. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/create` | Créer |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label/delete` | SUPPRIMER |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_labels` | OBTENIR |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/create` | Créer |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/known_label_key/delete` | SUPPRIMER |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/known_label_keys` | OBTENIR |
+| GET | `/api/register/namespaces/system/get-cloud-init-config` | Obtenir la configuration Cloud Init. |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens` | Créer un jeton. |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/tokens/&#123;metadata.name&#125;` | Remplacer un jeton. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens` | Lister les jetons. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | Obtenir un jeton |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;` | Supprimer un jeton. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/tokens/&#123;name&#125;/state` | Définir l'état du jeton. |
+
+## Liens
+
+- [Référence interactive de l'API](./users/)
+- [Spécification OpenAPI JSON](../specifications/api/users.json)

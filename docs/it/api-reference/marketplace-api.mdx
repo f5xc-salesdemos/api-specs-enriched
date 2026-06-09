@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA API Marketplace"
+description: 'Servizi aggiuntivi, connettori e policy TPM.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+Provisioning di tunnel GRE e IPSec di terze parti con timer DPD. Allocazione di risorse condivise tra namespace con controlli di posizionamento dei tile.
+
+- **Categoria**: Piattaforma
+- **Complessità**: moderata
+- **Percorsi**: 36 | **Schemi**: 183
+- **Livello**: Avanzato
+- **Domini correlati**: `bigip`, `admin`
+
+## Casi d'uso
+
+- Accedere a integrazioni e componenti aggiuntivi di terze parti
+- Gestire le estensioni del marketplace
+- Configurare Terraform e integrazioni esterne
+- Gestire le policy TPM
+
+## Risorse principali
+
+- **marketplace_item**: Elemento del marketplace per il catalogo dei servizi
+- **subscription**: Sottoscrizione per i diritti di accesso ai servizi
+
+## Endpoint
+
+| Metodo | Percorso | Descrizione |
+|--------|----------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | Ottenere i dettagli del servizio aggiuntivo. |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | Stato di attivazione del servizio aggiuntivo. |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | Stato di attivazione di tutti i servizi aggiuntivi. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | Elencare i servizi aggiuntivi. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | Ottenere il servizio aggiuntivo. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | Creare una sottoscrizione aggiuntiva. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | Sostituire una sottoscrizione aggiuntiva. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | Elencare le sottoscrizioni aggiuntive. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | Ottenere la sottoscrizione aggiuntiva. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | Eliminare la sottoscrizione aggiuntiva. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | Creare un'istanza Central Manager. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | Sostituire un'istanza Central Manager. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | Elencare le istanze Central Manager. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Ottenere l'istanza Central Manager. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Eliminare l'istanza Central Manager. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | Creare la configurazione external_connector. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | Sostituire la configurazione external_connector. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | Elencare le configurazioni dei connettori esterni. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | Ottenere la configurazione external_connector. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | Eliminare la configurazione del connettore esterno. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | Elencare i tile di navigazione. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | Ottenere il tile di navigazione. |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | Registrare un nuovo account AWS. |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | Iscrizione account AWS. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | Elencare i piani. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | Ottenere il piano. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | Sostituire l'applicazione di terze parti. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | Ottenere la configurazione di sicurezza per l'applicazione di terze parti. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | Elencare le applicazioni di terze parti. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | Ottenere l'applicazione di terze parti. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | Generare il token. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | Ottenere l'oggetto interno per la vista. |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | Eliminazione forzata della vista. |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | Eseguire l'azione Terraform per la vista. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | Ottenere i parametri Terraform per la vista. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | Ottenere lo stato di Terraform per la vista. |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | Iscrizione XC SaaS. |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | Ottenere i dettagli di registrazione. |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | Inviare email di iscrizione. |
+
+## Link
+
+- [Riferimento API interattivo](./marketplace/)
+- [Specifica OpenAPI JSON](../specifications/api/marketplace.json)

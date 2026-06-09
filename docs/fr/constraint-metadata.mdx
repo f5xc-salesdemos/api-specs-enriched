@@ -1,0 +1,534 @@
+---
+title: Système de métadonnées de contraintes
+description: >-
+  Métadonnées de contraintes complètes pour la génération IA déterministe et la
+  validation
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**Objectif** : Métadonnées de contraintes complètes pour la génération IA déterministe, la validation CLI et l'application des schémas Terraform.
+
+**Extension** : `x-f5xc-constraints`
+**Version** : 3.3.0
+**Statut** : Production
+**Consommateurs** : Assistants IA, outils CLI, fournisseurs Terraform, extensions IDE, validateurs d'API
+
+---
+
+## Table des matières
+
+1. [Vue d'ensemble](#overview)
+2. [Structure de l'extension](#extension-structure)
+3. [Types de contraintes](#constraint-types)
+4. [Descriptions en langage naturel](#natural-language-descriptions)
+5. [Exemples de validation](#validation-examples)
+6. [Scores de confiance](#confidence-scores)
+7. [Intégration de la découverte](#discovery-integration)
+8. [Guide d'intégration des outils](#tool-integration-guide)
+
+---
+
+## Vue d'ensemble
+
+L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur les contraintes de validation des champs, permettant :
+
+- **Assistants IA** : Générer des configurations valides sans intervention utilisateur pour les détails de contraintes
+- **Outils CLI** : Fournir des indications de saisie précises, la validation et des messages d'erreur
+- **Terraform** : Appliquer les contraintes au moment de la planification, pas au moment de l'application
+- **Extensions IDE** : Validation en temps réel et suggestions d'auto-complétion
+- **Validateurs d'API** : Validation avant soumission pour réduire les erreurs API
+
+### Statistiques de couverture
+
+- **9 851 contraintes** sur toutes les spécifications API F5 XC
+- **Plus de 50 types de motifs** (chaîne, tableau, numérique)
+- **95 % de confiance** sur les champs hautement prioritaires (noms, ports, identifiants)
+- **Réconciliation à 3 niveaux** : EXISTANT > DÉCOUVERTE > INFÉRÉ
+
+---
+
+## Structure de l'extension
+
+### Champs de niveau supérieur
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### Descriptions des champs
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `constraintType` | string | Type de données (string, array, number, object) |
+| `deterministic` | boolean | Indicateur de haute confiance (confiance >= 0.9) pour la génération IA |
+| `category` | string | Catégorie de contrainte pour le regroupement et le reporting |
+| *(clés de contrainte)* | divers | Clés de contrainte spécifiques au type aplaties au niveau supérieur (ex. : `minLength`, `maxItems`, `minimum`) |
+| `metadata` | object | Suivi de la source, confiance, horodatage de validation |
+
+---
+
+## Types de contraintes
+
+### Contraintes de chaîne
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### Formats pris en charge
+
+| Format | Description | Exemple |
+|--------|-------------|---------|
+| `dns-label` | Étiquette DNS RFC 1123 (1-63 caractères) | `my-service` |
+| `fqdn` | Nom de domaine pleinement qualifié | `api.example.com` |
+| `email` | Adresse e-mail RFC 5322 | `user@example.com` |
+| `url` | URI/URL RFC 3986 | `https://example.com/api` |
+| `ipv4` | Adresse IPv4 | `192.168.1.1` |
+| `ipv6` | Adresse IPv6 | `2001:db8::1` |
+| `uuid` | UUID RFC 4122 | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | Horodatage ISO 8601 | `2026-01-19T12:00:00Z` |
+| `date` | Date ISO 8601 | `2026-01-19` |
+| `time` | Heure ISO 8601 | `12:00:00` |
+| `json` | Chaîne JSON (analysable) | `{"key": "value"}` |
+| `yaml` | Chaîne YAML (analysable) | `key: value` |
+| `base64` | Chaîne encodée en Base64 | `SGVsbG8gV29ybGQ=` |
+| `hex` | Chaîne hexadécimale | `48656c6c6f` |
+| `mac-address` | Adresse MAC | `00:1A:2B:3C:4D:5E` |
+| `phone` | Numéro de téléphone E.164 | `+1-555-123-4567` |
+
+### Contraintes de tableau
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### Contraintes numériques
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## Descriptions en langage naturel
+
+### Contraintes de format de chaîne
+
+**Étiquettes DNS** (`format: "dns-label"`) :
+- Les noms d'étiquettes DNS doivent comporter de 1 à 63 caractères alphanumériques minuscules
+- Les traits d'union sont autorisés mais pas en début/fin (RFC 1123)
+- Exemple : `my-service`, `api-gateway`, `lb-prod-01`
+
+**Adresses e-mail** (`format: "email"`) :
+- Les adresses e-mail doivent être valides selon la RFC 5322
+- Maximum 254 caractères
+- Exemple : `admin@example.com`, `api+webhook@service.io`
+
+**FQDN** (`format: "fqdn"`) :
+- Les noms de domaine pleinement qualifiés doivent comporter de 1 à 253 caractères
+- Étiquettes DNS séparées par des points
+- Exemple : `api.example.com`, `service.production.internal`
+
+**URL** (`format: "url"`) :
+- Les URL doivent être des URI valides selon la RFC 3986
+- Doivent inclure le schéma (http/https)
+- Exemple : `https://api.example.com/v1`, `http://localhost:8080`
+
+**Adresses IPv4** (`format: "ipv4"`) :
+- Les adresses IPv4 doivent être en notation décimale pointée
+- Exemple : `192.168.1.1`, `10.0.0.1`
+
+**UUID** (`format: "uuid"`) :
+- Les UUID doivent respecter le format RFC 4122
+- Exemple : `550e8400-e29b-41d4-a716-446655440000`
+
+**Horodatages** (`format: "date-time"`) :
+- Les horodatages doivent être au format ISO 8601
+- Exemple : `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
+
+### Contraintes numériques
+
+**Numéros de port** :
+- Les numéros de port doivent être des entiers entre 1 et 65535
+- Ports standards : 80 (HTTP), 443 (HTTPS), 22 (SSH)
+
+**Identifiants VLAN** :
+- Les identifiants VLAN doivent être des entiers entre 1 et 4094 (norme 802.1Q)
+
+**Délais d'expiration** :
+- Les délais d'expiration doivent être de 1 à 3600 secondes (maximum 1 heure)
+
+### Contraintes de tableau
+
+**Pools d'origine** :
+- Le tableau de pools d'origine nécessite au moins 1 élément, maximum 50 éléments
+- Chaque élément doit être unique
+
+**Étiquettes** :
+- Le tableau d'étiquettes autorise de 0 à 100 éléments
+- Les éléments n'ont pas besoin d'être uniques
+
+---
+
+## Exemples de validation
+
+### Exemple 1 : Validation de nom d'étiquette DNS
+
+**Contrainte** :
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**Valeurs valides** :
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**Valeurs invalides** :
+- ❌ `My-Service` (majuscules non autorisées)
+- ❌ `-my-service` (trait d'union au début)
+- ❌ `my-service-` (trait d'union à la fin)
+- ❌ `my_service` (underscore non autorisé)
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (trop long)
+
+### Exemple 2 : Validation de numéro de port
+
+**Contrainte** :
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**Valeurs valides** :
+- ✅ `80` (HTTP)
+- ✅ `443` (HTTPS)
+- ✅ `8080` (alternative HTTP courante)
+- ✅ `65535` (port maximum)
+
+**Valeurs invalides** :
+- ❌ `0` (en dessous du minimum)
+- ❌ `65536` (au-dessus du maximum)
+- ❌ `-1` (négatif)
+- ❌ `"80"` (chaîne, pas un nombre)
+
+### Exemple 3 : Validation de taille de tableau
+
+**Contrainte** :
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**Valeurs valides** :
+- ✅ `["origin-1"]` (1 élément)
+- ✅ `["origin-1", "origin-2", "origin-3"]` (3 éléments, tous uniques)
+
+**Valeurs invalides** :
+- ❌ `[]` (en dessous du minimum)
+- ❌ `["origin-1", "origin-1"]` (éléments en double)
+- ❌ `[tableau avec 51 éléments]` (au-dessus du maximum)
+
+---
+
+## Scores de confiance
+
+### Interprétation des scores
+
+| Plage | Interprétation | Utilisation |
+|-------|----------------|-------------|
+| 0.90-1.00 | **Confiance élevée** | Indicateur déterministe activé, utiliser pour la génération IA |
+| 0.70-0.89 | **Confiance moyenne** | Consultatif, confirmation utilisateur recommandée |
+| 0.50-0.69 | **Confiance faible** | Informatif uniquement, validation utilisateur requise |
+| < 0.50 | **Très faible** | Non inclus dans les contraintes |
+
+### Indicateur déterministe
+
+L'indicateur booléen `deterministic` est activé lorsque :
+- Le score de confiance est >= 0.9
+- Le motif a été validé par rapport aux données de découverte OU
+- Le motif correspond à des standards bien établis (RFC, ISO, etc.)
+
+**Utilisation dans la génération IA** :
+```python
+if constraint.get("deterministic"):
+    # Generate value automatically without asking user
+    value = generate_from_pattern(constraint)
+else:
+    # Ask user for input with constraint hints
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## Intégration de la découverte
+
+### Priorité des sources
+
+Les contraintes sont réconciliées en utilisant une priorité à 3 niveaux :
+
+1. **EXISTANT** (Confiance : 1.0)
+   - Défini explicitement dans la spécification OpenAPI originale
+   - Jamais remplacé
+
+2. **DÉCOUVERTE** (Confiance : 0.99)
+   - Extrait des réponses de l'API F5 XC en direct
+   - Inclut les règles de validation de x-ves-validation-rules
+   - Remplace les contraintes inférées
+
+3. **INFÉRÉ** (Confiance : 0.50-0.95)
+   - Correspondance de motifs à partir des noms de champs
+   - Priorité la plus basse, remplacé par la découverte ou l'explicite
+
+### Sources de données de découverte
+
+Les contraintes de découverte sont extraites de :
+
+1. **x-ves-validation-rules** : Extensions de validation natives F5
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **Catalogue d'erreurs** : Messages d'erreur API indiquant des violations de contraintes
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **Validation des réponses** : Réponses API réussies démontrant des valeurs valides
+   - Plages de valeurs observées
+   - Motifs de format réels
+
+---
+
+## Guide d'intégration des outils
+
+### Intégration des assistants IA
+
+**Générer des noms de ressources valides** :
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # Ask user for name
+        return prompt_user("Enter resource name: ")
+
+    # Generate automatically
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # Generate valid name matching pattern
+    return generate_dns_label(max_length=max_len)
+```
+
+### Intégration des outils CLI
+
+**Fournir la validation des entrées** :
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # Check length (constraint keys are at top level)
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # Check pattern
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### Intégration du fournisseur Terraform
+
+**Génération de schéma** :
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // Constraint keys are at top level (no nested "string" wrapper)
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### Intégration des extensions IDE
+
+**Auto-complétion et validation** :
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // Add format-specific completions
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // Add validation hint
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## Annexe : Catalogue des motifs de contraintes
+
+### Motifs à haute confiance (0.95-0.99)
+
+| Motif | Regex du nom de champ | Type de contrainte | Exemple |
+|-------|----------------------|---------------------|---------|
+| Étiquette DNS | `\bname$` | String (1-63 car., dns-label) | `my-service` |
+| Espace de noms | `\bnamespace$` | String (1-63 car., dns-label) | `production` |
+| Port | `\bport$` | Number (1-65535) | `443` |
+| Identifiant VLAN | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
+| UUID | `\buuid$` | String (36 car., format uuid) | `550e8400-...` |
+| E-mail | `\bemail$` | String (max 254 car., email) | `user@example.com` |
+| Horodatage | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
+
+### Motifs à confiance moyenne (0.80-0.94)
+
+| Motif | Regex du nom de champ | Type de contrainte | Exemple |
+|-------|----------------------|---------------------|---------|
+| Nom d'utilisateur | `\b(user\|username)$` | String (1-64 car., alphanumérique) | `admin` |
+| Nom d'affichage | `\b(display_?)?name$` | String (1-256 car., texte libre) | `My Service` |
+| Description | `\b(comment\|description\|note)$` | String (max 4096 car.) | `Service description` |
+| Chemin | `\bpath$` | String (max 2048 car.) | `/api/v1/resources` |
+
+---
+
+## Support et commentaires
+
+- **Problèmes** : Signalez les problèmes de précision des contraintes sur https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **Documentation** : Documentation complète de l'API sur https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **Intégration MCP** : Consultez le dépôt `f5xc-api-mcp` pour des exemples d'intégration du serveur MCP
+
+---
+
+**Version** : 3.3.0
+**Dernière mise à jour** : 19/01/2026
+**Contraintes réconciliées** : 9 851
+**Couverture des motifs** : Plus de 50 types

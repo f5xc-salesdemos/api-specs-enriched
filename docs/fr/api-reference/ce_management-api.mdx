@@ -1,0 +1,72 @@
+---
+title: "\U0001F527 API de gestion Ce"
+description: 'Interfaces réseau, flottes et enregistrement de sites.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 7ca801568779
+  translator: machine
+---
+
+Provisionnement basé sur des jetons avec téléchargement d'images et validation pré-mise à jour. Le regroupement en flottes permet des opérations en masse sur des emplacements distribués.
+
+- **Catégorie** : Infrastructure
+- **Complexité** : modérée
+- **Chemins** : 28 | **Schémas** : 231
+- **Niveau** : Standard
+- **Domaines associés** : `customer_edge`, `sites`
+
+## Cas d'utilisation
+
+- Gérer le cycle de vie des sites Customer Edge
+- Configurer les interfaces réseau et les paramètres de flotte
+- Gérer l'enregistrement des sites et les flux de travail de jetons
+- Exécuter les mises à jour de sites avec des vérifications pré-mise à jour
+
+## Ressources principales
+
+- **site_config** : Configuration de site pour les paramètres de nœud périphérique
+- **fleet_config** : Configuration de flotte pour la gestion multi-sites
+- **registration_token** : Jeton d'enregistrement pour l'intégration de sites
+
+## Points de terminaison
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets` | Créer une flotte. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets/&#123;metadata.name&#125;` | Remplacer une flotte. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets` | Lister les flottes. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | Obtenir une flotte. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | Supprimer une flotte. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | Paramètres de gestion des modules. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | Créer une interface réseau. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | Remplacer une interface réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | Lister les interfaces réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | Obtenir une interface réseau. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | Supprimer une interface réseau. |
+| POST | `/api/register/namespaces/system/get-image-download-url` | Obtenir l'URL de téléchargement d'image. |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | Obtenir l'UID d'enregistrement par jeton de site. |
+| POST | `/api/register/namespaces/system/suggest-values` | Suggérer des valeurs. |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | Créer un enregistrement. |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | Remplacer un enregistrement. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | Lister les enregistrements par état. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | Approuver un enregistrement. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | Lister les enregistrements. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | Obtenir un enregistrement. |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | Supprimer un enregistrement. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | Lister les enregistrements par site. |
+| POST | `/api/register/registerBootstrap` | Créer un enregistrement. |
+| POST | `/api/register/requestConfig` | Configuration d'enregistrement. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | Créer une politique USB. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | Remplacer une politique USB. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | Lister les politiques USB. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | Obtenir une politique USB. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | Supprimer une politique USB. |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | Vérification pré-mise à jour. |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | Obtenir le statut de mise à jour. |
+| GET | `/api/maurice/upgradable_sw_versions` | Obtenir les versions logicielles pouvant être mises à jour. |
+
+## Liens
+
+- [Référence API interactive](./ce_management/)
+- [Spécification OpenAPI JSON](../specifications/api/ce_management.json)

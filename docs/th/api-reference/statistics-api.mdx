@@ -1,0 +1,129 @@
+---
+title: "\U0001F4C8 API สถิติ"
+description: การแจ้งเตือน บันทึก การวิเคราะห์โฟลว์ และการรายงาน
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: f18cb43a1e28
+  translator: machine
+---
+
+นโยบายการแจ้งเตือนพร้อมการเชื่อมต่อกับตัวรับ การรวบรวมบันทึก มุมมองโทโพโลยี และการติดตามสุขภาพไซต์
+
+- **หมวดหมู่**: การดำเนินงาน
+- **ความซับซ้อน**: ขั้นสูง
+- **เส้นทาง**: 77 | **สคีมา**: 575
+- **ระดับ**: มาตรฐาน
+- **โดเมนที่เกี่ยวข้อง**: `observability`, `support`
+
+## กรณีการใช้งาน
+
+- เข้าถึงสถิติโฟลว์และการวิเคราะห์
+- จัดการการแจ้งเตือนและนโยบายการแจ้งเตือน
+- ดูบันทึกและตัวรับบันทึก
+- สร้างรายงานและกราฟ
+- ติดตามโทโพโลยีและการค้นพบบริการ
+- ตรวจสอบสถานะที่ไซต์
+
+## ทรัพยากรหลัก
+
+- **dashboard**: แดชบอร์ดสำหรับการแสดงผลเมตริก
+- **saved_query**: คิวรีที่บันทึกไว้สำหรับการวิเคราะห์เมตริกและบันทึก
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys` | สร้างนโยบายการแจ้งเตือน |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_policys/&#123;metadata.name&#125;` | แทนที่นโยบายการแจ้งเตือน |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_policy/match` | GET การจับคู่นโยบายการแจ้งเตือน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys` | แสดงรายการนโยบายการแจ้งเตือน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | GET นโยบายการแจ้งเตือน |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_policys/&#123;name&#125;` | DELETE นโยบายการแจ้งเตือน |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers` | สร้างตัวรับการแจ้งเตือน |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/alert_receivers/&#123;metadata.name&#125;` | แทนที่ตัวรับการแจ้งเตือน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers` | แสดงรายการตัวรับการแจ้งเตือน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | GET ตัวรับการแจ้งเตือน |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;` | DELETE ตัวรับการแจ้งเตือน |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/confirm` | ยืนยันตัวรับการแจ้งเตือน |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/test` | ทดสอบตัวรับการแจ้งเตือน |
+| POST | `/api/alert/namespaces/&#123;namespace&#125;/alert_receivers/&#123;name&#125;/verify` | ตรวจสอบตัวรับการแจ้งเตือน |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | GET การแจ้งเตือน |
+| PUT | `/api/web/namespaces/system/catalogs` | แสดงรายการ |
+| GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | แสดงรายการบริการที่ค้นพบตามประเภทที่ระบุ |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | แสดงรายการบริการที่ค้นพบ |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | GET อ็อบเจกต์บริการที่ค้นพบ |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | สร้าง HTTP/HTTPS load balancer |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | สร้าง TCP load balancer |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | ปิดการมองเห็นในเวิร์กสเปซทั้งหมด |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | เปิดการมองเห็นในเวิร์กสเปซทั้งหมด |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | แนะนำค่า |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys` | แสดงรายการความผิดปกติของโฟลว์ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/flow_anomalys/&#123;name&#125;` | GET ความผิดปกติของโฟลว์ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/matching_flows` | แสดงโฟลว์ที่ตรงกัน |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | สมัครสมาชิกการเก็บรวบรวมโฟลว์ |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | ตรวจสอบสถานะการสมัครสมาชิกการเก็บรวบรวมโฟลว์ |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | ยกเลิกสมัครสมาชิกการเก็บรวบรวมโฟลว์ |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers` | สร้างตัวรับบันทึกแบบทั่วไป |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/global_log_receivers/&#123;metadata.name&#125;` | แทนที่ตัวรับบันทึกแบบทั่วไป |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/global_log_receiver/status` | สถานะตัวรับบันทึกแบบทั่วไป |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers` | แสดงรายการตัวรับบันทึกแบบทั่วไป |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | GET ตัวรับบันทึกแบบทั่วไป |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;` | DELETE ตัวรับบันทึกแบบทั่วไป |
+| POST | `/api/log_receiver/namespaces/&#123;namespace&#125;/global_log_receivers/&#123;name&#125;/test` | ทดสอบตัวรับบันทึกแบบทั่วไป |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers` | สร้างตัวรับบันทึก |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/log_receivers/&#123;metadata.name&#125;` | แทนที่ตัวรับบันทึก |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers` | แสดงรายการตัวรับบันทึก |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | GET ตัวรับบันทึก |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;` | DELETE ตัวรับบันทึก |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/log_receivers/&#123;name&#125;/test` | ทดสอบตัวรับบันทึก |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | คิวรีบันทึกไฟร์วอลล์ |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | คิวรีการรวมบันทึกไฟร์วอลล์ |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | คิวรีการเลื่อนบันทึกไฟร์วอลล์ |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | คิวรีการเลื่อนบันทึกไฟร์วอลล์ |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | คิวรีการเลื่อนบันทึกตรวจสอบ K8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | คิวรีการเลื่อนบันทึกตรวจสอบ K8s |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | คิวรีการเลื่อนเหตุการณ์ K8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | คิวรีการเลื่อนเหตุการณ์ K8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | คิวรีเหตุการณ์แพลตฟอร์ม |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | คิวรีการรวมเหตุการณ์แพลตฟอร์ม |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | คิวรีการเลื่อนเหตุการณ์แพลตฟอร์ม |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | คิวรีการเลื่อนเหตุการณ์แพลตฟอร์ม |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | คิวรีบันทึกตรวจสอบ VK8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | คิวรีการรวมบันทึกตรวจสอบ VK8s |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | คิวรีการเลื่อนบันทึกตรวจสอบ VK8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | คิวรีการเลื่อนบันทึกตรวจสอบ VK8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | คิวรีเหตุการณ์ VK8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | คิวรีการรวมเหตุการณ์ VK8s |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | คิวรีการเลื่อนเหตุการณ์ VK8s |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | คิวรีการเลื่อนเหตุการณ์ VK8s |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;` | GET รายงาน |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/reports/&#123;name&#125;/download` | ดาวน์โหลดรายงาน |
+| POST | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs` | สร้างการกำหนดค่ารายงาน |
+| PUT | `/api/report/namespaces/&#123;metadata.namespace&#125;/report_configs/&#123;metadata.name&#125;` | แทนที่การกำหนดค่ารายงาน |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs` | แสดงรายการการกำหนดค่ารายงาน |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history` | แสดงรายการประวัติรายงาน |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-bot-defence` | แสดงรายการประวัติรายงาน Bot Defence |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/list-reports-history-waap` | แสดงรายการประวัติรายงาน Waap |
+| GET | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | GET การกำหนดค่ารายงาน |
+| DELETE | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;` | DELETE การกำหนดค่ารายงาน |
+| POST | `/api/report/namespaces/&#123;namespace&#125;/report_configs/&#123;name&#125;/generate` | สร้างรายงานทันที |
+| POST | `/api/data/namespaces/system/graph/all_ns_service` | คิวรีกราฟบริการทุก Namespace |
+| POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | โทโพโลยี DC Cluster |
+| GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | สรุป DC Cluster Groups |
+| GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | GET ตารางเส้นทางเครือข่าย |
+| GET | `/api/data/namespaces/system/topology/route_table/&#123;name&#125;` | GET ตารางเส้นทาง |
+| POST | `/api/data/namespaces/system/topology/site_mesh_group/&#123;site_mesh_group&#125;` | โทโพโลยี Site Mesh |
+| GET | `/api/data/namespaces/system/topology/site_mesh_groups` | สรุป Site Mesh Groups |
+| GET | `/api/data/namespaces/system/topology/tgw/&#123;id&#125;/route_tables` | GET ตารางเส้นทาง TGW |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_application/&#123;network_id&#125;` | คิวรีทราฟฟิกแอปพลิเคชัน L3l4 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_mitigation/&#123;mitigation_id&#125;` | คิวรีทราฟฟิกการบรรเทา L3l4 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_network/&#123;network_id&#125;` | คิวรีทราฟฟิกเครือข่าย L3l4 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/by_zone/&#123;network_id&#125;` | คิวรีทราฟฟิกโซน L3l4 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/event_count/&#123;network_id&#125;` | จำนวนเหตุการณ์ L3l4 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/graph/l3l4/top_talkers/&#123;network_id&#125;` | คิวรี Top talkers L3l4 |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./statistics/)
+- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/statistics.json)

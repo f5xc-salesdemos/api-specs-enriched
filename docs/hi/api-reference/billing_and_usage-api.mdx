@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 बिलिंग और उपयोग API"
+description: 'सब्सक्रिप्शन योजनाएँ, भुगतान विधियाँ, और कोटा।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+योजना संक्रमण, चालान, और संसाधन खपत। नेमस्पेस-स्तरीय कोटा सीमाएँ और उपयोग ट्रैकिंग।
+
+- **श्रेणी**: प्लेटफ़ॉर्म
+- **जटिलता**: मध्यम
+- **पथ**: 25 | **स्कीमा**: 101
+- **टियर**: स्टैंडर्ड
+- **संबंधित डोमेन**: `system`, `users`
+
+## उपयोग के मामले
+
+- सब्सक्रिप्शन योजनाएँ और बिलिंग संक्रमण प्रबंधित करें
+- भुगतान विधियाँ और चालान कॉन्फ़िगर करें
+- नेमस्पेस भर में संसाधन कोटा उपयोग ट्रैक करें
+- उपयोग सीमाओं और क्षमता की निगरानी करें
+
+## प्राथमिक संसाधन
+
+- **subscription**: सेवा अधिकारों के लिए सब्सक्रिप्शन
+- **quota**: उपयोग सीमाओं के लिए संसाधन कोटा
+- **usage_report**: खपत ट्रैकिंग के लिए उपयोग रिपोर्ट
+
+## एंडपॉइंट
+
+| विधि | पथ | विवरण |
+|--------|------|-------------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | बिलिंग उपयोग सारांश। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | चालान PDF प्राप्त करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | चालानों की सूची। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | क्रेडिट कार्ड को प्राथमिक बनाएँ। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | भुगतान विधि को द्वितीयक बनाएँ। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | भुगतान विधि को द्वितीयक बनाएँ। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | भुगतान विधि विनिर्देश बनाएँ। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | निर्दिष्ट भुगतान विधि हटाएँ। |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | योजना संक्रमण प्राप्त करें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | योजना संक्रमण आरंभ करें। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | कोटा बनाएँ। |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | कोटा प्रतिस्थापित करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | कस्टम कोटा सीमाएँ प्राप्त करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | कोटा उपयोग प्राप्त करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | कोटा सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | कोटा प्राप्त करें |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | कोटा हटाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | सब्सक्रिप्शन सूची। |
+| POST | `/api/web/namespaces/system/addon/subscribe` | XC ऐडऑन सेवाओं की सब्सक्रिप्शन लें। |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | XC ऐडऑन सेवाओं की सब्सक्रिप्शन रद्द करें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | वर्तमान उपयोग विवरण सूची। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | प्रति घंटा उपयोग विवरण सूची। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | मासिक उपयोग विवरण सूची। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | उपयोग विवरण सूची। |
+| GET | `/api/web/namespaces/system/usage_plans/current` | वर्तमान उपयोग योजना प्राप्त करें। |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | उपयोग योजनाओं की सूची। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./billing_and_usage/)
+- [OpenAPI विनिर्देश JSON](../specifications/api/billing_and_usage.json)

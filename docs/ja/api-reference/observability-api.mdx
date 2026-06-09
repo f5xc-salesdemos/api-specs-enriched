@@ -1,0 +1,106 @@
+---
+title: "\U0001F4CA オブザーバビリティ API"
+description: 合成ヘルスチェックとDNS解決の検証。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 6a6373e33031
+  translator: machine
+---
+
+レイテンシ測定を伴うHTTP可用性プローブ。証明書の有効期限アラートおよびインフラストラクチャヘルスのためのグローバルステータスダッシュボード。
+
+- **カテゴリ**: オペレーション
+- **複雑度**: 中程度
+- **パス数**: 56 | **スキーマ数**: 196
+- **ティア**: スタンダード
+- **関連ドメイン**: `statistics`, `support`
+
+## ユースケース
+
+- 合成モニタリングの設定
+- モニタリングおよびテストポリシーの定義
+- オブザーバビリティダッシュボードの管理
+
+## 主要リソース
+
+- **log_receiver**: 集中ログ収集のためのログレシーバー
+- **metrics_receiver**: 集中メトリクス収集のためのメトリクスレシーバー
+- **alert_policy**: モニタリングおよび通知のためのアラートポリシー
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| GET | `/api/data/namespaces/system/all_ns_alerts` | アラートの取得。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | アラートの取得。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | アラート履歴の取得。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | アラート履歴の集計。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | アラート履歴のスクロール。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | アラート履歴のスクロール。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | DNSモニターの作成。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | DNSモニターの置換。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | フィルタ済みDNSモニター一覧の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | DNSモニターの一覧。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | DNSモニターの取得。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | DNSモニターの削除。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | HTTPモニターの作成。 |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | HTTPモニターの更新。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | フィルタ済みHTTPモニター一覧の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | HTTPモニターの一覧。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | HTTPモニターの取得。 |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | HTTPモニターの削除。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | アクセスログクエリ V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | アクセスログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | アクセスログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | アクセスログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | 監査ログクエリ V2。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | 監査ログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | 監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | ファイアウォールログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | ファイアウォールログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | ファイアウォールログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | K8s監査ログスクロールクエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | K8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | プラットフォームイベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | プラットフォームイベント集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | プラットフォームイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | VK8s監査ログクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | VK8s監査ログ集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | VK8s監査ログスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | VK8sイベントクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | VK8sイベント集計クエリ。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8sイベントスクロールクエリ。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | VK8sイベントスクロールクエリ。 |
+| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | オブザーバビリティサービスへのサブスクライブ。 |
+| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | オブザーバビリティ合成モニターからのアンサブスクライブ。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | 証明書レポート詳細の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | 証明書サマリーの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | DNSモニターサマリーの取得。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | DNSモニターヘルスの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | グローバル履歴の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | グローバルサマリーの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | 合成モニタリングヘルスチェックの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | HTTPモニター詳細の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | HTTPモニターサマリーの取得。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | HTTPモニターヘルスの取得。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | メトリクスクエリデータの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | モニターイベントの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | モニター履歴の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | レコードタイプサマリーの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | ソースサマリーの取得。 |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | 値の提案。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | TLSレポート詳細の取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | TLSレポートサマリーの取得。 |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | TLSサマリーの取得。 |
+
+## リンク
+
+- [インタラクティブAPIリファレンス](./observability/)
+- [OpenAPI仕様JSON](../specifications/api/observability.json)

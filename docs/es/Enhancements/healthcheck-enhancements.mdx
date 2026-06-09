@@ -1,0 +1,173 @@
+---
+title: Mejoras en Healthcheck
+description: Metadatos de enriquecimiento para esquemas relacionados con healthcheck
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+Metadatos de enriquecimiento para esquemas relacionados con healthcheck. Consulte [Extensiones OpenAPI](../development/#openapi-extensions) para las definiciones de extensiones.
+
+## Esquemas enriquecidos
+
+### Patrón
+
+Todos los esquemas que coinciden con `healthcheck.*SpecType` reciben enriquecimientos:
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+Adicionalmente, el esquema anidado `healthcheckHttpHealthCheck` contiene enriquecimientos para la configuración de health check HTTP.
+
+## Valores predeterminados aplicados por el servidor
+
+Los campos marcados con `x-f5xc-server-default: true` tienen su valor `default` aplicado por el servidor API de F5 XC cuando se omiten en las solicitudes.
+
+### Campos de nivel superior
+
+| Campo | Valor predeterminado | Tipo | Descripción |
+|-------|----------------------|------|-------------|
+| `jitter` | `0` | integer | Valor absoluto de jitter para aleatorización de temporización |
+| `jitter_percent` | `0` | integer | Jitter basado en porcentaje para aleatorización de temporización |
+
+### Esquema healthcheckHttpHealthCheck
+
+| Campo | Valor predeterminado | Tipo | Descripción |
+|-------|----------------------|------|-------------|
+| `use_origin_server_name` | `{}` | object | Nombre del servidor de origen para el encabezado Host |
+| `headers` | `{}` | object | Encabezados personalizados |
+| `request_headers_to_remove` | `[]` | array | Encabezados a eliminar de las solicitudes |
+| `use_http2` | `false` | boolean | Soporte HTTP/2 |
+| `expected_status_codes` | `[]` | array | Códigos de estado aceptados (vacío = 200-299) |
+
+## Valores recomendados
+
+Los campos marcados con `x-f5xc-recommended-value` indican valores que la consola web de F5 XC pre-completa al crear nuevos recursos.
+
+### Campos de nivel superior
+
+| Campo | Valor recomendado | Tipo | Descripción |
+|-------|-------------------|------|-------------|
+| `timeout` | `3` | integer | Tiempo de espera del health check en segundos |
+| `interval` | `15` | integer | Intervalo entre health checks en segundos |
+| `unhealthy_threshold` | `1` | integer | Fallos consecutivos antes de marcar como no saludable |
+| `healthy_threshold` | `3` | integer | Éxitos consecutivos antes de marcar como saludable |
+| `jitter_percent` | `30` | integer | Porcentaje de jitter para uso en producción |
+
+### Esquema healthcheckHttpHealthCheck
+
+| Campo | Valor recomendado | Tipo | Descripción |
+|-------|-------------------|------|-------------|
+| `path` | `"/"` | string | Ruta del endpoint de health check |
+| `use_http2` | `false` | boolean | Configuración de soporte HTTP/2 |
+| `expected_status_codes` | `["200"]` | array | Códigos de estado que indican origen saludable |
+| `use_origin_server_name` | `{}` | object | Nombre del servidor de origen para el encabezado Host |
+
+## Recomendaciones de variantes OneOf
+
+Los esquemas que contienen grupos de campos mutuamente excluyentes (OneOf) incluyen `x-f5xc-recommended-oneof-variant` para indicar qué variante se utiliza con mayor frecuencia. Estos metadatos identifican la elección típica cuando existen múltiples opciones, basándose en los valores predeterminados de la consola de F5 XC y los patrones de uso comunes.
+
+### Grupos OneOf de nivel superior
+
+| Esquema | Grupo OneOf | Variante recomendada | Descripción |
+|---------|-------------|----------------------|-------------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | Tipo de health check HTTP |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | Tipo de health check HTTP |
+
+### Grupos OneOf de healthcheckHttpHealthCheck
+
+| Esquema | Grupo OneOf | Variante recomendada | Descripción |
+|---------|-------------|----------------------|-------------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | Encabezado Host para solicitudes de health check |
+
+#### Elección de encabezado Host
+
+El grupo OneOf `host_header_choice` controla cómo se especifica el encabezado Host en las solicitudes HTTP de health check.
+
+| Variante | Tipo | Descripción |
+|----------|------|-------------|
+| `use_origin_server_name` | `object` (vacío) | Utilizar el nombre del servidor de origen como encabezado Host. Esta es la selección predeterminada en la consola de F5 XC. |
+| `host_header` | `string` | Especificar un valor personalizado de encabezado Host para las solicitudes de health check. |
+
+**Referencia del esquema API**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## Referencia de extensiones OpenAPI
+
+Estas extensiones de proveedor se añaden al esquema OpenAPI estándar para transmitir el comportamiento predeterminado específico de F5 XC.
+
+### x-f5xc-server-default
+
+**Tipo**: `boolean`
+
+Cuando es `true`, indica que el valor `default` acompañante es aplicado por el servidor API de F5 XC. Los campos con esta extensión pueden omitirse de manera segura en las solicitudes API: el servidor aplica el valor predeterminado automáticamente.
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**Tipo**: `any` (coincide con el tipo de campo)
+
+Especifica un valor que la consola web de F5 XC utiliza como valor predeterminado pre-completado. Este valor no es aplicado por el servidor, pero representa la configuración inicial típica para nuevos recursos creados a través de la consola.
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**Tipo**: `object` (mapa de nombre de grupo a nombre de variante)
+
+Para esquemas con grupos de campos mutuamente excluyentes, identifica qué variante es la opción predeterminada o más común. La clave es el nombre del grupo OneOf y el valor es el nombre del campo de la variante recomendada.
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## Acceso a datos
+
+### Especificaciones OpenAPI
+
+| Archivo | Contenido |
+|---------|-----------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | Especificación combinada con todos los esquemas |
+
+### Estructura de validation.json
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # Campos con x-f5xc-server-default: true
+├── recommended         # Campos con x-f5xc-recommended-value
+├── oneof_recommended   # Recomendaciones de variantes OneOf
+└── nested_recommended  # Valores recomendados de esquemas anidados
+```
+
+## Documentación relacionada
+
+- [Guía de desarrollo - Extensiones OpenAPI](../development/#openapi-extensions) - Definiciones y uso de extensiones
+- [Especificación de validación](../validation-spec/) - Formato y estructura de validation.json
+- [Mejoras en Origin Pool](./originpool-enhancements/) - Enriquecimientos del esquema de origin pool
+
+## Registro de cambios
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 2.1.4 | 2026-01-19 | Añadida documentación del grupo OneOf `host_header_choice` para parámetros de solicitud de health check HTTP |
+| 2.1.3 | 2026-01-18 | Documentación global de extensiones consolidada en DEVELOPMENT.md; solo datos específicos de recursos |
+| 2.1.2 | 2026-01-18 | Reescrito como referencia API pura; eliminados ejemplos posteriores y lenguaje prescriptivo |
+| 2.1.1 | 2026-01-18 | Añadidos valores recomendados anidados, variantes OneOf recomendadas, extensión `x-f5xc-recommended-oneof-variant` |
+| 2.1.0 | 2026-01-18 | Añadida estructura unificada de valores predeterminados en validation.json |
+| 2.0.30 | 2026-01-16 | Añadidos valores predeterminados anidados para esquemas `$ref` |
+| 2.0.29 | 2026-01-17 | Valores predeterminados iniciales de healthcheck |

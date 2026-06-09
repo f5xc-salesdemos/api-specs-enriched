@@ -1,0 +1,72 @@
+---
+title: "\U0001F527 CE Management API"
+description: 'Netzwerkschnittstellen, Flotten und Standortregistrierung.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 7ca801568779
+  translator: machine
+---
+
+Token-basierte Bereitstellung mit Image-Downloads und Vorab-Upgrade-Validierung. Flottengruppierung ermöglicht Massenoperationen über verteilte Standorte hinweg.
+
+- **Kategorie**: Infrastruktur
+- **Komplexität**: moderat
+- **Pfade**: 28 | **Schemas**: 231
+- **Stufe**: Standard
+- **Verwandte Domänen**: `customer_edge`, `sites`
+
+## Anwendungsfälle
+
+- Verwaltung des Lebenszyklus von Customer Edge-Standorten
+- Konfiguration von Netzwerkschnittstellen und Flotteneinstellungen
+- Handhabung von Standortregistrierung und Token-Workflows
+- Durchführung von Standort-Upgrades mit Vorab-Upgrade-Prüfungen
+
+## Primäre Ressourcen
+
+- **site_config**: Standortkonfiguration für Edge-Node-Einstellungen
+- **fleet_config**: Flottenkonfiguration für Multi-Standort-Verwaltung
+- **registration_token**: Registrierungstoken für das Standort-Onboarding
+
+## Endpunkte
+
+| Methode | Pfad | Beschreibung |
+|---------|------|--------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets` | Flotte erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets/&#123;metadata.name&#125;` | Flotte ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets` | Flotten auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | Flotte abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | Flotte löschen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | Modulverwaltungseinstellungen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | Netzwerkschnittstelle erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | Netzwerkschnittstelle ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | Netzwerkschnittstellen auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | Netzwerkschnittstelle abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | Netzwerkschnittstelle löschen. |
+| POST | `/api/register/namespaces/system/get-image-download-url` | Image-Download-URL abrufen. |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | Registrierungs-UID nach Standort-Token abrufen. |
+| POST | `/api/register/namespaces/system/suggest-values` | Werte vorschlagen. |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | Registrierung erstellen. |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | Registrierung ersetzen. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | Registrierungen nach Status auflisten. |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | Registrierung genehmigen. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | Registrierungen auflisten. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | Registrierung abrufen. |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | Registrierung löschen. |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | Registrierungen nach Standort auflisten. |
+| POST | `/api/register/registerBootstrap` | Registrierung erstellen. |
+| POST | `/api/register/requestConfig` | Registrierungskonfiguration. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | USB-Richtlinie erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | USB-Richtlinie ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | USB-Richtlinien auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | USB-Richtlinie abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | USB-Richtlinie löschen. |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | Vorab-Upgrade-Prüfung. |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | Upgrade-Status abrufen. |
+| GET | `/api/maurice/upgradable_sw_versions` | Aktualisierbare SW-Versionen abrufen. |
+
+## Links
+
+- [Interaktive API-Referenz](./ce_management/)
+- [OpenAPI-Spezifikation JSON](../specifications/api/ce_management.json)

@@ -1,0 +1,521 @@
+---
+title: विकास मार्गदर्शिका
+description: F5 XC API संवर्धन पाइपलाइन के लिए विकास कार्यप्रवाह
+sidebar:
+  order: 1
+i18n:
+  sourceHash: cd6be8e70b79
+  translator: machine
+---
+
+यह मार्गदर्शिका F5 XC API संवर्धन पाइपलाइन के लिए विकास कार्यप्रवाह का वर्णन करती है।
+
+## त्वरित प्रारंभ
+
+### पहली बार सेटअप
+
+```bash
+# Clone the repository
+git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
+cd api-specs-enriched
+
+# Create virtual environment and install dependencies
+make install
+
+# Install pre-commit hooks
+make pre-commit-install
+
+# Download specs and run pipeline
+make build
+
+# Preview documentation locally
+make serve
+```
+
+### दैनिक विकास
+
+```bash
+# Quick rebuild (uses cached specs)
+make rebuild
+
+# Run all quality checks
+make pre-commit-run
+
+# Preview documentation
+make serve
+```
+
+## आर्किटेक्चर अवलोकन
+
+### दो-फ़ोल्डर डिज़ाइन
+
+```text
+┌─────────────────────┐     ┌─────────────────────────────┐
+│   specs/original/   │────▶│   docs/specifications/api/  │
+│   (READ-ONLY)       │     │   (GENERATED)               │
+│   - Downloaded      │     │   - Domain specs            │
+│   - Gitignored      │     │   - Master spec             │
+│   - ETag cached     │     │   - GitHub Pages            │
+└─────────────────────┘     └─────────────────────────────┘
+```
+
+### पाइपलाइन प्रवाह
+
+```text
+Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+     │              │          │         │       │
+     ▼              ▼          ▼         ▼       ▼
+ 270 specs     Branding    Fix refs   23 domains  Spectral
+             + Grammar    + Types    + Master     rules
+```
+
+### निर्देशिका संरचना
+
+| निर्देशिका | उद्देश्य | Git स्थिति |
+|-----------|---------|------------|
+| `specs/original/` | F5 स्रोत स्पेक्स | Gitignored |
+| `specs/discovered/` | API खोज आउटपुट | ट्रैक किया गया (openapi.json, session.json) |
+| `docs/specifications/api/` | जनरेट किए गए डोमेन स्पेक्स | Gitignored |
+| `scripts/` | Python पाइपलाइन स्क्रिप्ट | ट्रैक किया गया |
+| `config/` | पाइपलाइन कॉन्फ़िगरेशन | ट्रैक किया गया |
+| `reports/` | जनरेट की गई रिपोर्ट | Gitignored |
+
+## कार्यप्रवाह पैटर्न
+
+### 1. खोज कार्यप्रवाह
+
+**पूर्वापेक्षाएँ**:
+- F5 XC वातावरण से VPN कनेक्शन
+- मान्य API क्रेडेंशियल
+
+```bash
+# Set credentials
+export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
+export F5XC_API_TOKEN="your-api-token"
+
+# Run discovery
+make discover
+
+# View results
+jq '.statistics' specs/discovered/session.json
+
+# Commit for CI/CD
+make push-discovery
+```
+
+**खोज से प्राप्त होता है**:
+- वास्तविक आवश्यक/वैकल्पिक फ़ील्ड
+- लाइव प्रतिक्रियाओं से Enum मान
+- डिफ़ॉल्ट मान
+- पैटर्न सत्यापन
+- प्रतिक्रिया उदाहरण
+
+### 2. रिलीज़ कार्यप्रवाह
+
+रिलीज़ स्वचालित हैं:
+
+1. दैनिक शेड्यूल (6 AM UTC) या main में push वर्कफ़्लो ट्रिगर करता है
+2. ETag जाँच निर्धारित करती है कि F5 स्पेक्स बदले हैं या नहीं
+3. पाइपलाइन स्पेक्स को प्रोसेस और संवर्धित करती है
+4. संस्करण git टैग से गणना किया जाता है: `git describe --tags --abbrev=0`
+5. सीधा कमिट + टैग बनाया जाता है (कोई संस्करण बंप PR नहीं)
+6. चेंजलॉग के साथ GitHub रिलीज़ बनाई जाती है
+7. दस्तावेज़ीकरण GitHub Pages पर डिप्लॉय किया जाता है
+
+**संस्करण बंप नियम**:
+
+| शर्त | बंप प्रकार | उदाहरण |
+|-----------|-----------|---------|
+| कमिट में `[major]` | Major | 1.0.0 → 2.0.0 |
+| कमिट में `BREAKING CHANGE` | Major | 1.0.0 → 2.0.0 |
+| नया डोमेन स्पेक जोड़ा गया | Minor | 1.0.0 → 1.1.0 |
+| कोई अन्य परिवर्तन | Patch | 1.0.0 → 1.0.1 |
+
+### 3. विकास कार्यप्रवाह
+
+```bash
+# Create feature branch
+git checkout -b feature/my-change
+
+# Make changes to config or scripts
+
+# Test locally
+make pipeline
+make lint
+
+# Commit (pre-commit hooks run automatically)
+git add .
+git commit -m "feat: add new enrichment rule"
+
+# Push and create PR
+git push -u origin feature/my-change
+gh pr create
+```
+
+## खोज विस्तृत विवरण
+
+### खोज क्या है?
+
+खोज लाइव F5 XC API का अन्वेषण करती है ताकि पता चल सके:
+
+- **अदस्तावेज़ीकृत बाधाएँ**: आवश्यक फ़ील्ड जो OpenAPI में चिह्नित नहीं हैं
+- **वास्तविक enum मान**: प्रोडक्शन में देखे गए वास्तविक मान
+- **डिफ़ॉल्ट व्यवहार**: फ़ील्ड छोड़ने पर सर्वर द्वारा लागू किए गए मान
+- **प्रतिक्रिया पैटर्न**: वास्तविक डेटा आकार
+
+### खोज कॉन्फ़िगरेशन
+
+```yaml
+# config/discovery.yaml
+discovery:
+  exploration:
+    namespaces:
+      - "system"
+      - "shared"
+    methods:
+      - "GET"
+      - "OPTIONS"
+    max_endpoints_per_run: 500
+
+  schema_inference:
+    sample_size: 3
+    detect_patterns: true
+    detect_constraints: true
+```
+
+### खोज एक्सटेंशन
+
+खोज स्पेक्स में `x-discovered-*` एक्सटेंशन जोड़ती है:
+
+```json
+{
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-discovered-required": true,
+      "x-discovered-pattern": "^[a-z][a-z0-9-]*$",
+      "x-discovered-examples": ["my-app", "prod-lb"]
+    }
+  }
+}
+```
+
+### बाधा विश्लेषण रिपोर्ट
+
+```bash
+make constraint-report
+# Output: reports/constraint-analysis.md
+```
+
+## रिलीज़ प्रक्रिया
+
+### रिलीज़ पैकेज सामग्री
+
+```text
+f5xc-api-specs-v1.0.14.zip
+├── openapi.json       # Master combined spec
+├── openapi.yaml       # YAML format
+├── domains/           # Individual domain specs
+│   ├── api_security.json
+│   ├── load_balancer.json
+│   └── ...
+├── index.json         # Metadata
+├── CHANGELOG.md       # Release notes
+└── README.md          # Usage instructions
+```
+
+### मैन्युअल वर्कफ़्लो ट्रिगर
+
+```bash
+gh workflow run sync-and-enrich.yml
+gh run watch
+```
+
+## कॉन्फ़िगरेशन मार्गदर्शिका
+
+### संवर्धन कॉन्फ़िगरेशन
+
+```yaml
+# config/enrichment.yaml
+enrichment:
+  branding:
+    replacements:
+      "Volterra": "F5 Distributed Cloud"
+      "VES": "F5 XC"
+
+  acronyms:
+    API: "Application Programming Interface"
+    DNS: "Domain Name System"
+
+  grammar:
+    enabled: true
+    language_tool: true
+```
+
+### सामान्यीकरण कॉन्फ़िगरेशन
+
+```yaml
+# config/normalization.yaml
+normalization:
+  orphan_refs:
+    fix: true
+    remove_if_unresolvable: true
+
+  empty_operations:
+    remove: true
+
+  type_standardization:
+    enabled: true
+```
+
+### Spectral लिंटिंग नियम
+
+```yaml
+# config/spectral.yaml
+extends:
+  - spectral:oas
+
+rules:
+  operation-operationId: error
+  operation-tags: warn
+```
+
+## OpenAPI एक्सटेंशन
+
+संवर्धन पाइपलाइन सत्यापन और डिफ़ॉल्ट मान मेटाडेटा एम्बेड करने के लिए वेंडर एक्सटेंशन का उपयोग करती है।
+
+### एक्सटेंशन श्रेणियाँ
+
+| एक्सटेंशन | अर्थ | निहितार्थ |
+|-----------|---------|-------------|
+| `x-f5xc-server-default` | जब फ़ील्ड छोड़ा जाता है तो F5 XC API सर्वर यह मान लागू करता है | फ़ील्ड वैकल्पिक है; इसे छोड़ने पर दस्तावेज़ीकृत डिफ़ॉल्ट व्यवहार उत्पन्न होता है |
+| `x-f5xc-recommended-value` | F5 XC वेब कंसोल नए संसाधनों के लिए यह मान पूर्व-भरता है | फ़ील्ड का कोई सर्वर डिफ़ॉल्ट नहीं है लेकिन यह मान विशिष्ट कॉन्फ़िगरेशन का प्रतिनिधित्व करता है |
+| `x-f5xc-recommended-oneof-variant` | F5 XC कंसोल इस OneOf वैरिएंट को पूर्व-चयनित करता है | पहचानता है कि जब कई पारस्परिक रूप से अनन्य विकल्प मौजूद हों तो विशिष्ट विकल्प क्या है |
+| `x-f5xc-conflicts-with` | अन्य प्रॉपर्टीज़ को सूचीबद्ध करता है जिन्हें इस फ़ील्ड के साथ उपयोग नहीं किया जा सकता | प्रॉपर्टी OneOf समूह का हिस्सा है; परस्पर विरोधी प्रॉपर्टीज़ में से केवल एक निर्दिष्ट की जा सकती है |
+
+### आवश्यक फ़ील्ड एक्सटेंशन
+
+| एक्सटेंशन | स्रोत | उद्देश्य |
+|-----------|--------|---------|
+| `x-ves-required: "true"` | F5 XC मूल स्पेक | फ़ील्ड को गैर-शून्य/गैर-रिक्त मान की आवश्यकता है |
+| `x-f5xc-required-for` | संवर्धन पाइपलाइन | संदर्भ-विशिष्ट आवश्यक स्थिति |
+
+**x-f5xc-required-for संदर्भ**:
+- `create`: संसाधन बनाते समय आवश्यक
+- `update`: संसाधन अपडेट करते समय आवश्यक
+- `minimum_config`: न्यूनतम व्यवहार्य कॉन्फ़िगरेशन के लिए आवश्यक
+
+### डिफ़ॉल्ट मान और OneOf एक्सटेंशन
+
+| एक्सटेंशन | उद्देश्य |
+|-----------|---------|
+| `x-f5xc-server-default: true` | सर्वर-लागू डिफ़ॉल्ट को चिह्नित करता है |
+| `x-f5xc-recommended-value` | F5 XC कंसोल पूर्व-भरित मान |
+| `x-f5xc-recommended-oneof-variant` | अनुशंसित OneOf वैरिएंट |
+| `x-f5xc-conflicts-with` | अन्य OneOf प्रॉपर्टीज़ के साथ पारस्परिक अनन्यता |
+
+#### x-f5xc-server-default
+
+**प्रकार**: `boolean`
+
+जब `true` हो, तो इंगित करता है कि साथ दिया गया `default` मान F5 XC API सर्वर द्वारा लागू किया जाता है। इस एक्सटेंशन वाले फ़ील्ड को API अनुरोधों से सुरक्षित रूप से छोड़ा जा सकता है — सर्वर स्वचालित रूप से डिफ़ॉल्ट लागू करता है।
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+#### x-f5xc-recommended-value
+
+**प्रकार**: `any` (फ़ील्ड प्रकार से मेल खाता है)
+
+एक मान निर्दिष्ट करता है जिसे F5 XC वेब कंसोल पूर्व-भरित डिफ़ॉल्ट के रूप में उपयोग करता है। यह मान सर्वर द्वारा लागू नहीं किया जाता लेकिन कंसोल के माध्यम से बनाए गए नए संसाधनों के लिए विशिष्ट प्रारंभिक कॉन्फ़िगरेशन का प्रतिनिधित्व करता है।
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+#### x-f5xc-recommended-oneof-variant
+
+**प्रकार**: `object` (समूह नाम से वैरिएंट नाम का मैप)
+
+पारस्परिक रूप से अनन्य फ़ील्ड समूहों वाले स्कीमा के लिए, पहचानता है कि कौन सा वैरिएंट डिफ़ॉल्ट या सबसे सामान्य विकल्प है। कुंजी OneOf समूह नाम है और मान अनुशंसित वैरिएंट फ़ील्ड नाम है।
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+#### x-f5xc-conflicts-with
+
+**प्रकार**: स्ट्रिंग्स का `array`
+
+**जोड़ा गया**: v3.2.0 (Issue #494)
+
+OneOf समूह सदस्यों के बीच पारस्परिक अनन्यता संबंधों की घोषणा करता है। `x-ves-oneof-field-*` एक्सटेंशन से स्वचालित रूप से प्राप्त। यह डाउनस्ट्रीम टूल (Terraform, CLI, MCP) को रनटाइम के बजाय स्कीमा स्तर पर विरोधों को मान्य करने में सक्षम बनाता है।
+
+```yaml
+host_header:
+  type: string
+  x-f5xc-conflicts-with: ["use_origin_server_name"]
+
+use_origin_server_name:
+  type: object
+  x-f5xc-conflicts-with: ["host_header"]
+```
+
+**उपयोग के मामले**:
+- Terraform प्रदाता सत्यापन नियम उत्पन्न कर सकते हैं
+- CLI टूल परस्पर विरोधी फ़ील्ड संयोजनों के बारे में चेतावनी दे सकते हैं
+- AI सहायक सही OneOf कॉन्फ़िगरेशन उत्पन्न कर सकते हैं
+- IDE एक्सटेंशन विरोध-जागरूक ऑटोकम्पलीशन प्रदान कर सकते हैं
+
+**स्रोत**: पाइपलाइन संवर्धन के दौरान F5 मूल `x-ves-oneof-field-*` एक्सटेंशन से स्वचालित रूप से प्राप्त।
+
+### सत्यापन नियम निहितार्थ
+
+संवर्धक आवश्यक स्थिति अनुमान लगाने के लिए `x-ves-validation-rules` का निरीक्षण करता है:
+
+| नियम | निहितार्थ |
+|------|-------------|
+| `ves.io.schema.rules.message.required: "true"` | फ़ील्ड आवश्यक है |
+| `ves.io.schema.rules.uint32.gte: N` | यदि N >= 1 और कोई सर्वर डिफ़ॉल्ट नहीं, तो फ़ील्ड आवश्यक है |
+| `ves.io.schema.rules.repeated.min_items: N` | यदि N >= 1, तो एरे को कम से कम N आइटम चाहिए |
+| `ves.io.schema.rules.string.min_bytes: N` | यदि N >= 1, तो स्ट्रिंग को कम से कम N बाइट चाहिए |
+
+### सर्वर-लागू डिफ़ॉल्ट वाले संसाधन
+
+कुछ संसाधन खाली स्पेक्स स्वीकार करते हैं क्योंकि सर्वर डिफ़ॉल्ट लागू करता है:
+
+| संसाधन | सर्वर-लागू डिफ़ॉल्ट |
+|----------|------------------------|
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, डिफ़ॉल्ट `api_groups` |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, नेस्टेड http_health_check डिफ़ॉल्ट |
+
+इन संसाधनों के लिए, `x-f5xc-required-for.create` `false` हो सकता है भले ही `x-ves-required` `true` हो।
+
+### डिफ़ॉल्ट मान पैटर्न
+
+| पैटर्न | प्रकार | उदाहरण |
+|---------|------|---------|
+| `\{\}` | रिक्त ऑब्जेक्ट (विकल्प चयन) | `monitoring: \{\}` |
+| `[]` | रिक्त एरे | `expected_status_codes: []` |
+| `0` | संख्यात्मक | `jitter: 0` |
+| `""` | स्ट्रिंग | `expected_response: ""` |
+| `false` | बूलियन | `use_http2: false` |
+
+### खोजे गए डिफ़ॉल्ट जोड़ना
+
+1. API के माध्यम से न्यूनतम स्पेक के साथ F5 XC में संसाधन बनाएँ
+2. सर्वर-लागू मान देखने के लिए संसाधन को वापस पढ़ें
+3. `config/discovered_defaults.yaml` में डिफ़ॉल्ट दस्तावेज़ीकृत करें
+4. पाइपलाइन चलाएँ: `make pipeline`
+5. इसके साथ सत्यापित करें: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+
+## समस्या निवारण
+
+### Pre-commit में बहुत अधिक समय लगता है
+
+संगति सुनिश्चित करने के लिए पाइपलाइन प्रत्येक कमिट पर चलती है। कार्य-प्रगति कमिट के लिए:
+
+```bash
+git commit --no-verify -m "WIP: work in progress"
+# Run before final commit: make pre-commit-run
+```
+
+### खोज विफल हो जाती है
+
+```bash
+# Check VPN
+ping your-tenant.console.ves.volterra.io
+
+# Check credentials
+echo $F5XC_API_TOKEN | head -c 10
+
+# Check API URL format
+echo $F5XC_API_URL
+# Format: https://tenant.console.ves.volterra.io/api
+```
+
+### जनरेट किए गए स्पेक्स पर लिंट त्रुटियाँ
+
+```bash
+# Check lint report
+cat reports/lint-report.json | jq '.errors'
+```
+
+आउटपुट फ़ाइलों में नहीं, बल्कि संवर्धन/सामान्यीकरण कॉन्फ़िग में समस्याएँ ठीक करें।
+
+### संस्करण प्रणाली
+
+संस्करण git टैग (जैसे, `v2.0.38`) से प्राप्त होता है, जो समवर्ती PR पर मर्ज विरोधों का कारण बनने वाली रेस कंडीशन को समाप्त करता है।
+
+```python
+# Version is calculated dynamically from git tags
+from scripts.utils.version_calculator import get_version_from_tags
+version = get_version_from_tags()  # Returns "2.0.38"
+```
+
+### क्लोन के बाद स्पेक्स गायब हैं
+
+जनरेट किए गए स्पेक्स gitignored हैं:
+
+```bash
+make build  # Downloads and generates everything
+```
+
+### बड़ी फ़ाइल अवरुद्ध
+
+`.pre-commit-config.yaml` में बहिष्करण जोड़ें:
+
+```yaml
+- id: check-added-large-files
+  exclude: ^path/to/large/file\.json$
+```
+
+## त्वरित संदर्भ
+
+### Make लक्ष्य
+
+| लक्ष्य | विवरण |
+|--------|-------------|
+| `make build` | पूर्ण बिल्ड (डाउनलोड + पाइपलाइन) |
+| `make rebuild` | त्वरित पुनर्निर्माण (डाउनलोड छोड़ें) |
+| `make download` | स्पेक्स डाउनलोड करें (ETag कैश्ड) |
+| `make download-force` | बलपूर्वक डाउनलोड |
+| `make pipeline` | संवर्धन पाइपलाइन चलाएँ |
+| `make lint` | Spectral लिंटिंग |
+| `make serve` | स्थानीय दस्तावेज़ीकरण सर्वर |
+| `make discover` | API खोज (VPN आवश्यक) |
+| `make push-discovery` | खोज डेटा कमिट करें |
+| `make clean` | जनरेट की गई फ़ाइलें हटाएँ |
+| `make pre-commit-run` | सभी गुणवत्ता जाँच चलाएँ |
+
+### पर्यावरण चर
+
+| चर | उद्देश्य |
+|----------|---------|
+| `F5XC_API_URL` | F5 XC टेनेंट API URL |
+| `F5XC_API_TOKEN` | API प्रमाणीकरण टोकन |
+
+### प्रमुख फ़ाइलें
+
+| फ़ाइल | उद्देश्य |
+|------|---------|
+| `.etag` | अंतिम डाउनलोड किया गया ETag |
+| `CHANGELOG.md` | स्वचालित रूप से जनरेट किया गया चेंजलॉग |
+| `config/enrichment.yaml` | संवर्धन नियम |
+| `config/normalization.yaml` | सामान्यीकरण नियम |
+| `config/discovery.yaml` | खोज सेटिंग्स |
+| `config/spectral.yaml` | लिंटिंग नियम |
+| `scripts/utils/version_calculator.py` | टैग-आधारित संस्करण गणना |
+
+**नोट**: संस्करण git टैग (जैसे, `v2.0.38`) से प्राप्त होता है, `.version` फ़ाइल से नहीं।

@@ -1,0 +1,516 @@
+---
+title: HTTP 로드밸런서 개선사항
+description: HTTP 로드밸런서 스키마를 위한 보강 메타데이터
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 0784444951d8
+  translator: machine
+---
+
+HTTP 로드밸런서 스키마를 위한 보강 메타데이터입니다. 확장 정의에 대해서는 [OpenAPI 확장](../development/#openapi-extensions)을 참조하세요.
+
+## 보강된 스키마
+
+### 패턴
+
+`viewshttp_loadbalancer.*SpecType`과 일치하는 모든 스키마가 보강을 받습니다:
+
+- `viewshttp_loadbalancerCreateSpecType`
+- `viewshttp_loadbalancerReplaceSpecType`
+- `viewshttp_loadbalancerGetSpecType`
+
+## 최소 구성 메타데이터
+
+`x-f5xc-minimum-configuration` 확장은 최소한의 실행 가능한 HTTP 로드밸런서를 생성하기 위한 포괄적인 CLI 메타데이터를 제공합니다.
+
+### 필수 필드
+
+| 필드 | 제약 조건 | 설명 |
+|-------|-----------|-------------|
+| `metadata.name` | DNS 레이블 형식: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | 리소스 이름 |
+| `metadata.namespace` | DNS 레이블 형식 | 네임스페이스 |
+| `spec.domains` | 배열, min_items: 1 | 서비스할 도메인 |
+
+### 로드밸런서 유형 (OneOf 필수)
+
+다음 로드밸런서 유형 중 하나를 지정해야 합니다:
+
+| 변형 | 설명 |
+|---------|-------------|
+| `spec.http` | HTTP 전용 |
+| `spec.https` | 수동 인증서를 사용한 HTTPS |
+| `spec.https_auto_cert` | 자동 인증서를 사용한 HTTPS |
+| `spec.http_https` | HTTP와 HTTPS 모두 |
+
+**참고**: 로드밸런서 유형 OneOf 그룹은 다음과 같이 참조됩니다:
+- 구성 파일에서는 `lb_type` (`config/minimum_configs.yaml`의 짧은 형식)
+- OpenAPI 스펙 네이티브 확장에서는 `loadbalancer_type` (네이티브 필드 이름)
+
+**API 스키마 참조**: `x-ves-oneof-field-loadbalancer_type: ["http", "https", "https_auto_cert", "http_https"]`
+
+### 최소 실행 가능 구성
+
+```json
+{
+  "metadata": {
+    "name": "example-app",
+    "namespace": "default"
+  },
+  "spec": {
+    "domains": ["example.com"],
+    "https_auto_cert": {
+      "port": 443,
+      "tls_config": {"default_security": {}}
+    },
+    "advertise_on_public_default_vip": {},
+    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+  }
+}
+```
+
+## 서버 적용 기본값
+
+`x-f5xc-server-default: true`로 표시된 필드는 요청에서 생략될 때 F5 XC API 서버에 의해 `default` 값이 적용됩니다. HTTP 로드밸런서는 대부분의 보안 기능과 프로토콜 옵션이 비활성화 또는 안전한 상태로 기본 설정되기 때문에 서버 적용 기본값이 많습니다.
+
+### HTTPS 자동 인증서 기본값
+
+`https_auto_cert`가 지정된 경우, 생략된 필드에 대해 서버가 다음 기본값을 적용합니다:
+
+| 필드 | 기본값 | 유형 | 설명 |
+|-------|---------------|------|-------------|
+| `port` | `443` | integer | HTTPS 수신 포트 |
+| `http_redirect` | `false` | boolean | HTTP에서 HTTPS로 리다이렉트 |
+| `add_hsts` | `false` | boolean | HTTP Strict Transport Security 헤더 |
+| `tls_config.default_security` | `{}` | object | 강력한 암호를 사용한 TLS 1.2+ |
+| `no_mtls` | `{}` | object | 상호 TLS 비활성화 |
+| `default_header` | `{}` | object | 기본 서버 이름 헤더 처리 |
+| `enable_path_normalize` | `{}` | object | 경로 정규화 활성화 |
+| `default_loadbalancer` | `{}` | object | 기본 로드밸런서 설정 |
+| `header_transformation_type.legacy_header_transformation` | `{}` | object | 레거시 헤더 변환 |
+| `connection_idle_timeout` | `120000` | integer | 연결 유휴 타임아웃(밀리초, 2분) |
+| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 및 HTTP/2 활성화 |
+| `coalescing_options.default_coalescing` | `{}` | object | 기본 HTTP/2 연결 병합 |
+
+### 보안 기능 기본값
+
+모든 보안 기능은 생략 시 기본적으로 비활성화됩니다:
+
+| 필드 | 기본값 | 설명 |
+|-------|---------------|-------------|
+| `disable_waf` | `{}` | 웹 애플리케이션 방화벽 비활성화 |
+| `disable_bot_defense` | `{}` | 봇 방어 비활성화 |
+| `disable_rate_limit` | `{}` | 속도 제한 비활성화 |
+| `disable_api_discovery` | `{}` | API 탐색 비활성화 |
+| `disable_api_testing` | `{}` | API 테스트 비활성화 |
+| `disable_api_definition` | `{}` | API 정의 비활성화 |
+| `disable_malware_protection` | `{}` | 악성코드 보호 비활성화 |
+| `disable_client_side_defense` | `{}` | 클라이언트 측 방어 비활성화 |
+| `disable_ip_reputation` | `{}` | IP 평판 비활성화 |
+| `disable_threat_mesh` | `{}` | 위협 메시 비활성화 |
+| `disable_malicious_user_detection` | `{}` | 악성 사용자 탐지 비활성화 |
+
+### DDoS 및 접근 제어 기본값
+
+| 필드 | 기본값 | 설명 |
+|-------|---------------|-------------|
+| `l7_ddos_protection.mitigation_block` | `{}` | DDoS 트래픽 차단 (기본 완화 조치) |
+| `l7_ddos_protection.default_rps_threshold` | `{}` | 기본 RPS 임계값 사용 |
+| `l7_ddos_protection.clientside_action_none` | `{}` | 클라이언트 측 DDoS 검증 없음 |
+| `l7_ddos_protection.ddos_policy_none` | `{}` | DDoS 정책 참조 없음 |
+| `no_challenge` | `{}` | 클라이언트 챌린지 없음 |
+| `user_id_client_ip` | `{}` | 클라이언트 IP로 사용자 식별 |
+| `disable_trust_client_ip_headers` | `{}` | 클라이언트 IP 헤더 신뢰하지 않음 |
+
+### 기타 서버 적용 기본값
+
+| 필드 | 기본값 | 유형 | 설명 |
+|-------|---------------|------|-------------|
+| `advertise_on_public_default_vip` | `{}` | object | 공개 기본 VIP에 공고 |
+| `round_robin` | `{}` | object | 라운드 로빈 로드밸런싱 알고리즘 |
+| `add_location` | `true` | boolean | 응답에 위치 헤더 추가 |
+| `system_default_timeouts` | `{}` | object | 시스템 기본 타임아웃 사용 |
+| `service_policies_from_namespace` | `{}` | object | 네임스페이스에서 서비스 정책 상속 |
+| `default_sensitive_data_policy` | `{}` | object | 기본 민감 데이터 정책 사용 |
+
+## 상호 배타적 필드 그룹
+
+`x-f5xc-conflicts-with`로 표시된 필드는 OneOf 패턴을 나타냅니다. 각 그룹에서 하나의 필드만 지정할 수 있습니다.
+
+### 핵심 구성 그룹
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | 로드밸런서 프로토콜 유형 |
+| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | 로드밸런서 공고 방법 |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | 트래픽 분배 알고리즘 |
+
+### HTTPS 구성 그룹 (10개 그룹)
+
+#### TLS 구성
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS 보안 수준 |
+| `mtls` | `no_mtls`, `use_mtls` | 상호 TLS 활성화 또는 비활성화 |
+
+#### 프로토콜 및 헤더
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP 프로토콜 버전 |
+| `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP 헤더 변환 유형 |
+| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | 서버 이름 헤더 처리 |
+
+#### 연결 관리
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | 경로 정규화 활성화 또는 비활성화 |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | 기본 또는 비기본 로드밸런서 |
+| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 연결 병합 옵션 |
+
+### 보안 기능 그룹 (11개 그룹)
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `waf` | `disable_waf`, `enable_waf` | 웹 애플리케이션 방화벽 |
+| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | 봇 탐지 및 완화 |
+| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | 속도 제한 |
+| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API 탐색 |
+| `api_testing` | `disable_api_testing`, `enable_api_testing` | API 테스트 |
+| `api_definition` | `disable_api_definition`, `enable_api_definition` | API 정의 |
+| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | 악성코드 보호 |
+| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | 클라이언트 측 방어 |
+| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP 평판 |
+| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | 위협 메시 |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | 악성 사용자 탐지 |
+
+### DDoS 보호 그룹 (4개 그룹)
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS 완화 조치 |
+| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | 초당 요청 수 임계값 |
+| `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | 클라이언트 측 DDoS 검증 조치 |
+| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS 정책 참조 또는 없음 |
+
+### 기타 설정 그룹 (6개 그룹)
+
+| 그룹 이름 | 필드 | 설명 |
+|-----------|--------|-------------|
+| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | 봇 탐지를 위한 클라이언트 챌린지 유형 |
+| `user_identification` | `user_id_client_ip`, `user_identification` | 사용자 식별 방법 |
+| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | 클라이언트 IP 헤더 신뢰 여부 |
+| `timeouts` | `system_default_timeouts`, `custom_timeouts` | 시스템 기본 또는 사용자 정의 타임아웃 사용 |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | 네임스페이스의 서비스 정책 또는 활성 목록 |
+| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | 기본 또는 사용자 정의 민감 데이터 정책 사용 |
+
+## OneOf 변형 권장 사항 (향후 확장)
+
+**상태**: 아직 http_loadbalancer 스키마에 적용되지 않았습니다.
+
+OneOf 그룹에 대해 가장 일반적인 선택을 나타내는 `x-f5xc-recommended-oneof-variant`를 포함하는 healthcheck와 달리, http_loadbalancer에는 현재 이 확장이 없습니다.
+
+### Healthcheck와의 비교
+
+**Healthcheck** (구현됨):
+```yaml
+viewshealthcheckCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+
+**HTTP 로드밸런서** (아직 구현되지 않음):
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant: null  # 권장 lb_type 변형을 나타낼 예정
+```
+
+### 향후 구현
+
+http_loadbalancer에 이 확장을 추가하려면:
+1. F5 XC 콘솔 기본 선택 사항을 관찰합니다 (예: UI에서 어떤 lb_type이 미리 선택되는지)
+2. `config/discovered_defaults.yaml`에 구성을 추가합니다
+3. 보강 파이프라인을 다시 실행하여 확장을 적용합니다
+
+**추가 시 예상 구조**:
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  x-f5xc-recommended-oneof-variant:
+    loadbalancer_type: "https_auto_cert"  # 예시 - 검증 필요
+```
+
+이 확장은 다운스트림 도구가 사용자에게 구성 옵션을 제시할 때 가장 일반적으로 사용되는 변형을 미리 선택할 수 있게 합니다.
+
+## 제약 조건 메타데이터
+
+`x-f5xc-constraints`로 표시된 필드는 API 분석에서 발견된 유효성 검사 제약 조건을 포함합니다.
+
+### 배열 제약 조건
+
+| 필드 | minItems | maxItems | uniqueItems |
+|-------|----------|----------|-------------|
+| `spec.domains` | 1 | - | false |
+| `spec.routes` | 1 | 256 | false |
+| `spec.blocked_clients` | 1 | 128 | true |
+| `spec.trusted_clients` | 1 | 128 | true |
+| `spec.data_guard_rules` | 1 | 256 | true |
+
+### 정수 제약 조건
+
+| 필드 | 최솟값 | 최댓값 | 기본값 | 설명 |
+|-------|---------|---------|---------|-------------|
+| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS 포트 번호 |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | 연결 유휴 타임아웃(밀리초, 1초~1시간) |
+
+### 열거형 제약 조건
+
+| 필드 | 값 | 기본값 | 설명 |
+|-------|--------|---------|-------------|
+| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS 보안 수준 |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP 헤더 변환 |
+| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP 프로토콜 버전 |
+| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 연결 병합 |
+| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | 로드밸런싱 알고리즘 |
+| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | 레이어 7 DDoS 완화 조치 |
+| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | DDoS 탐지를 위한 RPS 임계값 |
+| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | 클라이언트 측 DDoS 검증 |
+| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | 클라이언트 챌린지 유형 |
+| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | 로드밸런서 공고 |
+
+## 가이드 워크플로우 통합
+
+보강 파이프라인은 스펙 수준에서 `x-f5xc-guided-workflows` 메타데이터를 추가합니다. 이러한 워크플로우는 AI 어시스턴트와 CLI 도구에서 사용하는 단계별 배포 안내를 제공합니다.
+
+### HTTP 로드밸런서 배포
+
+백엔드 오리진 풀을 포함한 완전히 구성된 HTTP 로드밸런서를 생성하기 위한 5단계 워크플로우입니다 (`config/guided_workflows.yaml`에 정의됨):
+
+| 단계 | 작업 | 리소스 | 필수 필드 | 선택 사항 |
+|------|--------|----------|-----------------|----------|
+| 1 | 오리진 풀 생성 | `origin_pool` | `name`, `origin_servers`, `port` | 아니오 |
+| 2 | 헬스 체크 구성 | `healthcheck` | `name`, `http_health_check` | 예 |
+| 3 | 헬스 체크 연결 | - | - | 예 |
+| 4 | HTTP 로드밸런서 생성 | `http_loadbalancer` | `name`, `domains`, `http.port` | 아니오 |
+| 5 | 배포 확인 | - | - | 아니오 |
+
+**사전 요구 사항**: 대상 테넌트의 유효한 네임스페이스, IP 또는 DNS를 통해 접근 가능한 백엔드 애플리케이션, SSL 인증서 (HTTPS의 경우 선택 사항).
+
+### TLS를 포함한 HTTPS 로드밸런서 배포
+
+SSL/TLS 종료를 포함한 HTTPS 로드밸런서를 생성하기 위한 7단계 워크플로우입니다:
+
+| 단계 | 작업 | 리소스 | 필수 필드 | 선택 사항 |
+|------|--------|----------|-----------------|----------|
+| 1 | SSL 인증서 업로드 | `certificate` | `name`, `certificate_chain`, `private_key` | 아니오 |
+| 2 | 오리진 풀 생성 | `origin_pool` | `name`, `origin_servers` | 아니오 |
+| 3 | 헬스 체크 구성 | `healthcheck` | - | 예 |
+| 4 | WAF 정책 구성 | `app_firewall` | - | 예 |
+| 5 | HTTPS 로드밸런서 생성 | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | 아니오 |
+| 6 | WAF 정책 연결 | - | - | 예 |
+| 7 | HTTPS 배포 확인 | - | - | 아니오 |
+
+**사전 요구 사항**: 대상 테넌트의 유효한 네임스페이스, SSL 인증서 및 개인 키, 접근 가능한 백엔드 애플리케이션.
+
+### 워크플로우 활용
+
+다운스트림 도구는 이러한 워크플로우를 사용하여 사용자에게 다단계 배포를 안내합니다:
+
+- **xcsh CLI**: 워크플로우를 대화형 가이드 명령으로 제시합니다 (예: `xcsh deploy http-lb`)
+- **VS Code 확장**: 진행 추적과 함께 사이드바 패널에 워크플로우 단계를 표시합니다
+- **AI 어시스턴트**: 워크플로우 단계를 순차적으로 따라가며 각 리소스를 생성하고 종속성을 검증합니다
+
+## OpenAPI 확장 참조
+
+이러한 벤더 확장은 F5 XC 관련 메타데이터를 전달하기 위해 표준 OpenAPI 스키마에 추가됩니다.
+
+### x-f5xc-cli-domain
+
+**유형**: `string`
+
+CLI 및 도구 구성을 위한 도메인 분류를 나타냅니다.
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-cli-domain: "virtual"
+```
+
+### x-f5xc-minimum-configuration
+
+**유형**: `object`
+
+최소한의 실행 가능한 구성을 생성하기 위한 포괄적인 메타데이터를 제공합니다. 포함 내용:
+- 설명
+- 제약 조건이 있는 필수 필드
+- 상호 배타적 그룹
+- 예제 구성 (YAML, JSON)
+- curl 명령 예제
+
+```yaml
+viewshttp_loadbalancerCreateSpecType:
+  type: object
+  x-f5xc-minimum-configuration:
+    description: "HTTP/HTTPS load balancer for distributing traffic across origin pools"
+    required_fields:
+      - "metadata.name"
+      - "metadata.namespace"
+      - "spec.domains"
+    mutually_exclusive_groups:
+      - name: "lb_type"
+        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        reason: "Choose exactly one load balancer type"
+    example_yaml: |
+      ...
+    example_json: |
+      ...
+    example_curl: |
+      ...
+```
+
+### x-f5xc-server-default
+
+**유형**: `boolean`
+
+`true`인 경우, 동반되는 `default` 값이 F5 XC API 서버에 의해 적용됨을 나타냅니다. 이 확장이 있는 필드는 API 요청에서 안전하게 생략할 수 있습니다 -- 서버가 자동으로 기본값을 적용합니다.
+
+```yaml
+disable_waf:
+  type: object
+  default: {}
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-conflicts-with
+
+**유형**: `array of strings`
+
+현재 필드와 상호 배타적인 필드 이름을 나열하며, OneOf 패턴을 나타냅니다.
+
+```yaml
+advertise_custom:
+  type: object
+  x-f5xc-conflicts-with:
+    - advertise_on_public
+    - advertise_on_public_default_vip
+    - do_not_advertise
+```
+
+### x-f5xc-constraints
+
+**유형**: `object`
+
+배열 크기 제한, 정수 범위, 고유성 요구 사항 및 발견 메타데이터를 포함한 유효성 검사 제약 조건을 제공합니다.
+
+```yaml
+routes:
+  type: array
+  x-f5xc-constraints:
+    constraintType: "array"
+    minItems: 1
+    maxItems: 256
+    uniqueItems: false
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+      validatedAt: "2026-01-19T12:00:00Z"
+```
+
+```yaml
+port:
+  type: integer
+  x-f5xc-constraints:
+    constraintType: "number"
+    minimum: 1
+    maximum: 65535
+    metadata:
+      source: "discovery"
+      confidence: 0.99
+```
+
+### x-f5xc-description-short 및 x-f5xc-description-medium
+
+**유형**: `string`
+
+다양한 사용 사례를 위한 대체 설명 길이를 제공합니다:
+- `x-f5xc-description-short`: 최대 60자 (CLI 열, 배지)
+- `x-f5xc-description-medium`: 최대 150자 (툴팁, 요약)
+
+```yaml
+domains:
+  type: array
+  description: "List of domains the load balancer will serve"
+  x-f5xc-description-short: "Domains to serve"
+  x-f5xc-description-medium: "List of domains for which the load balancer accepts traffic"
+```
+
+### x-f5xc-example
+
+**유형**: `any` (필드 유형과 일치)
+
+문서화 및 도구를 위한 구체적인 필드 예제를 제공합니다.
+
+```yaml
+name:
+  type: string
+  x-f5xc-example: "example-app"
+
+domains:
+  type: array
+  x-f5xc-example: ["example.com", "www.example.com"]
+```
+
+### x-f5xc-required-for
+
+**유형**: `array of strings`
+
+`minimum_config`, `create`, `update`, `read` 플래그를 사용하여 컨텍스트별 요구 사항을 나타냅니다.
+
+```yaml
+metadata.name:
+  type: string
+  x-f5xc-required-for: ["minimum_config", "create"]
+
+metadata.uid:
+  type: string
+  x-f5xc-required-for: ["read"]
+```
+
+## 데이터 접근
+
+### OpenAPI 사양
+
+| 파일 | 내용 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | 보강이 포함된 모든 http_loadbalancer 스키마 |
+| `docs/specifications/api/openapi.json` | 모든 스키마가 포함된 병합 사양 |
+
+### 구성 파일
+
+| 파일 | 용도 |
+|------|---------|
+| `config/minimum_configs.yaml` | 최소 구성 메타데이터 소스 |
+| `config/constraint_patterns.yaml` | 제약 조건 패턴 정의 |
+| `config/guided_workflows.yaml` | 가이드 워크플로우 단계 정의 |
+| `config/domain_descriptions.yaml` | 도메인 수준 설명 메타데이터 |
+
+### 보강된 스키마
+
+- `viewshttp_loadbalancerCreateSpecType` - 생성 작업 스키마
+- `viewshttp_loadbalancerReplaceSpecType` - 업데이트 작업 스키마
+- `viewshttp_loadbalancerGetSpecType` - 읽기 작업 스키마
+
+## 관련 문서
+
+- [개발 가이드 - OpenAPI 확장](../development/#openapi-extensions) - 확장 정의 및 사용법
+- [Healthcheck 개선사항](./healthcheck-enhancements/) - Healthcheck 스키마 보강 (`x-f5xc-recommended-oneof-variant` 포함)
+- [오리진 풀 개선사항](./originpool-enhancements/) - 오리진 풀 스키마 보강
+- [제약 조건 메타데이터 가이드](../constraint-metadata/) - 상세한 제약 조건 유효성 검사 문서
+
+## 변경 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|---------|------|---------|
+| 2.0.46 | 2026-04-18 | 서버 적용 기본값, 가이드 워크플로우 통합 및 확장된 최소 구성 섹션 추가 |
+| 2.0.45 | 2026-01-20 | 초기 http_loadbalancer 보강 문서 |

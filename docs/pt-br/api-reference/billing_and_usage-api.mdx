@@ -1,0 +1,66 @@
+---
+title: "\U0001F4B3 API de Faturamento e Uso"
+description: 'Planos de assinatura, métodos de pagamento e cotas.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 9abaa66c9e84
+  translator: machine
+---
+
+Transições de plano, faturamento e consumo de recursos. Limites de cota em nível de namespace e rastreamento de uso.
+
+- **Categoria**: Plataforma
+- **Complexidade**: moderada
+- **Caminhos**: 25 | **Schemas**: 101
+- **Nível**: Padrão
+- **Domínios relacionados**: `system`, `users`
+
+## Casos de Uso
+
+- Gerenciar planos de assinatura e transições de faturamento
+- Configurar métodos de pagamento e faturas
+- Rastrear uso de cotas de recursos entre namespaces
+- Monitorar limites de uso e capacidade
+
+## Recursos Principais
+
+- **subscription**: Assinatura para direitos de serviço
+- **quota**: Cota de recursos para limites de uso
+- **usage_report**: Relatório de uso para rastreamento de consumo
+
+## Endpoints
+
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| POST | `/api/data/namespaces/system/billing/usage_summary` | Resumo de Uso de Faturamento. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | Obter PDF da Fatura. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | Listar faturas. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | Tornar cartão de crédito primário. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | Tornar método de pagamento secundário. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | Tornar método de pagamento secundário. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | Criar especificação de método de pagamento. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | Excluir o método de pagamento especificado. |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | Obter Transição de Plano. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | Iniciar Transição de Plano. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | Criar Cota. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | Substituir Cota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | Obter Limites de Cota Personalizado. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | Obter Uso de Cota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | Listar Cotas. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | Obter Cota. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | Excluir Cota. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | Listar Assinaturas. |
+| POST | `/api/web/namespaces/system/addon/subscribe` | Assinar serviços complementares XC. |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | Cancelar assinatura de serviços complementares XC. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | Listar detalhes de uso atual. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | Listar detalhes de uso por hora. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | Listar detalhes de uso mensal. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | Listar detalhes de uso. |
+| GET | `/api/web/namespaces/system/usage_plans/current` | Obter plano de uso atual. |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | Listar Planos de Uso. |
+
+## Links
+
+- [Referência Interativa da API](./billing_and_usage/)
+- [JSON da Especificação OpenAPI](../specifications/api/billing_and_usage.json)

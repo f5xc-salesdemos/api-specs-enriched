@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA मार्केटप्लेस API"
+description: 'ऐड-ऑन सेवाएँ, कनेक्टर, और TPM नीतियाँ।'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+DPD टाइमर के साथ थर्ड-पार्टी GRE और IPSec टनल प्रोविज़निंग। टाइल प्लेसमेंट नियंत्रण के साथ नेमस्पेस में साझा संसाधन आवंटन।
+
+- **श्रेणी**: प्लेटफ़ॉर्म
+- **जटिलता**: मध्यम
+- **पथ**: 36 | **स्कीमा**: 183
+- **टियर**: उन्नत
+- **संबंधित डोमेन**: `bigip`, `admin`
+
+## उपयोग के मामले
+
+- थर्ड-पार्टी इंटीग्रेशन और ऐड-ऑन तक पहुँच प्राप्त करें
+- मार्केटप्लेस एक्सटेंशन प्रबंधित करें
+- Terraform और बाहरी इंटीग्रेशन कॉन्फ़िगर करें
+- TPM नीतियाँ प्रबंधित करें
+
+## प्राथमिक संसाधन
+
+- **marketplace_item**: सेवा कैटलॉग के लिए मार्केटप्लेस आइटम
+- **subscription**: सेवा अधिकारों के लिए सब्सक्रिप्शन
+
+## एंडपॉइंट
+
+| विधि | पथ | विवरण |
+|--------|------|-------------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | ऐड-ऑन सेवा विवरण प्राप्त करें। |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | ऐड-ऑन सेवा सक्रियण स्थिति। |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | सभी ऐड-ऑन सेवा सक्रियण स्थिति। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | ऐड-ऑन सेवा सूचीबद्ध करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | ऐड-ऑन सेवा प्राप्त करें। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | ऐड-ऑन सब्सक्रिप्शन बनाएँ। |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | ऐड-ऑन सब्सक्रिप्शन प्रतिस्थापित करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | ऐड-ऑन सब्सक्रिप्शन सूचीबद्ध करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | ऐड-ऑन सब्सक्रिप्शन प्राप्त करें। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | ऐड-ऑन सब्सक्रिप्शन हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | सेंट्रल मैनेजर इंस्टेंस बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | सेंट्रल मैनेजर इंस्टेंस प्रतिस्थापित करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | सेंट्रल मैनेजर इंस्टेंस सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | सेंट्रल मैनेजर इंस्टेंस प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | सेंट्रल मैनेजर इंस्टेंस हटाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | external_connector कॉन्फ़िगरेशन बनाएँ। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | external_connector कॉन्फ़िगरेशन प्रतिस्थापित करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | बाहरी कनेक्टर कॉन्फ़िगरेशन सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | external_connector कॉन्फ़िगरेशन प्राप्त करें। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | बाहरी कनेक्टर कॉन्फ़िगरेशन हटाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | नेविगेशन टाइल सूचीबद्ध करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | नेविगेशन टाइल प्राप्त करें। |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | नया AWS खाता पंजीकृत करें। |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | AWS खाता साइनअप। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | प्लान सूचीबद्ध करें |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | प्लान प्राप्त करें |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | थर्ड पार्टी एप्लिकेशन प्रतिस्थापित करें। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | थर्ड पार्टी एप्लिकेशन के लिए सुरक्षा कॉन्फ़िग प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | थर्ड पार्टी एप्लिकेशन सूचीबद्ध करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | थर्ड पार्टी एप्लिकेशन प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | टोकन जनरेट करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | व्यू के लिए आंतरिक ऑब्जेक्ट प्राप्त करें। |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | व्यू को बलपूर्वक हटाएँ। |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | व्यू के लिए Terraform क्रिया चलाएँ। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | व्यू के लिए Terraform पैरामीटर प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | व्यू के लिए Terraform की स्थिति प्राप्त करें। |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | XC SaaS साइनअप। |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | पंजीकरण विवरण प्राप्त करें। |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | साइनअप ईमेल भेजें। |
+
+## लिंक
+
+- [इंटरैक्टिव API संदर्भ](./marketplace/)
+- [OpenAPI स्पेसिफिकेशन JSON](../specifications/api/marketplace.json)

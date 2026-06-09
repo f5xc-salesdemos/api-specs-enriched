@@ -1,0 +1,108 @@
+---
+title: "\U0001F6D1 DDoS API"
+description: ボリューメトリック攻撃の緩和とトラフィックスクラビング。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: e560f0ed4570
+  translator: machine
+---
+
+拒否リスト、ファイアウォールルールグループ、およびトンネルベースの保護機能。ネットワーク境界セキュリティのためのレート制限とパターン分析。
+
+- **カテゴリ**: セキュリティ
+- **複雑度**: 上級
+- **パス数**: 60 | **スキーマ数**: 246
+- **ティア**: アドバンスド
+- **関連ドメイン**: `network_security`, `virtual`
+
+## ユースケース
+
+- DDoS 保護ポリシーの設定
+- DDoS 脅威の監視と分析
+- インフラストラクチャ保護の設定
+
+## 主要リソース
+
+- **ddos_protection**: トラフィックスクラビングのための DDoS 保護設定
+- **ddos_mitigation_rule**: 攻撃対応のための DDoS 緩和ルール
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| GET | `/api/infraprotect/namespaces/system/infraprotect/access` | 顧客アクセス。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;` | DDoS アラート。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;/to_event` | アラートをイベントにリンク。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alerts` | DDoS アラート。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/bgp_peer_status` | BGP ピアステータス。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | イベント詳細。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | イベントの編集。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/alerts` | イベントアラート。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/attachments` | イベント添付ファイル。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | イベント詳細の削除。 |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | イベント詳細の編集。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | イベント詳細一覧。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | イベント詳細の追加。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/mitigation_annotations` | イベント緩和アノテーション。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events` | イベント一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | シンプルイベントビュー。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;` | 緩和の詳細。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/annotations` | 緩和アノテーション。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/ips` | 緩和 IP。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigations` | 緩和一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | ネットワーク一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/report/&#123;report_id&#125;` | レポート詳細。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/reports` | レポート一覧。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/transit_usage` | トランジット使用量。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/suggest-values` | 値の候補。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns` | DDoS トランジット ASN の作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns/&#123;metadata.name&#125;` | DDoS トランジット ASN の置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns` | Infraprotect ASN の一覧。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/update-asn-review-status` | ASN レビューステータスの更新。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | Infraprotect ASN の取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | Infraprotect ASN の削除。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs` | DDoS トランジットプレフィックスの作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs/&#123;metadata.name&#125;` | DDoS トランジットプレフィックスの置換。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-irr-override` | ASN プレフィックス IRR オーバーライドの更新。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-review-status` | ASN プレフィックスレビューステータスの更新。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs` | Infraprotect ASN プレフィックスの一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | Infraprotect ASN プレフィックスの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | Infraprotect ASN プレフィックスの削除。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules` | DDoS トランジット拒否リストルールの作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules/&#123;metadata.name&#125;` | DDoS トランジット拒否リストルールの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules` | Infraprotect 拒否リストルールの一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | Infraprotect 拒否リストルールの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | Infraprotect 拒否リストルールの削除。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules` | DDoS トランジットファイアウォールルールの作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules/&#123;metadata.name&#125;` | DDoS トランジットファイアウォールルールの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules` | Infraprotect ファイアウォールルールの一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | Infraprotect ファイアウォールルールの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | Infraprotect ファイアウォールルールの削除。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups` | DDoS トランジットファイアウォールルールグループの置換。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups/&#123;metadata.name&#125;` | DDoS トランジットファイアウォールルールグループの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | Infraprotect ファイアウォールルールグループの一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | Infraprotect ファイアウォールルールグループの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | Infraprotect ファイアウォールルールグループの削除。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | 緩和対策。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | DDoS トランジットファイアウォールルールセットの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | Infraprotect ファイアウォールルールセットの一覧。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | Infraprotect ファイアウォールルールセットの取得。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_informations/&#123;name&#125;` | Infraprotect 情報の取得。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements` | DDoS トランジットインターネットプレフィックスの作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;metadata.name&#125;` | DDoS トランジットインターネットプレフィックスの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements` | Infraprotect インターネットプレフィックスアドバタイズメントの一覧。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | Infraprotect インターネットプレフィックスアドバタイズメントの更新。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | Infraprotect インターネットプレフィックスの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | Infraprotect インターネットプレフィックスアドバタイズメントの削除。 |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | DDoS トランジットトンネルの作成。 |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | DDoS トランジットトンネルの置換。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | トンネル一覧。 |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | トンネルステータスの更新。 |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | トンネルの取得。 |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | トンネルの削除。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./ddos/)
+- [OpenAPI 仕様 JSON](../specifications/api/ddos.json)

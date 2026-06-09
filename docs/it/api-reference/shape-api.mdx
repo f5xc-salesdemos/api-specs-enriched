@@ -1,0 +1,327 @@
+---
+title: "\U0001F3AD API Shape"
+description: 'Difesa dai bot, prevenzione delle frodi e integrità del client.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09077d724f15
+  translator: machine
+---
+
+Riconoscimento delle minacce con analisi comportamentale e fingerprinting dei dispositivi. Integrazione SDK mobile per la protezione delle applicazioni.
+
+- **Categoria**: Sicurezza
+- **Complessità**: avanzata
+- **Percorsi**: 271 | **Schemi**: 813
+- **Livello**: Avanzato
+- **Domini correlati**: `bot_defense`, `virtual`
+
+## Casi d'uso
+
+- Configurare le policy di Shape Security
+- Gestire la prevenzione di bot e minacce
+- Configurare le policy SafeAP
+- Abilitare il riconoscimento delle minacce
+
+## Risorse principali
+
+- **shape_app_firewall**: Firewall applicativo Shape per la protezione avanzata
+- **shape_recognizer**: Riconoscitore Shape per l'analisi dei pattern di traffico
+
+## Endpoint
+
+| Metodo | Percorso | Descrizione |
+|--------|----------|-------------|
+| POST | `/api/shape/dip/namespaces/system/app_provision` | Provisioning dell'applicazione. |
+| DELETE | `/api/shape/dip/namespaces/system/application` | Eliminazione dell'applicazione. |
+| POST | `/api/shape/dip/namespaces/system/application` | Aggiornamento dell'applicazione. |
+| GET | `/api/shape/dip/namespaces/system/applications` | Ottenere le applicazioni. |
+| POST | `/api/shape/dip/namespaces/system/bot/asn` | Ottenere la valutazione bot per ASN principali. |
+| POST | `/api/shape/dip/namespaces/system/bot/transactions` | Ottenere la valutazione bot per le transazioni. |
+| POST | `/api/shape/dip/namespaces/system/bot/urls` | Ottenere la valutazione bot per URL principali. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/age` | Ottenere i dispositivi per età. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/applications` | Ottenere informazioni per applicazioni. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/asn` | Ottenere i dispositivi per ASN. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/country` | Ottenere i dispositivi per paese. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/session` | Ottenere i dispositivi per sessione. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/ua` | Ottenere i dispositivi per User-Agent. |
+| POST | `/api/shape/dip/namespaces/system/dashboard/unique` | Ottenere i dispositivi per accesso univoco. |
+| POST | `/api/shape/dip/namespaces/system/enable` | Abilitare Application Traffic Insights. |
+| GET | `/api/shape/dip/namespaces/system/provision/regions` | Ottenere le regioni disponibili per Application Traffic Insights. |
+| GET | `/api/shape/dip/namespaces/system/status` | Ottenere lo stato di Application Traffic Insights. |
+| POST | `/api/shape/dip/namespaces/system/validate/src_tag_injection` | Validare l'iniezione JS. |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys` | Creare una policy di generazione avvisi. |
+| PUT | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys/&#123;metadata.name&#125;` | Sostituire la policy di generazione avvisi. |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policy/&#123;name&#125;/status` | Clonare il template di avviso. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys` | Elencare le policy di generazione avvisi BRM. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | Ottenere la policy di generazione avvisi. |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | Eliminare la policy di generazione avvisi BRM. |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_templates` | Creare un dominio da proteggere. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates` | Elencare i template di avviso BRM. |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | Ottenere il dominio protetto. |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | Eliminare il template di avviso BRM. |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | Clonare il template di avviso. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | Distribuire le regole di rilevamento bot. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | Ottenere l'elenco delle distribuzioni di regole di rilevamento bot. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | Ottenere i dettagli di una distribuzione di regole di rilevamento bot. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | Ottenere le regole di rilevamento bot in stato bozza. |
+| DELETE | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | Scartare la bozza. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | Salvare la bozza. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/summary` | Ottenere il riepilogo delle regole di rilevamento bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | Elencare le regole di rilevamento bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | Ottenere la cronologia delle modifiche per una regola di rilevamento bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | Ottenere la regola di rilevamento bot. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | Suggerire valori. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | Ottenere gli aggiornamenti di rilevamento bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | Scaricare le note di rilascio degli aggiornamenti di rilevamento bot. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | Elencare tutte le policy endpoint bot e le versioni. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | Sostituzione personalizzata della policy endpoint bot. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | Sostituire la policy endpoint bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | Versioni della policy endpoint bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | Elencare le policy endpoint bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | Ottenere la policy endpoint bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | Ottenere il contenuto. |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | Creare un'infrastruttura bot. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | Sostituire l'infrastruttura bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | Elencare le infrastrutture bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | Ottenere l'infrastruttura bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | Cronologia delle distribuzioni. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | Stato della distribuzione. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | Distribuire le policy all'infrastruttura bot. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | Elencare tutte le policy allowlist bot e le versioni. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | Sostituzione personalizzata della policy allowlist bot. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | Sostituire la policy allowlist bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | Versioni della policy allowlist bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | Elencare le policy allowlist bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | Ottenere la policy allowlist bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | Ottenere il contenuto. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | Ottenere il file di configurazione base mobile. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | Elencare tutte le policy di rete bot e le versioni. |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | Sostituzione personalizzata della policy di rete bot. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | Sostituire la policy di rete bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | Versioni della policy di rete bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | Elencare le policy di rete bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | Ottenere la policy di rete bot. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | Ottenere il contenuto. |
+| POST | `/api/shape/csd/namespaces/system/init` | Abilitare la difesa lato client. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | Ottenere i domini rilevati. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | Ottenere i dettagli del dominio. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | Elencare tutti i campi modulo con metodo GET. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | Elencare tutti i campi modulo. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | Aggiornare l'analisi dei campi modulo. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | Ottenere il campo modulo. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | Ottenere la configurazione dell'iniezione JS. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | Eliminare la giustificazione dello script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | Elencare gli script. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | Elencare gli script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | Elencare i comportamenti per script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | Ottenere la panoramica dello script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | Elencare i campi modulo per script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | Elencare le interazioni di rete per script. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | Aggiornare lo stato di lettura dei campi modulo dello script. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | Elencare gli utenti interessati. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | Aggiornare la giustificazione dello script. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | Ottenere lo stato. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | Ottenere il riepilogo. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/testjs` | Test JS |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/update_domains` | Aggiornare i domini. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/allowed_domains` | Creare un dominio consentito. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains` | Elencare i domini consentiti della difesa lato client. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | Ottenere il dominio consentito. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | Eliminare il dominio consentito della difesa lato client. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/protected_domains` | Creare un dominio da proteggere. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains` | Elencare i domini da proteggere della difesa lato client. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | Ottenere il dominio protetto. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | Eliminare il dominio da proteggere della difesa lato client. |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/mitigated_domains` | Creare un dominio mitigato. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | Elencare i domini mitigati della difesa lato client. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | Ottenere il dominio mitigato. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | Eliminare il dominio mitigato della difesa lato client. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | Elencare tutti i domini rilevati. |
+| POST | `/api/shape/csd/namespaces/system/subscribe` | Iscriversi alla difesa lato client. |
+| POST | `/api/shape/csd/namespaces/system/unsubscribe` | Annullare l'iscrizione alla difesa lato client. |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | Iscriversi a Mobile App Shield. |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | Annullare l'iscrizione a Mobile App Shield. |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | Iscriversi a Mobile Integrator. |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/unsubscribe` | Annullare l'iscrizione a Mobile Integrator. |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk` | Ottenere l'elenco degli SDK mobili. |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk/&#123;name&#125;/&#123;version&#125;` | Ottenere l'SDK mobile. |
+| POST | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs` | Creare la configurazione base dell'SDK mobile. |
+| PUT | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs/&#123;metadata.name&#125;` | Sostituire la configurazione base dell'SDK mobile. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_config_file/&#123;name&#125;` | Ottenere il file di configurazione base mobile. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs` | Elencare le configurazioni base dell'SDK mobile. |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | Ottenere la configurazione base dell'SDK mobile. |
+| DELETE | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | Eliminare la configurazione base dell'SDK mobile. |
+| GET | `/api/shape/bot/namespaces/system/apikey` | Chiave API |
+| GET | `/api/shape/bot/namespaces/system/regions` | Regioni |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications` | Creare un'applicazione protetta. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications/&#123;metadata.name&#125;` | Sostituire l'applicazione protetta. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications` | Elencare le applicazioni protette. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | Ottenere l'applicazione protetta. |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | Eliminare l'applicazione protetta. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/config` | Configurazione del connettore. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/template` | Template del connettore. |
+| POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | Verificare lo stato dei peer. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | Stato ATB. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | Riepilogo dei consumi. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | Categorie degli endpoint. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | Etichetta delle categorie degli endpoint. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/list` | Tutti gli endpoint protetti. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/summary` | Riepilogo degli endpoint. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoints` | Report degli endpoint. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/credential-stuffing-attack` | Evento Insight: attacco di credential stuffing. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/bad-bot-reduction` | Insight sulla riduzione dei bot malevoli. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/unaddressed-automations` | Insight sulle automazioni non gestite. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/personal-stats` | Statistiche personali Insight. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/total-automation` | Evento Insight: automazione totale. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/endpoints` | Report endpoint malevoli. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/asn` | Report transazioni malevole ASN. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/browser` | Report transazioni malevole browser. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ip` | Report transazioni malevole IP. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/os` | Report transazioni malevole OS. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ua` | Report transazioni malevole UA. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/endpoints` | Endpoint più attaccati. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview` | Panoramica della latenza principale. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview/apps` | Panoramica della latenza principale per app. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/asorg` | Bot malevoli principali per ASOrg. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/automation` | Principali tipi di automazione bot malevoli. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ip` | Bot malevoli principali per indirizzo IP. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ua` | Bot malevoli principali per stringa User Agent. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/app` | Transazioni principali per applicazione. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/categories` | Categorie principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/endpointlabels` | Etichette endpoint principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/good` | Bot buoni principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/browser` | Browser umani principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/device` | Dispositivi umani principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/geolocation` | Geolocalizzazione umana principale. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/platform` | Piattaforme umane principali. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/app` | Bot malevoli principali per applicazione. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/apps/timeseries` | Serie temporale report APP malevoli. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg` | Bot malevoli principali per ASOrg v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | ASN principali per intento di attacco. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/attackintent` | Bot malevoli principali per intento di attacco. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/automation` | Principali tipi di automazione bot malevoli v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/bfp` | BFP più attaccati. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/endpoints` | Endpoint più attaccati v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip` | Bot malevoli principali per indirizzo IP v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | IP sorgente principali per intento di attacco. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua` | Bot malevoli principali per stringa User Agent v2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | User Agent principali per intento di attacco. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/attackintent/timeseries` | Serie temporale dell'intento di attacco per tutto il traffico. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/categories/timeseries` | Serie temporale delle categorie per tutto il traffico. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/dimension/attackintent/timeseries` | Serie temporale dell'intento di attacco dei bot malevoli. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/actions` | Panoramica del traffico malevolo per azioni. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/metrics` | Metriche della panoramica del traffico malevolo. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/timeseries/actions` | Serie temporale della panoramica del traffico malevolo per azioni. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview` | Panoramica del traffico. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/expanded` | Panoramica del traffico espansa. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/timeseries` | Serie temporale della panoramica del traffico. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | Riepilogo dell'utilizzo. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | Campi forensi. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | Panoramica del traffico automatizzato per azioni. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | Riepilogo degli endpoint V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | Report endpoint malevoli V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | Report transazioni malevole ASN V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/browser` | Report transazioni malevole browser V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | Report transazioni malevole IP V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | Report transazioni malevole OS V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | Report transazioni malevole UA V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | Bot buoni principali V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | Browser umani principali V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | Dispositivi umani principali V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/geolocation` | Geolocalizzazione umana principale V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/platform` | Piattaforme umane principali V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/apps/timeseries` | Serie temporale report APP malevoli V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | ASN principali per intento di attacco V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/attackintent` | Bot malevoli principali per intento di attacco V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/endpoints` | Endpoint più attaccati v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | IP sorgente principali per intento di attacco V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | User Agent principali per intento di attacco V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/dimension/attackintent/timeseries` | Serie temporale dell'intento di attacco dei bot malevoli V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/actions` | Panoramica del traffico malevolo per azioni V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/metrics` | Metriche della panoramica del traffico malevolo V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/timeseries/actions` | Serie temporale della panoramica del traffico malevolo per azioni V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview` | Panoramica del traffico V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/expanded` | Panoramica del traffico espansa V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/timeseries` | Serie temporale della panoramica del traffico V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/good` | Bot buoni principali V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/asorg` | Bot malevoli principali per ASOrg v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/automation` | Principali tipi di automazione bot malevoli v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ip` | Bot malevoli principali per indirizzo IP v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ua` | Bot malevoli principali per stringa User Agent v3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview` | Panoramica del traffico V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/expanded` | Panoramica del traffico espansa V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/timeseries` | Serie temporale della panoramica del traffico V3. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/endpoints` | Endpoint più attaccati v4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/ua` | Bot malevoli principali per stringa User Agent v4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/expanded` | Panoramica del traffico espansa in Traffic Analyzer. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/timeseries` | Serie temporale della panoramica del traffico V4. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/top/type/malicious/dimension/endpoints` | Endpoint più attaccati v5. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/traffic/overview/expanded` | Panoramica del traffico espansa V5. |
+| POST | `/api/shape/bot/reporting/peers/threat-types` | Gruppo peer per tipi di minaccia. |
+| POST | `/api/shape/bot/reporting/peers/top-good-bots` | Bot buoni principali del gruppo peer. |
+| POST | `/api/shape/bot/reporting/peers/top-reason-codes` | Codici motivo principali del gruppo peer. |
+| POST | `/api/shape/bot/reporting/peers/traffic/overview` | Panoramica del traffico del gruppo peer. |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/subscribe` | Iscriversi a Shape Bot Defense. |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | Annullare l'iscrizione a Shape Bot Defense. |
+| POST | `/api/shape/bot/subscribe` | Iscriversi a Shape Bot Defense. |
+| POST | `/api/shape/bot/unsubscribe` | Annullare l'iscrizione a Shape Bot Defense. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | Dashboard dei canali. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | Dashboard delle conversioni. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | Dashboard Enjoy. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | Dashboard di aggregazione dell'attrito. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | Dashboard dell'istogramma dell'attrito. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | Controllo dello stato di salute. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | Dashboard Lift. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | Dashboard Rescue. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | Codici motivo principali. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | Ottenere lo stato di provisioning di Recognize Addon. |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | Stato |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | Iscriversi a Shape Recognize. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | Annullare l'iscrizione a Shape Recognize. |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | Validazione dell'iniezione SrcTag Addon. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | Iscriversi a Safe AP. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | Annullare l'iscrizione a Safe AP. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | Ottenere i dati sulle frodi correnti. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | Ottenere gli account più a rischio. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | Ottenere i dispositivi più a rischio. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | Ottenere gli indirizzi IP più a rischio. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | Ottenere i motivi di rischio principali. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | Ottenere i dati delle transazioni. |
+| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | Controllo dello stato di salute. |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | Ottenere i dati SafeCubeJS. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | Ottenere l'elenco della tabella blocchi SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | Ottenere l'audit dei blocchi dell'analista SAFE come file CSV. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | Ottenere la tabella dei blocchi dell'analista SAFE come file CSV. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | Ottenere i dettagli dei blocchi SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | Inviare il feedback sui blocchi SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | Inviare la regola di blocco SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | Ottenere l'elenco della tabella blocchi SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | Inviare endpoint SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | Aggiornare il feedback sulle frodi. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | Aggiornare il feedback sulle frodi. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | Richiesta stato di salute. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | Provisioning SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | Ottenere la panoramica SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | Inviare la panoramica SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | Ottenere le posizioni principali SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | Inviare le posizioni principali SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | Ottenere le sorgenti principali SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | Inviare le sorgenti principali SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | Inviare le transazioni SAFE nel tempo. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | Ottenere il riepilogo dell'analista SAFE. |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | Ottenere i dettagli delle transazioni dell'analista SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | Inviare i dettagli delle transazioni SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | Inviare la cronologia dei dispositivi delle transazioni SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | Inviare le posizioni delle transazioni SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | Inviare le sessioni correlate alle transazioni SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | Inviare la cronologia delle transazioni SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | Elencare le transazioni dell'analista SAFE. |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | Ottenere le transazioni dell'analista SAFE come file CSV. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | Configurazione enterprise. |
+
+## Link
+
+- [Riferimento API interattivo](./shape/)
+- [Specifica OpenAPI JSON](../specifications/api/shape.json)

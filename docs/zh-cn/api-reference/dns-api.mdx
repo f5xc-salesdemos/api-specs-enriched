@@ -1,0 +1,98 @@
+---
+title: "\U0001F310 Dns API"
+description: 权威区域和记录管理。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: c1abca57b8f1
+  translator: machine
+---
+
+名称解析，支持区域传输和健康检查。记录类型和委派支持。
+
+- **类别**：网络
+- **复杂度**：高级
+- **路径数**：49 | **模式数**：285
+- **层级**：标准
+- **相关领域**：`virtual`、`network`
+
+## 使用场景
+
+- 配置 DNS 负载均衡
+- 管理 DNS 区域和域名
+- 配置 DNS 合规策略
+- 管理资源记录集 (RRSets)
+
+## 主要资源
+
+- **dns_zone**：具有记录管理功能的权威 DNS 区域
+- **dns_domain**：DNS 域名委派和配置设置
+- **dns_load_balancer**：基于 DNS 的流量分配，支持地理路由和故障转移
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss` | 创建 DNS 合规检查。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_compliance_checkss/&#123;metadata.name&#125;` | 替换 DNS 合规检查。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss` | 列出 DNS 合规检查配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | 获取 DNS 合规检查。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_compliance_checkss/&#123;name&#125;` | 删除 DNS 合规检查配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies` | 创建 DNS 代理。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_proxies/&#123;metadata.name&#125;` | 替换 DNS 代理。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies` | 列出 DNS 代理配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | 获取 DNS 代理。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_proxies/&#123;name&#125;` | 删除 DNS 代理配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains` | 创建 DNS 域名。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/dns_domains/&#123;metadata.name&#125;` | 替换 DNS 域名。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dns_domain/&#123;name&#125;/verify` | 验证 DNS 域名。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains` | 列出 DNS 域名。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | 获取 DNS 域名。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/dns_domains/&#123;name&#125;` | 删除 DNS 域名。 |
+| POST | `/api/config/dns/namespaces/system/suggest-values` | 建议值。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers` | 创建 DNS 负载均衡器。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_load_balancers/&#123;metadata.name&#125;` | 替换 DNS 负载均衡器。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers` | 列出 DNS 负载均衡器。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/health_status` | DNS 负载均衡器健康状态列表。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/pool_members_health_status` | DNS 负载均衡器池成员健康状态列表。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/health_status` | DNS 负载均衡器池健康状态。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;dns_lb_name&#125;/dns_lb_pools/&#123;dns_lb_pool_name&#125;/pool_members/&#123;pool_member_address&#125;/health_status_change_events` | DNS 负载均衡器池成员健康状态变更事件。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | 获取 DNS 负载均衡器。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;` | 删除 DNS 负载均衡器。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/dns_load_balancers/&#123;name&#125;/health_status` | DNS 负载均衡器健康状态。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks` | 创建 DNS 负载均衡器健康检查。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_health_checks/&#123;metadata.name&#125;` | 替换 DNS 负载均衡器健康检查。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks` | 列出 DNS 负载均衡器健康检查。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | 获取 DNS 负载均衡器健康检查。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_health_checks/&#123;name&#125;` | 删除 DNS 负载均衡器健康检查。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools` | 创建 DNS 负载均衡器池。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_lb_pools/&#123;metadata.name&#125;` | 替换 DNS 负载均衡器池。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools` | 列出 DNS 负载均衡器池。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | 获取 DNS 负载均衡器池。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_lb_pools/&#123;name&#125;` | 删除 DNS 负载均衡器池。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/clone_from_dns_domain` | 从 DNSDomain 克隆。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import` | 导入 F5 Cloud Services DNS 区域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_axfr` | 导入 DNS 区域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_create` | 导入 BIND 文件。 |
+| POST | `/api/config/dns/namespaces/system/dns_zone/import_bind_validate` | 验证 BIND 文件。 |
+| POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones` | 创建 DNS 区域。 |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/dns_zones/&#123;metadata.name&#125;` | 替换 DNS 区域。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/local_zone_file` | 获取本地区域文件。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/remote_zone_file` | 获取远程区域文件。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zone/&#123;dns_zone_name&#125;/zone_file/export` | 导出区域文件。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones` | 列出 DNS 区域。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/metrics` | DNS 区域指标。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/dns_zones/request_logs` | 获取 DNS 区域请求日志。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | 获取 DNS 区域。 |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/dns_zones/&#123;name&#125;` | 删除 DNS 区域。 |
+| POST | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;` | 创建 |
+| GET | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 获取 |
+| DELETE | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 删除 |
+| PUT | `/api/config/dns/namespaces/system/dns_zones/&#123;dns_zone_name&#125;/rrsets/&#123;group_name&#125;/&#123;record_name&#125;/&#123;type&#125;` | 替换 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/subscribe` | 订阅 DNS 管理。 |
+| POST | `/api/config/dns/namespaces/system/dns_management/addon/unsubscribe` | 取消订阅 DNS 管理。 |
+
+## 链接
+
+- [交互式 API 参考](./dns/)
+- [OpenAPI 规范 JSON](../specifications/api/dns.json)

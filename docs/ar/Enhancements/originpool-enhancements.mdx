@@ -1,0 +1,265 @@
+---
+title: تحسينات مجمع الأصل
+description: بيانات وصفية للإثراء لمخططات مجمع الأصل
+sidebar:
+  order: 3
+i18n:
+  sourceHash: aa72a429270e
+  translator: machine
+---
+
+بيانات وصفية للإثراء للمخططات المتعلقة بـ origin_pool. انظر [امتدادات OpenAPI](../development/#openapi-extensions) لتعريفات الامتدادات.
+
+## المخططات المُثرَاة
+
+### النمط
+
+جميع المخططات المطابقة لـ `origin_pool.*SpecType` تتلقى إثراءات:
+
+- `origin_poolCreateSpecType`
+- `origin_poolReplaceSpecType`
+- `origin_poolGetSpecType`
+
+## الحقول المطلوبة
+
+| الحقل | مطلوب لـ | ملاحظات |
+|-------|----------|---------|
+| `metadata.name` | جميع العمليات | 1-63 حرفاً، أحرف صغيرة وأرقام، نمط: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace` | جميع العمليات | معرف مساحة الاسم |
+| `spec.origin_servers` | الإنشاء | عنصر واحد كحد أدنى |
+| `spec.port` | الإنشاء | 1-65535، بدون قيمة افتراضية من الخادم |
+
+## الحد الأدنى من التكوين القابل للتشغيل
+
+```json
+{
+  "metadata": {
+    "name": "my-origin-pool",
+    "namespace": "default"
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "backend.example.com"
+        }
+      }
+    ],
+    "port": 443
+  }
+}
+```
+
+## القيم الافتراضية المُطبَّقة من الخادم
+
+الحقول المُعلَّمة بـ `x-f5xc-server-default: true` يتم تطبيق قيمتها الافتراضية (`default`) بواسطة خادم F5 XC API عند حذفها من الطلبات.
+
+### حقول المستوى الأعلى
+
+| الحقل | القيمة الافتراضية | النوع | الوصف |
+|-------|-------------------|-------|-------|
+| `no_tls` | `{}` | كائن | TLS إلى الأصل مُعطَّل |
+| `healthcheck` | `[]` | مصفوفة | لا توجد فحوصات صحية مُكوَّنة |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | تعداد | موازنة حمل بالتناوب الدائري |
+| `endpoint_selection` | `DISTRIBUTED` | تعداد | استخدام جميع نقاط النهاية (محلية + بعيدة) |
+
+### القيم الافتراضية لـ advanced_options
+
+عندما لا يتم تحديد `advanced_options`، يتصرف الخادم كما لو أن هذه القيم كانت مُعيَّنة:
+
+| الحقل | القيمة الافتراضية | النوع | الوصف |
+|-------|-------------------|-------|-------|
+| `connection_timeout` | `2000` | عدد صحيح | مهلة الاتصال بالمللي ثانية |
+| `http_idle_timeout` | `300000` | عدد صحيح | مهلة خمول HTTP بالمللي ثانية (5 دقائق) |
+| `same_as_endpoint_port` | `{}` | كائن | فحص الصحة يستخدم منفذ نقطة النهاية |
+| `default_circuit_breaker` | `{}` | كائن | إعدادات قاطع الدائرة الافتراضية |
+| `disable_outlier_detection` | `{}` | كائن | كشف القيم الشاذة مُعطَّل |
+| `no_panic_threshold` | `{}` | كائن | لا يوجد حد ذعر |
+| `disable_subsets` | `{}` | كائن | موازنة الحمل بالمجموعات الفرعية مُعطَّلة |
+| `auto_http_config` | `{}` | كائن | تفاوض تلقائي لبروتوكول HTTP |
+| `disable_proxy_protocol` | `{}` | كائن | بروتوكول الوكيل مُعطَّل |
+| `disable_lb_source_ip_persistance` | `{}` | كائن | ثبات عنوان IP المصدر لموازن الحمل مُعطَّل |
+
+### القيم الافتراضية للكائنات المتداخلة
+
+| المسار | القيمة الافتراضية | الوصف |
+|--------|-------------------|-------|
+| `origin_servers[].labels` | `{}` | كائن تسميات فارغ |
+| `origin_servers[].public_name.refresh_interval` | `0` | استخدام الفترة الافتراضية للنظام لتحديث DNS |
+
+## التناقضات بين واجهة المستخدم والقيم الافتراضية للخادم
+
+تقوم واجهة F5 XC الإلكترونية بتحديد قيم مسبقة مختلفة عما يُطبِّقه واجهة API عند حذف الحقول.
+
+| الحقل | المُحدَّد مسبقاً في واجهة المستخدم | المُطبَّق من الخادم | ملاحظة |
+|-------|-------------------------------------|---------------------|--------|
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | الموارد المُنشأة من واجهة المستخدم والمُنشأة من API تختلف عند حذف الحقل |
+
+## قيم التعداد
+
+### loadbalancer_algorithm
+
+| القيمة | الوصف | ملاحظات |
+|--------|-------|---------|
+| `ROUND_ROBIN` | يتم اختيار كل نقطة نهاية سليمة بالتناوب الدائري | الافتراضي من الخادم |
+| `LEAST_REQUEST` | يتم اختيار نقطة النهاية ذات أقل عدد من الطلبات النشطة | |
+| `RING_HASH` | تجزئة متسقة باستخدام تجزئة حلقية لأسماء نقاط النهاية | |
+| `RANDOM` | اختيار عشوائي لنقطة نهاية سليمة | |
+| `LB_OVERRIDE` | سياسة التجزئة مُورَثة من موازن الحمل الأب | الافتراضي في واجهة المستخدم |
+
+### endpoint_selection
+
+| القيمة | الوصف | ملاحظات |
+|--------|-------|---------|
+| `DISTRIBUTED` | مراعاة نقاط النهاية البعيدة والمحلية معاً | الافتراضي من الخادم |
+| `LOCAL_ONLY` | نقاط النهاية المحلية فقط | |
+| `LOCAL_PREFERRED` | تفضيل المحلية، والرجوع إلى البعيدة عند عدم التوفر | |
+
+## مجموعات حقول OneOf
+
+مجموعات حقول حصرية متبادلة. يمكن تحديد حقل واحد فقط من كل مجموعة:
+
+| المجموعة | الحقول | الافتراضي من الخادم |
+|----------|--------|---------------------|
+| تكوين المنفذ | `port`، `automatic_port`، `lb_port` | `port` (صريح) |
+| TLS إلى الأصل | `no_tls`، `use_tls` | `no_tls` |
+| منفذ فحص الصحة | `same_as_endpoint_port`، `health_check_port` | `same_as_endpoint_port` |
+| قاطع الدائرة | `default_circuit_breaker`، `disable_circuit_breaker`، `circuit_breaker` | `default_circuit_breaker` |
+| كشف القيم الشاذة | `disable_outlier_detection`، `outlier_detection` | `disable_outlier_detection` |
+| حد الذعر | `no_panic_threshold`، `panic_threshold` | `no_panic_threshold` |
+| موازنة الحمل بالمجموعات الفرعية | `disable_subsets`، `enable_subsets` | `disable_subsets` |
+| بروتوكول HTTP | `auto_http_config`، `http1_config`، `http2_options` | `auto_http_config` |
+| بروتوكول الوكيل | `disable_proxy_protocol`، `proxy_protocol_v1`، `proxy_protocol_v2` | `disable_proxy_protocol` |
+| عنوان IP المصدر لموازن الحمل | `disable_lb_source_ip_persistance`، `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| مجمع الاتصالات | `enable_conn_pool_reuse`، `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+
+## قيود الحقول
+
+| الحقل | النوع | القيد |
+|-------|-------|-------|
+| `spec.port` | عدد صحيح | 1-65535 |
+| `spec.advanced_options.connection_timeout` | عدد صحيح | 0-1,800,000 مللي ثانية |
+| `spec.advanced_options.http_idle_timeout` | عدد صحيح | 0-600,000 مللي ثانية |
+| `spec.advanced_options.panic_threshold` | عدد صحيح | 0-100 (نسبة مئوية) |
+| `metadata.name` | نص | 1-63 حرفاً، نمط: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+
+## خيارات تكوين واجهة المستخدم
+
+تقدم وحدة تحكم F5 XC الإلكترونية 15 خيار تكوين لمجمعات الأصل:
+
+| # | تسمية واجهة المستخدم | مسار حقل API | النوع | الافتراضي من الخادم |
+|---|---------------------|--------------|-------|---------------------|
+| 1 | منفذ خادم الأصل | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (صريح) |
+| 2 | إعادة استخدام مجمع الاتصالات | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
+| 3 | منفذ فحص الصحة | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
+| 4 | خوارزمية موازن الحمل | `spec.loadbalancer_algorithm` | تعداد | `ROUND_ROBIN` |
+| 5 | اختيار نقطة النهاية | `spec.endpoint_selection` | تعداد | `DISTRIBUTED` |
+| 6 | TLS إلى الأصل | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 7 | مهلة الاتصال | `spec.advanced_options.connection_timeout` | عدد صحيح | 2000 مللي ثانية |
+| 8 | مهلة خمول HTTP | `spec.advanced_options.http_idle_timeout` | عدد صحيح | 300000 مللي ثانية |
+| 9 | قاطع الدائرة | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
+| 10 | كشف القيم الشاذة | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 11 | حد الذعر | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
+| 12 | موازنة الحمل بالمجموعات الفرعية | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
+| 13 | بروتوكول HTTP | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
+| 14 | بروتوكول الوكيل | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
+| 15 | ثبات عنوان IP المصدر لموازن الحمل | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+
+## الوصول إلى البيانات
+
+### مواصفات OpenAPI
+
+| الملف | المحتوى |
+|-------|---------|
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`، `origin_poolReplaceSpecType`، `origin_poolGetSpecType` |
+| `docs/specifications/api/openapi.json` | مواصفة مدمجة مع جميع المخططات |
+
+### هيكل validation.json
+
+```text
+defaults.resources.origin_pool
+├── server_applied      # الحقول ذات x-f5xc-server-default: true
+├── recommended         # الحقول ذات x-f5xc-recommended-value
+├── advanced_options    # القيم الافتراضية المتداخلة لـ advanced_options
+├── oneof_choices       # اختيارات OneOf الافتراضية
+└── ui_vs_server        # تناقضات واجهة المستخدم مقابل الخادم
+```
+
+## أنواع خوادم الأصل
+
+يمكن تحديد خوادم الأصل باستخدام متغيرات أنواع مختلفة. يحدد النوع الحقول الإضافية المطلوبة.
+
+### الأنواع المُنفَّذة
+
+| النوع | الوصف | الحقول المطلوبة | الحالة |
+|-------|-------|-----------------|--------|
+| `public_name` | خادم أصل باسم DNS عام | `dns_name` | ✅ مكتمل |
+| `public_ip` | خادم أصل بعنوان IP عام | `ip` (IPv4) | ✅ مكتمل |
+
+### مثال: public_name
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_name": {
+        "dns_name": "backend.example.com"
+      }
+    }
+  ]
+}
+```
+
+### مثال: public_ip
+
+```json
+{
+  "origin_servers": [
+    {
+      "public_ip": {
+        "ip": "8.8.8.8"
+      }
+    }
+  ]
+}
+```
+
+## قيد التنفيذ: أنواع خوادم الأصل المعتمدة على الموقع
+
+تتطلب أنواع خوادم الأصل التالية تطوير منطق مورد "الموقع" قبل التنفيذ:
+
+| النوع | الوصف | الحقول المطلوبة | الحالة |
+|-------|-------|-----------------|--------|
+| `private_ip` | خادم أصل بعنوان IP خاص/عام ومعلومات الموقع | `ip`، `site_locator`، `network_choice`، `snat_pool` | 🔲 في انتظار منطق الموقع |
+| `private_name` | خادم أصل باسم DNS ومعلومات الموقع | `dns_name`، `site_locator`، `network_choice`، `snat_pool` | 🔲 في انتظار منطق الموقع |
+| `k8s_service` | خدمة Kubernetes مع معلومات الموقع | `service_name`، `site_locator`، `network_choice` | 🔲 في انتظار منطق الموقع |
+| `consul_service` | خدمة HashiCorp Consul مع معلومات الموقع | `service_name`، `site_locator`، `network_choice` | 🔲 في انتظار منطق الموقع |
+
+### متطلبات التنفيذ
+
+قبل أن يمكن توثيق هذه الأنواع بالكامل:
+
+1. **اكتشاف مورد الموقع** - توثيق مخطط مورد `site` وأنماط site_locator
+2. **تعداد اختيار الشبكة** - توثيق القيم المقيدة لـ `network_choice` (site_local_inside، site_local_outside، إلخ.)
+3. **خيارات مجمع SNAT** - توثيق أنماط تكوين مجمع SNAT
+4. **المراجع عبر الموارد** - تحديد كيفية إشارة origin_pool إلى موارد الموقع
+
+### التتبع
+
+- عنصر نائب للتكوين: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- السباق المرتبط: إثراءات مخطط مورد الموقع
+
+## الوثائق ذات الصلة
+
+- [دليل التطوير - امتدادات OpenAPI](../development/#openapi-extensions) - تعريفات الامتدادات واستخدامها
+- [مواصفات التحقق](../validation-spec/) - تنسيق وهيكل validation.json
+- [تحسينات فحص الصحة](./healthcheck-enhancements/) - إثراءات مخطط فحص الصحة
+
+## سجل التغييرات
+
+| الإصدار | التاريخ | التغييرات |
+|---------|---------|-----------|
+| 2.1.2 | 2026-01-18 | إضافة قسم أنواع خوادم الأصل مع public_name/public_ip؛ علامات TODO للأنواع المعتمدة على الموقع |
+| 2.1.1 | 2026-01-18 | أُعيدت الكتابة كمرجع API خالص؛ حُذفت أمثلة الكود التابعة |
+| 2.1.0 | 2026-01-18 | تحديث إلى هيكل القيم الافتراضية الموحد في validation.json |
+| 2.0.33 | 2026-01-17 | التوثيق الأولي لتحسينات مجمع الأصل |

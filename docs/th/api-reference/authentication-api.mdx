@@ -1,0 +1,59 @@
+---
+title: "\U0001F511 API การพิสูจน์ตัวตน"
+description: การกำหนดค่าผู้ให้บริการยืนยันตัวตนและนโยบายการเข้าถึง
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 1cc771c65d3a
+  translator: machine
+---
+
+การจัดการตัวตนด้วยการเชื่อมต่อผู้ให้บริการ นโยบายการเข้าถึง และการควบคุมวงจรชีวิตของข้อมูลรับรอง
+
+- **หมวดหมู่**: แพลตฟอร์ม
+- **ความซับซ้อน**: ง่าย
+- **เส้นทาง**: 14 | **สคีมา**: 38
+- **ระดับ**: มาตรฐาน
+- **โดเมนที่เกี่ยวข้อง**: `system`, `users`
+
+## กรณีการใช้งาน
+
+- กำหนดค่ากลไกการพิสูจน์ตัวตน
+- จัดการผู้ให้บริการ OIDC และ OAuth
+- กำหนดค่าการจัดเตรียมผู้ใช้ SCIM
+- จัดการข้อมูลรับรอง API และการเข้าถึง
+- กำหนดค่านโยบายการสมัครบัญชี
+
+## ทรัพยากรหลัก
+
+- **authentication_policy**: นโยบายการพิสูจน์ตัวตนสำหรับการเข้าถึงของผู้ใช้และ API
+- **token**: โทเค็น API สำหรับการเข้าถึงแบบโปรแกรม
+- **api_credential**: ข้อมูลรับรอง API สำหรับการพิสูจน์ตัวตนของบริการ
+
+## เอนด์พอยต์
+
+| เมธอด | เส้นทาง | คำอธิบาย |
+|--------|------|-------------|
+| POST | `/api/web/namespaces/system/bulk_revoke/api_credentials` | เพิกถอนข้อมูลรับรอง API แบบกลุ่ม |
+| POST | `/api/web/namespaces/system/bulk_revoke/service_credentials` | เพิกถอนข้อมูลรับรองบริการแบบกลุ่ม |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/activate/api_credentials` | เปิดใช้งานข้อมูลรับรอง API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/activate/service_credentials` | เปิดใช้งานข้อมูลรับรองบริการ API |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_credentials` | แสดงรายการข้อมูลรับรอง API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/api_credentials` | สร้างข้อมูลรับรอง API |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/api_credentials/&#123;name&#125;` | ดึงข้อมูลรับรอง API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/renew/api_credentials` | ต่ออายุข้อมูลรับรอง API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/renew/service_credentials` | ต่ออายุข้อมูลรับรองบริการ API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/revoke/api_credentials` | เพิกถอนข้อมูลรับรอง API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/revoke/scim_token` | เพิกถอนข้อมูลรับรอง SCIM API |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/revoke/service_credentials` | เพิกถอนข้อมูลรับรองบริการ |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/scim_token` | ดึงโทเค็น SCIM |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/scim_token` | สร้าง/สร้างใหม่โทเค็น SCIM API |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/service_credentials` | แสดงรายการข้อมูลรับรองบริการ |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/service_credentials` | สร้างข้อมูลรับรองบริการ |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/service_credentials/&#123;name&#125;` | ดึงข้อมูลรับรองบริการ |
+| PUT | `/api/web/namespaces/&#123;namespace&#125;/service_credentials/&#123;name&#125;` | แทนที่ข้อมูลรับรองบริการ |
+
+## ลิงก์
+
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./authentication/)
+- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/authentication.json)

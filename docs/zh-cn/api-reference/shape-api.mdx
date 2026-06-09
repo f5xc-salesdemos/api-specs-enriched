@@ -1,0 +1,327 @@
+---
+title: "\U0001F3AD Shape API"
+description: 机器人防御、欺诈预防和客户端完整性。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 09077d724f15
+  translator: machine
+---
+
+通过行为分析和设备指纹识别进行威胁识别。移动 SDK 集成用于应用程序防护。
+
+- **类别**：安全
+- **复杂度**：高级
+- **路径**：271 | **模式**：813
+- **层级**：高级
+- **相关领域**：`bot_defense`、`virtual`
+
+## 使用场景
+
+- 配置 Shape Security 策略
+- 管理机器人和威胁防护
+- 配置 SafeAP 策略
+- 启用威胁识别
+
+## 主要资源
+
+- **shape_app_firewall**：用于高级防护的 Shape 应用防火墙
+- **shape_recognizer**：用于流量模式分析的 Shape 识别器
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/shape/dip/namespaces/system/app_provision` | 应用配置。 |
+| DELETE | `/api/shape/dip/namespaces/system/application` | 删除应用。 |
+| POST | `/api/shape/dip/namespaces/system/application` | 更新应用。 |
+| GET | `/api/shape/dip/namespaces/system/applications` | 获取应用列表。 |
+| POST | `/api/shape/dip/namespaces/system/bot/asn` | 按 Top ASN 获取机器人评估。 |
+| POST | `/api/shape/dip/namespaces/system/bot/transactions` | 获取事务的机器人评估。 |
+| POST | `/api/shape/dip/namespaces/system/bot/urls` | 按 Top URL 获取机器人评估。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/age` | 按使用时间获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/applications` | 按应用获取信息。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/asn` | 按 ASN 获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/country` | 按国家/地区获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/session` | 按会话获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/ua` | 按 User-Agent 获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/dashboard/unique` | 按唯一访问获取设备。 |
+| POST | `/api/shape/dip/namespaces/system/enable` | 启用应用流量洞察。 |
+| GET | `/api/shape/dip/namespaces/system/provision/regions` | 获取应用流量洞察的可用区域。 |
+| GET | `/api/shape/dip/namespaces/system/status` | 获取应用流量洞察状态。 |
+| POST | `/api/shape/dip/namespaces/system/validate/src_tag_injection` | 验证 JS 注入。 |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys` | 创建告警生成策略。 |
+| PUT | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_gen_policys/&#123;metadata.name&#125;` | 替换告警生成策略。 |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policy/&#123;name&#125;/status` | 克隆告警模板。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys` | 列出 BRM 告警生成策略。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | 获取告警生成策略。 |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_gen_policys/&#123;name&#125;` | 删除 BRM 告警生成策略。 |
+| POST | `/api/shape/alerts/namespaces/&#123;metadata.namespace&#125;/alert_templates` | 创建待保护域。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates` | 列出 BRM 告警模板。 |
+| GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | 获取受保护域。 |
+| DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | 删除 BRM 告警模板。 |
+| POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | 克隆告警模板。 |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | 部署机器人检测规则。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | 获取机器人检测规则部署列表。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | 获取机器人检测规则部署详情。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 获取处于草稿状态的机器人检测规则。 |
+| DELETE | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 丢弃草稿。 |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/draft` | 保存草稿。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/summary` | 获取机器人检测规则摘要。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | 列出机器人检测规则。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | 获取机器人检测规则的变更历史。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | 获取机器人检测规则。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | 建议值。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | 获取机器人检测更新。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | 下载机器人检测更新发行说明。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | 列出所有机器人端点策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 自定义替换机器人端点策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | 替换机器人端点策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | 机器人端点策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | 列出机器人端点策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | 获取机器人端点策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | 获取内容。 |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | 创建机器人基础设施。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | 替换机器人基础设施。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | 列出机器人基础设施。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | 获取机器人基础设施。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | 部署历史。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | 部署状态。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | 将策略部署到机器人基础设施。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | 列出所有机器人白名单策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 自定义替换机器人白名单策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | 替换机器人白名单策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | 机器人白名单策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | 列出机器人白名单策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | 获取机器人白名单策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | 获取内容。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | 获取移动端基础配置文件。 |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | 列出所有机器人网络策略及版本。 |
+| PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 自定义替换机器人网络策略。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | 替换机器人网络策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | 机器人网络策略版本。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | 列出机器人网络策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | 获取机器人网络策略。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | 获取内容。 |
+| POST | `/api/shape/csd/namespaces/system/init` | 启用客户端防御。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | 获取已检测到的域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | 获取域详情。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | 使用 GET 方法列出所有表单字段。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | 列出所有表单字段。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | 更新表单字段分析。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | 获取表单字段。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | 获取 JS 注入配置。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | 删除脚本理由。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 列出脚本。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | 列出脚本。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | 按脚本列出行为。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | 获取脚本概览。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | 按脚本列出表单字段。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | 按脚本列出网络交互。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | 更新脚本表单字段已读状态。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | 列出受影响用户。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | 更新脚本理由。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | 获取状态。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | 获取摘要。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/testjs` | 测试 JS |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/update_domains` | 更新域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/allowed_domains` | 创建允许的域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains` | 列出客户端防御允许的域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 获取允许的域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/allowed_domains/&#123;name&#125;` | 删除客户端防御允许的域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/protected_domains` | 创建待保护域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains` | 列出客户端防御待保护域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 获取受保护域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/protected_domains/&#123;name&#125;` | 删除客户端防御待保护域。 |
+| POST | `/api/shape/csd/namespaces/&#123;metadata.namespace&#125;/mitigated_domains` | 创建已缓解域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | 列出客户端防御已缓解域。 |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 获取已缓解域。 |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | 删除客户端防御已缓解域。 |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | 列出所有已检测到的域。 |
+| POST | `/api/shape/csd/namespaces/system/subscribe` | 订阅客户端防御。 |
+| POST | `/api/shape/csd/namespaces/system/unsubscribe` | 取消订阅客户端防御。 |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | 订阅移动应用防护。 |
+| POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | 取消订阅移动应用防护。 |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | 订阅移动集成器。 |
+| POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/unsubscribe` | 取消订阅移动集成器。 |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk` | 获取移动 SDK 列表。 |
+| GET | `/api/object_store/namespaces/&#123;namespace&#125;/stored_objects/mobile-sdk/&#123;name&#125;/&#123;version&#125;` | 获取移动 SDK。 |
+| POST | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs` | 创建移动 SDK 基础配置。 |
+| PUT | `/api/mobile/security/namespaces/&#123;metadata.namespace&#125;/mobile_base_configs/&#123;metadata.name&#125;` | 替换移动 SDK 基础配置。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_config_file/&#123;name&#125;` | 获取移动端基础配置文件。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs` | 列出移动 SDK 基础配置。 |
+| GET | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 获取移动 SDK 基础配置。 |
+| DELETE | `/api/mobile/security/namespaces/&#123;namespace&#125;/mobile_base_configs/&#123;name&#125;` | 删除移动 SDK 基础配置。 |
+| GET | `/api/shape/bot/namespaces/system/apikey` | API 密钥 |
+| GET | `/api/shape/bot/namespaces/system/regions` | 区域 |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications` | 创建受保护应用。 |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/protected_applications/&#123;metadata.name&#125;` | 替换受保护应用。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications` | 列出受保护应用。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 获取受保护应用。 |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;` | 删除受保护应用。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/config` | 连接器配置。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/protected_applications/&#123;name&#125;/template` | 模板连接器。 |
+| POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | 检查对等节点状态。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB 状态。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | 消费摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | 端点类别。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | 端点类别标签。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/list` | 所有受保护端点。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/summary` | 端点摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoints` | 报告端点。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/credential-stuffing-attack` | 洞察事件：凭据填充攻击。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/bad-bot-reduction` | 洞察恶意机器人减少。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/event/unaddressed-automations` | 洞察未处理的自动化。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/personal-stats` | 洞察个人统计。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/insight/total-automation` | 洞察事件：总自动化。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/endpoints` | 恶意报告端点。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/asn` | 恶意报告事务 ASN。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/browser` | 恶意报告事务浏览器。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ip` | 恶意报告事务 IP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/os` | 恶意报告事务操作系统。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/malicious/transactions/ua` | 恶意报告事务 UA。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/endpoints` | Top 被攻击端点。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview` | Top 延迟概览。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/latency/overview/apps` | Top 延迟概览应用。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/asorg` | 按 ASOrg 排名的 Top 恶意机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/automation` | Top 恶意机器人自动化类型。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ip` | 按 IP 地址排名的 Top 恶意机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/malicious/ua` | 按 User Agent 字符串排名的 Top 恶意机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/app` | 按应用排名的 Top 事务。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/categories` | Top 类别。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/transactions/endpointlabels` | Top 端点标签。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/good` | Top 良性机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/browser` | Top 人类浏览器。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/device` | Top 人类设备。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/geolocation` | Top 人类地理位置。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/human/dimension/platform` | Top 人类平台。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/app` | 按应用排名的 Top 恶意机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/apps/timeseries` | 恶意报告应用时间序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg` | 按 ASOrg 排名的 Top 恶意机器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 攻击意图的 Top ASN。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/attackintent` | 按攻击意图排名的 Top 恶意机器人。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/automation` | Top 恶意机器人自动化类型 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/bfp` | Top 被攻击 BFP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/endpoints` | Top 被攻击端点 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip` | 按 IP 地址排名的 Top 恶意机器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 攻击意图的 Top 源 IP。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua` | 按 User Agent 字符串排名的 Top 恶意机器人 v2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 攻击意图的 Top User Agent。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/attackintent/timeseries` | 所有流量的攻击意图时间序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/dimension/categories/timeseries` | 所有流量的类别时间序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/dimension/attackintent/timeseries` | 恶意机器人攻击意图时间序列。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/actions` | 恶意流量概览（按操作）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/metrics` | 恶意流量概览指标。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/malicious/overview/timeseries/actions` | 恶意流量概览时间序列（按操作）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview` | 流量概览。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/expanded` | 扩展流量概览。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/traffic/overview/timeseries` | 流量概览时间序列。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | 使用量摘要。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | 取证字段。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | 自动化流量概览（按操作）。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | 端点摘要 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | 恶意报告端点 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | 恶意报告事务 ASN V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/browser` | 恶意报告事务浏览器 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | 恶意报告事务 IP V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | 恶意报告事务操作系统 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | 恶意报告事务 UA V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | Top 良性机器人 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | Top 人类浏览器 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | Top 人类设备 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/geolocation` | Top 人类地理位置 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/platform` | Top 人类平台 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/apps/timeseries` | 恶意报告应用时间序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/asorg/&#123;attack_type&#125;` | 攻击意图的 Top ASN V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/attackintent` | 按攻击意图排名的 Top 恶意机器人 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/endpoints` | Top 被攻击端点 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ip/&#123;attack_type&#125;` | 攻击意图的 Top 源 IP V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/malicious/dimension/ua/&#123;attack_type&#125;` | 攻击意图的 Top User Agent V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/dimension/attackintent/timeseries` | 恶意机器人攻击意图时间序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/actions` | 恶意流量概览（按操作）V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/metrics` | 恶意流量概览指标 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/malicious/overview/timeseries/actions` | 恶意流量概览时间序列（按操作）V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview` | 流量概览 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/expanded` | 扩展流量概览 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/traffic/overview/timeseries` | 流量概览时间序列 V2。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/good` | Top 良性机器人 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/asorg` | 按 ASOrg 排名的 Top 恶意机器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/automation` | Top 恶意机器人自动化类型 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ip` | 按 IP 地址排名的 Top 恶意机器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/top/type/malicious/dimension/ua` | 按 User Agent 字符串排名的 Top 恶意机器人 v3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview` | 流量概览 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/expanded` | 扩展流量概览 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v3/reporting/traffic/overview/timeseries` | 流量概览时间序列 V3。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/endpoints` | Top 被攻击端点 v4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/top/type/malicious/dimension/ua` | 按 User Agent 字符串排名的 Top 恶意机器人 v4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/expanded` | 流量分析器中的扩展流量概览。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v4/reporting/traffic/overview/timeseries` | 流量概览时间序列 V4。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/top/type/malicious/dimension/endpoints` | Top 被攻击端点 v5。 |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v5/reporting/traffic/overview/expanded` | 扩展流量概览 V5。 |
+| POST | `/api/shape/bot/reporting/peers/threat-types` | 按威胁类型的对等组。 |
+| POST | `/api/shape/bot/reporting/peers/top-good-bots` | 对等组 Top 良性机器人。 |
+| POST | `/api/shape/bot/reporting/peers/top-reason-codes` | 对等组 Top 原因代码。 |
+| POST | `/api/shape/bot/reporting/peers/traffic/overview` | 对等组流量概览。 |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/subscribe` | 订阅 Shape Bot Defense。 |
+| POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | 取消订阅 Shape Bot Defense。 |
+| POST | `/api/shape/bot/subscribe` | 订阅 Shape Bot Defense。 |
+| POST | `/api/shape/bot/unsubscribe` | 取消订阅 Shape Bot Defense。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | 渠道仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | 转化仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | Enjoy 仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | 摩擦聚合仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | 摩擦直方图仪表板。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | 健康检查。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | Lift 仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | Rescue 仪表板。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | Top 原因代码。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | 获取 Recognize 配置状态附加组件。 |
+| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | 状态 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | 订阅 Shape Recognize。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | 取消订阅 Shape Recognize。 |
+| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | 验证 SrcTag 注入附加组件。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | 订阅 Safe AP。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | 取消订阅 Safe AP。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | 获取当前欺诈数据。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | 获取 Top 高风险账户。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | 获取 Top 高风险设备。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | 获取 Top 高风险 IP 地址。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | 获取 Top 高风险原因。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | 获取事务数据。 |
+| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | 健康检查。 |
+| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | 获取 SafeCubeJS 数据。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | 获取 SAFE 拦截表列表。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | 获取 SAFE 分析师拦截审计 CSV 文件。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | 获取 SAFE 分析师拦截表 CSV 文件。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | 获取 SAFE 拦截详情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | 提交 SAFE 拦截反馈。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | 提交 SAFE 拦截规则。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | 获取 SAFE 拦截表列表。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | 提交 SAFE 端点。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | 更新欺诈反馈。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | 更新欺诈反馈。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | 健康检查请求。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | 提交 SAFE 配置。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | 获取 SAFE 概览。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | 提交 SAFE 概览。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | 获取 SAFE Top 位置。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | 提交 SAFE Top 位置。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | 获取 SAFE Top 来源。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | 提交 SAFE Top 来源。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | 提交 SAFE 事务时间趋势。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | 获取 SAFE 分析师摘要。 |
+| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | 获取 SAFE 分析师事务详情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | 提交 SAFE 事务详情。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | 提交 SAFE 事务设备历史。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | 提交 SAFE 事务位置。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | 提交 SAFE 事务关联会话。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | 提交 SAFE 事务时间线。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | 列出 SAFE 分析师事务。 |
+| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | 获取 SAFE 分析师事务 CSV 文件。 |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | 企业配置。 |
+
+## 链接
+
+- [交互式 API 参考](./shape/)
+- [OpenAPI 规范 JSON](../specifications/api/shape.json)

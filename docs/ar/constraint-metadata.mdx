@@ -1,0 +1,532 @@
+---
+title: نظام بيانات القيود الوصفية
+description: بيانات وصفية شاملة للقيود لتوليد الذكاء الاصطناعي الحتمي والتحقق من الصحة
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**الغرض**: بيانات وصفية شاملة للقيود لتوليد الذكاء الاصطناعي الحتمي، والتحقق من صحة واجهة سطر الأوامر، وفرض مخطط Terraform.
+
+**الامتداد**: `x-f5xc-constraints`
+**الإصدار**: 3.3.0
+**الحالة**: إنتاج
+**المستهلكون**: مساعدو الذكاء الاصطناعي، أدوات واجهة سطر الأوامر، مزودو Terraform، إضافات بيئة التطوير المتكاملة، أدوات التحقق من صحة الواجهة البرمجية
+
+---
+
+## جدول المحتويات
+
+1. [نظرة عامة](#overview)
+2. [هيكل الامتداد](#extension-structure)
+3. [أنواع القيود](#constraint-types)
+4. [الأوصاف باللغة الطبيعية](#natural-language-descriptions)
+5. [أمثلة التحقق من الصحة](#validation-examples)
+6. [درجات الثقة](#confidence-scores)
+7. [تكامل الاكتشاف](#discovery-integration)
+8. [دليل تكامل الأدوات](#tool-integration-guide)
+
+---
+
+## نظرة عامة
+
+يوفر امتداد `x-f5xc-constraints` معرفة حتمية حول قيود التحقق من صحة الحقول، مما يتيح:
+
+- **مساعدو الذكاء الاصطناعي**: توليد إعدادات صالحة دون مدخلات المستخدم لتفاصيل القيود
+- **أدوات واجهة سطر الأوامر**: توفير تلميحات إدخال دقيقة، والتحقق من الصحة، ورسائل الخطأ
+- **Terraform**: فرض القيود في وقت التخطيط، وليس وقت التطبيق
+- **إضافات بيئة التطوير المتكاملة**: التحقق في الوقت الفعلي واقتراحات الإكمال التلقائي
+- **أدوات التحقق من صحة الواجهة البرمجية**: التحقق قبل الإرسال لتقليل أخطاء الواجهة البرمجية
+
+### إحصائيات التغطية
+
+- **9,851 قيدًا** عبر جميع مواصفات F5 XC API
+- **أكثر من 50 نوع نمط** (سلسلة نصية، مصفوفة، رقمي)
+- **ثقة 95%** على الحقول ذات الأولوية العالية (الأسماء، المنافذ، المعرفات)
+- **مصالحة من 3 مستويات**: EXISTING > DISCOVERY > INFERRED
+
+---
+
+## هيكل الامتداد
+
+### الحقول ذات المستوى الأعلى
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### وصف الحقول
+
+| الحقل | النوع | الوصف |
+|-------|------|-------------|
+| `constraintType` | سلسلة نصية | نوع البيانات (string، array، number، object) |
+| `deterministic` | منطقي | علامة الثقة العالية (الثقة >= 0.9) لتوليد الذكاء الاصطناعي |
+| `category` | سلسلة نصية | فئة القيد للتجميع وإعداد التقارير |
+| *(مفاتيح القيود)* | متنوعة | مفاتيح قيود خاصة بالنوع مسطحة على المستوى الأعلى (مثل `minLength`، `maxItems`، `minimum`) |
+| `metadata` | كائن | تتبع المصدر، الثقة، الطابع الزمني للتحقق |
+
+---
+
+## أنواع القيود
+
+### قيود السلاسل النصية
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### التنسيقات المدعومة
+
+| التنسيق | الوصف | مثال |
+|--------|-------------|---------|
+| `dns-label` | تسمية DNS وفق RFC 1123 (1-63 حرفًا) | `my-service` |
+| `fqdn` | اسم نطاق مؤهل بالكامل | `api.example.com` |
+| `email` | عنوان بريد إلكتروني وفق RFC 5322 | `user@example.com` |
+| `url` | URI/URL وفق RFC 3986 | `https://example.com/api` |
+| `ipv4` | عنوان IPv4 | `192.168.1.1` |
+| `ipv6` | عنوان IPv6 | `2001:db8::1` |
+| `uuid` | UUID وفق RFC 4122 | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | طابع زمني ISO 8601 | `2026-01-19T12:00:00Z` |
+| `date` | تاريخ ISO 8601 | `2026-01-19` |
+| `time` | وقت ISO 8601 | `12:00:00` |
+| `json` | سلسلة JSON (قابلة للتحليل) | `{"key": "value"}` |
+| `yaml` | سلسلة YAML (قابلة للتحليل) | `key: value` |
+| `base64` | سلسلة مشفرة بـ Base64 | `SGVsbG8gV29ybGQ=` |
+| `hex` | سلسلة سداسية عشرية | `48656c6c6f` |
+| `mac-address` | عنوان MAC | `00:1A:2B:3C:4D:5E` |
+| `phone` | رقم هاتف E.164 | `+1-555-123-4567` |
+
+### قيود المصفوفات
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### القيود الرقمية
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## الأوصاف باللغة الطبيعية
+
+### قيود تنسيق السلاسل النصية
+
+**تسميات DNS** (`format: "dns-label"`):
+- يجب أن تتكون تسميات DNS من 1-63 حرفًا أبجديًا رقميًا بأحرف صغيرة
+- الشرطات مسموح بها ولكن ليس في البداية/النهاية (RFC 1123)
+- مثال: `my-service`، `api-gateway`، `lb-prod-01`
+
+**عناوين البريد الإلكتروني** (`format: "email"`):
+- يجب أن تكون عناوين البريد الإلكتروني صالحة وفق RFC 5322
+- الحد الأقصى 254 حرفًا
+- مثال: `admin@example.com`، `api+webhook@service.io`
+
+**أسماء النطاقات المؤهلة بالكامل** (`format: "fqdn"`):
+- يجب أن تتكون أسماء النطاقات المؤهلة بالكامل من 1-253 حرفًا
+- تسميات DNS مفصولة بنقاط
+- مثال: `api.example.com`، `service.production.internal`
+
+**عناوين URL** (`format: "url"`):
+- يجب أن تكون عناوين URL معرفات URI صالحة وفق RFC 3986
+- يجب أن تتضمن البروتوكول (http/https)
+- مثال: `https://api.example.com/v1`، `http://localhost:8080`
+
+**عناوين IPv4** (`format: "ipv4"`):
+- يجب أن تكون عناوين IPv4 بتنسيق النقاط العشرية
+- مثال: `192.168.1.1`، `10.0.0.1`
+
+**معرفات UUID** (`format: "uuid"`):
+- يجب أن تتبع معرفات UUID تنسيق RFC 4122
+- مثال: `550e8400-e29b-41d4-a716-446655440000`
+
+**الطوابع الزمنية** (`format: "date-time"`):
+- يجب أن تكون الطوابع الزمنية بتنسيق ISO 8601
+- مثال: `2026-01-19T12:00:00Z`، `2026-01-19T12:00:00+00:00`
+
+### القيود الرقمية
+
+**أرقام المنافذ**:
+- يجب أن تكون أرقام المنافذ أعدادًا صحيحة بين 1 و65535
+- المنافذ القياسية: 80 (HTTP)، 443 (HTTPS)، 22 (SSH)
+
+**معرفات VLAN**:
+- يجب أن تكون معرفات VLAN أعدادًا صحيحة بين 1 و4094 (معيار 802.1Q)
+
+**فترات المهلة**:
+- يجب أن تكون فترات المهلة بين 1 و3600 ثانية (ساعة واحدة كحد أقصى)
+
+### قيود المصفوفات
+
+**مجموعات الخوادم الأصلية**:
+- مصفوفة مجموعات الخوادم الأصلية تتطلب عنصرًا واحدًا على الأقل، بحد أقصى 50 عنصرًا
+- يجب أن يكون كل عنصر فريدًا
+
+**العلامات**:
+- تسمح مصفوفة العلامات بـ 0-100 عنصر
+- لا يلزم أن تكون العناصر فريدة
+
+---
+
+## أمثلة التحقق من الصحة
+
+### المثال 1: التحقق من صحة تسمية DNS
+
+**القيد**:
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**القيم الصالحة**:
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**القيم غير الصالحة**:
+- ❌ `My-Service` (الأحرف الكبيرة غير مسموح بها)
+- ❌ `-my-service` (شرطة في البداية)
+- ❌ `my-service-` (شرطة في النهاية)
+- ❌ `my_service` (الشرطة السفلية غير مسموح بها)
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (طويل جدًا)
+
+### المثال 2: التحقق من صحة رقم المنفذ
+
+**القيد**:
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**القيم الصالحة**:
+- ✅ `80` (HTTP)
+- ✅ `443` (HTTPS)
+- ✅ `8080` (بديل HTTP شائع)
+- ✅ `65535` (الحد الأقصى للمنفذ)
+
+**القيم غير الصالحة**:
+- ❌ `0` (أقل من الحد الأدنى)
+- ❌ `65536` (أعلى من الحد الأقصى)
+- ❌ `-1` (سالب)
+- ❌ `"80"` (سلسلة نصية، وليس رقمًا)
+
+### المثال 3: التحقق من صحة حجم المصفوفة
+
+**القيد**:
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**القيم الصالحة**:
+- ✅ `["origin-1"]` (عنصر واحد)
+- ✅ `["origin-1", "origin-2", "origin-3"]` (3 عناصر، جميعها فريدة)
+
+**القيم غير الصالحة**:
+- ❌ `[]` (أقل من الحد الأدنى)
+- ❌ `["origin-1", "origin-1"]` (عناصر مكررة)
+- ❌ `[array with 51 items]` (أعلى من الحد الأقصى)
+
+---
+
+## درجات الثقة
+
+### تفسير الدرجات
+
+| النطاق | التفسير | الاستخدام |
+|-------|----------------|-------|
+| 0.90-1.00 | **ثقة عالية** | علامة الحتمية مُفعّلة، تُستخدم لتوليد الذكاء الاصطناعي |
+| 0.70-0.89 | **ثقة متوسطة** | استشارية، يُوصى بتأكيد المستخدم |
+| 0.50-0.69 | **ثقة منخفضة** | لأغراض المعلومات فقط، تتطلب التحقق من المستخدم |
+| < 0.50 | **ثقة منخفضة جدًا** | غير مُدرجة في القيود |
+
+### علامة الحتمية
+
+تُعيَّن العلامة المنطقية `deterministic` عندما:
+- درجة الثقة >= 0.9
+- تم التحقق من النمط مقابل بيانات الاكتشاف أو
+- يتطابق النمط مع معايير راسخة (RFC، ISO، إلخ.)
+
+**الاستخدام في توليد الذكاء الاصطناعي**:
+```python
+if constraint.get("deterministic"):
+    # Generate value automatically without asking user
+    value = generate_from_pattern(constraint)
+else:
+    # Ask user for input with constraint hints
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## تكامل الاكتشاف
+
+### أولوية المصدر
+
+تتم مصالحة القيود باستخدام أولوية من 3 مستويات:
+
+1. **EXISTING** (الثقة: 1.0)
+   - مُعيَّنة صراحة في مواصفات OpenAPI الأصلية
+   - لا يتم تجاوزها أبدًا
+
+2. **DISCOVERY** (الثقة: 0.99)
+   - مُستخرجة من استجابات F5 XC API المباشرة
+   - تتضمن قواعد التحقق من x-ves-validation-rules
+   - تتجاوز القيود المُستنتجة
+
+3. **INFERRED** (الثقة: 0.50-0.95)
+   - مُطابقة بالأنماط من أسماء الحقول
+   - الأولوية الأدنى، يتم تجاوزها بالاكتشاف أو الصريح
+
+### مصادر بيانات الاكتشاف
+
+يتم استخراج قيود الاكتشاف من:
+
+1. **x-ves-validation-rules**: امتدادات التحقق الأصلية لـ F5
+   - `ves.io.schema.rules.string.max_len` ← `maxLength`
+   - `ves.io.schema.rules.string.pattern` ← `pattern`
+   - `ves.io.schema.rules.repeated.max_items` ← `maxItems`
+
+2. **كتالوج الأخطاء**: رسائل خطأ الواجهة البرمجية التي تشير إلى انتهاكات القيود
+   - "name must be 1-63 characters" ← minLength/maxLength
+   - "port must be between 1 and 65535" ← minimum/maximum
+
+3. **التحقق من الاستجابة**: استجابات الواجهة البرمجية الناجحة التي تُظهر القيم الصالحة
+   - نطاقات القيم المُلاحظة
+   - أنماط التنسيق الفعلية
+
+---
+
+## دليل تكامل الأدوات
+
+### تكامل مساعد الذكاء الاصطناعي
+
+**توليد أسماء موارد صالحة**:
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # Ask user for name
+        return prompt_user("Enter resource name: ")
+
+    # Generate automatically
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # Generate valid name matching pattern
+    return generate_dns_label(max_length=max_len)
+```
+
+### تكامل أدوات واجهة سطر الأوامر
+
+**توفير التحقق من صحة المدخلات**:
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # Check length (constraint keys are at top level)
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # Check pattern
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### تكامل مزود Terraform
+
+**توليد المخطط**:
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // Constraint keys are at top level (no nested "string" wrapper)
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### تكامل إضافات بيئة التطوير المتكاملة
+
+**الإكمال التلقائي والتحقق من الصحة**:
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // Add format-specific completions
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // Add validation hint
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## الملحق: كتالوج أنماط القيود
+
+### الأنماط عالية الثقة (0.95-0.99)
+
+| النمط | التعبير النمطي لاسم الحقل | نوع القيد | مثال |
+|---------|------------------|-----------------|---------|
+| تسمية DNS | `\bname$` | سلسلة نصية (1-63 حرفًا، dns-label) | `my-service` |
+| فضاء الأسماء | `\bnamespace$` | سلسلة نصية (1-63 حرفًا، dns-label) | `production` |
+| المنفذ | `\bport$` | رقم (1-65535) | `443` |
+| معرف VLAN | `\b(vlan)?_?id$` | رقم (1-4094) | `100` |
+| UUID | `\buuid$` | سلسلة نصية (36 حرفًا، تنسيق uuid) | `550e8400-...` |
+| البريد الإلكتروني | `\bemail$` | سلسلة نصية (حد أقصى 254 حرفًا، email) | `user@example.com` |
+| الطابع الزمني | `\b(timestamp\|created_at\|updated_at)$` | سلسلة نصية (ISO 8601) | `2026-01-19T12:00:00Z` |
+
+### الأنماط متوسطة الثقة (0.80-0.94)
+
+| النمط | التعبير النمطي لاسم الحقل | نوع القيد | مثال |
+|---------|------------------|-----------------|---------|
+| اسم المستخدم | `\b(user\|username)$` | سلسلة نصية (1-64 حرفًا، أبجدي رقمي) | `admin` |
+| اسم العرض | `\b(display_?)?name$` | سلسلة نصية (1-256 حرفًا، نص حر) | `My Service` |
+| الوصف | `\b(comment\|description\|note)$` | سلسلة نصية (حد أقصى 4096 حرفًا) | `Service description` |
+| المسار | `\bpath$` | سلسلة نصية (حد أقصى 2048 حرفًا) | `/api/v1/resources` |
+
+---
+
+## الدعم والملاحظات
+
+- **المشكلات**: أبلغ عن مشكلات دقة القيود على https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **الوثائق**: الوثائق الكاملة للواجهة البرمجية على https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **تكامل MCP**: راجع مستودع `f5xc-api-mcp` لأمثلة تكامل خادم MCP
+
+---
+
+**الإصدار**: 3.3.0
+**آخر تحديث**: 2026-01-19
+**القيود المُصالَحة**: 9,851
+**تغطية الأنماط**: أكثر من 50 نوعًا

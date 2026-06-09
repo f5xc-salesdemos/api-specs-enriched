@@ -1,0 +1,532 @@
+---
+title: 約束元資料系統
+description: 用於確定性 AI 生成與驗證的全面約束元資料
+sidebar:
+  order: 2
+i18n:
+  sourceHash: 797e5a0158e1
+  translator: machine
+---
+
+**目的**：用於確定性 AI 生成、CLI 驗證及 Terraform 結構描述強制執行的全面約束元資料。
+
+**擴充欄位**：`x-f5xc-constraints`
+**版本**：3.3.0
+**狀態**：正式環境
+**使用者**：AI 助手、CLI 工具、Terraform 提供者、IDE 擴充功能、API 驗證器
+
+---
+
+## 目錄
+
+1. [概述](#overview)
+2. [擴充結構](#extension-structure)
+3. [約束類型](#constraint-types)
+4. [自然語言描述](#natural-language-descriptions)
+5. [驗證範例](#validation-examples)
+6. [信心分數](#confidence-scores)
+7. [探索整合](#discovery-integration)
+8. [工具整合指南](#tool-integration-guide)
+
+---
+
+## 概述
+
+`x-f5xc-constraints` 擴充提供關於欄位驗證約束的確定性知識，實現以下功能：
+
+- **AI 助手**：無需使用者輸入約束細節即可生成有效配置
+- **CLI 工具**：提供準確的輸入提示、驗證和錯誤訊息
+- **Terraform**：在計畫階段而非套用階段強制執行約束
+- **IDE 擴充功能**：即時驗證和自動完成建議
+- **API 驗證器**：提交前驗證以減少 API 錯誤
+
+### 涵蓋範圍統計
+
+- 所有 F5 XC API 規格中共有 **9,851 個約束**
+- **50+ 種模式類型**（字串、陣列、數值）
+- 高優先順序欄位（名稱、連接埠、識別碼）達 **95% 信心度**
+- **三層級調和**：EXISTING > DISCOVERY > INFERRED
+
+---
+
+## 擴充結構
+
+### 頂層欄位
+
+```json
+{
+  "x-f5xc-constraints": {
+    "constraintType": "string|array|number|object",
+    "deterministic": true,
+    "category": "length|size|range|pattern|character|format",
+
+    "minLength": 1,
+    "maxLength": 63,
+    "pattern": "^[a-z0-9]+$",
+
+    "metadata": {
+      "source": "discovery|inferred|explicit",
+      "confidence": 0.95,
+      "category": "naming",
+      "validatedAt": "2026-01-19T12:00:00Z"
+    }
+  }
+}
+```
+
+### 欄位描述
+
+| 欄位 | 類型 | 描述 |
+|-------|------|-------------|
+| `constraintType` | string | 資料類型（string、array、number、object） |
+| `deterministic` | boolean | 高信心度旗標（信心度 >= 0.9），用於 AI 生成 |
+| `category` | string | 約束類別，用於分組和報告 |
+| *（約束鍵）* | various | 類型特定的約束鍵，扁平化置於頂層（例如 `minLength`、`maxItems`、`minimum`） |
+| `metadata` | object | 來源追蹤、信心度、驗證時間戳 |
+
+---
+
+## 約束類型
+
+### 字串約束
+
+```json
+{
+  "constraintType": "string",
+  "category": "naming",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "characterSet": {
+    "allowed": "[a-z0-9-]",
+    "restricted": "[^a-z0-9-]",
+    "required": "[a-z0-9]",
+    "description": "Lowercase alphanumeric with hyphens, not at start/end"
+  },
+  "format": "dns-label",
+  "formatDescription": "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end",
+  "byteLength": {
+    "min": 1,
+    "max": 63
+  },
+  "validation": {
+    "rfc": "RFC 1123",
+    "standard": "Kubernetes resource naming"
+  },
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.95
+  },
+  "deterministic": true
+}
+```
+
+#### 支援的格式
+
+| 格式 | 描述 | 範例 |
+|--------|-------------|---------|
+| `dns-label` | RFC 1123 DNS 標籤（1-63 字元） | `my-service` |
+| `fqdn` | 完整網域名稱 | `api.example.com` |
+| `email` | RFC 5322 電子郵件地址 | `user@example.com` |
+| `url` | RFC 3986 URI/URL | `https://example.com/api` |
+| `ipv4` | IPv4 位址 | `192.168.1.1` |
+| `ipv6` | IPv6 位址 | `2001:db8::1` |
+| `uuid` | RFC 4122 UUID | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time` | ISO 8601 時間戳 | `2026-01-19T12:00:00Z` |
+| `date` | ISO 8601 日期 | `2026-01-19` |
+| `time` | ISO 8601 時間 | `12:00:00` |
+| `json` | JSON 字串（可解析） | `{"key": "value"}` |
+| `yaml` | YAML 字串（可解析） | `key: value` |
+| `base64` | Base64 編碼字串 | `SGVsbG8gV29ybGQ=` |
+| `hex` | 十六進位字串 | `48656c6c6f` |
+| `mac-address` | MAC 位址 | `00:1A:2B:3C:4D:5E` |
+| `phone` | E.164 電話號碼 | `+1-555-123-4567` |
+
+### 陣列約束
+
+```json
+{
+  "constraintType": "array",
+  "category": "collection",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.90
+  },
+  "deterministic": true
+}
+```
+
+### 數值約束
+
+```json
+{
+  "constraintType": "number",
+  "category": "range",
+  "minimum": 1,
+  "maximum": 65535,
+  "multipleOf": 1,
+  "exclusiveMinimum": false,
+  "exclusiveMaximum": false,
+  "metadata": {
+    "source": "inferred",
+    "confidence": 0.99
+  },
+  "deterministic": true
+}
+```
+
+---
+
+## 自然語言描述
+
+### 字串格式約束
+
+**DNS 標籤** (`format: "dns-label"`)：
+- DNS 標籤名稱必須為 1-63 個小寫英數字元
+- 允許使用連字號但不可置於開頭/結尾（RFC 1123）
+- 範例：`my-service`、`api-gateway`、`lb-prod-01`
+
+**電子郵件地址** (`format: "email"`)：
+- 電子郵件地址必須符合 RFC 5322 規範
+- 最大 254 個字元
+- 範例：`admin@example.com`、`api+webhook@service.io`
+
+**完整網域名稱** (`format: "fqdn"`)：
+- 完整網域名稱（FQDN）必須為 1-253 個字元
+- 以點號分隔的 DNS 標籤
+- 範例：`api.example.com`、`service.production.internal`
+
+**URL** (`format: "url"`)：
+- URL 必須為符合 RFC 3986 的有效 URI
+- 必須包含方案（http/https）
+- 範例：`https://api.example.com/v1`、`http://localhost:8080`
+
+**IPv4 位址** (`format: "ipv4"`)：
+- IPv4 位址必須使用點分十進位表示法
+- 範例：`192.168.1.1`、`10.0.0.1`
+
+**UUID** (`format: "uuid"`)：
+- UUID 必須遵循 RFC 4122 格式
+- 範例：`550e8400-e29b-41d4-a716-446655440000`
+
+**時間戳** (`format: "date-time"`)：
+- 時間戳必須為 ISO 8601 格式
+- 範例：`2026-01-19T12:00:00Z`、`2026-01-19T12:00:00+00:00`
+
+### 數值約束
+
+**連接埠號碼**：
+- 連接埠號碼必須為 1 至 65535 之間的整數
+- 標準連接埠：80（HTTP）、443（HTTPS）、22（SSH）
+
+**VLAN ID**：
+- VLAN ID 必須為 1 至 4094 之間的整數（802.1Q 標準）
+
+**逾時時間**：
+- 逾時時間必須為 1-3600 秒（最大 1 小時）
+
+### 陣列約束
+
+**來源池**：
+- 來源池陣列至少需要 1 個項目，最多 50 個項目
+- 每個項目必須唯一
+
+**標籤**：
+- 標籤陣列允許 0-100 個項目
+- 項目無需唯一
+
+---
+
+## 驗證範例
+
+### 範例 1：DNS 標籤名稱驗證
+
+**約束**：
+```json
+{
+  "constraintType": "string",
+  "minLength": 1,
+  "maxLength": 63,
+  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+  "format": "dns-label",
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `my-service`
+- ✅ `api-gateway`
+- ✅ `lb-prod-01`
+- ✅ `web`
+
+**無效值**：
+- ❌ `My-Service`（不允許大寫）
+- ❌ `-my-service`（開頭為連字號）
+- ❌ `my-service-`（結尾為連字號）
+- ❌ `my_service`（不允許底線）
+- ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（太長）
+
+### 範例 2：連接埠號碼驗證
+
+**約束**：
+```json
+{
+  "constraintType": "number",
+  "minimum": 1,
+  "maximum": 65535,
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `80`（HTTP）
+- ✅ `443`（HTTPS）
+- ✅ `8080`（常見的替代 HTTP 連接埠）
+- ✅ `65535`（最大連接埠）
+
+**無效值**：
+- ❌ `0`（低於最小值）
+- ❌ `65536`（超過最大值）
+- ❌ `-1`（負數）
+- ❌ `"80"`（字串，非數值）
+
+### 範例 3：陣列大小驗證
+
+**約束**：
+```json
+{
+  "constraintType": "array",
+  "minItems": 1,
+  "maxItems": 50,
+  "uniqueItems": true,
+  "deterministic": true
+}
+```
+
+**有效值**：
+- ✅ `["origin-1"]`（1 個項目）
+- ✅ `["origin-1", "origin-2", "origin-3"]`（3 個項目，全部唯一）
+
+**無效值**：
+- ❌ `[]`（低於最小值）
+- ❌ `["origin-1", "origin-1"]`（重複項目）
+- ❌ `[包含 51 個項目的陣列]`（超過最大值）
+
+---
+
+## 信心分數
+
+### 分數解讀
+
+| 範圍 | 解讀 | 用途 |
+|-------|----------------|-------|
+| 0.90-1.00 | **高信心度** | 啟用確定性旗標，用於 AI 生成 |
+| 0.70-0.89 | **中信心度** | 建議性質，建議使用者確認 |
+| 0.50-0.69 | **低信心度** | 僅供參考，需要使用者驗證 |
+| < 0.50 | **極低** | 不包含在約束中 |
+
+### 確定性旗標
+
+`deterministic` 布林旗標在以下情況設定為真：
+- 信心分數 >= 0.9
+- 模式已通過探索資料驗證，或
+- 模式符合既定標準（RFC、ISO 等）
+
+**在 AI 生成中的用法**：
+```python
+if constraint.get("deterministic"):
+    # 自動生成值，無需詢問使用者
+    value = generate_from_pattern(constraint)
+else:
+    # 使用約束提示詢問使用者輸入
+    value = prompt_user_with_hints(constraint)
+```
+
+---
+
+## 探索整合
+
+### 來源優先順序
+
+約束使用三層級優先順序進行調和：
+
+1. **EXISTING**（信心度：1.0）
+   - 在原始 OpenAPI 規格中明確設定
+   - 永不被覆蓋
+
+2. **DISCOVERY**（信心度：0.99）
+   - 從即時 F5 XC API 回應中擷取
+   - 包含來自 x-ves-validation-rules 的驗證規則
+   - 覆蓋推斷的約束
+
+3. **INFERRED**（信心度：0.50-0.95）
+   - 從欄位名稱進行模式比對
+   - 最低優先順序，被探索或明確約束覆蓋
+
+### 探索資料來源
+
+探索約束從以下來源擷取：
+
+1. **x-ves-validation-rules**：原生 F5 驗證擴充
+   - `ves.io.schema.rules.string.max_len` → `maxLength`
+   - `ves.io.schema.rules.string.pattern` → `pattern`
+   - `ves.io.schema.rules.repeated.max_items` → `maxItems`
+
+2. **錯誤目錄**：指示約束違規的 API 錯誤訊息
+   - "name must be 1-63 characters" → minLength/maxLength
+   - "port must be between 1 and 65535" → minimum/maximum
+
+3. **回應驗證**：展示有效值的成功 API 回應
+   - 觀察到的值範圍
+   - 實際格式模式
+
+---
+
+## 工具整合指南
+
+### AI 助手整合
+
+**生成有效的資源名稱**：
+```python
+def generate_resource_name(schema_property):
+    constraints = schema_property.get("x-f5xc-constraints", {})
+
+    if not constraints.get("deterministic"):
+        # 詢問使用者名稱
+        return prompt_user("Enter resource name: ")
+
+    # 自動生成
+    pattern = constraints.get("pattern")
+    max_len = constraints.get("maxLength", 63)
+
+    # 生成符合模式的有效名稱
+    return generate_dns_label(max_length=max_len)
+```
+
+### CLI 工具整合
+
+**提供輸入驗證**：
+```python
+def validate_cli_input(field_name, user_value, constraints):
+    if not constraints:
+        return True, None
+
+    # 檢查長度（約束鍵位於頂層）
+    if "minLength" in constraints and len(user_value) < constraints["minLength"]:
+        return False, f"{field_name} must be at least {constraints['minLength']} characters"
+
+    if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
+        return False, f"{field_name} must be at most {constraints['maxLength']} characters"
+
+    # 檢查模式
+    if "pattern" in constraints:
+        import re
+        if not re.match(constraints["pattern"], user_value):
+            char_set = constraints.get("characterSet", {})
+            desc = char_set.get("description", "valid format")
+            return False, f"{field_name} must match {desc}"
+
+    return True, None
+```
+
+### Terraform 提供者整合
+
+**結構描述生成**：
+```go
+func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
+    constraints := property["x-f5xc-constraints"].(map[string]interface{})
+    s := &schema.Schema{
+        Type:     schema.TypeString,
+        Required: true,
+    }
+
+    // 約束鍵位於頂層（沒有巢狀的 "string" 包裝）
+    if minLen, ok := constraints["minLength"].(float64); ok {
+        s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
+    }
+
+    if pattern, ok := constraints["pattern"].(string); ok {
+        charSet := constraints["characterSet"].(map[string]interface{})
+        s.ValidateDiagFunc = validation.StringMatch(regexp.MustCompile(pattern),
+            charSet["description"].(string))
+    }
+
+    return s
+}
+```
+
+### IDE 擴充功能整合
+
+**自動完成與驗證**：
+```typescript
+function provideCompletions(field: FieldInfo): CompletionItem[] {
+    const constraints = field.schema['x-f5xc-constraints'];
+    if (!constraints) return [];
+
+    const items: CompletionItem[] = [];
+
+    // 新增格式特定的完成項目
+    if (constraints.format === 'dns-label') {
+        items.push({
+            label: 'my-service',
+            detail: 'Example DNS label',
+            kind: CompletionItemKind.Value
+        });
+    }
+
+    // 新增驗證提示
+    if (constraints.deterministic) {
+        items.push({
+            label: '✨ Auto-generate',
+            detail: 'Generate valid value automatically',
+            kind: CompletionItemKind.Function,
+            command: { command: 'f5xc.generateValue', arguments: [field] }
+        });
+    }
+
+    return items;
+}
+```
+
+---
+
+## 附錄：約束模式目錄
+
+### 高信心度模式（0.95-0.99）
+
+| 模式 | 欄位名稱正規表達式 | 約束類型 | 範例 |
+|---------|------------------|-----------------|---------|
+| DNS 標籤 | `\bname$` | String（1-63 字元，dns-label） | `my-service` |
+| 命名空間 | `\bnamespace$` | String（1-63 字元，dns-label） | `production` |
+| 連接埠 | `\bport$` | Number（1-65535） | `443` |
+| VLAN ID | `\b(vlan)?_?id$` | Number（1-4094） | `100` |
+| UUID | `\buuid$` | String（36 字元，uuid 格式） | `550e8400-...` |
+| 電子郵件 | `\bemail$` | String（最大 254 字元，email） | `user@example.com` |
+| 時間戳 | `\b(timestamp\|created_at\|updated_at)$` | String（ISO 8601） | `2026-01-19T12:00:00Z` |
+
+### 中信心度模式（0.80-0.94）
+
+| 模式 | 欄位名稱正規表達式 | 約束類型 | 範例 |
+|---------|------------------|-----------------|---------|
+| 使用者名稱 | `\b(user\|username)$` | String（1-64 字元，英數字元） | `admin` |
+| 顯示名稱 | `\b(display_?)?name$` | String（1-256 字元，自由文字） | `My Service` |
+| 描述 | `\b(comment\|description\|note)$` | String（最大 4096 字元） | `Service description` |
+| 路徑 | `\bpath$` | String（最大 2048 字元） | `/api/v1/resources` |
+
+---
+
+## 支援與意見回饋
+
+- **問題回報**：請至 https://github.com/f5xc-salesdemos/api-specs-enriched/issues 回報約束準確性問題
+- **文件**：完整 API 文件請見 https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **MCP 整合**：請參閱 `f5xc-api-mcp` 儲存庫中的 MCP 伺服器整合範例
+
+---
+
+**版本**：3.3.0
+**最後更新**：2026-01-19
+**已調和約束數**：9,851
+**模式涵蓋範圍**：50+ 種類型

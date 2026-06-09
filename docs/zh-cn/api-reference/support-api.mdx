@@ -1,0 +1,96 @@
+---
+title: "\U0001F3AB 支持 API"
+description: 工单、升级处理和网络诊断。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 91ad994f8afb
+  translator: machine
+---
+
+包含评论、严重级别变更和解决状态跟踪的工单生命周期管理。用于连接分析的数据包捕获。
+
+- **类别**：运维
+- **复杂度**：中等
+- **路径数**：53 | **模式数**：167
+- **层级**：标准
+- **相关领域**：`statistics`、`observability`
+
+## 使用场景
+
+- 提交和管理支持工单
+- 跟踪客户支持请求
+- 访问运维支持文档
+
+## 主要资源
+
+- **support_case**：用于问题跟踪和解决的支持案例
+- **alert**：用于运维通知的系统告警
+- **audit_log**：用于合规和安全跟踪的审计日志
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | 重新同步 CRL。 |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | 为子租户创建的支持工单列表。 |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | 免税验证请求。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | 创建客户支持。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | 列出所有租户工单。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | 关闭客户支持工单。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | 为客户支持工单添加评论。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | 升级工单。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | 更改工单优先级。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | 重新打开已关闭的客户支持工单。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | 列出客户支持。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | 获取客户支持。 |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 获取附件。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | 检查调试信息收集。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | 诊断 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | 下载调试信息收集。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | 健康状态 |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | 更改密码。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | 开始调试信息收集。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | 列出 F5XC 服务。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | 状态 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | 执行 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | 执行日志 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | 用户执行 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | 主机 Ping |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | 重启节点。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | 日志 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | 软重启。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | 显示 DHCP 租约。 |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | 允许 F5 SSH。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | 获取 LTE 配置。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | 更新 LTE 配置。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | 断开连接。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | 显示 LTE 信息。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | 获取转储 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | 列出 Tcpdump。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | 停止 Tcpdump。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA 项目和问题类型。 |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | 验证工单跟踪系统。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | 创建工单跟踪系统。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | 替换工单跟踪系统。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | 列出工单跟踪系统。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | 获取工单跟踪系统。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | 删除工单跟踪系统。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | 获取 USB 配置。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | 更新 USB 配置。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | 列出 USB 设备。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | 列出 USB 启用规则。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | 添加 USB 启用规则。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | 删除 USB 启用规则。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | 获取 WIFI 配置。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | 更新 WIFI 配置。 |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | 断开连接。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | 显示 WIFI 信息。 |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | 列出 WIFI 网络。 |
+
+## 链接
+
+- [交互式 API 参考](./support/)
+- [OpenAPI 规范 JSON](../specifications/api/support.json)

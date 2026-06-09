@@ -1,0 +1,173 @@
+---
+title: ヘルスチェック拡張
+description: ヘルスチェック関連スキーマのエンリッチメントメタデータ
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+ヘルスチェック関連スキーマのエンリッチメントメタデータ。拡張の定義については[OpenAPI拡張](../development/#openapi-extensions)を参照してください。
+
+## エンリッチされたスキーマ
+
+### パターン
+
+`healthcheck.*SpecType` に一致するすべてのスキーマがエンリッチメントを受けます：
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+さらに、ネストされたスキーマ `healthcheckHttpHealthCheck` にはHTTPヘルスチェック設定のエンリッチメントが含まれています。
+
+## サーバー適用のデフォルト値
+
+`x-f5xc-server-default: true` が付与されたフィールドは、リクエストから省略された場合にF5 XC APIサーバーによって `default` 値が適用されます。
+
+### トップレベルフィールド
+
+| フィールド | デフォルト値 | 型 | 説明 |
+|-------|---------------|------|-------------|
+| `jitter` | `0` | integer | タイミングランダム化のための絶対ジッター値 |
+| `jitter_percent` | `0` | integer | タイミングランダム化のためのパーセンテージベースのジッター |
+
+### healthcheckHttpHealthCheck スキーマ
+
+| フィールド | デフォルト値 | 型 | 説明 |
+|-------|---------------|------|-------------|
+| `use_origin_server_name` | `{}` | object | Hostヘッダー用のオリジンサーバー名 |
+| `headers` | `{}` | object | カスタムヘッダー |
+| `request_headers_to_remove` | `[]` | array | リクエストから除去するヘッダー |
+| `use_http2` | `false` | boolean | HTTP/2サポート |
+| `expected_status_codes` | `[]` | array | 受け入れるステータスコード（空 = 200-299） |
+
+## 推奨値
+
+`x-f5xc-recommended-value` が付与されたフィールドは、新しいリソース作成時にF5 XCウェブコンソールが事前入力する値を示します。
+
+### トップレベルフィールド
+
+| フィールド | 推奨値 | 型 | 説明 |
+|-------|-------------------|------|-------------|
+| `timeout` | `3` | integer | ヘルスチェックタイムアウト（秒） |
+| `interval` | `15` | integer | ヘルスチェック間隔（秒） |
+| `unhealthy_threshold` | `1` | integer | 異常と判定するまでの連続失敗回数 |
+| `healthy_threshold` | `3` | integer | 正常と判定するまでの連続成功回数 |
+| `jitter_percent` | `30` | integer | 本番環境用のジッターパーセンテージ |
+
+### healthcheckHttpHealthCheck スキーマ
+
+| フィールド | 推奨値 | 型 | 説明 |
+|-------|-------------------|------|-------------|
+| `path` | `"/"` | string | ヘルスチェックエンドポイントパス |
+| `use_http2` | `false` | boolean | HTTP/2サポート設定 |
+| `expected_status_codes` | `["200"]` | array | オリジンが正常であることを示すステータスコード |
+| `use_origin_server_name` | `{}` | object | Hostヘッダー用のオリジンサーバー名 |
+
+## OneOfバリアントの推奨
+
+相互排他的なフィールドグループ（OneOf）を含むスキーマには、最も一般的に使用されるバリアントを示す `x-f5xc-recommended-oneof-variant` が含まれています。このメタデータは、F5 XCコンソールのデフォルトと一般的な使用パターンに基づいて、複数のオプションが存在する場合の典型的な選択肢を特定します。
+
+### トップレベルのOneOfグループ
+
+| スキーマ | OneOfグループ | 推奨バリアント | 説明 |
+|--------|-------------|---------------------|-------------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTPヘルスチェックタイプ |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTPヘルスチェックタイプ |
+
+### healthcheckHttpHealthCheck OneOfグループ
+
+| スキーマ | OneOfグループ | 推奨バリアント | 説明 |
+|--------|-------------|---------------------|-------------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | ヘルスチェックリクエストのHostヘッダー |
+
+#### Hostヘッダーの選択
+
+`host_header_choice` OneOfグループは、ヘルスチェックHTTPリクエストにおけるHostヘッダーの指定方法を制御します。
+
+| バリアント | 型 | 説明 |
+|---------|------|-------------|
+| `use_origin_server_name` | `object`（空） | オリジンサーバー名をHostヘッダーとして使用します。これはF5 XCコンソールでのデフォルト選択です。 |
+| `host_header` | `string` | ヘルスチェックリクエストにカスタムHostヘッダー値を指定します。 |
+
+**APIスキーマリファレンス**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## OpenAPI拡張リファレンス
+
+これらのベンダー拡張は、F5 XC固有のデフォルト動作を伝えるために標準OpenAPIスキーマに追加されます。
+
+### x-f5xc-server-default
+
+**型**: `boolean`
+
+`true` の場合、付随する `default` 値がF5 XC APIサーバーによって適用されることを示します。この拡張を持つフィールドはAPIリクエストから安全に省略でき、サーバーが自動的にデフォルトを適用します。
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**型**: `any`（フィールドの型に一致）
+
+F5 XCウェブコンソールが事前入力のデフォルトとして使用する値を指定します。この値はサーバーによって強制されるものではなく、コンソール経由で新しいリソースを作成する際の典型的な初期設定を表します。
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**型**: `object`（グループ名からバリアント名へのマップ）
+
+相互排他的なフィールドグループを持つスキーマに対して、デフォルトまたは最も一般的な選択肢となるバリアントを特定します。キーはOneOfグループ名、値は推奨バリアントのフィールド名です。
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## データアクセス
+
+### OpenAPI仕様
+
+| ファイル | 内容 |
+|------|---------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`、`healthcheckCreateSpecType`、`healthcheckReplaceSpecType`、`healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | すべてのスキーマを含むマージされた仕様 |
+
+### validation.json 構造
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # x-f5xc-server-default: true を持つフィールド
+├── recommended         # x-f5xc-recommended-value を持つフィールド
+├── oneof_recommended   # OneOfバリアントの推奨
+└── nested_recommended  # ネストされたスキーマの推奨値
+```
+
+## 関連ドキュメント
+
+- [開発ガイド - OpenAPI拡張](../development/#openapi-extensions) - 拡張の定義と使用方法
+- [バリデーション仕様](../validation-spec/) - validation.jsonのフォーマットと構造
+- [オリジンプール拡張](./originpool-enhancements/) - オリジンプールスキーマのエンリッチメント
+
+## 変更履歴
+
+| バージョン | 日付 | 変更内容 |
+|---------|------|---------|
+| 2.1.4 | 2026-01-19 | HTTPヘルスチェックリクエストパラメータの `host_header_choice` OneOfグループドキュメントを追加 |
+| 2.1.3 | 2026-01-18 | グローバル拡張ドキュメントをDEVELOPMENT.mdに統合。リソース固有のデータのみ |
+| 2.1.2 | 2026-01-18 | 純粋なAPIリファレンスとして書き直し。下流の例と規範的な表現を削除 |
+| 2.1.1 | 2026-01-18 | ネストされた推奨値、OneOf推奨バリアント、`x-f5xc-recommended-oneof-variant` 拡張を追加 |
+| 2.1.0 | 2026-01-18 | validation.jsonに統合デフォルト構造を追加 |
+| 2.0.30 | 2026-01-16 | `$ref` スキーマのネストされたデフォルトを追加 |
+| 2.0.29 | 2026-01-17 | ヘルスチェックデフォルトの初期実装 |

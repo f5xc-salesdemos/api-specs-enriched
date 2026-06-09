@@ -1,0 +1,84 @@
+---
+title: "\U0001F578️ サービスメッシュ API"
+description: マイクロサービスルーティングとサイドカー構成。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: d33734c26c6d
+  translator: machine
+---
+
+ディスカバリーと学習済みスキーマ分析によるアプリケーションタイプ定義。インテリジェントなリクエストハンドリングのためのトラフィックパターン推論。
+
+- **カテゴリ**: インフラストラクチャ
+- **複雑度**: 上級
+- **パス数**: 38 | **スキーマ数**: 247
+- **ティア**: アドバンスド
+- **関連ドメイン**: `managed_kubernetes`, `container_services`, `virtual`
+
+## ユースケース
+
+- サービスメッシュ接続の構成
+- エンドポイントディスカバリーとルーティングの管理
+- NFV サービスの構成
+- アプリケーション設定とタイプの定義
+
+## 主要リソース
+
+- **endpoint**: トラフィックルーティング用のサービスメッシュエンドポイント
+- **origin_pool**: ロードバランサーのトラフィック分散用バックエンドサーバーグループ
+- **service_discovery**: 動的エンドポイントのためのサービスディスカバリー構成
+
+## エンドポイント
+
+| メソッド | パス | 説明 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | App Setting を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | App Setting を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | App Setting を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | App Setting を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | App Setting を削除。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | 疑わしいユーザーのステータスを取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | App Type を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | App Type を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | App Type を一覧表示。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | API エンドポイントごとの学習済みスキーマを取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | PDF を取得 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | API エンドポイントを取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | App Type の Swagger Spec を取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | オーバーライドを削除。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | オーバーライドを追加。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | オーバーライドを取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | サービス API エンドポイント PDF を取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | サービス API エンドポイントを取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | App Type を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | App Type を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | Endpoint を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | Endpoint を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | Endpoint を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | Endpoint を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | Endpoint を削除。 |
+| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | NFV Service を強制削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services` | NFV Service を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services/&#123;metadata.name&#125;` | NFV Service を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services` | NFV Service を一覧表示。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/nfv_services/metrics` | メトリクス |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | NFV Service を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | NFV Service を削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | Site Mesh Group を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | Site Mesh Group を置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | Site Mesh Group を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | Site Mesh Group を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | Site Mesh Group を削除。 |
+| POST | `/api/maurice/software_os_version` | SW_VERSION に基づく OS を取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | Virtual Network を作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | Virtual Network を置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | SID カウンター。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | Virtual Network を一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Virtual Network を取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Virtual Network を削除。 |
+
+## リンク
+
+- [インタラクティブ API リファレンス](./service_mesh/)
+- [OpenAPI 仕様 JSON](../specifications/api/service_mesh.json)

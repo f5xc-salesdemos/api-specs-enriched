@@ -1,0 +1,72 @@
+---
+title: "\U0001F527 Ce 管理 API"
+description: 网络接口、队列和站点注册。
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 7ca801568779
+  translator: machine
+---
+
+基于令牌的配置支持镜像下载和预升级验证。队列分组功能支持跨分布式位置的批量操作。
+
+- **类别**：基础设施
+- **复杂度**：中等
+- **路径数**：28 | **模式数**：231
+- **层级**：标准
+- **相关领域**：`customer_edge`、`sites`
+
+## 使用场景
+
+- 管理客户边缘站点生命周期
+- 配置网络接口和队列设置
+- 处理站点注册和令牌工作流
+- 执行站点升级及预升级检查
+
+## 主要资源
+
+- **site_config**：边缘节点设置的站点配置
+- **fleet_config**：多站点管理的队列配置
+- **registration_token**：站点入网的注册令牌
+
+## 端点
+
+| 方法 | 路径 | 描述 |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets` | 创建队列。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fleets/&#123;metadata.name&#125;` | 替换队列。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets` | 列出队列。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | 获取队列。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | 删除队列。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | 模块管理设置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | 创建网络接口。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | 替换网络接口。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | 列出网络接口。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | 获取网络接口。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | 删除网络接口。 |
+| POST | `/api/register/namespaces/system/get-image-download-url` | 获取镜像下载 URL。 |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | 通过站点令牌获取注册 UID。 |
+| POST | `/api/register/namespaces/system/suggest-values` | 建议值。 |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | 创建注册。 |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | 替换注册。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | 按状态列出注册。 |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | 注册审批。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | 列出注册。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | 获取注册。 |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | 删除注册。 |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | 按站点列出注册。 |
+| POST | `/api/register/registerBootstrap` | 创建注册。 |
+| POST | `/api/register/requestConfig` | 注册配置。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | 创建 USB 策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | 替换 USB 策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | 列出 USB 策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | 获取 USB 策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | 删除 USB 策略。 |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | 预升级检查。 |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | 获取升级状态。 |
+| GET | `/api/maurice/upgradable_sw_versions` | 获取可升级软件版本。 |
+
+## 链接
+
+- [交互式 API 参考](./ce_management/)
+- [OpenAPI 规范 JSON](../specifications/api/ce_management.json)

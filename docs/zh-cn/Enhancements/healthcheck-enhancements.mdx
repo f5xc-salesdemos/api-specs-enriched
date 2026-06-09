@@ -1,0 +1,173 @@
+---
+title: 健康检查增强
+description: 健康检查相关模式的富化元数据
+sidebar:
+  order: 1
+i18n:
+  sourceHash: 8a6393a0c1e6
+  translator: machine
+---
+
+健康检查相关模式的富化元数据。有关扩展定义，请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
+
+## 富化模式
+
+### 模式匹配规则
+
+所有匹配 `healthcheck.*SpecType` 的模式都会接收富化信息：
+
+- `healthcheckCreateSpecType`
+- `healthcheckReplaceSpecType`
+- `healthcheckGetSpecType`
+
+此外，嵌套模式 `healthcheckHttpHealthCheck` 包含 HTTP 健康检查配置的富化信息。
+
+## 服务器端应用的默认值
+
+标记为 `x-f5xc-server-default: true` 的字段，当请求中省略时，其 `default` 值由 F5 XC API 服务器自动应用。
+
+### 顶层字段
+
+| 字段 | 默认值 | 类型 | 描述 |
+|-------|--------|------|------|
+| `jitter` | `0` | integer | 用于时间随机化的绝对抖动值 |
+| `jitter_percent` | `0` | integer | 基于百分比的时间随机化抖动 |
+
+### healthcheckHttpHealthCheck 模式
+
+| 字段 | 默认值 | 类型 | 描述 |
+|-------|--------|------|------|
+| `use_origin_server_name` | `{}` | object | 用于 Host 头的源服务器名称 |
+| `headers` | `{}` | object | 自定义头 |
+| `request_headers_to_remove` | `[]` | array | 需要从请求中移除的头 |
+| `use_http2` | `false` | boolean | HTTP/2 支持 |
+| `expected_status_codes` | `[]` | array | 可接受的状态码（空值 = 200-299） |
+
+## 推荐值
+
+标记为 `x-f5xc-recommended-value` 的字段表示 F5 XC Web 控制台在创建新资源时预填充的值。
+
+### 顶层字段
+
+| 字段 | 推荐值 | 类型 | 描述 |
+|-------|--------|------|------|
+| `timeout` | `3` | integer | 健康检查超时时间（秒） |
+| `interval` | `15` | integer | 健康检查间隔时间（秒） |
+| `unhealthy_threshold` | `1` | integer | 标记为不健康之前的连续失败次数 |
+| `healthy_threshold` | `3` | integer | 标记为健康之前的连续成功次数 |
+| `jitter_percent` | `30` | integer | 生产环境使用的抖动百分比 |
+
+### healthcheckHttpHealthCheck 模式
+
+| 字段 | 推荐值 | 类型 | 描述 |
+|-------|--------|------|------|
+| `path` | `"/"` | string | 健康检查端点路径 |
+| `use_http2` | `false` | boolean | HTTP/2 支持设置 |
+| `expected_status_codes` | `["200"]` | array | 表示源站健康的状态码 |
+| `use_origin_server_name` | `{}` | object | 用于 Host 头的源服务器名称 |
+
+## OneOf 变体推荐
+
+包含互斥字段组（OneOf）的模式会包含 `x-f5xc-recommended-oneof-variant`，用于指示最常用的变体。此元数据基于 F5 XC 控制台默认设置和常见使用模式，标识在存在多个选项时的典型选择。
+
+### 顶层 OneOf 组
+
+| 模式 | OneOf 组 | 推荐变体 | 描述 |
+|------|----------|----------|------|
+| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP 健康检查类型 |
+| `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP 健康检查类型 |
+
+### healthcheckHttpHealthCheck OneOf 组
+
+| 模式 | OneOf 组 | 推荐变体 | 描述 |
+|------|----------|----------|------|
+| `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | 健康检查请求的 Host 头 |
+
+#### Host 头选择
+
+`host_header_choice` OneOf 组控制健康检查 HTTP 请求中 Host 头的指定方式。
+
+| 变体 | 类型 | 描述 |
+|------|------|------|
+| `use_origin_server_name` | `object`（空） | 使用源服务器名称作为 Host 头。这是 F5 XC 控制台中的默认选择。 |
+| `host_header` | `string` | 为健康检查请求指定自定义 Host 头值。 |
+
+**API 模式参考**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+
+## OpenAPI 扩展参考
+
+这些供应商扩展被添加到标准 OpenAPI 模式中，用于传达 F5 XC 特定的默认行为。
+
+### x-f5xc-server-default
+
+**类型**: `boolean`
+
+当值为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。带有此扩展的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
+
+```yaml
+use_http2:
+  type: boolean
+  default: false
+  x-f5xc-server-default: true
+```
+
+### x-f5xc-recommended-value
+
+**类型**: `any`（与字段类型匹配）
+
+指定 F5 XC Web 控制台用作预填充默认值的值。此值不由服务器强制执行，但代表通过控制台创建新资源时的典型起始配置。
+
+```yaml
+timeout:
+  type: integer
+  x-f5xc-recommended-value: 3
+```
+
+### x-f5xc-recommended-oneof-variant
+
+**类型**: `object`（组名称到变体名称的映射）
+
+对于具有互斥字段组的模式，标识哪个变体是默认或最常见的选择。键是 OneOf 组名称，值是推荐的变体字段名称。
+
+```yaml
+healthcheckCreateSpecType:
+  type: object
+  x-f5xc-recommended-oneof-variant:
+    health_check: "http_health_check"
+```
+## 数据访问
+
+### OpenAPI 规范
+
+| 文件 | 内容 |
+|------|------|
+| `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`、`healthcheckCreateSpecType`、`healthcheckReplaceSpecType`、`healthcheckGetSpecType` |
+| `docs/specifications/api/openapi.json` | 包含所有模式的合并规范 |
+
+### validation.json 结构
+
+```text
+defaults.resources.healthcheck
+├── server_applied      # 带有 x-f5xc-server-default: true 的字段
+├── recommended         # 带有 x-f5xc-recommended-value 的字段
+├── oneof_recommended   # OneOf 变体推荐
+└── nested_recommended  # 嵌套模式推荐值
+```
+
+## 相关文档
+
+- [开发指南 - OpenAPI 扩展](../development/#openapi-extensions) - 扩展定义和用法
+- [验证规范](../validation-spec/) - validation.json 格式和结构
+- [源站池增强](./originpool-enhancements/) - 源站池模式富化
+
+## 变更日志
+
+| 版本 | 日期 | 变更内容 |
+|------|------|----------|
+| 2.1.4 | 2026-01-19 | 添加了 HTTP 健康检查请求参数的 `host_header_choice` OneOf 组文档 |
+| 2.1.3 | 2026-01-18 | 将全局扩展文档合并到 DEVELOPMENT.md；仅保留资源特定数据 |
+| 2.1.2 | 2026-01-18 | 重写为纯 API 参考；移除了下游示例和规范性语言 |
+| 2.1.1 | 2026-01-18 | 添加了嵌套推荐值、OneOf 推荐变体、`x-f5xc-recommended-oneof-variant` 扩展 |
+| 2.1.0 | 2026-01-18 | 在 validation.json 中添加了统一的默认值结构 |
+| 2.0.30 | 2026-01-16 | 为 `$ref` 模式添加了嵌套默认值 |
+| 2.0.29 | 2026-01-17 | 初始健康检查默认值 |

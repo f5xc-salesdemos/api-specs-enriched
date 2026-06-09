@@ -1,0 +1,78 @@
+---
+title: "\U0001F3EA API do Marketplace"
+description: 'Serviços complementares, conectores e políticas TPM.'
+sidebar:
+  hidden: true
+i18n:
+  sourceHash: 494755c3db2c
+  translator: machine
+---
+
+Provisionamento de túneis GRE e IPSec de terceiros com temporizadores DPD. Alocação de recursos compartilhados entre namespaces com controles de posicionamento de tiles.
+
+- **Categoria**: Plataforma
+- **Complexidade**: moderada
+- **Caminhos**: 36 | **Esquemas**: 183
+- **Nível**: Avançado
+- **Domínios relacionados**: `bigip`, `admin`
+
+## Casos de Uso
+
+- Acessar integrações e complementos de terceiros
+- Gerenciar extensões do marketplace
+- Configurar Terraform e integrações externas
+- Gerenciar políticas TPM
+
+## Recursos Principais
+
+- **marketplace_item**: Item do marketplace para catálogo de serviços
+- **subscription**: Assinatura para direitos de serviço
+
+## Endpoints
+
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| GET | `/api/web/custom/namespaces/shared/addon_services/&#123;name&#125;` | Obter Detalhes do Serviço Complementar. |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/activation-status` | Status de Ativação do Serviço Complementar. |
+| GET | `/api/web/namespaces/system/addon_services/&#123;addon_service&#125;/all-activation-status` | Status de Ativação de Todos os Serviços Complementares. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services` | Listar Serviços Complementares. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_services/&#123;name&#125;` | Obter Serviço Complementar. |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions` | Criar Assinatura de Complemento. |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/addon_subscriptions/&#123;metadata.name&#125;` | Substituir Assinatura de Complemento. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions` | Listar Assinaturas de Complemento. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | Obter Assinatura de Complemento. |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/addon_subscriptions/&#123;name&#125;` | Excluir Assinatura de Complemento. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances` | Criar Instância do Central Manager. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cminstances/&#123;metadata.name&#125;` | Substituir Instância do Central Manager. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances` | Listar Instâncias do Central Manager. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Obter Instância do Central Manager. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cminstances/&#123;name&#125;` | Excluir Instância do Central Manager. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors` | Criar configuração de external_connector. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/external_connectors/&#123;metadata.name&#125;` | Substituir configuração de external_connector. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors` | Listar Configuração de Conector Externo. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | Obter configuração de external_connector. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/external_connectors/&#123;name&#125;` | Excluir Configuração de Conector Externo. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles` | Listar Tiles de Navegação. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/navigation_tiles/&#123;name&#125;` | Obter Tile de Navegação. |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/register` | Registrar Nova Conta AWS. |
+| POST | `/no_auth/namespaces/system/aws/f5xc-saas/signup` | Cadastrar Conta AWS. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans` | Listar Plano |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/plans/&#123;name&#125;` | Obter Plano |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/third_party_applications/&#123;metadata.name&#125;` | Substituir Aplicação de Terceiros. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/third_party_application/get_security_config` | Obter Configuração de Segurança para Aplicação de Terceiros. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications` | Listar Aplicações de Terceiros. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;` | Obter Aplicação de Terceiros. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/third_party_applications/&#123;name&#125;/generate_token` | Gerar Token. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/view_internal/&#123;view_kind&#125;/&#123;view_name&#125;` | Obter objeto interno para view. |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/force-delete` | Forçar Exclusão de view. |
+| POST | `/api/terraform/namespaces/&#123;namespace&#125;/terraform/&#123;view_kind&#125;/&#123;view_name&#125;/run` | Executar Ação Terraform para view. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;` | Obter Parâmetros Terraform para view. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/terraform_parameters/&#123;view_kind&#125;/&#123;view_name&#125;/status` | Obter Status do Terraform para view. |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup` | Cadastrar XC SaaS. |
+| GET | `/no_auth/namespaces/system/f5xc-saas/signup/registration_details` | Obter Detalhes do Registro. |
+| POST | `/no_auth/namespaces/system/f5xc-saas/signup/send_email` | Enviar E-mail de Cadastro. |
+
+## Links
+
+- [Referência Interativa da API](./marketplace/)
+- [Especificação OpenAPI em JSON](../specifications/api/marketplace.json)

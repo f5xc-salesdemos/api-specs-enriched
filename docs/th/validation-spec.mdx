@@ -1,0 +1,318 @@
+---
+title: ข้อกำหนดการตรวจสอบความถูกต้อง
+description: โครงสร้างและเนื้อหาของข้อกำหนดการตรวจสอบความถูกต้อง
+sidebar:
+  order: 3
+i18n:
+  sourceHash: b1994d14ae6e
+  translator: machine
+---
+
+เอกสารนี้อธิบายโครงสร้างและเนื้อหาของข้อกำหนดการตรวจสอบความถูกต้อง (validation specification) ที่เผยแพร่โดยโปรเจกต์ api-specs-enriched
+
+## ภาพรวม
+
+ข้อกำหนดการตรวจสอบความถูกต้องจะรวบรวมข้อจำกัดการตรวจสอบ API ค่าเริ่มต้น และเมตาดาต้าการกำหนดค่าไว้ในไฟล์ JSON ไฟล์เดียว ข้อกำหนดนี้สร้างขึ้นจาก enriched OpenAPI specs และเผยแพร่ควบคู่กัน
+
+**ตำแหน่งที่เผยแพร่**: `docs/specifications/api/validation.json`
+
+## โครงสร้างข้อกำหนด
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.1.0",
+  "generated_at": "2026-01-17T12:00:00Z",
+  "source": "api-specs-enriched",
+
+  "required_fields": { ... },
+  "enum_values": { ... },
+  "constraints": { ... },
+  "patterns": [ ... ],
+  "conditional_requirements": { ... },
+  "minimum_configurations": { ... },
+  "defaults": { ... },
+  "extensions": { ... }
+}
+```
+
+## ส่วนต่าง ๆ
+
+### required_fields
+
+ระบุฟิลด์ที่จำเป็นสำหรับแต่ละประเภทการดำเนินการต่อทรัพยากร
+
+```json
+{
+  "required_fields": {
+    "common": {
+      "all_operations": ["metadata.name", "metadata.namespace"]
+    },
+    "resources": {
+      "origin_pool": {
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+      }
+    }
+  }
+}
+```
+
+### enum_values
+
+กำหนดค่าที่อนุญาตสำหรับฟิลด์ที่มีข้อจำกัด
+
+```json
+{
+  "enum_values": {
+    "loadbalancer_algorithm": {
+      "description": "Load balancing algorithm for distributing traffic across origin servers",
+      "values": [
+        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
+        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
+        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
+        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
+        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+      ],
+      "default": "ROUND_ROBIN"
+    }
+  }
+}
+```
+
+### constraints
+
+ค่าเริ่มต้นการตรวจสอบระดับประเภทและกฎที่อิงรูปแบบ
+
+```json
+{
+  "constraints": {
+    "type_defaults": {
+      "string": {"minLength": 0, "maxLength": 1024},
+      "integer": {"minimum": 0, "maximum": 2147483647}
+    }
+  }
+}
+```
+
+### patterns
+
+กฎการตรวจสอบที่อิงรูปแบบชื่อฟิลด์พร้อมคะแนนความเชื่อมั่น
+
+```json
+{
+  "patterns": [
+    {
+      "pattern": "\\bport$",
+      "constraints": {"minimum": 1, "maximum": 65535},
+      "confidence": 0.99,
+      "description": "Valid TCP/UDP port range"
+    },
+    {
+      "pattern": "\\bname$",
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      },
+      "confidence": 0.90,
+      "description": "Kubernetes-style naming convention"
+    }
+  ]
+}
+```
+
+### defaults
+
+ค่าเริ่มต้นทั้งหมดที่จัดระเบียบตามประเภททรัพยากรในโครงสร้างแบบรวม
+
+```json
+{
+  "defaults": {
+    "description": "All default values organized by resource type",
+    "resources": {
+      "healthcheck": {
+        "server_applied": {
+          "jitter": 0,
+          "jitter_percent": 0
+        },
+        "recommended": {
+          "timeout": 3,
+          "interval": 15,
+          "unhealthy_threshold": 1,
+          "healthy_threshold": 3,
+          "jitter_percent": 30
+        },
+        "oneof_recommended": {
+          "health_check": "http_health_check"
+        },
+        "nested_recommended": {
+          "http_health_check": {
+            "path": "/",
+            "use_http2": false,
+            "expected_status_codes": ["200"],
+            "use_origin_server_name": {}
+          }
+        }
+      },
+      "origin_pool": {
+        "server_applied": {
+          "no_tls": {},
+          "healthcheck": [],
+          "loadbalancer_algorithm": "ROUND_ROBIN",
+          "endpoint_selection": "DISTRIBUTED"
+        },
+        "recommended": {
+          "port": 443,
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000
+        },
+        "advanced_options": {
+          "connection_timeout": 2000,
+          "http_idle_timeout": 300000,
+          "same_as_endpoint_port": {},
+          "default_circuit_breaker": {},
+          "disable_outlier_detection": {}
+        },
+        "oneof_choices": {
+          "port_choice": "port",
+          "tls_choice": "no_tls",
+          "circuit_breaker_choice": "default_circuit_breaker"
+        },
+        "ui_vs_server": {
+          "loadbalancer_algorithm": {
+            "ui_default": "LB_OVERRIDE",
+            "server_default": "ROUND_ROBIN",
+            "note": "UI preselects LB_OVERRIDE but server applies ROUND_ROBIN if omitted"
+          }
+        }
+      },
+      "app_firewall": {
+        "server_applied": {
+          "allow_all_response_codes": {},
+          "default_anonymization": {},
+          "monitoring": {}
+        }
+      }
+    }
+  }
+}
+```
+
+#### หมวดหมู่ค่าเริ่มต้น
+
+| หมวดหมู่ | คำอธิบาย | แหล่งที่มา |
+|----------|-------------|--------|
+| `server_applied` | ค่าที่ API นำไปใช้เมื่อฟิลด์ถูกละเว้น | การทดสอบ API จริง |
+| `recommended` | ค่าที่ตั้งไว้ล่วงหน้าในเว็บคอนโซล F5 XC | การวิเคราะห์ UI |
+| `advanced_options` | ค่าเริ่มต้นที่ซ้อนอยู่ภายในอ็อบเจกต์ advanced_options | การค้นพบ API |
+| `oneof_choices` | การเลือกตัวแปร OneOf เริ่มต้น | พฤติกรรม API |
+| `oneof_recommended` | ตัวแปร OneOf ที่แนะนำ | ค่าเริ่มต้นคอนโซล |
+| `nested_recommended` | ค่าที่แนะนำสำหรับสกีมาซ้อน | การวิเคราะห์ UI |
+| `ui_vs_server` | กรณีที่ค่าเริ่มต้น UI แตกต่างจากค่าเริ่มต้น API | การวิเคราะห์เปรียบเทียบ |
+
+### conditional_requirements
+
+ฟิลด์ที่ใช้ร่วมกันไม่ได้และการพึ่งพาแบบมีเงื่อนไข
+
+```json
+{
+  "conditional_requirements": {
+    "resources": {
+      "healthcheck": {
+        "mutually_exclusive": [
+          {
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "reason": "Choose exactly one health check type"
+          }
+        ],
+        "conditional": []
+      }
+    }
+  }
+}
+```
+
+### minimum_configurations
+
+การกำหนดค่าขั้นต่ำที่ใช้งานได้พร้อมตัวอย่างที่ทำงานได้จริง
+
+```json
+{
+  "minimum_configurations": {
+    "resources": {
+      "origin_pool": {
+        "description": "Backend origin servers for load balancing",
+        "example": {
+          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "spec": {
+            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "port": 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## การแมป OpenAPI Extension
+
+enriched OpenAPI specs ฝังเมตาดาต้าการตรวจสอบโดยใช้ extension เหล่านี้:
+
+| Extension | วัตถุประสงค์ | ตำแหน่ง |
+|-----------|---------|----------|
+| `x-f5xc-required-for` | ฟิลด์ที่จำเป็นตามบริบท | คุณสมบัติสกีมา |
+| `x-f5xc-server-default` | ทำเครื่องหมายค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด | คุณสมบัติสกีมา |
+| `x-f5xc-recommended-value` | ค่าเริ่มต้นที่แนะนำ | คุณสมบัติสกีมา |
+| `x-f5xc-recommended-oneof-variant` | ตัวแปร OneOf ที่แนะนำ | คำจำกัดความสกีมา |
+| `x-f5xc-conditions` | ข้อกำหนดแบบมีเงื่อนไข | คุณสมบัติสกีมา |
+| `x-f5xc-minimum-configuration` | ตัวอย่างการกำหนดค่าขั้นต่ำ | คำจำกัดความสกีมา |
+| `x-f5xc-validation` | ข้อจำกัดที่ได้จากการค้นพบ | คุณสมบัติสกีมา |
+
+## การเข้าถึงข้อมูล
+
+### URL สำหรับเผยแพร่
+
+| แหล่งที่มา | URL |
+|--------|-----|
+| GitHub Pages | `https://f5xc-salesdemos.github.io/api-specs-enriched/specifications/api/validation.json` |
+| Raw GitHub | `https://raw.githubusercontent.com/f5xc-salesdemos/api-specs-enriched/main/docs/specifications/api/validation.json` |
+
+### เส้นทางในเครื่อง
+
+หลังจากรันไปป์ไลน์: `docs/specifications/api/validation.json`
+
+## การกำหนดเวอร์ชัน
+
+ข้อกำหนดการตรวจสอบใช้ semantic versioning ในฟิลด์ `version`:
+
+| ประเภทการเปลี่ยนแปลง | การเพิ่มเวอร์ชัน | ตัวอย่าง |
+|-------------|--------------|---------|
+| การเปลี่ยนแปลงโครงสร้างที่ทำให้ไม่เข้ากัน | Major | การเปลี่ยนชื่อฟิลด์ การลบส่วน |
+| กฎการตรวจสอบหรือทรัพยากรใหม่ | Minor | ค่าเริ่มต้นทรัพยากรใหม่ |
+| การแก้ไขข้อผิดพลาดหรืออัปเดตคำอธิบาย | Patch | การแก้ไขคำผิด |
+
+## ลำดับความสำคัญในการปรับกระทบยอด
+
+เมื่อหลายแหล่งข้อมูลให้ข้อจำกัด ลำดับความสำคัญในการปรับกระทบยอดคือ:
+
+1. **มีอยู่แล้ว** - ข้อจำกัดใน OpenAPI spec ต้นฉบับ (ความสำคัญสูงสุด)
+2. **จากการค้นพบ** - ข้อจำกัดจากการค้นพบ API แบบเรียลไทม์
+3. **จากการอนุมาน** - ข้อจำกัดจากการจับคู่รูปแบบ (ความสำคัญต่ำสุด)
+
+## เอกสารที่เกี่ยวข้อง
+
+- [การปรับปรุง Healthcheck](./Enhancements/healthcheck-enhancements/) - การเสริมสร้างสกีมา Healthcheck
+- [การปรับปรุง Origin Pool](./Enhancements/originpool-enhancements/) - การเสริมสร้างสกีมา Origin Pool
+- [CLAUDE.md](../../CLAUDE.md) - คำแนะนำสำหรับผู้ช่วย AI
+- [DEVELOPMENT.md](./development/) - คู่มือสำหรับนักพัฒนา
+
+## บันทึกการเปลี่ยนแปลง
+
+| เวอร์ชัน | วันที่ | การเปลี่ยนแปลง |
+|---------|------|---------|
+| 2.1.2 | 2026-01-18 | เขียนใหม่เป็นเอกสารอ้างอิง API ล้วน; เพิ่มหมวดหมู่ oneof_recommended และ nested_recommended |
+| 2.1.0 | 2026-01-18 | โครงสร้างค่าเริ่มต้นแบบรวมที่แทนที่ส่วนที่กระจัดกระจาย |
+| 2.0.0 | 2026-01-15 | ข้อกำหนดการตรวจสอบความถูกต้องเริ่มต้น |
