@@ -74,12 +74,14 @@ class SchemaFixer:
         self._fix_missing_max_items = True
         self._default_max_items = self.DEFAULT_ARRAY_MAX_ITEMS
         self._format_type_mapping = self.FORMAT_TYPE_MAPPING.copy()
+        self._property_renames: dict[str, dict[str, str]] = {}
 
         self._load_config(config_path)
 
         # Statistics tracking
         self._fixes_applied = 0
         self._max_items_added = 0
+        self._properties_renamed = 0
 
     def _load_config(self, config_path: Path) -> None:
         """Load configuration from YAML config."""
@@ -102,11 +104,16 @@ class SchemaFixer:
         if custom_mappings:
             self._format_type_mapping.update(custom_mappings)
 
-    def fix_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
-        """Apply early-stage schema fixes (format-without-type).
+        # Property renames: {proto_message: {old_key: new_key}}
+        rename_config = schema_config.get("rename_properties", {})
+        if rename_config.get("enabled", False):
+            self._property_renames = rename_config.get("mappings", {})
 
-        Intentionally does NOT inject ``maxItems``; that is a late-stage
-        Checkov-compliance pass — see ``inject_max_items()``.
+    def fix_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
+        """Apply early-stage schema fixes.
+
+        Fixes format-without-type issues and renames misspelled property
+        keys in schemas where the live API uses the corrected name.
 
         Args:
             spec: OpenAPI specification dictionary.
@@ -115,7 +122,11 @@ class SchemaFixer:
             Specification with fixed schemas.
         """
         self._fixes_applied = 0
-        return self._fix_recursive(spec)
+        self._properties_renamed = 0
+        spec = self._fix_recursive(spec)
+        if self._property_renames:
+            self._apply_property_renames(spec)
+        return spec
 
     def inject_max_items(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Inject a default ``maxItems`` into every array schema that lacks one.
@@ -216,6 +227,28 @@ class SchemaFixer:
         self._fixes_applied += 1
         return result
 
+    def _apply_property_renames(self, spec: dict[str, Any]) -> None:
+        """Rename misspelled property keys in schemas matched by x-ves-proto-message."""
+        schemas = spec.get("components", {}).get("schemas", {})
+        for schema in schemas.values():
+            if not isinstance(schema, dict):
+                continue
+            proto = schema.get("x-ves-proto-message", "")
+            short_name = proto.rsplit(".", 1)[-1] if proto else ""
+            renames = self._property_renames.get(short_name, {})
+            if not renames:
+                continue
+            props = schema.get("properties", {})
+            for old_key, new_key in renames.items():
+                if old_key in props and new_key not in props:
+                    props[new_key] = props.pop(old_key)
+                    self._properties_renamed += 1
+            if "required" in schema and isinstance(schema["required"], list):
+                for old_key, new_key in renames.items():
+                    schema["required"] = [
+                        new_key if r == old_key else r for r in schema["required"]
+                    ]
+
     def get_stats(self) -> dict[str, Any]:
         """Return statistics about fixes applied."""
         return {
@@ -224,4 +257,5 @@ class SchemaFixer:
             "max_items_added": self._max_items_added,
             "fix_missing_max_items": self._fix_missing_max_items,
             "default_max_items": self._default_max_items,
+            "properties_renamed": self._properties_renamed,
         }
