@@ -1,6 +1,6 @@
 ---
-title: ⚖️ Virtual API
-description: HTTP、TCP、UDPロードバランシングとオリジンプール。
+title: ⚖️ バーチャル API
+description: オリジンプールを使用した HTTP、TCP、UDP ロードバランシング。
 sidebar:
   hidden: true
 i18n:
@@ -10,32 +10,32 @@ i18n:
 
 ルーティングルールによるリージョン間のトラフィック分散。ヘルスチェックとフェイルオーバーポリシー。
 
-- **カテゴリ**: ネットワーキング
-- **複雑度**: 上級
+- **カテゴリ**: ネットワーク
+- **複雑さ**: 高度
 - **パス数**: 133 | **スキーマ数**: 903
-- **ティア**: Advanced
+- **ティア**: 高度
 - **関連ドメイン**: `dns`, `service_policy`, `network`
 
 ## ユースケース
 
-- HTTP/TCP/UDPロードバランサーの設定
+- HTTP/TCP/UDP ロードバランサーの設定
 - オリジンプールとサービスの管理
 - 仮想ホストとルーティングの設定
 - レートリミッターとサービスポリシーの定義
-- 地理位置情報に基づくルーティングの管理
-- プロキシとフォワーディングポリシーの設定
-- マルウェア保護と脅威キャンペーンの管理
+- ジオロケーションベースのルーティングの管理
+- プロキシと転送ポリシーの設定
+- マルウェア対策と脅威キャンペーンの管理
 - ヘルスチェックとエンドポイント監視の設定
 
 ## 主要リソース
 
-- **http_loadbalancer**: アプリケーショントラフィック分散のためのレイヤー7 HTTP/HTTPSロードバランサー
-- **tcp_loadbalancer**: 非HTTPプロトコルトラフィックのためのレイヤー4 TCP/UDPロードバランサー
-- **origin_pool**: ロードバランサーのトラフィック分散のためのバックエンドサーバーグループ
+- **http_loadbalancer**: アプリケーショントラフィック分散のためのレイヤー 7 HTTP/HTTPS ロードバランサー
+- **tcp_loadbalancer**: 非 HTTP プロトコルトラフィック向けのレイヤー 4 TCP/UDP ロードバランサー
+- **origin_pool**: ロードバランサーのトラフィック分散用バックエンドサーバーグループ
 - **healthcheck**: オリジンサーバーの可用性のためのヘルス監視設定
-- **app_firewall**: HTTPトラフィック保護のためのWebアプリケーションファイアウォールポリシー
+- **app_firewall**: HTTP トラフィック保護のための Web アプリファイアウォール (WAF) ポリシー
 - **service_policy**: サービスレベルのアクセス制御とトラフィック管理ルール
-- **malicious_user_detection**: 悪意のあるユーザー行動の自動検出と緩和
+- **malicious_user_detection**: 悪意あるユーザー行動の自動検出と緩和
 
 ## エンドポイント
 
@@ -45,7 +45,7 @@ i18n:
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls` | アプリケーションファイアウォールの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls/&#123;metadata.name&#125;` | アプリケーションファイアウォールの置換。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_firewall/metrics` | メトリクス |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls` | アプリケーションファイアウォールの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls` | アプリケーションファイアウォールの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | アプリケーションファイアウォールの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | アプリケーションファイアウォールの削除。 |
 | POST | `/api/data/namespaces/system/app_security/all_ns_events` | 全ネームスペースのセキュリティイベントクエリ。 |
@@ -65,136 +65,136 @@ i18n:
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | 不審なユーザーログ集計クエリ。 |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | 不審なユーザーログスクロールクエリ。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | 不審なユーザーログスクロールクエリ。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | APIエンドポイント保護ルールの提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | API エンドポイント保護ルールの提案。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | クライアントブロックルールの提案。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/data_exposure/suggestion` | 機密データルールの提案。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | DDoS緩和ルールの提案。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | Open API仕様検証ルールの提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | DDoS 緩和ルールの提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | Open API 仕様検証ルールの提案。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/rate_limit/suggestion` | レートリミットルールの提案。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | クライアント信頼ルールの提案。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | WAF除外ルールの提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | 信頼クライアントルールの提案。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | WAF 除外ルールの提案。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters` | クラスターの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters/&#123;metadata.name&#125;` | クラスターの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/clusters` | クラスターの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/clusters` | クラスターの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | クラスターの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | クラスターの削除。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers` | HTTPロードバランサーの作成。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers/&#123;metadata.name&#125;` | HTTPロードバランサーの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | HTTPロードバランサー設定の一覧。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | HTTPロードバランサーのセキュリティ設定の取得。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTPロードバランサーの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTPロードバランサー設定の削除。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | API定義の割り当て。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | 利用可能なAPI定義の一覧。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | APIエンドポイントの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | HTTPロードバランサーのSwagger仕様の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | APIエンドポイントスキーマ更新の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | APIエンドポイントスキーマの更新。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | HTTPロードバランサーのDoS自動緩和ルールの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | HTTPロードバランサーのDoS自動緩和ルールの削除。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | DNS情報の取得。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | L7 DDoS RPSしきい値の設定。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers` | HTTP ロードバランサーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers/&#123;metadata.name&#125;` | HTTP ロードバランサーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | HTTP ロードバランサーの設定一覧表示。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | HTTP ロードバランサーのセキュリティ設定取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTP ロードバランサーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTP ロードバランサーの設定削除。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | API 定義の割り当て。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | 利用可能な API 定義の一覧表示。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | API エンドポイントの取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | HTTP ロードバランサーの Swagger 仕様取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | API エンドポイントスキーマ更新の取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | API エンドポイントスキーマの更新。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | HTTP ロードバランサーの DoS 自動緩和ルール取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | HTTP ロードバランサーの DoS 自動緩和ルール削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | DNS 情報の取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | L7 DDoS RPS しきい値の設定。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections` | プロトコルインスペクションの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections/&#123;metadata.name&#125;` | プロトコルインスペクションの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | プロトコルインスペクション設定の一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | プロトコルインスペクションの設定一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | プロトコルインスペクションの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | プロトコルインスペクション設定の削除。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers` | TCPロードバランサーの作成。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers/&#123;metadata.name&#125;` | TCPロードバランサーの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | TCPロードバランサー設定の一覧。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCPロードバランサーの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCPロードバランサー設定の削除。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS情報の取得。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers` | UDPロードバランサーの作成。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers/&#123;metadata.name&#125;` | UDPロードバランサーの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | UDPロードバランサー設定の一覧。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDPロードバランサーの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDPロードバランサー設定の削除。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS情報の取得。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | 拡張ファイアウォールポリシーの作成。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | 拡張ファイアウォールポリシーの置換。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | 拡張ファイアウォールポリシーのヒット。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | 拡張ファイアウォールポリシーの一覧。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 拡張ファイアウォールポリシーの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 拡張ファイアウォールポリシーの削除。 |
-| POST | `/api/config/namespaces/system/malware_protection/addon/subscribe` | マルウェア保護のサブスクライブ。 |
-| POST | `/api/config/namespaces/system/malware_protection/addon/unsubscribe` | マルウェア保護のサブスクライブ解除。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | プロトコルインスペクションの設定削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers` | TCP ロードバランサーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers/&#123;metadata.name&#125;` | TCP ロードバランサーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | TCP ロードバランサーの設定一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCP ロードバランサーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCP ロードバランサーの設定削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS 情報の取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers` | UDP ロードバランサーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers/&#123;metadata.name&#125;` | UDP ロードバランサーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | UDP ロードバランサーの設定一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDP ロードバランサーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDP ロードバランサーの設定削除。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS 情報の取得。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | 強化ファイアウォールポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | 強化ファイアウォールポリシーの置換。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | 強化ファイアウォールポリシーヒット。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | 強化ファイアウォールポリシーの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 強化ファイアウォールポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 強化ファイアウォールポリシーの削除。 |
+| POST | `/api/config/namespaces/system/malware_protection/addon/subscribe` | マルウェア対策へのサブスクライブ。 |
+| POST | `/api/config/namespaces/system/malware_protection/addon/unsubscribe` | マルウェア対策のサブスクライブ解除。 |
 | POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets` | ジオロケーションの作成。 |
 | PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets/&#123;metadata.name&#125;` | ジオロケーションセットの置換。 |
-| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets` | ジオロケーションセットの一覧。 |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets` | ジオロケーションセットの一覧表示。 |
 | GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | ジオロケーションセットの取得。 |
 | DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | ジオロケーションセットの削除。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks` | ヘルスチェックの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks/&#123;metadata.name&#125;` | ヘルスチェックの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | ヘルスチェックの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | ヘルスチェックの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | ヘルスチェックの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | ヘルスチェックの削除。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | オリジンプールの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | オリジンプールの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | オリジンプールの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | オリジンプールの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | オリジンプールの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | オリジンプールの削除。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies` | プロキシの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies/&#123;metadata.name&#125;` | プロキシの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies` | プロキシの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies` | プロキシの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | プロキシの取得 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | プロキシの削除。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | プロキシサーバーCA証明書の取得。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | プロキシサーバー CA 証明書の取得。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys` | 仕様の作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys/&#123;metadata.name&#125;` | 仕様の置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | レートリミッターポリシーの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | レートリミッターポリシーの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | 仕様の取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | レートリミッターポリシーの削除。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | サービスポリシーの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | サービスポリシーの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | サービスポリシーの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | サービスポリシーの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | サービスポリシーの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | サービスポリシーの削除。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules` | サービスポリシールールの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules/&#123;metadata.name&#125;` | サービスポリシールールの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules` | サービスポリシールールの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules` | サービスポリシールールの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | サービスポリシールールの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | サービスポリシールールの削除。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets` | サービスポリシーセットの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets` | サービスポリシーセットの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets/&#123;name&#125;` | サービスポリシーセットの取得。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts` | 仮想ホストの作成。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts/&#123;metadata.name&#125;` | 仮想ホストの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts` | 仮想ホストの一覧。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts` | 仮想ホストの一覧表示。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | 仮想ホストの取得。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | 仮想ホストの削除。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_definitions/assign` | API定義の割り当て。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint` | APIエンドポイントの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | APIエンドポイントごとの学習済みスキーマの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | APIエンドポイントPDFの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | APIエンドポイントごとの関連ソースOpenApiスキーマの取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/unmerge_sources_openapi_schema` | APIエンドポイントからのソースのマージ解除。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints` | APIエンドポイントの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | 仮想ホストのAPIエンドポイント統計の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | 仮想ホストの合計APIコール数の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | 仮想ホストのトップAPIエンドポイントの取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_sensitive_data` | 仮想ホストの機密データサマリーの取得。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/swagger_spec` | アプリタイプのSwagger仕様の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | APIエンドポイントスキーマ更新の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | APIエンドポイントスキーマの更新。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/create_ticket` | 脆弱性のチケットを作成。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | DNS情報の取得。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_definitions/assign` | API 定義の割り当て。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint` | API エンドポイントの取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | API エンドポイントごとの学習済みスキーマ取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | API エンドポイント PDF の取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | API エンドポイントごとの関連ソース OpenAPI スキーマ取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/unmerge_sources_openapi_schema` | API エンドポイントからソースのマージ解除。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints` | API エンドポイントの取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | 仮想ホストの API エンドポイント統計取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | 仮想ホストの API 総コール数取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | 仮想ホストのトップ API エンドポイント取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_sensitive_data` | 仮想ホストの機密データサマリー取得。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/swagger_spec` | アプリタイプの Swagger 仕様取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | API エンドポイントスキーマ更新の取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | API エンドポイントスキーマの更新。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/create_ticket` | 脆弱性に対するチケットの作成。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | DNS 情報の取得。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/unlink_tickets` | チケットのリンク解除。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | 仮想ホストの脆弱性の取得。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | 仮想ホストの脆弱性の更新。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | 仮想ホストの脆弱性取得。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | 仮想ホストの脆弱性更新。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/rule_hits` | クライアントルールヒットメトリクス。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/security_events` | クライアントセキュリティイベントメトリクス。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | サーバールールヒットメトリクス。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | サーバーセキュリティイベントメトリクス。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys` | WAF除外ポリシーの作成。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys/&#123;metadata.name&#125;` | WAF除外ポリシーの置換。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | WAF除外ポリシーの一覧。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | WAF除外ポリシーの取得。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | WAF除外ポリシーの削除。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys` | WAF 除外ポリシーの作成。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys/&#123;metadata.name&#125;` | WAF 除外ポリシーの置換。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | WAF 除外ポリシーの一覧表示。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | WAF 除外ポリシーの取得。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | WAF 除外ポリシーの削除。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/active_staged_signatures` | アクティブなステージングシグネチャ。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/released_signatures` | リリース済みシグネチャ。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/staged_signatures` | ステージングシグネチャ。 |
 
 ## リンク
 
-- [インタラクティブAPIリファレンス](./virtual/)
-- [OpenAPI仕様JSON](../specifications/api/virtual.json)
+- [インタラクティブ API リファレンス](./virtual/)
+- [OpenAPI 仕様 JSON](../specifications/api/virtual.json)

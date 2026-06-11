@@ -1,5 +1,5 @@
 ---
-title: "\U0001F578️ API Service Mesh"
+title: "\U0001F578️ Service Mesh API"
 description: Routing dei microservizi e configurazione sidecar.
 sidebar:
   hidden: true
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Definizioni dei tipi di applicazione con discovery e analisi dello schema appreso. Inferenza dei pattern di traffico per la gestione intelligente delle richieste.
+Definizioni dei tipi di applicazione con analisi dello schema rilevato e appreso. Inferenza dei pattern di traffico per la gestione intelligente delle richieste.
 
 - **Categoria**: Infrastruttura
 - **Complessità**: avanzata
@@ -19,64 +19,64 @@ Definizioni dei tipi di applicazione con discovery e analisi dello schema appres
 ## Casi d'uso
 
 - Configurare la connettività del service mesh
-- Gestire il discovery e il routing degli endpoint
+- Gestire il rilevamento degli endpoint e il routing
 - Configurare i servizi NFV
-- Definire impostazioni e tipi di applicazione
+- Definire le impostazioni e i tipi di applicazione
 
 ## Risorse principali
 
 - **endpoint**: Endpoint del service mesh per il routing del traffico
-- **origin_pool**: Gruppo di server backend per la distribuzione del traffico del load balancer
-- **service_discovery**: Configurazione del service discovery per endpoint dinamici
+- **origin_pool**: Gruppo di server backend per la distribuzione del traffico del bilanciatore del carico
+- **service_discovery**: Configurazione del rilevamento dei servizi per endpoint dinamici
 
 ## Endpoint
 
 | Metodo | Percorso | Descrizione |
-|--------|----------|-------------|
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | Crea App Setting. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | Sostituisci App Setting. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | Elenca App Setting. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | Ottieni App Setting. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | Elimina App Setting. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | Ottieni stato degli utenti sospetti. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | Crea App Type. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | Sostituisci App Type. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | Elenca App Type. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | Ottieni schema appreso per endpoint API. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | Ottieni PDF |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | Ottieni endpoint API. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | Ottieni Swagger Spec per App Type. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | Rimuovi Override. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | Aggiungi Override. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | Ottieni Override. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | Ottieni PDF endpoint API del servizio. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | Ottieni endpoint API del servizio. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | Ottieni App Type. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | Elimina App Type. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | Crea Endpoint. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | Sostituisci Endpoint. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | Elenca Endpoint. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | Ottieni Endpoint. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | Elimina Endpoint. |
-| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | Eliminazione forzata servizio NFV. |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | Crea impostazione app. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | Sostituisci impostazione app. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | Elenca impostazione app. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | GET impostazione app. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | DELETE impostazione app. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | GET stato degli utenti sospetti. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | Crea tipo app. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | Sostituisci tipo app. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | Elenca tipo app. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | GET schema appreso per endpoint API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | GET PDF |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | GET endpoint API. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | GET specifica Swagger per tipo app. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | Rimuovi override. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | Aggiungi override. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | GET override. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | GET PDF endpoint API del servizio. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | GET endpoint API del servizio. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | GET tipo app. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | DELETE tipo app. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | Crea endpoint. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | Sostituisci endpoint. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | Elenca endpoint. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | GET endpoint. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | DELETE endpoint. |
+| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | Forza DELETE servizio NFV. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services` | Crea servizio NFV. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services/&#123;metadata.name&#125;` | Sostituisci servizio NFV. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services` | Elenca servizio NFV. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/nfv_services/metrics` | Metriche |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | Ottieni servizio NFV. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | Elimina servizio NFV. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | Crea Site Mesh Group. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | Sostituisci Site Mesh Group. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | Elenca Site Mesh Group. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | Ottieni Site Mesh Group. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | Elimina Site Mesh Group. |
-| POST | `/api/maurice/software_os_version` | Ottieni OS basato su SW_VERSION. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | Crea Virtual Network. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | Sostituisci Virtual Network. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | GET servizio NFV. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | DELETE servizio NFV. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | Crea gruppo site mesh. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | Sostituisci gruppo site mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | Elenca gruppo site mesh. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | GET gruppo site mesh. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | DELETE gruppo site mesh. |
+| POST | `/api/maurice/software_os_version` | GET sistema operativo in base a SW_VERSION. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | Crea rete virtuale. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | Sostituisci rete virtuale. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | Contatori SID. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | Elenca Virtual Network. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Ottieni Virtual Network. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | Elimina Virtual Network. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | Elenca rete virtuale. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | GET rete virtuale. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | DELETE rete virtuale. |
 
 ## Link
 

@@ -1,8 +1,8 @@
 ---
 title: Système de métadonnées de contraintes
 description: >-
-  Métadonnées de contraintes complètes pour la génération IA déterministe et la
-  validation
+  Métadonnées de contraintes complètes pour la génération et la validation
+  déterministes par IA
 sidebar:
   order: 2
 i18n:
@@ -10,7 +10,7 @@ i18n:
   translator: machine
 ---
 
-**Objectif** : Métadonnées de contraintes complètes pour la génération IA déterministe, la validation CLI et l'application des schémas Terraform.
+**Objectif** : Métadonnées de contraintes complètes pour la génération déterministe par IA, la validation CLI et l'application du schéma Terraform.
 
 **Extension** : `x-f5xc-constraints`
 **Version** : 3.3.0
@@ -21,33 +21,33 @@ i18n:
 
 ## Table des matières
 
-1. [Vue d'ensemble](#vue-densemble)
-2. [Structure de l'extension](#structure-de-lextension)
-3. [Types de contraintes](#types-de-contraintes)
-4. [Descriptions en langage naturel](#descriptions-en-langage-naturel)
-5. [Exemples de validation](#exemples-de-validation)
-6. [Scores de confiance](#scores-de-confiance)
-7. [Intégration de la découverte](#intégration-de-la-découverte)
-8. [Guide d'intégration des outils](#guide-dintégration-des-outils)
+1. [Vue d'ensemble](#overview)
+2. [Structure de l'extension](#extension-structure)
+3. [Types de contraintes](#constraint-types)
+4. [Descriptions en langage naturel](#natural-language-descriptions)
+5. [Exemples de validation](#validation-examples)
+6. [Scores de confiance](#confidence-scores)
+7. [Intégration Discovery](#discovery-integration)
+8. [Guide d'intégration des outils](#tool-integration-guide)
 
 ---
 
 ## Vue d'ensemble
 
-L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur les contraintes de validation des champs, permettant :
+L'extension `x-f5xc-constraints` fournit une connaissance déterministe des contraintes de validation de champs, permettant :
 
-- **Assistants IA** : Générer des configurations valides sans intervention de l'utilisateur pour les détails des contraintes
+- **Assistants IA** : Générer des configurations valides sans saisie utilisateur pour les détails des contraintes
 - **Outils CLI** : Fournir des indications de saisie précises, une validation et des messages d'erreur
-- **Terraform** : Appliquer les contraintes au moment de la planification, et non de l'exécution
+- **Terraform** : Appliquer les contraintes au moment de la planification, et non lors de l'application
 - **Extensions IDE** : Validation en temps réel et suggestions d'autocomplétion
 - **Validateurs d'API** : Validation avant soumission pour réduire les erreurs d'API
 
 ### Statistiques de couverture
 
-- **9 851 contraintes** à travers toutes les spécifications d'API F5 XC
+- **9 851 contraintes** sur l'ensemble des spécifications d'API F5 XC
 - **Plus de 50 types de motifs** (chaîne, tableau, numérique)
 - **95 % de confiance** sur les champs prioritaires (noms, ports, identifiants)
-- **Réconciliation à 3 niveaux** : EXISTANT > DÉCOUVERTE > INFÉRÉ
+- **Réconciliation à 3 niveaux** : EXISTING > DISCOVERY > INFERRED
 
 ---
 
@@ -81,7 +81,7 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 | Champ | Type | Description |
 |-------|------|-------------|
 | `constraintType` | string | Type de données (string, array, number, object) |
-| `deterministic` | boolean | Indicateur de haute confiance (confiance >= 0.9) pour la génération IA |
+| `deterministic` | boolean | Indicateur de haute confiance (confiance >= 0,9) pour la génération par IA |
 | `category` | string | Catégorie de contrainte pour le regroupement et le reporting |
 | *(clés de contrainte)* | divers | Clés de contrainte spécifiques au type aplaties au niveau supérieur (ex. : `minLength`, `maxItems`, `minimum`) |
 | `metadata` | object | Suivi de la source, confiance, horodatage de validation |
@@ -187,8 +187,8 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 ### Contraintes de format de chaîne
 
 **Étiquettes DNS** (`format: "dns-label"`) :
-- Les noms d'étiquettes DNS doivent comporter 1 à 63 caractères alphanumériques minuscules
-- Les tirets sont autorisés mais pas en début/fin (RFC 1123)
+- Les noms d'étiquettes DNS doivent comporter entre 1 et 63 caractères alphanumériques en minuscules
+- Les traits d'union sont autorisés mais pas en début/fin (RFC 1123)
 - Exemple : `my-service`, `api-gateway`, `lb-prod-01`
 
 **Adresses e-mail** (`format: "email"`) :
@@ -197,13 +197,13 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 - Exemple : `admin@example.com`, `api+webhook@service.io`
 
 **FQDN** (`format: "fqdn"`) :
-- Les noms de domaine pleinement qualifiés doivent comporter 1 à 253 caractères
+- Les noms de domaine pleinement qualifiés doivent comporter entre 1 et 253 caractères
 - Étiquettes DNS séparées par des points
 - Exemple : `api.example.com`, `service.production.internal`
 
 **URL** (`format: "url"`) :
 - Les URL doivent être des URI valides selon la RFC 3986
-- Doivent inclure le schéma (http/https)
+- Doivent inclure un schéma (http/https)
 - Exemple : `https://api.example.com/v1`, `http://localhost:8080`
 
 **Adresses IPv4** (`format: "ipv4"`) :
@@ -211,7 +211,7 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 - Exemple : `192.168.1.1`, `10.0.0.1`
 
 **UUID** (`format: "uuid"`) :
-- Les UUID doivent suivre le format RFC 4122
+- Les UUID doivent respecter le format RFC 4122
 - Exemple : `550e8400-e29b-41d4-a716-446655440000`
 
 **Horodatages** (`format: "date-time"`) :
@@ -222,29 +222,29 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 
 **Numéros de port** :
 - Les numéros de port doivent être des entiers compris entre 1 et 65535
-- Ports standards : 80 (HTTP), 443 (HTTPS), 22 (SSH)
+- Ports standard : 80 (HTTP), 443 (HTTPS), 22 (SSH)
 
 **Identifiants VLAN** :
 - Les identifiants VLAN doivent être des entiers compris entre 1 et 4094 (norme 802.1Q)
 
 **Délais d'expiration** :
-- Les délais d'expiration doivent être de 1 à 3600 secondes (maximum 1 heure)
+- Les délais d'expiration doivent être compris entre 1 et 3600 secondes (maximum 1 heure)
 
 ### Contraintes de tableau
 
 **Pools d'origine** :
-- Le tableau de pools d'origine nécessite au moins 1 élément, maximum 50 éléments
+- Le tableau des pools d'origine requiert au moins 1 élément, maximum 50 éléments
 - Chaque élément doit être unique
 
-**Tags** :
-- Le tableau de tags autorise 0 à 100 éléments
+**Étiquettes** :
+- Le tableau d'étiquettes autorise entre 0 et 100 éléments
 - Les éléments n'ont pas besoin d'être uniques
 
 ---
 
 ## Exemples de validation
 
-### Exemple 1 : Validation de nom d'étiquette DNS
+### Exemple 1 : Validation d'un nom d'étiquette DNS
 
 **Contrainte** :
 ```json
@@ -266,12 +266,12 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 
 **Valeurs invalides** :
 - ❌ `My-Service` (majuscules non autorisées)
-- ❌ `-my-service` (tiret en début)
-- ❌ `my-service-` (tiret en fin)
+- ❌ `-my-service` (trait d'union en début)
+- ❌ `my-service-` (trait d'union en fin)
 - ❌ `my_service` (underscore non autorisé)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (trop long)
 
-### Exemple 2 : Validation de numéro de port
+### Exemple 2 : Validation d'un numéro de port
 
 **Contrainte** :
 ```json
@@ -286,7 +286,7 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 **Valeurs valides** :
 - ✅ `80` (HTTP)
 - ✅ `443` (HTTPS)
-- ✅ `8080` (alternative HTTP courante)
+- ✅ `8080` (HTTP alternatif courant)
 - ✅ `65535` (port maximum)
 
 **Valeurs invalides** :
@@ -295,7 +295,7 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 - ❌ `-1` (négatif)
 - ❌ `"80"` (chaîne, pas un nombre)
 
-### Exemple 3 : Validation de taille de tableau
+### Exemple 3 : Validation de la taille d'un tableau
 
 **Contrainte** :
 ```json
@@ -325,19 +325,19 @@ L'extension `x-f5xc-constraints` fournit des connaissances déterministes sur le
 
 | Plage | Interprétation | Utilisation |
 |-------|----------------|-------------|
-| 0.90-1.00 | **Haute confiance** | Indicateur déterministe activé, utiliser pour la génération IA |
-| 0.70-0.89 | **Confiance moyenne** | Consultatif, confirmation de l'utilisateur recommandée |
-| 0.50-0.69 | **Faible confiance** | Informatif uniquement, validation de l'utilisateur requise |
-| < 0.50 | **Très faible** | Non inclus dans les contraintes |
+| 0,90-1,00 | **Haute confiance** | Indicateur déterministe activé, utiliser pour la génération par IA |
+| 0,70-0,89 | **Confiance moyenne** | Indicatif, recommander la confirmation de l'utilisateur |
+| 0,50-0,69 | **Faible confiance** | Informatif uniquement, nécessite la validation de l'utilisateur |
+| < 0,50 | **Très faible** | Non inclus dans les contraintes |
 
 ### Indicateur déterministe
 
 L'indicateur booléen `deterministic` est activé lorsque :
-- Le score de confiance >= 0.9
+- Le score de confiance est >= 0,9
 - Le motif a été validé par rapport aux données de découverte OU
 - Le motif correspond à des normes bien établies (RFC, ISO, etc.)
 
-**Utilisation dans la génération IA** :
+**Utilisation dans la génération par IA** :
 ```python
 if constraint.get("deterministic"):
     # Generate value automatically without asking user
@@ -349,37 +349,37 @@ else:
 
 ---
 
-## Intégration de la découverte
+## Intégration Discovery
 
 ### Priorité des sources
 
 Les contraintes sont réconciliées selon une priorité à 3 niveaux :
 
-1. **EXISTANT** (Confiance : 1.0)
-   - Défini explicitement dans la spécification OpenAPI originale
+1. **EXISTING** (Confiance : 1,0)
+   - Défini explicitement dans la spécification OpenAPI d'origine
    - Jamais remplacé
 
-2. **DÉCOUVERTE** (Confiance : 0.99)
+2. **DISCOVERY** (Confiance : 0,99)
    - Extrait des réponses de l'API F5 XC en direct
-   - Inclut les règles de validation de x-ves-validation-rules
+   - Inclut les règles de validation issues de x-ves-validation-rules
    - Remplace les contraintes inférées
 
-3. **INFÉRÉ** (Confiance : 0.50-0.95)
-   - Correspondance de motifs à partir des noms de champs
-   - Priorité la plus basse, remplacé par la découverte ou l'explicite
+3. **INFERRED** (Confiance : 0,50-0,95)
+   - Correspondance par motif à partir des noms de champs
+   - Priorité la plus basse, remplacé par discovery ou explicite
 
-### Sources de données de découverte
+### Sources de données Discovery
 
 Les contraintes de découverte sont extraites de :
 
-1. **x-ves-validation-rules** : Extensions de validation natives F5
+1. **x-ves-validation-rules** : Extensions de validation F5 natives
    - `ves.io.schema.rules.string.max_len` → `maxLength`
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
 
 2. **Catalogue d'erreurs** : Messages d'erreur d'API indiquant des violations de contraintes
-   - "name must be 1-63 characters" → minLength/maxLength
-   - "port must be between 1 and 65535" → minimum/maximum
+   - « le nom doit comporter entre 1 et 63 caractères » → minLength/maxLength
+   - « le port doit être compris entre 1 et 65535 » → minimum/maximum
 
 3. **Validation des réponses** : Réponses d'API réussies démontrant des valeurs valides
    - Plages de valeurs observées
@@ -389,7 +389,7 @@ Les contraintes de découverte sont extraites de :
 
 ## Guide d'intégration des outils
 
-### Intégration avec les assistants IA
+### Intégration des assistants IA
 
 **Générer des noms de ressources valides** :
 ```python
@@ -408,9 +408,9 @@ def generate_resource_name(schema_property):
     return generate_dns_label(max_length=max_len)
 ```
 
-### Intégration avec les outils CLI
+### Intégration des outils CLI
 
-**Fournir la validation des entrées** :
+**Fournir une validation des saisies** :
 ```python
 def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
@@ -434,7 +434,7 @@ def validate_cli_input(field_name, user_value, constraints):
     return True, None
 ```
 
-### Intégration avec le fournisseur Terraform
+### Intégration du fournisseur Terraform
 
 **Génération de schéma** :
 ```go
@@ -460,7 +460,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 }
 ```
 
-### Intégration avec les extensions IDE
+### Intégration des extensions IDE
 
 **Autocomplétion et validation** :
 ```typescript
@@ -495,40 +495,40 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ---
 
-## Annexe : Catalogue des motifs de contraintes
+## Annexe : Catalogue de motifs de contraintes
 
-### Motifs à haute confiance (0.95-0.99)
-
-| Motif | Regex du nom de champ | Type de contrainte | Exemple |
-|-------|----------------------|---------------------|---------|
-| Étiquette DNS | `\bname$` | String (1-63 caractères, dns-label) | `my-service` |
-| Espace de noms | `\bnamespace$` | String (1-63 caractères, dns-label) | `production` |
-| Port | `\bport$` | Number (1-65535) | `443` |
-| Identifiant VLAN | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
-| UUID | `\buuid$` | String (36 caractères, format uuid) | `550e8400-...` |
-| E-mail | `\bemail$` | String (max 254 caractères, email) | `user@example.com` |
-| Horodatage | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
-
-### Motifs à confiance moyenne (0.80-0.94)
+### Motifs à haute confiance (0,95-0,99)
 
 | Motif | Regex du nom de champ | Type de contrainte | Exemple |
-|-------|----------------------|---------------------|---------|
-| Nom d'utilisateur | `\b(user\|username)$` | String (1-64 caractères, alphanumérique) | `admin` |
-| Nom d'affichage | `\b(display_?)?name$` | String (1-256 caractères, texte libre) | `My Service` |
-| Description | `\b(comment\|description\|note)$` | String (max 4096 caractères) | `Service description` |
-| Chemin | `\bpath$` | String (max 2048 caractères) | `/api/v1/resources` |
+|-------|-----------------------|--------------------|---------|
+| Étiquette DNS | `\bname$` | Chaîne (1-63 caractères, dns-label) | `my-service` |
+| Espace de noms | `\bnamespace$` | Chaîne (1-63 caractères, dns-label) | `production` |
+| Port | `\bport$` | Nombre (1-65535) | `443` |
+| Identifiant VLAN | `\b(vlan)?_?id$` | Nombre (1-4094) | `100` |
+| UUID | `\buuid$` | Chaîne (36 caractères, format uuid) | `550e8400-...` |
+| E-mail | `\bemail$` | Chaîne (max 254 caractères, email) | `user@example.com` |
+| Horodatage | `\b(timestamp\|created_at\|updated_at)$` | Chaîne (ISO 8601) | `2026-01-19T12:00:00Z` |
+
+### Motifs à confiance moyenne (0,80-0,94)
+
+| Motif | Regex du nom de champ | Type de contrainte | Exemple |
+|-------|-----------------------|--------------------|---------|
+| Nom d'utilisateur | `\b(user\|username)$` | Chaîne (1-64 caractères, alphanumérique) | `admin` |
+| Nom d'affichage | `\b(display_?)?name$` | Chaîne (1-256 caractères, texte libre) | `My Service` |
+| Description | `\b(comment\|description\|note)$` | Chaîne (max 4096 caractères) | `Service description` |
+| Chemin | `\bpath$` | Chaîne (max 2048 caractères) | `/api/v1/resources` |
 
 ---
 
-## Support et retours
+## Assistance et retours
 
-- **Problèmes** : Signalez les problèmes de précision des contraintes sur https://github.com/f5xc-salesdemos/api-specs-enriched/issues
-- **Documentation** : Documentation complète de l'API sur https://f5xc-salesdemos.github.io/api-specs-enriched/
-- **Intégration MCP** : Consultez le dépôt `f5xc-api-mcp` pour des exemples d'intégration du serveur MCP
+- **Problèmes** : Signaler les problèmes de précision des contraintes à l'adresse https://github.com/f5xc-salesdemos/api-specs-enriched/issues
+- **Documentation** : Documentation complète de l'API disponible à l'adresse https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **Intégration MCP** : Consulter le dépôt `f5xc-api-mcp` pour des exemples d'intégration de serveur MCP
 
 ---
 
 **Version** : 3.3.0
-**Dernière mise à jour** : 19/01/2026
+**Dernière mise à jour** : 2026-01-19
 **Contraintes réconciliées** : 9 851
 **Couverture des motifs** : Plus de 50 types

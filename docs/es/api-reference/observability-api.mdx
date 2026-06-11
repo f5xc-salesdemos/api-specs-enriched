@@ -1,6 +1,6 @@
 ---
 title: "\U0001F4CA API de Observabilidad"
-description: Verificaciones de salud sintéticas y validación de resolución DNS.
+description: Comprobaciones de estado sintéticas y validación de resolución DNS.
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Sondas de disponibilidad HTTP con medición de latencia. Alertas de expiración de certificados y paneles de estado globales para la salud de la infraestructura.
+Sondeos de disponibilidad HTTP con medición de latencia. Alertas de vencimiento de certificados y paneles de estado global para la salud de la infraestructura.
 
 - **Categoría**: Operaciones
 - **Complejidad**: moderada
@@ -16,91 +16,91 @@ Sondas de disponibilidad HTTP con medición de latencia. Alertas de expiración 
 - **Nivel**: Estándar
 - **Dominios relacionados**: `statistics`, `support`
 
-## Casos de Uso
+## Casos de uso
 
 - Configurar monitoreo sintético
 - Definir políticas de monitoreo y pruebas
-- Gestionar paneles de observabilidad
+- Gestionar paneles de Observabilidad
 
-## Recursos Principales
+## Recursos principales
 
-- **log_receiver**: Receptor de registros para la recopilación centralizada de registros
-- **metrics_receiver**: Receptor de métricas para la recopilación centralizada de métricas
+- **log_receiver**: Receptor de registros para recolección centralizada de logs
+- **metrics_receiver**: Receptor de métricas para recolección centralizada de métricas
 - **alert_policy**: Política de alertas para monitoreo y notificación
 
 ## Endpoints
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/api/data/namespaces/system/all_ns_alerts` | Obtener alertas. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | Obtener alertas. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | Obtener historial de alertas. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | Agregación del historial de alertas. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | Desplazamiento del historial de alertas. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | Desplazamiento del historial de alertas. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | Crear monitor DNS. |
-| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | Reemplazar monitor DNS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | Obtener lista filtrada de monitores DNS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | Listar monitores DNS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | Obtener monitor DNS. |
-| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | Eliminar monitor DNS. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | Crear monitor HTTP. |
-| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | Actualizar monitor HTTP. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | Obtener lista filtrada de monitores HTTP. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | Listar monitores HTTP. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | Obtener monitor HTTP. |
-| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | Eliminar monitor HTTP. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | Consulta de registros de acceso V2. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | Consulta de agregación de registros de acceso. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | Consulta de desplazamiento de registros de acceso. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | Consulta de desplazamiento de registros de acceso. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | Consulta de registros de auditoría V2. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | Consulta de agregación de registros de auditoría. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | Consulta de registros de firewall. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | Consulta de agregación de registros de firewall. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de desplazamiento de registros de firewall. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de desplazamiento de registros de firewall. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría K8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría K8s. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de desplazamiento de eventos K8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de desplazamiento de eventos K8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | Consulta de eventos de plataforma. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Consulta de agregación de eventos de plataforma. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de desplazamiento de eventos de plataforma. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de desplazamiento de eventos de plataforma. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | Consulta de registros de auditoría VK8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | Consulta de agregación de registros de auditoría VK8s. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría VK8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de desplazamiento de registros de auditoría VK8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | Consulta de eventos VK8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | Consulta de agregación de eventos VK8s. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de desplazamiento de eventos VK8s. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de desplazamiento de eventos VK8s. |
-| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | Suscribirse al servicio de observabilidad. |
-| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | Cancelar suscripción al monitor sintético de observabilidad. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | Obtener detalle del informe de certificados. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | Obtener resumen de certificados. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | Obtener resumen del monitor DNS. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | Obtener salud del monitor DNS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | Obtener historial global. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | Obtener resumen global. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | Obtener verificación de salud del monitoreo sintético. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | Obtener detalle del monitor HTTP. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | Obtener resumen del monitor HTTP. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | Obtener salud del monitor HTTP. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | Obtener datos de consulta de métricas. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | Obtener eventos del monitor. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | Obtener historial del monitor. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | Obtener resumen de tipos de registro. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | Obtener resumen de origen. |
-| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | Sugerir valores. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | Obtener detalle del informe TLS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | Obtener resumen del informe TLS. |
-| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | Obtener resumen TLS. |
+| GET | `/api/data/namespaces/system/all_ns_alerts` | OBTENER Alertas. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts` | OBTENER Alertas. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history` | OBTENER Historial de Alertas. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/aggregation` | Agregación del Historial de Alertas. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | Desplazamiento del Historial de Alertas. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/alerts/history/scroll` | Desplazamiento del Historial de Alertas. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors` | Crear Monitor DNS. |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_dns_monitors/&#123;metadata.name&#125;` | Reemplazar Monitor DNS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-dns-monitor-list` | OBTENER Lista Filtrada de Monitor DNS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors` | Listar Monitor DNS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | OBTENER Monitor DNS. |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_dns_monitors/&#123;name&#125;` | ELIMINAR Monitor DNS. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors` | Crear Monitor HTTP. |
+| PUT | `/api/observability/synthetic_monitor/namespaces/&#123;metadata.namespace&#125;/v1_http_monitors/&#123;metadata.name&#125;` | Actualizar Monitor HTTP. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/filtered-http-monitor-list` | OBTENER Lista Filtrada de Monitor HTTP. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors` | Listar Monitor HTTP. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | OBTENER Monitor HTTP. |
+| DELETE | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/v1_http_monitors/&#123;name&#125;` | ELIMINAR Monitor HTTP. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs` | Consulta de Log de Acceso V2. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/aggregation` | Consulta de Agregación de Log de Acceso. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | Consulta de Desplazamiento de Log de Acceso. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/access_logs/scroll` | Consulta de Desplazamiento de Log de Acceso. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs` | Consulta de Log de Auditoría V2. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/aggregation` | Consulta de Agregación de Log de Auditoría. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs` | Consulta de Logs de Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/aggregation` | Consulta de Agregación de Logs de Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de Desplazamiento de Logs de Firewall. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/firewall_logs/scroll` | Consulta de Desplazamiento de Logs de Firewall. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría K8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de Desplazamiento de Eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/k8s_events/scroll` | Consulta de Desplazamiento de Eventos K8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events` | Consulta de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Consulta de Agregación de Eventos de Plataforma. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de Desplazamiento de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Consulta de Desplazamiento de Eventos de Plataforma. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs` | Consulta de Log de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/aggregation` | Consulta de Agregación de Log de Auditoría VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_audit_logs/scroll` | Consulta de Desplazamiento de Log de Auditoría VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events` | Consulta de Eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/aggregation` | Consulta de Agregación de Eventos VK8s. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de Desplazamiento de Eventos VK8s. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/vk8s_events/scroll` | Consulta de Desplazamiento de Eventos VK8s. |
+| POST | `/api/observability/connector/namespaces/system/observability/subscribe` | Suscribirse al servicio de Observabilidad. |
+| POST | `/api/observability/connector/namespaces/system/observability/unsubscribe` | Cancelar suscripción al Monitor Sintético de Observabilidad. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-report-detail` | OBTENER Detalle del Informe de Certificado. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/certificate-summary` | OBTENER Resumen de Certificado. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitor-summary` | OBTENER Resumen del Monitor DNS. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/dns-monitors-health` | OBTENER Estado del Monitor DNS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-history` | OBTENER Historial Global. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/global-summary` | OBTENER Resumen Global. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/health` | OBTENER Verificación de Estado del Monitoreo Sintético. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-detail` | OBTENER Detalle del Monitor HTTP. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitor-summary` | OBTENER Resumen del Monitor HTTP. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/http-monitors-health` | OBTENER Estado del Monitor HTTP. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/metric-query` | OBTENER Datos de Consulta de Métricas. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-events` | OBTENER Eventos del Monitor. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/monitor-history` | OBTENER Historial del Monitor. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/record-type-summary` | OBTENER Resumen por Tipo de Registro. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/source-summary` | OBTENER Resumen por Fuente. |
+| POST | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/suggest-values` | Sugerir Valores. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-detail` | OBTENER Detalle del Informe TLS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-report-summary` | OBTENER Resumen del Informe TLS. |
+| GET | `/api/observability/synthetic_monitor/namespaces/&#123;namespace&#125;/tls-summary` | OBTENER Resumen TLS. |
 
 ## Enlaces
 
-- [Referencia interactiva de la API](./observability/)
-- [Especificación OpenAPI en JSON](../specifications/api/observability.json)
+- [Referencia Interactiva de API](./observability/)
+- [Especificación OpenAPI JSON](../specifications/api/observability.json)

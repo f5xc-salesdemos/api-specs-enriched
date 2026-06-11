@@ -1,6 +1,6 @@
 ---
 title: ☁️ API Infrastruttura Cloud
-description: 'Connettori AWS, Azure, GCP e collegamento VPC.'
+description: 'Connettori AWS, Azure, GCP e allegati VPC.'
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Connessioni multi-cloud provider con peering gateway e configurazione dei percorsi di rete. Integrazione con vault delle credenziali ed enumerazione delle sottoreti.
+Connessioni a provider multi-cloud con peering di gateway e configurazione dei percorsi di rete. Integrazione con vault delle credenziali ed enumerazione delle subnet.
 
 - **Categoria**: Infrastruttura
 - **Complessità**: moderata
@@ -18,55 +18,55 @@ Connessioni multi-cloud provider con peering gateway e configurazione dei percor
 
 ## Casi d'uso
 
-- Connessione ai cloud provider (AWS, Azure, GCP)
-- Gestione delle credenziali cloud e dell'autenticazione
-- Configurazione della connettività cloud e del provisioning elastico
-- Collegamento e gestione delle regioni cloud
+- Connettersi ai provider cloud (AWS, Azure, GCP)
+- Gestire credenziali e autenticazione cloud
+- Configurare la connettività cloud e il provisioning elastico
+- Collegare e gestire le regioni cloud
 
 ## Risorse principali
 
-- **aws_vpc_site**: Distribuzione del sito AWS VPC con provisioning del nodo edge
-- **azure_vnet_site**: Distribuzione del sito Azure VNet con provisioning del nodo edge
-- **gcp_vpc_site**: Distribuzione del sito Google Cloud VPC con provisioning del nodo edge
-- **cloud_credentials**: Credenziali di autenticazione del cloud provider per la distribuzione dei siti
+- **aws_vpc_site**: Distribuzione del sito AWS VPC con provisioning dei nodi edge
+- **azure_vnet_site**: Distribuzione del sito Azure VNet con provisioning dei nodi edge
+- **gcp_vpc_site**: Distribuzione del sito Google Cloud VPC con provisioning dei nodi edge
+- **cloud_credentials**: Credenziali di autenticazione del provider cloud per la distribuzione del sito
 
 ## Endpoint
 
 | Metodo | Percorso | Descrizione |
-|--------|----------|-------------|
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | Elenco Hardware Certificato. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | GET Hardware Certificato. |
-| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | Riapplica Collegamento VPC. |
+|--------|------|-------------|
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | Elenca hardware certificato. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | GET hardware certificato. |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | RiapplicaAllegatoVPC. |
 | POST | `/api/data/namespaces/system/cloud_connects/metrics` | Tutte le metriche Cloud Connect. |
-| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | Tutte le metriche segmento Cloud Connect. |
+| POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | Tutte le metriche dei segmenti Cloud Connect. |
 | POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | Metriche Cloud Connect. |
-| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | Scoperta VPC Cloud Connect. |
-| POST | `/api/config/namespaces/system/edge_credentials` | Credenziali Cloud. |
+| POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | Rilevamento VPC Cloud Connect. |
+| POST | `/api/config/namespaces/system/edge_credentials` | Credenziale cloud. |
 | GET | `/api/config/namespaces/system/edge_list` | Elenco Edge |
 | POST | `/api/data/namespaces/system/top/cloud_connects` | Top Cloud Connect. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | Crea Cloud Connect. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | Sostituisci Cloud Connect. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | Elenco Cloud Connect. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | Elenca Cloud Connect. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | GET Cloud Connect. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | DELETE Cloud Connect. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | Crea Credenziali Cloud. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | Sostituisci Credenziali Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | Elenco Credenziali Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | GET Credenziali Cloud. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | DELETE Credenziali Cloud. |
-| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | Eliminazione forzata IP Elastico Cloud. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | Crea IP Elastico Cloud. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | Sostituisci IP Elastico Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | Elenco IP Elastico Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | GET IP Elastico Cloud. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | DELETE IP Elastico Cloud. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | Sostituisci Regione Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | Elenco Regione Cloud. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | GET Regione Cloud. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | Crea credenziali cloud. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | Sostituisci credenziali cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | Elenca credenziali cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | GET credenziali cloud. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | DELETE credenziali cloud. |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | Forza DELETE IP elastico cloud. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | Crea IP elastico cloud. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | Sostituisci IP elastico cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | Elenca IP elastico cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | GET IP elastico cloud. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | DELETE IP elastico cloud. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | Sostituisci regione cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | Elenca regione cloud. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | GET regione cloud. |
 | POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | CloudLink |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | Crea CloudLink. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | Sostituisci CloudLink. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | Elenco CloudLink. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | Elenca CloudLink. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | GET CloudLink. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | DELETE CloudLink. |
 

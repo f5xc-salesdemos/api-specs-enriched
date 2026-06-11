@@ -1,6 +1,6 @@
 ---
 title: ⚖️ Virtuelle API
-description: 'HTTP-, TCP-, UDP-Lastverteilung mit Origin-Pools.'
+description: 'HTTP-, TCP-, UDP-Lastverteilung mit Ursprungspools.'
 sidebar:
   hidden: true
 i18n:
@@ -8,70 +8,70 @@ i18n:
   translator: machine
 ---
 
-Datenverkehrsverteilung über Regionen hinweg mit Routing-Regeln. Health Checks und Failover-Richtlinien.
+Verkehrsverteilung über Regionen hinweg mit Routing-Regeln. Integritätsprüfungen und Failover-Richtlinien.
 
 - **Kategorie**: Netzwerk
 - **Komplexität**: Fortgeschritten
-- **Pfade**: 133 | **Schemas**: 903
-- **Stufe**: Fortgeschritten
+- **Pfade**: 133 | **Schemata**: 903
+- **Stufe**: Erweitert
 - **Verwandte Domänen**: `dns`, `service_policy`, `network`
 
 ## Anwendungsfälle
 
 - HTTP/TCP/UDP-Load-Balancer konfigurieren
-- Origin-Pools und Dienste verwalten
+- Ursprungspools und Dienste verwalten
 - Virtuelle Hosts und Routing konfigurieren
-- Rate-Limiter und Service-Richtlinien definieren
-- Geo-Standort-basiertes Routing verwalten
+- Ratenbegrenzer- und Dienstrichtlinien definieren
+- Geostandortbasiertes Routing verwalten
 - Proxy- und Weiterleitungsrichtlinien konfigurieren
 - Malware-Schutz und Bedrohungskampagnen verwalten
-- Health Checks und Endpoint-Überwachung konfigurieren
+- Integritätsprüfungen und Endpunktüberwachung konfigurieren
 
 ## Primäre Ressourcen
 
-- **http_loadbalancer**: Layer-7-HTTP/HTTPS-Load-Balancer für die Verteilung von Anwendungsdatenverkehr
-- **tcp_loadbalancer**: Layer-4-TCP/UDP-Load-Balancer für Nicht-HTTP-Protokoll-Datenverkehr
-- **origin_pool**: Backend-Servergruppe für die Load-Balancer-Datenverkehrsverteilung
-- **healthcheck**: Health-Monitoring-Konfiguration für die Verfügbarkeit von Origin-Servern
-- **app_firewall**: Web Application Firewall-Richtlinie zum Schutz von HTTP-Datenverkehr
-- **service_policy**: Zugriffskontroll- und Datenverkehrsverwaltungsregeln auf Dienstebene
-- **malicious_user_detection**: Automatische Erkennung und Abwehr von bösartigem Benutzerverhalten
+- **http_loadbalancer**: Layer-7-HTTP/HTTPS-Load-Balancer zur Verteilung von Anwendungsdatenverkehr
+- **tcp_loadbalancer**: Layer-4-TCP/UDP-Load-Balancer für Nicht-HTTP-Protokolldatenverkehr
+- **origin_pool**: Backend-Servergruppe zur Verteilung des Load-Balancer-Datenverkehrs
+- **healthcheck**: Integritätsüberwachungskonfiguration für die Verfügbarkeit des Ursprungsservers
+- **app_firewall**: Web-App-Firewall (WAF)-Richtlinie zum Schutz des HTTP-Datenverkehrs
+- **service_policy**: Zugriffssteuerungs- und Datenverkehrsverwaltungsregeln auf Dienstebene
+- **malicious_user_detection**: Automatisierte Erkennung und Abwehr von bösartigem Benutzerverhalten
 
 ## Endpunkte
 
 | Methode | Pfad | Beschreibung |
-|---------|------|--------------|
+|--------|------|-------------|
 | POST | `/api/data/namespaces/system/app_firewall/all_ns_metrics` | MetricsAllNamespaces. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls` | Application Firewall erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls/&#123;metadata.name&#125;` | Application Firewall ersetzen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls` | Anwendungs-Firewall erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls/&#123;metadata.name&#125;` | Anwendungs-Firewall ersetzen. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_firewall/metrics` | Metriken |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls` | Application Firewall auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | Application Firewall abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | Application Firewall löschen. |
-| POST | `/api/data/namespaces/system/app_security/all_ns_events` | Sicherheitsereignisse aller Namespaces abfragen. |
-| POST | `/api/data/namespaces/system/app_security/all_ns_events/aggregation` | Sicherheitsereignisse-Aggregationsabfrage aller Namespaces. |
-| POST | `/api/data/namespaces/system/app_security/all_ns_search/loadbalancers` | Load Balancer aller Namespaces suchen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events` | Sicherheitsereignisse abfragen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/aggregation` | Sicherheitsereignisse-Aggregationsabfrage. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Sicherheitsereignisse-Scroll-Abfrage. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Sicherheitsereignisse-Scroll-Abfrage. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | Sicherheitsvorfälle abfragen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | Sicherheitsvorfälle-Aggregationsabfrage. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | Sicherheitsvorfälle-Scroll-Abfrage. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | Sicherheitsvorfälle-Scroll-Abfrage. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/metrics` | Sicherheitsereignisse-Metriken. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/search/loadbalancers` | Load Balancer suchen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs` | Verdächtige Benutzerprotokolle abfragen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | Verdächtige Benutzerprotokolle-Aggregationsabfrage. |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Verdächtige Benutzerprotokolle-Scroll-Abfrage. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Verdächtige Benutzerprotokolle-Scroll-Abfrage. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls` | Anwendungs-Firewall auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | Anwendungs-Firewall abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_firewalls/&#123;name&#125;` | Anwendungs-Firewall löschen. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_events` | Sicherheitsereignisabfrage für alle Namespaces. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_events/aggregation` | Aggregationsabfrage für Sicherheitsereignisse für alle Namespaces. |
+| POST | `/api/data/namespaces/system/app_security/all_ns_search/loadbalancers` | Load-Balancer für alle Namespaces suchen. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events` | Sicherheitsereignisabfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/aggregation` | Aggregationsabfrage für Sicherheitsereignisse. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Scroll-Abfrage für Sicherheitsereignisse. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Scroll-Abfrage für Sicherheitsereignisse. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | Sicherheitsvorfallsabfrage. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | Aggregationsabfrage für Sicherheitsvorfälle. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | Scroll-Abfrage für Sicherheitsvorfälle. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | Scroll-Abfrage für Sicherheitsvorfälle. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/metrics` | Metriken für Sicherheitsereignisse. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/search/loadbalancers` | Load-Balancer suchen. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs` | Abfrage verdächtiger Benutzerprotokolle. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | Aggregationsabfrage für verdächtige Benutzerprotokolle. |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Scroll-Abfrage für verdächtige Benutzerprotokolle. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Scroll-Abfrage für verdächtige Benutzerprotokolle. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | API-Endpunktschutzregel vorschlagen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | Client-Blockierungsregel vorschlagen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/data_exposure/suggestion` | Regel für sensible Daten vorschlagen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | DDoS-Abwehrregel vorschlagen. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | Open-API-Spezifikations-Validierungsregel vorschlagen. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/rate_limit/suggestion` | Rate-Limit-Regel vorschlagen. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | Vertrauenswürdige-Client-Regel vorschlagen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | Validierungsregel für OpenAPI-Spezifikation vorschlagen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/rate_limit/suggestion` | Ratenbegrenzungsregel vorschlagen. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | Vertrauenswürdige Client-Regel vorschlagen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | WAF-Ausschlussregel vorschlagen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters` | Cluster erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters/&#123;metadata.name&#125;` | Cluster ersetzen. |
@@ -80,111 +80,111 @@ Datenverkehrsverteilung über Regionen hinweg mit Routing-Regeln. Health Checks 
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | Cluster löschen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers` | HTTP-Load-Balancer erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers/&#123;metadata.name&#125;` | HTTP-Load-Balancer ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | HTTP-Load-Balancer-Konfiguration auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | HTTP-Load-Balancer konfigurieren und auflisten. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | Sicherheitskonfiguration für HTTP-Load-Balancer abrufen. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTP-Load-Balancer abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTP-Load-Balancer-Konfiguration löschen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | HTTP-Load-Balancer konfigurieren und löschen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | API-Definition zuweisen. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | Verfügbare API-Definitionen auflisten. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | API-Endpunkte abrufen. |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | Swagger-Spezifikation für HTTP-Load-Balancer abrufen. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | API-Endpunkte-Schema-Aktualisierungen abrufen. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | API-Endpunkte-Schemas aktualisieren. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | DoS-Auto-Mitigationsregeln für HTTP-Load-Balancer abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | DoS-Auto-Mitigationsregel für HTTP-Load-Balancer löschen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Info abrufen. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | Schemaaktualisierungen für API-Endpunkte abrufen. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | Schemata für API-Endpunkte aktualisieren. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | DoS-Auto-Abwehrregeln für HTTP-Load-Balancer abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | DoS-Auto-Abwehrregel für HTTP-Load-Balancer löschen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Informationen abrufen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | L7-DDoS-RPS-Schwellenwert festlegen. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections` | Protokollinspektion erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections/&#123;metadata.name&#125;` | Protokollinspektion ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | Protokollinspektion-Konfiguration auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | Protokollinspektion abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | Protokollinspektion-Konfiguration löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections` | Protokollprüfung erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections/&#123;metadata.name&#125;` | Protokollprüfung ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | Protokollprüfung konfigurieren und auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | Protokollprüfung abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | Protokollprüfung konfigurieren und löschen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers` | TCP-Load-Balancer erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers/&#123;metadata.name&#125;` | TCP-Load-Balancer ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | TCP-Load-Balancer-Konfiguration auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | TCP-Load-Balancer konfigurieren und auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCP-Load-Balancer abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCP-Load-Balancer-Konfiguration löschen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Info abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | TCP-Load-Balancer konfigurieren und löschen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Informationen abrufen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers` | UDP-Load-Balancer erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers/&#123;metadata.name&#125;` | UDP-Load-Balancer ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | UDP-Load-Balancer-Konfiguration auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | UDP-Load-Balancer konfigurieren und auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDP-Load-Balancer abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDP-Load-Balancer-Konfiguration löschen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Info abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | UDP-Load-Balancer konfigurieren und löschen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | DNS-Informationen abrufen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | Erweiterte Firewall-Richtlinie erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | Erweiterte Firewall-Richtlinie ersetzen. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | Treffer erweiterter Firewall-Richtlinie. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | Treffer der erweiterten Firewall-Richtlinie. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | Erweiterte Firewall-Richtlinie auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | Erweiterte Firewall-Richtlinie abrufen. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | Erweiterte Firewall-Richtlinie löschen. |
 | POST | `/api/config/namespaces/system/malware_protection/addon/subscribe` | Malware-Schutz abonnieren. |
 | POST | `/api/config/namespaces/system/malware_protection/addon/unsubscribe` | Malware-Schutz abbestellen. |
 | POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets` | Geolokalisierung erstellen. |
-| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets/&#123;metadata.name&#125;` | Geolokalisierungs-Set ersetzen. |
-| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets` | Geolokalisierungs-Set auflisten. |
-| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | Geolokalisierungs-Set abrufen. |
-| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | Geolokalisierungs-Set löschen. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks` | Health Check erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks/&#123;metadata.name&#125;` | Health Check ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | Health Check auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | Health Check abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | Health Check löschen. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | Origin-Pool erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | Origin-Pool ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | Origin-Pool auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | Origin-Pool abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | Origin-Pool löschen. |
+| PUT | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets/&#123;metadata.name&#125;` | Geolokalisierungssatz ersetzen. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets` | Geolokalisierungssatz auflisten. |
+| GET | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | Geolokalisierungssatz abrufen. |
+| DELETE | `/api/config/dns/namespaces/&#123;namespace&#125;/geo_location_sets/&#123;name&#125;` | Geolokalisierungssatz löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks` | Integritätsprüfung erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/healthchecks/&#123;metadata.name&#125;` | Integritätsprüfung ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | Integritätsprüfung auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | Integritätsprüfung abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | Integritätsprüfung löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | Ursprungspool erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | Ursprungspool ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | Ursprungspool auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | Ursprungspool abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | Ursprungspool löschen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies` | Proxy erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies/&#123;metadata.name&#125;` | Proxy ersetzen. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/proxies` | Proxy auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | Proxy abrufen |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;` | Proxy löschen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | Proxy-Server-CA-Zertifikat abrufen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | CA-Zertifikat des Proxy-Servers abrufen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys` | Spezifikation erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys/&#123;metadata.name&#125;` | Spezifikation ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | Rate-Limiter-Richtlinie auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | Ratenbegrenzerrichtlinie auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | Spezifikation abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | Rate-Limiter-Richtlinie löschen. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | Service-Richtlinie erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | Service-Richtlinie ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | Service-Richtlinie auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Service-Richtlinie abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Service-Richtlinie löschen. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules` | Service-Richtlinienregel erstellen. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules/&#123;metadata.name&#125;` | Service-Richtlinienregel ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules` | Service-Richtlinienregel auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | Service-Richtlinienregel abrufen. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | Service-Richtlinienregel löschen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets` | Service-Richtlinien-Set auflisten. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets/&#123;name&#125;` | Service-Richtlinien-Set abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | Ratenbegrenzerrichtlinie löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | Dienstrichtlinie erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | Dienstrichtlinie ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | Dienstrichtlinie auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Dienstrichtlinie abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Dienstrichtlinie löschen. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules` | Dienstrichtlinienregel erstellen. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policy_rules/&#123;metadata.name&#125;` | Dienstrichtlinienregel ersetzen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules` | Dienstrichtlinienregel auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | Dienstrichtlinienregel abrufen. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policy_rules/&#123;name&#125;` | Dienstrichtlinienregel löschen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets` | Dienstrichtliniensatz auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policy_sets/&#123;name&#125;` | Dienstrichtliniensatz abrufen. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts` | Virtuellen Host erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_hosts/&#123;metadata.name&#125;` | Virtuellen Host ersetzen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts` | Virtuelle Hosts auflisten. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts` | Virtuellen Host auflisten. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | Virtuellen Host abrufen. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | Virtuellen Host löschen. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_definitions/assign` | API-Definition zuweisen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint` | API-Endpunkt abrufen. |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | Erlerntes Schema pro API-Endpunkt abrufen. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | API-Endpunkt-PDF abrufen. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | Relevantes Quell-OpenApi-Schema pro API-Endpunkt abrufen. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | PDF des API-Endpunkts abrufen. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | Relevantes OpenAPI-Quellschema pro API-Endpunkt abrufen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/unmerge_sources_openapi_schema` | Quelle vom API-Endpunkt trennen. |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints` | API-Endpunkte abrufen. |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | API-Endpunkte-Statistiken für virtuellen Host abrufen. |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | API-Endpunktstatistiken für virtuellen Host abrufen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | Gesamte API-Aufrufe für virtuellen Host abrufen. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | Top-API-Endpunkte für virtuellen Host abrufen. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | Wichtigste API-Endpunkte für virtuellen Host abrufen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_sensitive_data` | Zusammenfassung sensibler Daten für virtuellen Host abrufen. |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/swagger_spec` | Swagger-Spezifikation für App-Typ abrufen. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | API-Endpunkte-Schema-Aktualisierungen abrufen. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | API-Endpunkte-Schemas aktualisieren. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | Schemaaktualisierungen für API-Endpunkte abrufen. |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | Schemata für API-Endpunkte aktualisieren. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/create_ticket` | Ticket für eine Schwachstelle erstellen. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | DNS-Info abrufen. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | DNS-Informationen abrufen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/unlink_tickets` | Tickets trennen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | Schwachstellen für virtuellen Host abrufen. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | Schwachstellen für virtuellen Host aktualisieren. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/rule_hits` | Client-Regeltreffler-Metriken. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/security_events` | Client-Sicherheitsereignisse-Metriken. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | Server-Regeltreffler-Metriken. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | Server-Sicherheitsereignisse-Metriken. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/rule_hits` | Metriken für Client-Regeltreffern. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/security_events` | Metriken für clientseitige Sicherheitsereignisse. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | Metriken für Server-Regeltreffer. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | Metriken für serverseitige Sicherheitsereignisse. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys` | WAF-Ausschlussrichtlinie erstellen. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys/&#123;metadata.name&#125;` | WAF-Ausschlussrichtlinie ersetzen. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | WAF-Ausschlussrichtlinie auflisten. |

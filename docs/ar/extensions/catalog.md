@@ -1,34 +1,34 @@
 ---
-title: فهرس إضافات الإثراء
-description: المرجع الموثوق لكل إضافة x-* في مواصفات OpenAPI المُثراة
+title: كتالوج امتدادات الإثراء
+description: مرجع موثوق لكل امتداد x-* في مواصفات OpenAPI المحسّنة
 i18n:
   sourceHash: 7fde0afb4dac
   translator: machine
 ---
 
-# فهرس إضافات الإثراء
+# كتالوج امتدادات الإثراء
 
-المرجع الموثوق لكل إضافة `x-*` تظهر في
-`docs/specifications/api/*.json`. يتم فرض التطابق مع
+مرجع موثوق لكل امتداد `x-*` يظهر في
+`docs/specifications/api/*.json`. يُفرض التوافق مع
 `scripts/utils/extension_constants.py` بواسطة
 `tests/test_extension_catalog.py`.
 
-ثلاث فئات من الإضافات موثقة هنا:
+ثلاث فئات من الامتدادات موثقة هنا:
 
-- **مُضافة هنا** — إضافات يضيفها المُثريون لدينا (`x-f5xc-*` و
+- **مُحقنة هنا** — امتدادات يضيفها مُثريونا (`x-f5xc-*` و
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / متغيرات
-  الاكتشاف). هذه هي التي يجب أن تستهلكها الأدوات النهائية.
-- **تمرير من المنبع** — إضافات تصدرها F5 في المواصفات المصدرية
-  ونحتفظ بها دون تغيير (`x-ves-proto-*`، `x-displayname`، إلخ.).
-  موثقة من أجل الشفافية لكن لا يتحكم بها هذا المستودع.
-- **مُضافة مستقبلاً** — لم تُصدر بعد؛ توثق هنا في اللحظة التي
-  يبدأ فيها مُثرٍ بإنتاجها (لا ينطبق عند التعبئة الأولية).
+  الاكتشاف). وهي الامتدادات التي يجب أن تستهلكها الأدوات اللاحقة.
+- **مُمرَّرة من المنبع** — امتدادات تُصدرها F5 في مواصفات المصدر
+  ونحافظ عليها دون تغيير (`x-ves-proto-*`، `x-displayname`، إلخ).
+  موثقة للشفافية لكنها غير مُتحكَّم بها من هذا المستودع.
+- **مُحقنة مستقبلاً** — لم تُصدَر بعد؛ توثَّق هنا في اللحظة التي يبدأ
+  فيها مُثري ما بإنتاجها (غير قابل للتطبيق عند التعبئة الأولية).
 
-## مخطط الإدخال
+## مخطط المدخل
 
-كل إدخال أدناه له هذا الشكل بالضبط. يتسامح اختبار التطابق في
-`tests/test_extension_catalog.py` مع كون نص القسم مختصراً طالما أن
-عنوان `### x-name` موجود وعلامة `Pass-through from upstream:` حاضرة
+لكل مدخل أدناه هذا الشكل تحديداً. يتسامح اختبار التوافق في
+`tests/test_extension_catalog.py` مع كون جسم القسم موجزاً طالما أن
+رأس `### x-name` موجود وعلامة `Pass-through from upstream:` حاضرة
 بقيمة `yes` أو `no`.
 
     ### x-<name>
@@ -42,794 +42,794 @@ i18n:
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## مُضافة — على مستوى المواصفة (قسم info)
+## مُحقنة — على مستوى المواصفة (قسم info)
 
 ### x-f5xc-cli-domain
 
-- **يُطبق على:** info
-- **الغرض:** يحدد معرف نطاق CLI (مثل `http_loadbalancer`) لمواصفة مُثراة.
-- **المستهلكون:** CLI
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-cli-domain": "http_loadbalancer"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** يُحدِّد slug نطاق واجهة سطر الأوامر (مثل `http_loadbalancer`) لمواصفة مُثراة.
+- **Consumers:** CLI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-cli-domain": "http_loadbalancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-cli-metadata
 
-- **يُطبق على:** info
-- **الغرض:** كتلة بيانات وصفية على مستوى CLI (اسم الأداة، تلميحات الإصدار، تجميع النطاق).
-- **المستهلكون:** CLI
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/cli_metadata.yaml
-- **مثال:** `"x-f5xc-cli-metadata": {"tool": "xcsh", "domain": "http_loadbalancer"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** كتلة بيانات وصفية شاملة لواجهة سطر الأوامر (اسم الأداة، تلميحات الإصدار، تجميع النطاق).
+- **Consumers:** CLI
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/cli_metadata.yaml
+- **Example:** `"x-f5xc-cli-metadata": {"tool": "xcsh", "domain": "http_loadbalancer"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-upstream-timestamp
 
-- **يُطبق على:** info
-- **الغرض:** الطابع الزمني لمواصفة المنبع المصدرية التي بُني منها الملف المُثرى.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "format": "date-time"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-upstream-timestamp": "2026-04-21T12:00:00Z"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** طابع زمني لمواصفة المصدر الأولية التي بُني منها الملف المُثرى.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "date-time"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-upstream-timestamp": "2026-04-21T12:00:00Z"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-upstream-etag
 
-- **يُطبق على:** info
-- **الغرض:** علامة ETag لأصل إصدار مواصفة المنبع المصدرية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-upstream-etag": "\"abc123\""`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** ETag لأصل إصدار مواصفة المصدر الأولية.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-upstream-etag": "\"abc123\""`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-enriched-version
 
-- **يُطبق على:** info
-- **الغرض:** الإصدار الدلالي المختوم على المواصفة المُثراة بواسطة خط الأنابيب.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-enriched-version": "3.2.1"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** إصدار دلالي يُختم على المواصفة المُثراة من قِبل خط الأنابيب.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-enriched-version": "3.2.1"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-glossary
 
-- **يُطبق على:** info
-- **الغرض:** كتلة مسرد العلامة التجارية/المصطلحات المُطبقة على كل مواصفة نطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/branding.py
-- **يُحدد بالإعداد:** config/branding.yaml
-- **مثال:** `"x-f5xc-glossary": {"XC": "F5 Distributed Cloud"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** كتلة مسرد العلامة التجارية والمصطلحات المُطبَّقة على كل مواصفة نطاق.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/branding.py
+- **Driven by config:** config/branding.yaml
+- **Example:** `"x-f5xc-glossary": {"XC": "F5 Distributed Cloud"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-at
 
-- **يُطبق على:** info
-- **الغرض:** الطابع الزمني لوقت تنفيذ عملية اكتشاف API الحية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "format": "date-time"}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery.yaml
-- **مثال:** `"x-f5xc-discovered-at": "2026-04-21T09:15:00Z"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** الطابع الزمني لوقت تنفيذ مرحلة اكتشاف الواجهة البرمجية الحية.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "date-time"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-discovered-at": "2026-04-21T09:15:00Z"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-api-url
 
-- **يُطبق على:** info
-- **الغرض:** عنوان URL الأساسي لواجهة API الحية التي تم فحصها أثناء الاكتشاف.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "format": "uri"}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery.yaml
-- **مثال:** `"x-f5xc-api-url": "https://f5-amer-ent.console.ves.volterra.io"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** URL الأساسي للواجهة البرمجية الحية التي جرى استطلاعها أثناء الاكتشاف.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "uri"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-api-url": "https://f5-amer-ent.console.ves.volterra.io"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-api-reference-url
 
-- **يُطبق على:** info
-- **الغرض:** عنوان URL لصفحة وثائق مرجع API المستضافة لهذا النطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "format": "uri"}`
-- **يُضاف بواسطة:** scripts/utils/external_docs_enricher.py
-- **يُحدد بالإعداد:** لا شيء (مُشتق من اسم النطاق)
-- **مثال:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** URL صفحة توثيق مرجع الواجهة البرمجية المستضافة لهذا النطاق.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "uri"}`
+- **Injected by:** scripts/utils/external_docs_enricher.py
+- **Driven by config:** none (derived from domain name)
+- **Example:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-response-time-ms
 
-- **يُطبق على:** info
-- **الغرض:** زمن الاستجابة المُلاحظ (بالمللي ثانية) لواجهة API المفحوصة أثناء الاكتشاف.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** number
-- **مخطط القيمة:** `{"type": "number"}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery.yaml
-- **مثال:** `"x-f5xc-response-time-ms": 42`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** وقت الاستجابة الملاحَظ (بالميلي ثانية) للواجهة البرمجية المُستطلَعة أثناء الاكتشاف.
+- **Consumers:** multiple
+- **Value type:** number
+- **Value schema:** `{"type": "number"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-response-time-ms": 42`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-best-practices
 
-- **يُطبق على:** info
-- **الغرض:** إرشادات أفضل الممارسات المنتقاة لنطاق معين.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "object"}}`
-- **يُضاف بواسطة:** scripts/utils/best_practices_enricher.py
-- **يُحدد بالإعداد:** config/best_practices.yaml
-- **مثال:** `"x-f5xc-best-practices": [{"id": "bp-1", "text": "Prefer HTTPS"}]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** إرشادات أفضل الممارسات المنتقاة لنطاق ما.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/best_practices_enricher.py
+- **Driven by config:** config/best_practices.yaml
+- **Example:** `"x-f5xc-best-practices": [{"id": "bp-1", "text": "Prefer HTTPS"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-guided-workflows
 
-- **يُطبق على:** info
-- **الغرض:** سلاسل عمل مُسماة خطوة بخطوة لإنجاز المهام الشائعة في نطاق معين.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "object"}}`
-- **يُضاف بواسطة:** scripts/utils/guided_workflow_enricher.py
-- **يُحدد بالإعداد:** config/guided_workflows.yaml
-- **مثال:** `"x-f5xc-guided-workflows": [{"name": "create-lb", "steps": [...]}]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** سير عمل خطوة بخطوة مُسمَّاة لإنجاز المهام الشائعة في نطاق ما.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/guided_workflow_enricher.py
+- **Driven by config:** config/guided_workflows.yaml
+- **Example:** `"x-f5xc-guided-workflows": [{"name": "create-lb", "steps": [...]}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-acronyms
 
-- **يُطبق على:** info
-- **الغرض:** جدول توسيع الاختصارات الخاص بكل نطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object", "additionalProperties": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/acronym_enricher.py
-- **يُحدد بالإعداد:** config/acronyms.yaml
-- **مثال:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** جدول توسيع الاختصارات الخاص بكل نطاق.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
+- **Injected by:** scripts/utils/acronym_enricher.py
+- **Driven by config:** config/acronyms.yaml
+- **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
+- **Pass-through from upstream:** no
 
-## مُضافة — على مستوى المخطط (مخططات المكونات)
+## مُحقنة — على مستوى المخطط (مخططات المكونات)
 
 ### x-f5xc-minimum-configuration
 
-- **يُطبق على:** schema
-- **الغرض:** الحد الأدنى من مجموعة الحقول المطلوبة لنجاح عملية POST/PUT لهذا المورد.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/minimum_configuration_enricher.py
-- **يُحدد بالإعداد:** config/minimum_configs.yaml
-- **مثال:** `"x-f5xc-minimum-configuration": {"required_fields": ["name"]}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema
+- **Purpose:** الحد الأدنى من الحقول المطلوبة للنجاح في عملية POST/PUT لهذا المورد.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/minimum_configuration_enricher.py
+- **Driven by config:** config/minimum_configs.yaml
+- **Example:** `"x-f5xc-minimum-configuration": {"required_fields": ["name"]}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-namespace-profile
 
-- **يُطبق على:** info
-- **الغرض:** يوفر بيانات وصفية لقيود فضاء الأسماء والتوصيات والتصنيف لمورد ما.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
-- **يُضاف بواسطة:** scripts/utils/namespace_profile_enricher.py
-- **يُحدد بالإعداد:** config/namespace_profile.yaml
-- **مثال:** `"x-f5xc-namespace-profile": {"constraint": {"allowed": ["system", "shared", "user"]}, "recommendation": {"default": "shared"}, "classification": {"multi_tenant_pattern": "shared-ref"}}`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** يوفر قيود مساحة الاسم وبيانات التوصية والتصنيف الوصفية لمورد ما.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
+- **Injected by:** scripts/utils/namespace_profile_enricher.py
+- **Driven by config:** config/namespace_profile.yaml
+- **Example:** `"x-f5xc-namespace-profile": {"constraint": {"allowed": ["system", "shared", "user"]}, "recommendation": {"default": "shared"}, "classification": {"multi_tenant_pattern": "shared-ref"}}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-displayorder
 
-- **يُطبق على:** schema
-- **الغرض:** ترتيب مقترح للخصائص لعرضها في واجهة المستخدم/CLI.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-displayorder": ["name", "description", "spec"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema
+- **Purpose:** الترتيب المقترح للخصائص لعرضها في واجهة المستخدم أو واجهة سطر الأوامر.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-displayorder": ["name", "description", "spec"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-terraform-resource
 
-- **يُطبق على:** schema
-- **الغرض:** اسم نوع مورد Terraform الذي يُعين إلى هذا المخطط.
-- **المستهلكون:** Terraform
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-terraform-resource": "volterra_http_loadbalancer"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema
+- **Purpose:** اسم نوع مورد Terraform الذي يُعيَّن لهذا المخطط.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-terraform-resource": "volterra_http_loadbalancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-display-name
 
-- **يُطبق على:** schema
-- **الغرض:** اسم عرض مقروء للبشر لمخطط مورد (يتجاوز التوليد التلقائي).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-display-name": "HTTP Load Balancer"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema
+- **Purpose:** اسم عرض مقروء للإنسان لمخطط المورد (يتجاوز التوليد التلقائي).
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
+- **Pass-through from upstream:** no
 
-## مُضافة — على مستوى الخاصية
+## مُحقنة — على مستوى الخاصية
 
 ### x-f5xc-description
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** وصف مُثرى للخاصية يُكمّل `description` القادم من المنبع.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_descriptions.yaml
-- **مثال:** `"x-f5xc-description": "Fully-qualified domain name used for TLS SNI."`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** وصف خاصية مُثرى يُكمل الـ `description` الأصلي من المنبع.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_descriptions.yaml
+- **Example:** `"x-f5xc-description": "Fully-qualified domain name used for TLS SNI."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-validation
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** قواعد تحقق تصريحية مُشتقة من `ves.io.schema.rules` في protobuf المنبع.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/validation_enricher.py
-- **يُحدد بالإعداد:** config/validation_rules.yaml
-- **مثال:** `"x-f5xc-validation": {"min_len": 1, "max_len": 64}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** قواعد تحقق إعلانية مشتقة من `ves.io.schema.rules` لـ protobuf من المنبع.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/validation_enricher.py
+- **Driven by config:** config/validation_rules.yaml
+- **Example:** `"x-f5xc-validation": {"min_len": 1, "max_len": 64}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-examples
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** قيم أمثلة توضيحية متعددة لخاصية ما.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array"}`
-- **يُضاف بواسطة:** scripts/utils/resource_examples_enricher.py
-- **يُحدد بالإعداد:** config/resource_examples.yaml
-- **مثال:** `"x-f5xc-examples": ["example.com", "api.example.com"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** قيم أمثلة توضيحية متعددة لخاصية ما.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array"}`
+- **Injected by:** scripts/utils/resource_examples_enricher.py
+- **Driven by config:** config/resource_examples.yaml
+- **Example:** `"x-f5xc-examples": ["example.com", "api.example.com"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-example
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** قيمة مثال قانونية واحدة.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{}`
-- **يُضاف بواسطة:** scripts/utils/field_description_enricher.py
-- **يُحدد بالإعداد:** config/field_descriptions.yaml
-- **مثال:** `"x-f5xc-example": "example.com"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** قيمة مثال أساسية واحدة.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/field_description_enricher.py
+- **Driven by config:** config/field_descriptions.yaml
+- **Example:** `"x-f5xc-example": "example.com"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-completion
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** تلميحات إكمال الأوامر في الصدفة (تعداد ثابت أو أمر ديناميكي).
-- **المستهلكون:** CLI
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-completion": {"source": "command", "cmd": "xcsh namespace list"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** تلميحات إكمال الصدفة (enum ثابت أو أمر ديناميكي).
+- **Consumers:** CLI
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-completion": {"source": "command", "cmd": "xcsh namespace list"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-defaults
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** القيم الافتراضية لعرضها في الوثائق المُولدة وواجهات المستخدم.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-defaults": {"value": "default"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** القيمة الافتراضية التي تظهر في المستندات المُولَّدة وواجهات المستخدم.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-defaults": {"value": "default"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-required-for-operations
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** يسرد عمليات HTTP (POST/PUT/...) التي تتطلب هذه الخاصية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-required-for-operations": ["POST", "PUT"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** يُدرج عمليات HTTP (POST/PUT/...) التي تتطلب هذه الخاصية.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-required-for-operations": ["POST", "PUT"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-required-for
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** يسرد تركيبات الميزات المُسماة التي تتطلب هذه الخاصية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/minimum_configuration_enricher.py
-- **يُحدد بالإعداد:** config/minimum_configs.yaml
-- **مثال:** `"x-f5xc-required-for": ["tls-origin", "mtls"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** يُدرج مجموعات الميزات المُسمَّاة التي تتطلب هذه الخاصية.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/minimum_configuration_enricher.py
+- **Driven by config:** config/minimum_configs.yaml
+- **Example:** `"x-f5xc-required-for": ["tls-origin", "mtls"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-conditions
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** متطلبات شرطية (مثل: مطلوب عندما يساوي حقل شقيق القيمة X).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "object"}}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-conditions": [{"when": "tls.enabled == true", "require": "cert"}]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** المتطلبات الشرطية (مثل: مطلوب عندما يساوي حقل شقيق قيمة X).
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-conditions": [{"when": "tls.enabled == true", "require": "cert"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-deprecated
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** إشعار إيقاف الاستخدام مع إرشادات البديل.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/field_metadata_enricher.py
-- **يُحدد بالإعداد:** config/field_metadata.yaml
-- **مثال:** `"x-f5xc-deprecated": {"since": "3.0.0", "use": "new_field"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** إشعار إهمال مع إرشادات حول البديل.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-deprecated": {"since": "3.0.0", "use": "new_field"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-server-default
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** القيمة الافتراضية التي يعينها الخادم عندما يحذف العميل الخاصية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{}`
-- **يُضاف بواسطة:** scripts/utils/default_value_enricher.py
-- **يُحدد بالإعداد:** config/discovered_defaults.yaml
-- **مثال:** `"x-f5xc-server-default": "ROUND_ROBIN"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** القيمة الافتراضية التي يُعيِّنها الخادم عندما يُغفل العميل الخاصية.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-server-default": "ROUND_ROBIN"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-recommended-value
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** القيمة الموصى بها للإنتاج لحقل تكون فيه القيمة الافتراضية للخادم غير مثالية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{}`
-- **يُضاف بواسطة:** scripts/utils/default_value_enricher.py
-- **يُحدد بالإعداد:** config/discovered_defaults.yaml
-- **مثال:** `"x-f5xc-recommended-value": "LEAST_REQUEST"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** القيمة الإنتاجية الموصى بها لحقل تكون قيمته الافتراضية من الخادم دون المستوى الأمثل.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-recommended-value": "LEAST_REQUEST"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-recommended-oneof-variant
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** لكتل `oneOf`، يشير إلى المتغير الموصى به.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/default_value_enricher.py
-- **يُحدد بالإعداد:** config/discovered_defaults.yaml
-- **مثال:** `"x-f5xc-recommended-oneof-variant": "tls_parameters"`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** بالنسبة لكتل `oneOf`، يُشير إلى المتغير الموصى به.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-recommended-oneof-variant": "tls_parameters"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-conflicts-with
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** يسرد الخصائص الشقيقة التي لا يمكن تعيينها بالتزامن مع هذه الخاصية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/conflicts_with_enricher.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** يُدرج الخصائص الشقيقة التي لا يمكن تعيينها جنباً إلى جنب مع هذه الخاصية.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/conflicts_with_enricher.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-requires
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** يوثق التبعيات بين الحقول حيث يتطلب حقل ما تعيين حقل آخر.
-- **المستهلكون:** compile_catalog.py، xcsh CLI
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
-- **يُضاف بواسطة:** scripts/utils/dependency_enricher.py
-- **يُحدد بالإعداد:** config/minimum_configs.yaml (قسم التبعيات)
-- **مثال:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** يوثق التبعيات عبر الحقول حيث يستلزم حقل ما تعيين حقل آخر.
+- **Consumers:** compile_catalog.py, xcsh CLI
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/dependency_enricher.py
+- **Driven by config:** config/minimum_configs.yaml (dependencies section)
+- **Example:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-constraints
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** قيود رقمية / نصية مُشتقة من فحص API الحي أو أنماط ثابتة.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/constraint_enricher.py
-- **يُحدد بالإعداد:** config/constraint_patterns.yaml
-- **مثال:** `"x-f5xc-constraints": {"min": 1, "max": 65535, "source": "live-api"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** قيود رقمية / نصية مشتقة من الاستطلاع الحي للواجهة البرمجية أو الأنماط الثابتة.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/constraint_enricher.py
+- **Driven by config:** config/constraint_patterns.yaml
+- **Example:** `"x-f5xc-constraints": {"min": 1, "max": 65535, "source": "live-api"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-uniqueness
 
-- **يُطبق على:** خاصية المخطط
-- **الغرض:** يُصرح ما إذا كان يجب أن يكون الحقل فريداً ضمن نطاقه.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/uniqueness_enricher.py
-- **يُحدد بالإعداد:** hardcoded
-- **مثال:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
-- **تمرير من المنبع:** لا
+- **Applied at:** schema property
+- **Purpose:** يُعلن ما إذا كان يجب أن يكون الحقل فريداً ضمن نطاقه.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/uniqueness_enricher.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
+- **Pass-through from upstream:** no
 
-## مُضافة — على مستوى العملية
+## مُحقنة — على مستوى العملية
 
 ### x-f5xc-required-fields
 
-- **يُطبق على:** operation
-- **الغرض:** يُسمي حقول نص العملية التي يجب توفيرها للنجاح.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/operation_metadata_enricher.py
-- **يُحدد بالإعداد:** config/operation_metadata.yaml
-- **مثال:** `"x-f5xc-required-fields": ["metadata.name", "spec.domains"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** يُسمي حقول جسم العملية التي يجب توفيرها لتحقيق النجاح.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-required-fields": ["metadata.name", "spec.domains"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-danger-level
 
-- **يُطبق على:** operation
-- **الغرض:** يصنف نطاق تأثير العملية (منخفض/متوسط/عالٍ/حرج).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
-- **يُضاف بواسطة:** scripts/utils/operation_metadata_enricher.py
-- **يُحدد بالإعداد:** config/operation_metadata.yaml
-- **مثال:** `"x-f5xc-danger-level": "high"`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** يُصنِّف نطاق التأثير لعملية ما (منخفض/متوسط/عالٍ/حرج).
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-danger-level": "high"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-confirmation-required
 
-- **يُطبق على:** operation
-- **الغرض:** ما إذا كان يجب على CLI/واجهة المستخدم مطالبة المستخدم بالتأكيد قبل التنفيذ.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** boolean
-- **مخطط القيمة:** `{"type": "boolean"}`
-- **يُضاف بواسطة:** scripts/utils/operation_metadata_enricher.py
-- **يُحدد بالإعداد:** config/operation_metadata.yaml
-- **مثال:** `"x-f5xc-confirmation-required": true`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** ما إذا كانت واجهة سطر الأوامر أو واجهة المستخدم يجب أن تطلب من المستخدم التأكيد قبل التنفيذ.
+- **Consumers:** multiple
+- **Value type:** boolean
+- **Value schema:** `{"type": "boolean"}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-confirmation-required": true`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-side-effects
 
-- **يُطبق على:** operation
-- **الغرض:** يسرد الآثار الجانبية الملاحظة للعملية (إعادة التشغيل، إعادة التكوين، إلخ.).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/utils/operation_metadata_enricher.py
-- **يُحدد بالإعداد:** config/operation_metadata.yaml
-- **مثال:** `"x-f5xc-side-effects": ["invalidates-cache"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** يُدرج الآثار الجانبية الملاحَظة للعملية (إعادة تشغيل، إعادة تكوين، إلخ).
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-side-effects": ["invalidates-cache"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-response-time
 
-- **يُطبق على:** operation
-- **الغرض:** زمن الاستجابة المقاس تجريبياً لهذه العملية أثناء الاكتشاف.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery_enrichment.yaml
-- **مثال:** `"x-f5xc-discovered-response-time": {"p50_ms": 40, "p95_ms": 120}`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** وقت الاستجابة المقاس تجريبياً لهذه العملية أثناء الاكتشاف.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-response-time": {"p50_ms": 40, "p95_ms": 120}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-rate-limits
 
-- **يُطبق على:** operation
-- **الغرض:** رؤوس/سلوك حدود المعدل المُلاحظة من واجهة API الحية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** object
-- **مخطط القيمة:** `{"type": "object"}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery_enrichment.yaml
-- **مثال:** `"x-f5xc-discovered-rate-limits": {"limit": 100, "window_s": 60}`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** رؤوس حد المعدل / السلوك الملاحَظ المستخرج من الواجهة البرمجية الحية.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-rate-limits": {"limit": 100, "window_s": 60}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-error-catalog
 
-- **يُطبق على:** operation
-- **الغرض:** فهرس استجابات الأخطاء المُلاحظة أثناء الاكتشاف الحي، مع حمولات نموذجية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "object"}}`
-- **يُضاف بواسطة:** scripts/utils/discovery_enricher.py
-- **يُحدد بالإعداد:** config/discovery_enrichment.yaml
-- **مثال:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
-- **تمرير من المنبع:** لا
+- **Applied at:** operation
+- **Purpose:** كتالوج استجابات الخطأ المُلاحَظة أثناء الاكتشاف الحي، مع عينات من البيانات.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
+- **Pass-through from upstream:** no
 
-## مُضافة — على مستوى الفهرس (بيانات النطاق الوصفية)
+## مُحقنة — على مستوى الفهرس (بيانات النطاق الوصفية)
 
 ### x-f5xc-category
 
-- **يُطبق على:** info
-- **الغرض:** فئة التجميع العليا لـ CLI / واجهة المستخدم / الوثائق / Terraform لنطاق معين.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-category": "networking"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** فئة التجميع الأعلى مستوى لواجهة سطر الأوامر / واجهة المستخدم / المستندات / Terraform لنطاق ما.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-category": "networking"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-primary-resources
 
-- **يُطبق على:** info
-- **الغرض:** قائمة أنواع الموارد الأساسية التي تُعرّف النطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-primary-resources": ["http_loadbalancer"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** قائمة أنواع الموارد الأساسية التي تُعرِّف النطاق.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-primary-resources": ["http_loadbalancer"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-critical-resources
 
-- **يُطبق على:** info
-- **الغرض:** الموارد التي تتطلب عناية مرتفعة (حرجة للإنتاج).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/critical_resources.yaml
-- **مثال:** `"x-f5xc-critical-resources": ["tls_certificate"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** الموارد التي تتطلب عناية مرتفعة (حرجة في بيئة الإنتاج).
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/critical_resources.yaml
+- **Example:** `"x-f5xc-critical-resources": ["tls_certificate"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-short
 
-- **يُطبق على:** info
-- **الغرض:** وصف قصير للنطاق (~60 حرفاً). يُطبق أيضاً على مستوى الخاصية للأوصاف الطويلة.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/property_description_short_enricher.py
-- **يُحدد بالإعداد:** config/property_description_short.yaml
-- **مثال:** `"x-f5xc-description-short": "Layer-7 HTTPS load balancing."`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** وصف قصير للنطاق (~60 حرفاً). ينطبق أيضاً على مستوى الخاصية للأوصاف الطويلة.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/property_description_short_enricher.py
+- **Driven by config:** config/property_description_short.yaml
+- **Example:** `"x-f5xc-description-short": "Layer-7 HTTPS load balancing."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-medium
 
-- **يُطبق على:** info
-- **الغرض:** وصف متوسط للنطاق (~150 حرفاً). يُطبق أيضاً على مستوى الخاصية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/property_description_short_enricher.py
-- **يُحدد بالإعداد:** config/property_description_short.yaml
-- **مثال:** `"x-f5xc-description-medium": "HTTP/HTTPS load balancer with advanced routing, WAF, and TLS."`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** وصف متوسط للنطاق (~150 حرفاً). ينطبق أيضاً على مستوى الخاصية.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/property_description_short_enricher.py
+- **Driven by config:** config/property_description_short.yaml
+- **Example:** `"x-f5xc-description-medium": "HTTP/HTTPS load balancer with advanced routing, WAF, and TLS."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-long
 
-- **يُطبق على:** info
-- **الغرض:** وصف طويل للنطاق (~500 حرف).
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/utils/description_enricher.py
-- **يُحدد بالإعداد:** config/domain_descriptions.yaml
-- **مثال:** `"x-f5xc-description-long": "Full paragraph describing the domain..."`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** وصف طويل للنطاق (~500 حرف).
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/description_enricher.py
+- **Driven by config:** config/domain_descriptions.yaml
+- **Example:** `"x-f5xc-description-long": "Full paragraph describing the domain..."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-complexity
 
-- **يُطبق على:** info
-- **الغرض:** مستوى التعقيد النسبي لتأليف التكوينات في هذا النطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string", "enum": ["low", "medium", "high"]}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-complexity": "medium"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** مستوى التعقيد النسبي لإنشاء التكوينات في هذا النطاق.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-complexity": "medium"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-requires-tier
 
-- **يُطبق على:** info
-- **الغرض:** الحد الأدنى لمستوى اشتراك F5 XC المطلوب.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-requires-tier": "enterprise"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** الحد الأدنى من مستوى اشتراك F5 XC المطلوب.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-requires-tier": "enterprise"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-is-preview
 
-- **يُطبق على:** info
-- **الغرض:** يُعلّم نطاقاً كميزة معاينة / تجريبية.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** boolean
-- **مخطط القيمة:** `{"type": "boolean"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-is-preview": false`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** يُعلِّم نطاقاً ما باعتباره ميزة معاينة / تجريبية.
+- **Consumers:** multiple
+- **Value type:** boolean
+- **Value schema:** `{"type": "boolean"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-is-preview": false`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-use-cases
 
-- **يُطبق على:** info
-- **الغرض:** حالات الاستخدام المُسماة التي يدعمها هذا النطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-use-cases": ["tls-termination", "waf"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** حالات الاستخدام المُسمَّاة التي يدعمها هذا النطاق.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-use-cases": ["tls-termination", "waf"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-icon
 
-- **يُطبق على:** info
-- **الغرض:** معرف الأيقونة المستخدمة عند عرض هذا النطاق في واجهة المستخدم.
-- **المستهلكون:** Web UI
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-icon": "f5xc:load-balancer"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** معرِّف الأيقونة المستخدم عند عرض هذا النطاق في واجهة المستخدم.
+- **Consumers:** Web UI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-icon": "f5xc:load-balancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-logo-svg
 
-- **يُطبق على:** info
-- **الغرض:** SVG مُضمن (أو مسار) لشعار العلامة التجارية الذي يمثل النطاق.
-- **المستهلكون:** Web UI
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-logo-svg": "<svg>...</svg>"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** SVG مضمَّن (أو مسار) لشعار العلامة التجارية الذي يمثل النطاق.
+- **Consumers:** Web UI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-logo-svg": "<svg>...</svg>"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-related-domains
 
-- **يُطبق على:** info
-- **الغرض:** روابط متقاطعة لنطاقات أخرى تُستخدم عادةً مع هذا النطاق.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** array
-- **مخطط القيمة:** `{"type": "array", "items": {"type": "string"}}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-related-domains": ["origin_pool", "tls_certificate"]`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** روابط تشعبية لنطاقات أخرى تُستخدم شائعاً جنباً إلى جنب مع هذا النطاق.
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-related-domains": ["origin_pool", "tls_certificate"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-doc-section
 
-- **يُطبق على:** info
-- **الغرض:** معرف قسم التوثيق / تجميع التنقل للوثائق المعروضة.
-- **المستهلكون:** متعددون
-- **نوع القيمة:** string
-- **مخطط القيمة:** `{"type": "string"}`
-- **يُضاف بواسطة:** scripts/merge_specs.py
-- **يُحدد بالإعداد:** config/domain_patterns.yaml
-- **مثال:** `"x-f5xc-doc-section": "load-balancing"`
-- **تمرير من المنبع:** لا
+- **Applied at:** info
+- **Purpose:** قسم التوثيق / slug تجميع التنقل للمستندات المُعرضة.
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-doc-section": "load-balancing"`
+- **Pass-through from upstream:** no
 
-## تمرير من المنبع
+## مُمرَّرة من المنبع
 
 ### x-ves-proto-package
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-ves-proto-package": "ves.io.schema.virtual_host"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-package": "ves.io.schema.virtual_host"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-file
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-ves-proto-file": "ves.io/schema/virtual_host/types.proto"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-file": "ves.io/schema/virtual_host/types.proto"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-message
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-ves-proto-message": "ves.io.schema.virtual_host.CreateSpecType"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-message": "ves.io.schema.virtual_host.CreateSpecType"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-service
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-ves-proto-service": "ves.io.schema.virtual_host.API"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-service": "ves.io.schema.virtual_host.API"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-rpc
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-ves-proto-rpc": "ves.io.schema.api_sec.api_crawler.API.Create"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-rpc": "ves.io.schema.api_sec.api_crawler.API.Create"`
+- **Pass-through from upstream:** yes
 
 ### x-displayname
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** `"x-displayname": "Namespace"`
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-displayname": "Namespace"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-oneof
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** انظر وثائق F5 المنبع.
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** راجع وثائق المنبع F5.
+- **Pass-through from upstream:** yes
 
 ### x-ves-default
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** انظر وثائق F5 المنبع.
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** راجع وثائق المنبع F5.
+- **Pass-through from upstream:** yes
 
 ### x-ves-required
 
-- **يُطبق على:** المنبع
-- **الغرض:** محفوظ بدون تغيير من مواصفة F5 المنبع.
-- **المستهلكون:** غير متاح
-- **نوع القيمة:** متغير
-- **مخطط القيمة:** غير متاح
-- **يُضاف بواسطة:** المنبع
-- **يُحدد بالإعداد:** المنبع
-- **مثال:** انظر وثائق F5 المنبع.
-- **تمرير من المنبع:** نعم
+- **Applied at:** upstream
+- **Purpose:** محفوظة دون تغيير من مواصفة المنبع F5.
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** راجع وثائق المنبع F5.
+- **Pass-through from upstream:** yes

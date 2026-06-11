@@ -1,6 +1,6 @@
 ---
 title: "\U0001F578️ Service Mesh API"
-description: การกำหนดเส้นทางไมโครเซอร์วิสและการกำหนดค่า sidecar
+description: การกำหนดเส้นทาง Microservice และการกำหนดค่า sidecar
 sidebar:
   hidden: true
 i18n:
@@ -8,26 +8,26 @@ i18n:
   translator: machine
 ---
 
-คำจำกัดความประเภทแอปพลิเคชันพร้อมการค้นพบและการวิเคราะห์สคีมาที่เรียนรู้ การอนุมานรูปแบบการรับส่งข้อมูลสำหรับการจัดการคำขออัจฉริยะ
+คำจำกัดความประเภทแอปพลิเคชันพร้อมการค้นหาและการวิเคราะห์ schema ที่เรียนรู้ การอนุมานรูปแบบทราฟฟิกสำหรับการจัดการคำขออย่างชาญฉลาด
 
 - **หมวดหมู่**: โครงสร้างพื้นฐาน
 - **ความซับซ้อน**: ขั้นสูง
-- **เส้นทาง**: 38 | **สคีมา**: 247
+- **เส้นทาง**: 38 | **Schemas**: 247
 - **ระดับ**: ขั้นสูง
 - **โดเมนที่เกี่ยวข้อง**: `managed_kubernetes`, `container_services`, `virtual`
 
 ## กรณีการใช้งาน
 
 - กำหนดค่าการเชื่อมต่อ service mesh
-- จัดการการค้นพบ endpoint และการกำหนดเส้นทาง
+- จัดการการค้นหา endpoint และการกำหนดเส้นทาง
 - กำหนดค่าบริการ NFV
 - กำหนดการตั้งค่าและประเภทแอปพลิเคชัน
 
 ## ทรัพยากรหลัก
 
-- **endpoint**: endpoint ของ service mesh สำหรับการกำหนดเส้นทางการรับส่งข้อมูล
-- **origin_pool**: กลุ่มเซิร์ฟเวอร์แบ็กเอนด์สำหรับการกระจายการรับส่งข้อมูลของ load balancer
-- **service_discovery**: การกำหนดค่าการค้นพบบริการสำหรับ endpoint แบบไดนามิก
+- **endpoint**: Service mesh endpoint สำหรับการกำหนดเส้นทางทราฟฟิก
+- **origin_pool**: กลุ่มเซิร์ฟเวอร์แบ็กเอนด์สำหรับการกระจายทราฟฟิกของตัวกระจายโหลด
+- **service_discovery**: การกำหนดค่าการค้นหาบริการสำหรับ endpoint แบบไดนามิก
 
 ## Endpoints
 
@@ -36,49 +36,49 @@ i18n:
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings` | สร้าง App Setting |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_settings/&#123;metadata.name&#125;` | แทนที่ App Setting |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings` | แสดงรายการ App Setting |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | GET App Setting |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | DELETE App Setting |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | GET สถานะของผู้ใช้ที่น่าสงสัย |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | ดึงข้อมูล App Setting |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;` | ลบ App Setting |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_settings/&#123;name&#125;/suspicious_users` | ดึงสถานะของผู้ใช้ที่น่าสงสัย |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types` | สร้าง App Type |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_types/&#123;metadata.name&#125;` | แทนที่ App Type |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/app_types` | แสดงรายการ App Type |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | GET สคีมาที่เรียนรู้ต่อ API endpoint |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | GET PDF |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | GET API endpoints |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | GET Swagger Spec สำหรับ App Type |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/learnt_schema` | ดึง Schema ที่เรียนรู้ต่อ API endpoint |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoint/pdf` | ดึงข้อมูล PDF |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints` | ดึงข้อมูล API endpoints |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/api_endpoints/swagger_spec` | ดึง Swagger Spec สำหรับ App Type |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/pop` | ลบ Override |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/override/push` | เพิ่ม Override |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | GET Override |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | GET PDF ของ Service API Endpoint |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | GET Service API Endpoints |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | GET App Type |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | DELETE App Type |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/overrides` | ดึงข้อมูล Override |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoint/pdf` | ดึง PDF ของ Service API Endpoint |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/app_types/&#123;app_type_name&#125;/services/&#123;service_name&#125;/api_endpoints` | ดึง Service API Endpoints |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | ดึงข้อมูล App Type |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_types/&#123;name&#125;` | ลบ App Type |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints` | สร้าง Endpoint |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/endpoints/&#123;metadata.name&#125;` | แทนที่ Endpoint |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints` | แสดงรายการ Endpoint |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | GET Endpoint |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | DELETE Endpoint |
-| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | บังคับ DELETE NFV Service |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | ดึงข้อมูล Endpoint |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/endpoints/&#123;name&#125;` | ลบ Endpoint |
+| POST | `/api/config/namespaces/system/nfv_service/&#123;name&#125;/force-delete` | บังคับลบ NFV Service |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services` | สร้าง NFV Service |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nfv_services/&#123;metadata.name&#125;` | แทนที่ NFV Service |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services` | แสดงรายการ NFV Service |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/nfv_services/metrics` | เมตริก |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | GET NFV Service |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | DELETE NFV Service |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | ดึงข้อมูล NFV Service |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nfv_services/&#123;name&#125;` | ลบ NFV Service |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups` | สร้าง Site Mesh Group |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/site_mesh_groups/&#123;metadata.name&#125;` | แทนที่ Site Mesh Group |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups` | แสดงรายการ Site Mesh Group |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | GET Site Mesh Group |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | DELETE Site Mesh Group |
-| POST | `/api/maurice/software_os_version` | GET OS ตาม SW_VERSION |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | ดึงข้อมูล Site Mesh Group |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/site_mesh_groups/&#123;name&#125;` | ลบ Site Mesh Group |
+| POST | `/api/maurice/software_os_version` | ดึงข้อมูล OS ตาม SW_VERSION |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks` | สร้าง Virtual Network |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_networks/&#123;metadata.name&#125;` | แทนที่ Virtual Network |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | ตัวนับ SID |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/virtual_network/sid_counters` | SID Counters |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks` | แสดงรายการ Virtual Network |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | GET Virtual Network |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | DELETE Virtual Network |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | ดึงข้อมูล Virtual Network |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_networks/&#123;name&#125;` | ลบ Virtual Network |
 
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./service_mesh/)
-- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/service_mesh.json)
+- [OpenAPI Specification JSON](../specifications/api/service_mesh.json)

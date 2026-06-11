@@ -1,6 +1,6 @@
 ---
-title: "\U0001FAAA टेनेंट और पहचान API"
-description: 'उपयोगकर्ता प्रोफ़ाइल, सत्र, और OTP सेटिंग्स।'
+title: "\U0001FAAA टेनेंट और आइडेंटिटी API"
+description: 'उपयोगकर्ता प्रोफाइल, सत्र और OTP सेटिंग्स।'
 sidebar:
   hidden: true
 i18n:
@@ -8,9 +8,9 @@ i18n:
   translator: machine
 ---
 
-खाता दृश्य कॉन्फ़िगरेशन और एडमिन अलर्ट चैनल। वन-टाइम पासवर्ड रीसेट, प्रोविज़निंग फ़्लो, और सक्रिय कनेक्शन निगरानी।
+अकाउंट व्यू कॉन्फ़िगरेशन और एडमिन अलर्ट चैनल। एक-बार पासवर्ड रीसेट, प्रोविज़निंग फ्लो और सक्रिय कनेक्शन निगरानी।
 
-- **श्रेणी**: Platform
+- **श्रेणी**: प्लेटफ़ॉर्म
 - **जटिलता**: उन्नत
 - **पथ**: 183 | **स्कीमा**: 511
 - **स्तर**: मानक
@@ -18,44 +18,44 @@ i18n:
 
 ## उपयोग के मामले
 
-- उपयोगकर्ता प्रोफ़ाइल और सूचना प्राथमिकताएँ प्रबंधित करें
+- उपयोगकर्ता प्रोफाइल और अधिसूचना प्राथमिकताओं का प्रबंधन करें
 - सत्र नियंत्रण और OTP सेटिंग्स कॉन्फ़िगर करें
 - पहचान प्रबंधन संचालन संभालें
-- प्रारंभिक उपयोगकर्ता पहुँच अनुरोधों को संसाधित करें
+- प्रारंभिक उपयोगकर्ता एक्सेस अनुरोधों को प्रोसेस करें
 
 ## प्राथमिक संसाधन
 
-- **user_profile**: व्यक्तिगत सेटिंग्स के साथ उपयोगकर्ता प्रोफ़ाइल
+- **user_profile**: व्यक्तिगत सेटिंग्स के साथ उपयोगकर्ता प्रोफाइल
 - **session**: प्रमाणीकरण स्थिति के लिए उपयोगकर्ता सत्र
-- **otp_policy**: बहु-कारक प्रमाणीकरण के लिए OTP नीति
+- **otp_policy**: मल्टी-फैक्टर प्रमाणीकरण के लिए OTP नीति
 
 ## एंडपॉइंट
 
 | विधि | पथ | विवरण |
 |--------|------|-------------|
-| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | सपोर्ट टेनेंट एक्सेस प्राप्त करें। |
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | GET सपोर्ट टेनेंट एक्सेस। |
 | POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | सपोर्ट टेनेंट एक्सेस अपडेट करें। |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | अनुमत टेनेंट बनाएँ। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | अनुमत टेनेंट बनाएं। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | अनुमत टेनेंट बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | अनुमत टेनेंट सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | अनुमत टेनेंट प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | अनुमत टेनेंट हटाएँ। |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | प्रमाणीकरण बनाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | अनुमत टेनेंट सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | GET अनुमत टेनेंट। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | DELETE अनुमत टेनेंट। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | प्रमाणीकरण बनाएं। |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | प्रमाणीकरण बदलें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | प्रमाणीकरण सूचीबद्ध करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | प्रमाणीकरण प्राप्त करें। |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | प्रमाणीकरण हटाएँ। |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | प्राधिकरण सर्वर बनाएँ। |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | प्राधिकरण सर्वर बदलें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | प्राधिकरण सर्वर सूचीबद्ध करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | प्राधिकरण सर्वर प्राप्त करें। |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | प्राधिकरण सर्वर हटाएँ। |
-| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | प्राधिकरण सर्वर अपडेट करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | प्रमाणीकरण सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | GET प्रमाणीकरण। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | DELETE प्रमाणीकरण। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | ऑथराइज़ेशन सर्वर बनाएं। |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | ऑथराइज़ेशन सर्वर बदलें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | ऑथराइज़ेशन सर्वर सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | GET ऑथराइज़ेशन सर्वर। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | DELETE ऑथराइज़ेशन सर्वर। |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | ऑथराइज़ेशन सर्वर अपडेट करें। |
 | GET | `/api/web/namespaces/system/partner-management/child_tenants` | चाइल्ड टेनेंट की सूची। |
 | POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | चाइल्ड टेनेंट माइग्रेट करें। |
 | GET | `/api/web/namespaces/system/partner-management/customer_supports` | चाइल्ड टेनेंट में बनाए गए सभी सपोर्ट टिकट सूचीबद्ध करें। |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports` | चाइल्ड टेनेंट में कस्टमर सपोर्ट टिकट बनाएँ। |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | चाइल्ड टेनेंट में कस्टमर सपोर्ट टिकट प्राप्त करें। |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | चाइल्ड टेनेंट में कस्टमर सपोर्ट टिकट बनाएं। |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | चाइल्ड टेनेंट में GET कस्टमर सपोर्ट टिकट। |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | चाइल्ड टेनेंट में कस्टमर सपोर्ट टिकट बंद करें। |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | चाइल्ड टेनेंट में कस्टमर सपोर्ट टिकट पर टिप्पणी जोड़ें। |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | चाइल्ड टेनेंट में टिकट एस्केलेट करें। |
@@ -63,210 +63,210 @@ i18n:
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | चाइल्ड टेनेंट में बंद कस्टमर सपोर्ट टिकट फिर से खोलें। |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | चाइल्ड टेनेंट। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | चाइल्ड टेनेंट बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | चाइल्ड टेनेंट सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | चाइल्ड टेनेंट प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | चाइल्ड टेनेंट हटाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | चाइल्ड टेनेंट सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | GET चाइल्ड टेनेंट। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | DELETE चाइल्ड टेनेंट। |
 | GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | दिए गए चाइल्ड टेनेंट मैनेजर के लिए चाइल्ड टेनेंट सूचीबद्ध करें। |
 | POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | CTM चाइल्ड टेनेंट माइग्रेट करें। |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | चाइल्ड टेनेंट मैनेजर। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | चाइल्ड टेनेंट मैनेजर बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | चाइल्ड टेनेंट मैनेजर सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | चाइल्ड टेनेंट मैनेजर प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | चाइल्ड टेनेंट मैनेजर हटाएँ। |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | अनुलग्नक प्राप्त करें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | चाइल्ड टेनेंट मैनेजर सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | GET चाइल्ड टेनेंट मैनेजर। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | DELETE चाइल्ड टेनेंट मैनेजर। |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET अटैचमेंट। |
 | POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | क्लाउड नेटवर्क खोजें। |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | संपर्क बनाएँ। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | संपर्क बनाएं। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | संपर्क बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | संपर्क सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | संपर्क प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | संपर्क हटाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | संपर्क सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | GET संपर्क। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | DELETE संपर्क। |
 | GET | `/api/web/namespaces/system/managed_client/customer_supports` | प्रबंधित टेनेंट के टिकट सूचीबद्ध करें। |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports` | प्रबंधित टेनेंट में कस्टमर सपोर्ट टिकट बनाएँ। |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | प्रबंधित टेनेंट में कस्टमर सपोर्ट टिकट प्राप्त करें। |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | प्रबंधित टेनेंट में कस्टमर सपोर्ट टिकट बनाएं। |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | प्रबंधित टेनेंट में GET कस्टमर सपोर्ट टिकट। |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | प्रबंधित टेनेंट में कस्टमर सपोर्ट टिकट बंद करें। |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | प्रबंधित टेनेंट में कस्टमर सपोर्ट टिकट पर टिप्पणी जोड़ें। |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | प्रबंधित टेनेंट में टिकट एस्केलेट करें। |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | प्रबंधित टेनेंट में टिकट की प्राथमिकता। |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | प्रबंधित टेनेंट में बंद कस्टमर सपोर्ट टिकट फिर से खोलें। |
-| GET | `/api/web/namespaces/system/managed_tenants_by_user` | उपयोगकर्ता द्वारा प्रबंधित टेनेंट की सूची प्राप्त करें। |
-| GET | `/api/web/namespaces/system/managed_tenants_list` | प्रबंधित टेनेंट की सूची प्राप्त करें। |
-| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | सपोर्ट संचालन के लिए उपयोगकर्ता द्वारा प्रबंधित टेनेंट की सूची। |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | प्रबंधित टेनेंट बनाएँ। |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | GET उपयोगकर्ता द्वारा प्रबंधित टेनेंट की सूची। |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | GET प्रबंधित टेनेंट की सूची। |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | सपोर्ट ऑपरेशन के लिए उपयोगकर्ता द्वारा प्रबंधित टेनेंट की सूची। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | प्रबंधित टेनेंट बनाएं। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | प्रबंधित टेनेंट बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | प्रबंधित टेनेंट सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | प्रबंधित टेनेंट प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | प्रबंधित टेनेंट हटाएँ। |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | अनुलग्नक प्राप्त करें। |
-| GET | `/api/web/namespaces` | नेमस्पेस सूचीबद्ध करें। |
-| POST | `/api/web/namespaces` | नेमस्पेस बनाएँ। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | प्रबंधित टेनेंट सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | GET प्रबंधित टेनेंट। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | DELETE प्रबंधित टेनेंट। |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET अटैचमेंट। |
+| GET | `/api/web/namespaces` | नेमस्पेस सूची। |
+| POST | `/api/web/namespaces` | नेमस्पेस बनाएं। |
 | POST | `/api/config/namespaces/system/all_application_inventory` | सभी एप्लिकेशन ऑब्जेक्ट इन्वेंटरी। |
 | POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | WAF फ़िल्टर के साथ सभी एप्लिकेशन ऑब्जेक्ट इन्वेंटरी। |
-| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | सभी नेमस्पेस के लिए API एंडपॉइंट आँकड़े प्राप्त करें। |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | सभी नेमस्पेस के लिए GET API एंडपॉइंट आँकड़े। |
 | POST | `/api/web/namespaces/system/evaluate-api-access` | API एक्सेस मूल्यांकन करें। |
 | POST | `/api/web/namespaces/system/evaluate-batch-api-access` | बैच API एक्सेस मूल्यांकन करें। |
-| POST | `/api/web/namespaces/system/lookup-user-roles` | उपयोगकर्ता भूमिकाएँ देखें। |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | उपयोगकर्ता भूमिकाएं खोजें। |
 | POST | `/api/config/namespaces/system/networking_inventory` | नेटवर्किंग ऑब्जेक्ट इन्वेंटरी। |
-| POST | `/api/cloud-data/namespaces/system/suggest-values` | मान सुझाएँ। |
-| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | सार्वजनिक पर विज्ञापन की अनुमति अपडेट करें। |
-| POST | `/api/config/namespaces/system/validate_rules` | नियम सत्यापित करें। |
+| POST | `/api/cloud-data/namespaces/system/suggest-values` | मान सुझाएं। |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | पब्लिक पर विज्ञापन की अनुमति अपडेट करें। |
+| POST | `/api/config/namespaces/system/validate_rules` | नियम मान्य करें। |
 | PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | नेमस्पेस बदलें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | सक्रिय अलर्ट नीतियाँ प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | सक्रिय अलर्ट नीतियाँ सेट करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | सक्रिय नेटवर्क नीतियाँ प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | सक्रिय नेटवर्क नीतियाँ सेट करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | सक्रिय सेवा नीतियाँ प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | सक्रिय सेवा नीतियाँ सेट करें। |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | नेमस्पेस के लिए API एंडपॉइंट आँकड़े प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | GET सक्रिय अलर्ट नीतियां। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | सक्रिय अलर्ट नीतियां सेट करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | GET सक्रिय नेटवर्क नीतियां। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | सक्रिय नेटवर्क नीतियां सेट करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | GET सक्रिय सेवा नीतियां। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | सक्रिय सेवा नीतियां सेट करें। |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | नेमस्पेस के लिए GET API एंडपॉइंट आँकड़े। |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | एप्लिकेशन ऑब्जेक्ट इन्वेंटरी। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | इंटरनेट VIP के लिए FastACL प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | इंटरनेट VIP के लिए FastACL सेट करें। |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | मान सुझाएँ। |
-| GET | `/api/web/namespaces/&#123;name&#125;` | नेमस्पेस प्राप्त करें। |
-| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | कैस्केड हटाएँ। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | नेमस्पेस भूमिका सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | नेमस्पेस भूमिका प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | गतिशील डेटा। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | RBAC नीति सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | RBAC नीति प्राप्त करें। |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | कस्टम भूमिकाएँ सूचीबद्ध करें। |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | कस्टम भूमिका बनाएँ। |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | कस्टम भूमिका प्राप्त करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | GET इंटरनेट VIPs के लिए FastACLs। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | इंटरनेट VIPs के लिए FastACLs सेट करें। |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | मान सुझाएं। |
+| GET | `/api/web/namespaces/&#123;name&#125;` | GET नेमस्पेस। |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | कैस्केड DELETE। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | नेमस्पेस भूमिका सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | GET नेमस्पेस भूमिका। |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | डायनामिक डेटा। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | RBAC नीति सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | GET RBAC नीति। |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | कस्टम भूमिका सूची। |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | कस्टम भूमिका बनाएं। |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | कस्टम GET भूमिका। |
 | PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | कस्टम भूमिका बदलें। |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | भूमिका बनाएँ। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | भूमिका बनाएं। |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | भूमिका बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | भूमिका सूचीबद्ध करें |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | भूमिका प्राप्त करें |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | भूमिका हटाएँ। |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | प्राप्त करें |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | हटाएँ |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | सूचीबद्ध करें |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | बनाएँ |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | प्राप्त करें |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | भूमिका सूची |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | GET भूमिका |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | DELETE भूमिका। |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | GET |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | DELETE |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | सूची |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | बनाएं |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | GET |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | बदलें |
 | PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | बदलें |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | हटाएँ |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC मैपर प्राप्त करें। |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC मैपर अपडेट करें। |
-| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | OIDC प्रदाता SCIM एकीकरण अपडेट करें। |
-| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | राज्य सूचीबद्ध करें। |
-| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | शहर सूचीबद्ध करें। |
-| GET | `/no_auth/countries/&#123;prefix&#125;` | देश सूचीबद्ध करें। |
-| POST | `/no_auth/login/validate_registration` | पंजीकरण सत्यापित करें। |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | DELETE |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | GET OIDC मैपर्स। |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | OIDC मैपर्स अपडेट करें। |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | OIDC प्रोवाइडर SCIM इंटीग्रेशन अपडेट करें। |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | राज्यों की सूची। |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | शहरों की सूची। |
+| GET | `/no_auth/countries/&#123;prefix&#125;` | देशों की सूची। |
+| POST | `/no_auth/login/validate_registration` | पंजीकरण मान्य करें। |
 | POST | `/no_auth/send_password_email` | पासवर्ड ईमेल भेजें। |
 | GET | `/no_auth/signup/&#123;name&#125;` | साइनअप पढ़ें। |
-| POST | `/no_auth/validate_contact` | संपर्क सत्यापित करें। |
-| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | राज्य सूचीबद्ध करें। |
-| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | शहर सूचीबद्ध करें। |
-| GET | `/api/web/custom/countries/&#123;prefix&#125;` | देश सूचीबद्ध करें। |
+| POST | `/no_auth/validate_contact` | संपर्क मान्य करें। |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | राज्यों की सूची। |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | शहरों की सूची। |
+| GET | `/api/web/custom/countries/&#123;prefix&#125;` | देशों की सूची। |
 | GET | `/api/scim/namespaces/system/v2/Groups` | फ़िल्टर के आधार पर समूह सूचीबद्ध करें। |
-| POST | `/api/scim/namespaces/system/v2/Groups` | उपयोगकर्ताओं के साथ समूह बनाएँ। |
+| POST | `/api/scim/namespaces/system/v2/Groups` | उपयोगकर्ताओं के साथ समूह बनाएं। |
 | GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह सूचीबद्ध करें। |
-| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह हटाएँ। |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह DELETE करें। |
 | PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह बदलें। |
-| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह पैच करें। |
-| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | समर्थित संसाधन प्रकार प्राप्त करें। |
-| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | समर्थित संसाधन प्रकार प्राप्त करें। |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ID के आधार पर समूह PATCH करें। |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | GET समर्थित संसाधन प्रकार। |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | GET समर्थित संसाधन प्रकार। |
 | GET | `/api/scim/namespaces/system/v2/Schemas` | स्कीमा |
 | GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | ID द्वारा स्कीमा। |
-| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | सेवा प्रदाता कॉन्फ़िगरेशन सूचीबद्ध करें। |
-| GET | `/api/scim/namespaces/system/v2/Users` | सभी उपयोगकर्ता प्राप्त करें। |
-| POST | `/api/scim/namespaces/system/v2/Users` | भूमिका असाइनमेंट के साथ उपयोगकर्ता बनाएँ। |
-| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID से उपयोगकर्ता प्राप्त करें। |
-| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID द्वारा उपयोगकर्ता हटाएँ। |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | सेवा प्रदाता कॉन्फ़िग सूचीबद्ध करें। |
+| GET | `/api/scim/namespaces/system/v2/Users` | GET सभी उपयोगकर्ता। |
+| POST | `/api/scim/namespaces/system/v2/Users` | भूमिका असाइनमेंट के साथ उपयोगकर्ता बनाएं। |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID के साथ GET उपयोगकर्ता। |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ID द्वारा उपयोगकर्ता DELETE करें। |
 | PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | उपयोगकर्ता और भूमिका असाइनमेंट अपडेट करें। |
-| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | उपयोगकर्ता पैच करें। |
-| GET | `/no_auth/cname/lookup` | CNAME लुकअप। |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | उपयोगकर्ता PATCH करें। |
+| GET | `/no_auth/cname/lookup` | cname खोजें। |
 | GET | `/no_auth/tenant/idm/settings/password_policy` | पासवर्ड नीति प्राप्त करें। |
 | POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | डोमेन स्वामी असाइन करें। |
-| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | डोमेन स्वामी अनासाइन करें। |
+| POST | `/api/web/namespaces/system/tenant/domain_owner/unassign` | डोमेन स्वामी अनअसाइन करें। |
 | GET | `/api/web/namespaces/system/tenant/idm/events/last_login` | अंतिम लॉगिन मैप प्राप्त करें। |
 | GET | `/api/web/namespaces/system/tenant/idm/events/login` | लॉगिन इवेंट प्राप्त करें। |
 | POST | `/api/web/namespaces/system/tenant/idm/events/login_in_time` | समय सीमा में लॉगिन इवेंट प्राप्त करें। |
 | GET | `/api/web/namespaces/system/tenant/idm/settings` | IDM सेटिंग्स प्राप्त करें। |
 | PUT | `/api/web/namespaces/system/tenant/idm/settings` | IDM सेटिंग्स अपडेट करें। |
 | GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | निष्क्रिय उपयोगकर्ता सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/system/tenant/lookup` | CNAME लुकअप। |
-| POST | `/api/web/namespaces/system/tenant/request-delete` | टेनेंट हटाएँ। |
+| GET | `/api/web/namespaces/system/tenant/lookup` | cname खोजें। |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | DELETE टेनेंट। |
 | GET | `/api/web/namespaces/system/tenant/settings` | टेनेंट सेटिंग्स। |
 | PUT | `/api/web/namespaces/system/tenant/settings` | टेनेंट सेटिंग्स। |
 | PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | टेनेंट स्तर OTP अक्षम करें। |
 | PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | टेनेंट स्तर OTP सक्षम करें। |
-| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | टेनेंट फ़ेविकॉन। |
-| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफ़ाइल छवि। |
-| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफ़ाइल छवि हटाएँ। |
-| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफ़ाइल छवि अपडेट करें। |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | टेनेंट फेविकॉन। |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफाइल छवि। |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | DELETE टेनेंट प्रोफाइल छवि। |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफाइल छवि अपडेट करें। |
 | GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | टेनेंट लोगो। |
 | GET | `/api/web/namespaces/system/tenant/support-info` | सपोर्ट जानकारी। |
 | GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | टेनेंट एस्केलेशन दस्तावेज़। |
 | PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | टेनेंट निष्क्रिय करें। |
-| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | टेनेंट फ़ेविकॉन। |
-| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफ़ाइल छवि। |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | टेनेंट फेविकॉन। |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | टेनेंट प्रोफाइल छवि। |
 | GET | `/api/config/tenants/&#123;tenant&#125;/summary` | सारांश |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | टेनेंट कॉन्फ़िगरेशन बनाएँ। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | टेनेंट कॉन्फ़िगरेशन बनाएं। |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | टेनेंट कॉन्फ़िगरेशन बदलें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | टेनेंट कॉन्फ़िगरेशन सूचीबद्ध करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | टेनेंट कॉन्फ़िगरेशन प्राप्त करें। |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | टेनेंट कॉन्फ़िगरेशन हटाएँ। |
-| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | प्रत्यायोजित एक्सेस ऐड-ऑन सेवा सब्सक्राइब करें। |
-| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | प्रत्यायोजित एक्सेस ऐड-ऑन सेवा अनसब्सक्राइब करें। |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | टेनेंट प्रोफ़ाइल बनाएँ। |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | टेनेंट प्रोफ़ाइल बदलें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | टेनेंट प्रोफ़ाइल सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | टेनेंट प्रोफ़ाइल प्राप्त करें। |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | टेनेंट प्रोफ़ाइल हटाएँ। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | टेनेंट कॉन्फ़िगरेशन सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | GET टेनेंट कॉन्फ़िगरेशन। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | DELETE टेनेंट कॉन्फ़िगरेशन। |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | डेलिगेटेड एक्सेस ऐडऑन सेवा सब्सक्राइब करें। |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | डेलिगेटेड एक्सेस ऐडऑन सेवा अनसब्सक्राइब करें। |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | टेनेंट प्रोफाइल बनाएं। |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | टेनेंट प्रोफाइल बदलें। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | टेनेंट प्रोफाइल सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | GET टेनेंट प्रोफाइल। |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | DELETE टेनेंट प्रोफाइल। |
 | POST | `/api/web/custom/idm/user/sync` | उपयोगकर्ता सिंक करें |
-| PUT | `/api/web/custom/namespaces/system/users/group_add` | उपयोगकर्ता को समूहों में जोड़ें। |
-| PUT | `/api/web/custom/namespaces/system/users/group_remove` | उपयोगकर्ता को समूहों से हटाएँ। |
+| PUT | `/api/web/custom/namespaces/system/users/group_add` | समूहों में उपयोगकर्ता जोड़ें। |
+| PUT | `/api/web/custom/namespaces/system/users/group_remove` | समूहों से उपयोगकर्ता हटाएं। |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | TOS स्वीकार करें। |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | उपयोगकर्ता को भूमिका असाइन करें। |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | पासवर्ड ईमेल भेजें। |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | TOS प्राप्त करें |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | उपयोगकर्ता और भूमिका असाइनमेंट प्राप्त करें। |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | भूमिका असाइनमेंट के साथ उपयोगकर्ता बनाएँ। |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | GET TOS |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | GET उपयोगकर्ता और भूमिका असाइनमेंट। |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | भूमिका असाइनमेंट के साथ उपयोगकर्ता बनाएं। |
 | PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | उपयोगकर्ता और भूमिका असाइनमेंट अपडेट करें। |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | उपयोगकर्ता और भूमिका असाइनमेंट अपडेट करें। |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | उपयोगकर्ता और संबंधित ऑब्जेक्ट हटाएँ। |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | उपयोगकर्ता विवरण प्राप्त करें। |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | DELETE उपयोगकर्ता और संबंधित ऑब्जेक्ट। |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | GET उपयोगकर्ता विवरण। |
 | POST | `/api/web/custom/password/admin_reset` | एडमिन द्वारा पासवर्ड रीसेट करें। |
 | POST | `/api/web/custom/password/reset` | पासवर्ड रीसेट करें। |
-| GET | `/api/web/custom/namespaces/system/user_groups` | टेनेंट के लिए सभी उपयोगकर्ता समूह प्राप्त करें। |
-| POST | `/api/web/custom/namespaces/system/user_groups` | उपयोगकर्ता समूह बनाएँ। |
+| GET | `/api/web/custom/namespaces/system/user_groups` | GET टेनेंट के सभी उपयोगकर्ता समूह। |
+| POST | `/api/web/custom/namespaces/system/user_groups` | उपयोगकर्ता समूह बनाएं। |
 | POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | हटाने के लिए विश्लेषण करें। |
-| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | समूह ID प्रदान करके समूह के सभी विवरण प्राप्त करें। |
-| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | समूह ID प्रदान करके समूह हटाएँ। |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | समूह ID दिए जाने पर समूह के सभी विवरण प्राप्त करें। |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | समूह ID दिए जाने पर समूह DELETE करें। |
 | PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | उपयोगकर्ता समूह फ़ील्ड / एक्सेस / एसोसिएशन बदलें। |
 | PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | उपयोगकर्ता समूह को भूमिका असाइन करें। |
-| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | उपयोगकर्ता समूह से भूमिका हटाएँ। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | उपयोगकर्ता समूह सूचीबद्ध करें। |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | उपयोगकर्ता समूह प्राप्त करें। |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | उपयोगकर्ता पहचान बनाएँ। |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | उपयोगकर्ता समूह से भूमिका हटाएं। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | उपयोगकर्ता समूह सूची। |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | GET उपयोगकर्ता समूह। |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | उपयोगकर्ता पहचान बनाएं। |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | उपयोगकर्ता पहचान बदलें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | उपयोगकर्ता पहचान सूचीबद्ध करें। |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | उपयोगकर्ता पहचान प्राप्त करें। |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | उपयोगकर्ता पहचान हटाएँ। |
-| GET | `/api/web/namespaces/system/user/admin_notifications` | एडमिन सूचना प्राथमिकताएँ प्राप्त करें। |
-| PUT | `/api/web/namespaces/system/user/admin_notifications` | एडमिन सूचना प्राथमिकताएँ अपडेट करें। |
-| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | एडमिन सूचना प्राथमिकता अनसेट करें। |
-| GET | `/api/web/namespaces/system/user/combined_notifications` | संयुक्त सूचना प्राथमिकताएँ प्राप्त करें। |
-| PUT | `/api/web/namespaces/system/user/combined_notifications` | संयुक्त सूचना प्राथमिकताएँ अपडेट करें। |
-| GET | `/api/web/namespaces/system/user/notifications` | सूचना प्राथमिकताएँ प्राप्त करें। |
-| PUT | `/api/web/namespaces/system/user/notifications` | सूचना प्राथमिकताएँ अपडेट करें। |
-| PUT | `/api/web/namespaces/system/user/notifications/unset` | सूचना प्राथमिकता अनसेट करें। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | उपयोगकर्ता पहचान सूची। |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | GET उपयोगकर्ता पहचान। |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | DELETE उपयोगकर्ता पहचान। |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | GET एडमिन अधिसूचना प्राथमिकताएं। |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | एडमिन अधिसूचना प्राथमिकताएं अपडेट करें। |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | एडमिन अधिसूचना प्राथमिकता अनसेट करें। |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | GET संयुक्त अधिसूचना प्राथमिकताएं। |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | संयुक्त अधिसूचना प्राथमिकताएं अपडेट करें। |
+| GET | `/api/web/namespaces/system/user/notifications` | GET अधिसूचना प्राथमिकताएं। |
+| PUT | `/api/web/namespaces/system/user/notifications` | अधिसूचना प्राथमिकताएं अपडेट करें। |
+| PUT | `/api/web/namespaces/system/user/notifications/unset` | अधिसूचना प्राथमिकता अनसेट करें। |
 | PUT | `/api/web/namespaces/system/user/otp/admin_reset` | एडमिन द्वारा OTP डिवाइस रीसेट करें। |
 | GET | `/api/web/namespaces/system/user/sessions` | उपयोगकर्ता सत्र प्राप्त करें। |
-| GET | `/api/web/namespaces/system/user/settings` | प्राप्त करें |
-| PUT | `/api/web/namespaces/system/user/settings` | अपडेट करें |
+| GET | `/api/web/namespaces/system/user/settings` | GET |
+| PUT | `/api/web/namespaces/system/user/settings` | अपडेट |
 | PUT | `/api/web/namespaces/system/user/settings/idm/disable` | IDM में उपयोगकर्ता अक्षम करें। |
 | PUT | `/api/web/namespaces/system/user/settings/idm/enable` | IDM में उपयोगकर्ता सक्षम करें। |
-| GET | `/api/web/namespaces/system/user/settings/image` | उपयोगकर्ता प्रोफ़ाइल छवि प्राप्त करें। |
-| DELETE | `/api/web/namespaces/system/user/settings/image` | उपयोगकर्ता छवि हटाएँ। |
+| GET | `/api/web/namespaces/system/user/settings/image` | उपयोगकर्ता प्रोफाइल छवि प्राप्त करें। |
+| DELETE | `/api/web/namespaces/system/user/settings/image` | उपयोगकर्ता छवि DELETE करें। |
 | PUT | `/api/web/namespaces/system/user/settings/image` | उपयोगकर्ता छवि अपडेट करें। |
 | PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | प्रारंभिक एक्सेस अनुरोध करें। |
-| GET | `/api/web/namespaces/system/user/settings/view_preference` | दृश्य प्राथमिकता प्राप्त करें। |
-| PUT | `/api/web/namespaces/system/user/settings/view_preference` | दृश्य प्राथमिकता सेट करें। |
-| GET | `/api/config/namespaces/system/was/user_token` | वेब ऐप स्कैनिंग सेवा उपयोगकर्ता टोकन प्राप्त करें। |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | GET व्यू प्राथमिकता। |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | व्यू प्राथमिकता सेट करें। |
+| GET | `/api/config/namespaces/system/was/user_token` | GET वेब ऐप स्कैनिंग सेवा उपयोगकर्ता टोकन। |
 
 ## लिंक
 
-- [इंटरैक्टिव API संदर्भ](./tenant_and_identity/)
+- [इंटरेक्टिव API संदर्भ](./tenant_and_identity/)
 - [OpenAPI विनिर्देश JSON](../specifications/api/tenant_and_identity.json)

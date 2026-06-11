@@ -1,6 +1,6 @@
 ---
 title: Healthcheck-Erweiterungen
-description: Anreicherungsmetadaten für Healthcheck-bezogene Schemas
+description: Anreicherungsmetadaten für Healthcheck-bezogene Schemata
 sidebar:
   order: 1
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-Anreicherungsmetadaten für Healthcheck-bezogene Schemas. Siehe [OpenAPI-Erweiterungen](../development/#openapi-extensions) für Erweiterungsdefinitionen.
+Anreicherungsmetadaten für Healthcheck-bezogene Schemata. Siehe [OpenAPI-Erweiterungen](../development/#openapi-extensions) für Erweiterungsdefinitionen.
 
-## Angereicherte Schemas
+## Angereicherte Schemata
 
 ### Muster
 
-Alle Schemas, die dem Muster `healthcheck.*SpecType` entsprechen, erhalten Anreicherungen:
+Alle Schemata, die `healthcheck.*SpecType` entsprechen, erhalten Anreicherungen:
 
 - `healthcheckCreateSpecType`
 - `healthcheckReplaceSpecType`
@@ -22,87 +22,87 @@ Alle Schemas, die dem Muster `healthcheck.*SpecType` entsprechen, erhalten Anrei
 
 Zusätzlich enthält das verschachtelte Schema `healthcheckHttpHealthCheck` Anreicherungen für die HTTP-Healthcheck-Konfiguration.
 
-## Serverseitig angewandte Standardwerte
+## Serverseitig angewendete Standardwerte
 
-Felder, die mit `x-f5xc-server-default: true` gekennzeichnet sind, erhalten ihren `default`-Wert vom F5 XC API-Server, wenn sie in Anfragen ausgelassen werden.
+Felder, die mit `x-f5xc-server-default: true` gekennzeichnet sind, erhalten ihren `default`-Wert vom F5 XC API-Server angewendet, wenn sie in Anfragen ausgelassen werden.
 
-### Felder auf oberster Ebene
+### Felder der obersten Ebene
 
 | Feld | Standardwert | Typ | Beschreibung |
-|------|-------------|-----|--------------|
-| `jitter` | `0` | integer | Absoluter Jitter-Wert für Timing-Randomisierung |
-| `jitter_percent` | `0` | integer | Prozentbasierter Jitter für Timing-Randomisierung |
+|-------|---------------|------|-------------|
+| `jitter` | `0` | integer | Absoluter Jitter-Wert für die Zeitsteuerungs-Randomisierung |
+| `jitter_percent` | `0` | integer | Prozentbasierter Jitter für die Zeitsteuerungs-Randomisierung |
 
 ### healthcheckHttpHealthCheck-Schema
 
 | Feld | Standardwert | Typ | Beschreibung |
-|------|-------------|-----|--------------|
-| `use_origin_server_name` | `{}` | object | Origin-Server-Name für Host-Header |
+|-------|---------------|------|-------------|
+| `use_origin_server_name` | `{}` | object | Ursprungsservername für den Host-Header |
 | `headers` | `{}` | object | Benutzerdefinierte Header |
-| `request_headers_to_remove` | `[]` | array | Header, die aus Anfragen entfernt werden |
+| `request_headers_to_remove` | `[]` | array | Header, die aus Anfragen entfernt werden sollen |
 | `use_http2` | `false` | boolean | HTTP/2-Unterstützung |
-| `expected_status_codes` | `[]` | array | Akzeptierte Statuscodes (leer = 200-299) |
+| `expected_status_codes` | `[]` | array | Akzeptierte Statuscodes (leer = 200–299) |
 
 ## Empfohlene Werte
 
-Felder, die mit `x-f5xc-recommended-value` gekennzeichnet sind, geben Werte an, die die F5 XC Webkonsole beim Erstellen neuer Ressourcen vorab ausfüllt.
+Felder, die mit `x-f5xc-recommended-value` gekennzeichnet sind, geben Werte an, die die F5 XC Webkonsole beim Erstellen neuer Ressourcen vorausfüllt.
 
-### Felder auf oberster Ebene
+### Felder der obersten Ebene
 
 | Feld | Empfohlener Wert | Typ | Beschreibung |
-|------|-----------------|-----|--------------|
+|-------|-------------------|------|-------------|
 | `timeout` | `3` | integer | Healthcheck-Timeout in Sekunden |
 | `interval` | `15` | integer | Intervall zwischen Healthchecks in Sekunden |
-| `unhealthy_threshold` | `1` | integer | Aufeinanderfolgende Fehler vor der Markierung als ungesund |
-| `healthy_threshold` | `3` | integer | Aufeinanderfolgende Erfolge vor der Markierung als gesund |
+| `unhealthy_threshold` | `1` | integer | Aufeinanderfolgende Fehler, bevor als fehlerhaft markiert wird |
+| `healthy_threshold` | `3` | integer | Aufeinanderfolgende Erfolge, bevor als fehlerfrei markiert wird |
 | `jitter_percent` | `30` | integer | Jitter-Prozentsatz für den Produktionseinsatz |
 
 ### healthcheckHttpHealthCheck-Schema
 
 | Feld | Empfohlener Wert | Typ | Beschreibung |
-|------|-----------------|-----|--------------|
-| `path` | `"/"` | string | Healthcheck-Endpunktpfad |
+|-------|-------------------|------|-------------|
+| `path` | `"/"` | string | Healthcheck-Endpunkt-Pfad |
 | `use_http2` | `false` | boolean | HTTP/2-Unterstützungseinstellung |
-| `expected_status_codes` | `["200"]` | array | Statuscodes, die einen gesunden Origin anzeigen |
-| `use_origin_server_name` | `{}` | object | Origin-Server-Name für Host-Header |
+| `expected_status_codes` | `["200"]` | array | Statuscodes, die einen fehlerfreien Ursprung anzeigen |
+| `use_origin_server_name` | `{}` | object | Ursprungsservername für den Host-Header |
 
-## OneOf-Varianten-Empfehlungen
+## OneOf-Variantenempfehlungen
 
-Schemas, die sich gegenseitig ausschließende Feldgruppen (OneOf) enthalten, beinhalten `x-f5xc-recommended-oneof-variant`, um anzuzeigen, welche Variante am häufigsten verwendet wird. Diese Metadaten identifizieren die typische Wahl, wenn mehrere Optionen existieren, basierend auf F5 XC-Konsolenstandards und gängigen Nutzungsmustern.
+Schemata, die gegenseitig ausschließende Feldgruppen (OneOf) enthalten, schließen `x-f5xc-recommended-oneof-variant` ein, um anzugeben, welche Variante am häufigsten verwendet wird. Diese Metadaten identifizieren die typische Auswahl bei mehreren Optionen, basierend auf den Standardeinstellungen der F5 XC Konsole und gängigen Verwendungsmustern.
 
-### OneOf-Gruppen auf oberster Ebene
+### OneOf-Gruppen der obersten Ebene
 
 | Schema | OneOf-Gruppe | Empfohlene Variante | Beschreibung |
-|--------|-------------|--------------------:|--------------|
+|--------|-------------|---------------------|-------------|
 | `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP-Healthcheck-Typ |
 | `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP-Healthcheck-Typ |
 
-### healthcheckHttpHealthCheck OneOf-Gruppen
+### healthcheckHttpHealthCheck-OneOf-Gruppen
 
 | Schema | OneOf-Gruppe | Empfohlene Variante | Beschreibung |
-|--------|-------------|--------------------:|--------------|
+|--------|-------------|---------------------|-------------|
 | `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | Host-Header für Healthcheck-Anfragen |
 
 #### Host-Header-Auswahl
 
-Die OneOf-Gruppe `host_header_choice` steuert, wie der Host-Header in HTTP-Healthcheck-Anfragen angegeben wird.
+Die OneOf-Gruppe `host_header_choice` steuert, wie der Host-Header in HTTP-Anfragen für Healthchecks angegeben wird.
 
 | Variante | Typ | Beschreibung |
-|----------|-----|--------------|
-| `use_origin_server_name` | `object` (leer) | Verwendet den Origin-Server-Namen als Host-Header. Dies ist die Standardauswahl in der F5 XC-Konsole. |
-| `host_header` | `string` | Gibt einen benutzerdefinierten Host-Header-Wert für Healthcheck-Anfragen an. |
+|---------|------|-------------|
+| `use_origin_server_name` | `object` (leer) | Den Ursprungsservernamen als Host-Header verwenden. Dies ist die Standardauswahl in der F5 XC Konsole. |
+| `host_header` | `string` | Einen benutzerdefinierten Host-Header-Wert für Healthcheck-Anfragen angeben. |
 
-**API-Schema-Referenz**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
+**API-Schemareferenz**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
 
-## OpenAPI-Erweiterungsreferenz
+## Referenz der OpenAPI-Erweiterungen
 
-Diese herstellerspezifischen Erweiterungen werden dem standardmäßigen OpenAPI-Schema hinzugefügt, um F5 XC-spezifisches Standardverhalten zu vermitteln.
+Diese Herstellererweiterungen werden dem standardmäßigen OpenAPI-Schema hinzugefügt, um das F5 XC-spezifische Standardverhalten zu vermitteln.
 
 ### x-f5xc-server-default
 
 **Typ**: `boolean`
 
-Wenn `true`, zeigt dies an, dass der zugehörige `default`-Wert vom F5 XC API-Server durchgesetzt wird. Felder mit dieser Erweiterung können sicher aus API-Anfragen ausgelassen werden – der Server wendet den Standardwert automatisch an.
+Wenn `true`, gibt dies an, dass der begleitende `default`-Wert vom F5 XC API-Server erzwungen wird. Felder mit dieser Erweiterung können sicher aus API-Anfragen ausgelassen werden – der Server wendet den Standardwert automatisch an.
 
 ```yaml
 use_http2:
@@ -115,7 +115,7 @@ use_http2:
 
 **Typ**: `any` (entspricht dem Feldtyp)
 
-Gibt einen Wert an, den die F5 XC Webkonsole als vorab ausgefüllten Standardwert verwendet. Dieser Wert wird nicht serverseitig durchgesetzt, stellt aber die typische Ausgangskonfiguration für neue Ressourcen dar, die über die Konsole erstellt werden.
+Gibt einen Wert an, den die F5 XC Webkonsole als vorausgefüllten Standardwert verwendet. Dieser Wert wird nicht serverseitig erzwungen, sondern stellt die typische Ausgangskonfiguration für neue über die Konsole erstellte Ressourcen dar.
 
 ```yaml
 timeout:
@@ -127,7 +127,7 @@ timeout:
 
 **Typ**: `object` (Zuordnung von Gruppenname zu Variantenname)
 
-Für Schemas mit sich gegenseitig ausschließenden Feldgruppen wird angegeben, welche Variante die Standard- oder häufigste Wahl ist. Der Schlüssel ist der OneOf-Gruppenname und der Wert ist der empfohlene Varianten-Feldname.
+Für Schemata mit gegenseitig ausschließenden Feldgruppen wird angegeben, welche Variante die Standard- oder häufigste Auswahl ist. Der Schlüssel ist der Name der OneOf-Gruppe und der Wert ist der empfohlene Variantenfeldname.
 
 ```yaml
 healthcheckCreateSpecType:
@@ -140,9 +140,9 @@ healthcheckCreateSpecType:
 ### OpenAPI-Spezifikationen
 
 | Datei | Inhalt |
-|-------|--------|
+|------|---------|
 | `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
-| `docs/specifications/api/openapi.json` | Zusammengeführte Spezifikation mit allen Schemas |
+| `docs/specifications/api/openapi.json` | Zusammengeführte Spezifikation mit allen Schemata |
 
 ### validation.json-Struktur
 
@@ -150,24 +150,24 @@ healthcheckCreateSpecType:
 defaults.resources.healthcheck
 ├── server_applied      # Felder mit x-f5xc-server-default: true
 ├── recommended         # Felder mit x-f5xc-recommended-value
-├── oneof_recommended   # OneOf-Varianten-Empfehlungen
-└── nested_recommended  # Empfohlene Werte für verschachtelte Schemas
+├── oneof_recommended   # OneOf-Variantenempfehlungen
+└── nested_recommended  # Empfohlene Werte für verschachtelte Schemata
 ```
 
 ## Verwandte Dokumentation
 
-- [Entwicklungsleitfaden - OpenAPI-Erweiterungen](../development/#openapi-extensions) - Erweiterungsdefinitionen und Verwendung
-- [Validierungsspezifikation](../validation-spec/) - Format und Struktur von validation.json
-- [Origin-Pool-Erweiterungen](./originpool-enhancements/) - Origin-Pool-Schema-Anreicherungen
+- [Entwicklungsleitfaden – OpenAPI-Erweiterungen](../development/#openapi-extensions) – Erweiterungsdefinitionen und Verwendung
+- [Validierungsspezifikation](../validation-spec/) – validation.json-Format und -Struktur
+- [Ursprungspool-Erweiterungen](./originpool-enhancements/) – Schemaanreicherungen für Ursprungspools
 
 ## Änderungsprotokoll
 
 | Version | Datum | Änderungen |
-|---------|-------|------------|
+|---------|------|---------|
 | 2.1.4 | 2026-01-19 | Dokumentation der OneOf-Gruppe `host_header_choice` für HTTP-Healthcheck-Anfrageparameter hinzugefügt |
-| 2.1.3 | 2026-01-18 | Globale Erweiterungsdokumentation in DEVELOPMENT.md konsolidiert; nur ressourcenspezifische Daten |
-| 2.1.2 | 2026-01-18 | Als reine API-Referenz umgeschrieben; nachgelagerte Beispiele und präskriptive Formulierungen entfernt |
-| 2.1.1 | 2026-01-18 | Verschachtelte empfohlene Werte, empfohlene OneOf-Varianten, Erweiterung `x-f5xc-recommended-oneof-variant` hinzugefügt |
-| 2.1.0 | 2026-01-18 | Vereinheitlichte Standardwerte-Struktur in validation.json hinzugefügt |
-| 2.0.30 | 2026-01-16 | Verschachtelte Standardwerte für `$ref`-Schemas hinzugefügt |
-| 2.0.29 | 2026-01-17 | Initiale Healthcheck-Standardwerte |
+| 2.1.3 | 2026-01-18 | Globale Erweiterungsdokumente in DEVELOPMENT.md konsolidiert; nur ressourcenspezifische Daten |
+| 2.1.2 | 2026-01-18 | Als reine API-Referenz neu geschrieben; nachgelagerte Beispiele und präskriptive Sprache entfernt |
+| 2.1.1 | 2026-01-18 | Verschachtelte empfohlene Werte, OneOf-Variantenempfehlungen und Erweiterung `x-f5xc-recommended-oneof-variant` hinzugefügt |
+| 2.1.0 | 2026-01-18 | Einheitliche Standardwertstruktur in validation.json hinzugefügt |
+| 2.0.30 | 2026-01-16 | Verschachtelte Standardwerte für `$ref`-Schemata hinzugefügt |
+| 2.0.29 | 2026-01-17 | Erste Healthcheck-Standardwerte |

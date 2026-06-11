@@ -1,5 +1,5 @@
 ---
-title: "\U0001FAAA API ผู้เช่าและตัวตน"
+title: "\U0001FAAA Tenant And Identity API"
 description: โปรไฟล์ผู้ใช้ เซสชัน และการตั้งค่า OTP
 sidebar:
   hidden: true
@@ -8,11 +8,11 @@ i18n:
   translator: machine
 ---
 
-การกำหนดค่ามุมมองบัญชีและช่องทางการแจ้งเตือนของผู้ดูแลระบบ การรีเซ็ตรหัสผ่านแบบใช้ครั้งเดียว ขั้นตอนการจัดเตรียม และการตรวจสอบการเชื่อมต่อที่ใช้งานอยู่
+การกำหนดค่าการแสดงผลบัญชีและช่องทางการแจ้งเตือนผู้ดูแลระบบ การรีเซ็ตรหัสผ่านแบบใช้ครั้งเดียว ขั้นตอนการจัดเตรียมระบบ และการตรวจสอบการเชื่อมต่อที่ใช้งานอยู่
 
 - **หมวดหมู่**: แพลตฟอร์ม
 - **ความซับซ้อน**: ขั้นสูง
-- **เส้นทาง**: 183 | **สคีมา**: 511
+- **พาธ**: 183 | **สคีมา**: 511
 - **ระดับ**: มาตรฐาน
 - **โดเมนที่เกี่ยวข้อง**: `users`, `authentication`, `system`
 
@@ -20,8 +20,8 @@ i18n:
 
 - จัดการโปรไฟล์ผู้ใช้และการตั้งค่าการแจ้งเตือน
 - กำหนดค่าการควบคุมเซสชันและการตั้งค่า OTP
-- จัดการการดำเนินงานด้านตัวตน
-- ประมวลผลคำขอการเข้าถึงเริ่มต้นของผู้ใช้
+- ดำเนินการจัดการข้อมูลประจำตัว
+- ประมวลผลคำขอการเข้าถึงครั้งแรกของผู้ใช้
 
 ## ทรัพยากรหลัก
 
@@ -29,152 +29,152 @@ i18n:
 - **session**: เซสชันผู้ใช้สำหรับสถานะการยืนยันตัวตน
 - **otp_policy**: นโยบาย OTP สำหรับการยืนยันตัวตนแบบหลายปัจจัย
 
-## เอนด์พอยต์
+## Endpoints
 
-| เมธอด | เส้นทาง | คำอธิบาย |
+| เมธอด | พาธ | คำอธิบาย |
 |--------|------|-------------|
-| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | ดึงข้อมูลการเข้าถึงผู้เช่าสนับสนุน |
-| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | อัปเดตการเข้าถึงผู้เช่าสนับสนุน |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | สร้างผู้เช่าที่อนุญาต |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | แทนที่ผู้เช่าที่อนุญาต |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | แสดงรายการผู้เช่าที่อนุญาต |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | ดึงข้อมูลผู้เช่าที่อนุญาต |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | ลบผู้เช่าที่อนุญาต |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | สร้างการยืนยันตัวตน |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | แทนที่การยืนยันตัวตน |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | แสดงรายการการยืนยันตัวตน |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | ดึงข้อมูลการยืนยันตัวตน |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | ลบการยืนยันตัวตน |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | สร้างเซิร์ฟเวอร์การอนุญาต |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | แทนที่เซิร์ฟเวอร์การอนุญาต |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | แสดงรายการเซิร์ฟเวอร์การอนุญาต |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | ดึงข้อมูลเซิร์ฟเวอร์การอนุญาต |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | ลบเซิร์ฟเวอร์การอนุญาต |
-| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | อัปเดตเซิร์ฟเวอร์การอนุญาต |
-| GET | `/api/web/namespaces/system/partner-management/child_tenants` | รายการผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | ย้ายผู้เช่าย่อย |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports` | แสดงรายการตั๋วสนับสนุนทั้งหมดที่สร้างในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports` | สร้างตั๋วสนับสนุนลูกค้าในผู้เช่าย่อย |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | ดึงข้อมูลตั๋วสนับสนุนลูกค้าในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | ปิดตั๋วสนับสนุนลูกค้าในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | เพิ่มความคิดเห็นในตั๋วสนับสนุนลูกค้าในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | ยกระดับตั๋วในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | เปลี่ยนลำดับความสำคัญของตั๋วในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | เปิดตั๋วสนับสนุนลูกค้าที่ปิดแล้วอีกครั้งในผู้เช่าย่อย |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | ผู้เช่าย่อย |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | แทนที่ผู้เช่าย่อย |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | แสดงรายการผู้เช่าย่อย |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | ดึงข้อมูลผู้เช่าย่อย |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | ลบผู้เช่าย่อย |
-| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | แสดงรายการผู้เช่าย่อยสำหรับผู้จัดการผู้เช่าย่อยที่กำหนด |
-| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | ย้ายผู้เช่าย่อยของ CTM |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | ผู้จัดการผู้เช่าย่อย |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | แทนที่ผู้จัดการผู้เช่าย่อย |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | แสดงรายการผู้จัดการผู้เช่าย่อย |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | ดึงข้อมูลผู้จัดการผู้เช่าย่อย |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | ลบผู้จัดการผู้เช่าย่อย |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | ดึงข้อมูลไฟล์แนบ |
+| GET | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | GET สิทธิ์การเข้าถึง Support Tenant |
+| POST | `/api/web/namespaces/system/allowed_tenants/support-tenant/access` | อัปเดตสิทธิ์การเข้าถึง Support Tenant |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants` | สร้าง Allowed Tenant |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/allowed_tenants/&#123;metadata.name&#125;` | แทนที่ Allowed Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants` | แสดงรายการ Allowed Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | GET Allowed Tenant |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/allowed_tenants/&#123;name&#125;` | DELETE Allowed Tenant |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications` | สร้าง Authentication |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authentications/&#123;metadata.name&#125;` | แทนที่ Authentication |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications` | แสดงรายการ Authentication |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | GET Authentication |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authentications/&#123;name&#125;` | DELETE Authentication |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers` | สร้าง Authorization Server |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/authorization_servers/&#123;metadata.name&#125;` | แทนที่ Authorization Server |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers` | แสดงรายการ Authorization Server |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | GET Authorization Server |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;` | DELETE Authorization Server |
+| POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | อัปเดต Authorization Server |
+| GET | `/api/web/namespaces/system/partner-management/child_tenants` | แสดงรายการ Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | ย้าย Child Tenant |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports` | แสดงรายการตั๋วสนับสนุนทั้งหมดที่สร้างใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports` | สร้างตั๋วการสนับสนุนลูกค้าใน Child Tenant |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | GET ตั๋วการสนับสนุนลูกค้าใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | ปิดตั๋วการสนับสนุนลูกค้าใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | เพิ่มความคิดเห็นในตั๋วการสนับสนุนลูกค้าใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | ยกระดับตั๋วใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | เปลี่ยนลำดับความสำคัญของตั๋วใน Child Tenant |
+| POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | เปิดตั๋วการสนับสนุนลูกค้าที่ปิดแล้วใน Child Tenant อีกครั้ง |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants` | Child Tenant |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenants/&#123;metadata.name&#125;` | แทนที่ Child Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants` | แสดงรายการ Child Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | GET Child Tenant |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenants/&#123;name&#125;` | DELETE Child Tenant |
+| GET | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants` | แสดงรายการ Child Tenant สำหรับ Child Tenant Manager ที่กำหนด |
+| POST | `/api/web/namespaces/system/partner-management/child_tenant_managers/&#123;name&#125;/child_tenants/migrate` | ย้าย CTM Child Tenant |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers` | Child Tenant Manager |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/child_tenant_managers/&#123;metadata.name&#125;` | แทนที่ Child Tenant Manager |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | แสดงรายการ Child Tenant Manager |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | GET Child Tenant Manager |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | DELETE Child Tenant Manager |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET ไฟล์แนบ |
 | POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | ค้นหาเครือข่ายคลาวด์ |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | สร้างผู้ติดต่อ |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | แทนที่ผู้ติดต่อ |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | แสดงรายการผู้ติดต่อ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | ดึงข้อมูลผู้ติดต่อ |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | ลบผู้ติดต่อ |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports` | แสดงรายการตั๋วของผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports` | สร้างตั๋วสนับสนุนลูกค้าในผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | ดึงข้อมูลตั๋วสนับสนุนลูกค้าในผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | ปิดตั๋วสนับสนุนลูกค้าในผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | เพิ่มความคิดเห็นในตั๋วสนับสนุนลูกค้าในผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | ยกระดับตั๋วในผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | ลำดับความสำคัญของตั๋วในผู้เช่าที่จัดการ |
-| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | เปิดตั๋วสนับสนุนลูกค้าที่ปิดแล้วอีกครั้งในผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/system/managed_tenants_by_user` | ดึงรายการผู้เช่าที่จัดการตามผู้ใช้ |
-| GET | `/api/web/namespaces/system/managed_tenants_list` | ดึงรายการผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | รายการผู้เช่าที่จัดการตามผู้ใช้สำหรับการดำเนินการสนับสนุน |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | สร้างผู้เช่าที่จัดการ |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | แทนที่ผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | แสดงรายการผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | ดึงข้อมูลผู้เช่าที่จัดการ |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | ลบผู้เช่าที่จัดการ |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | ดึงข้อมูลไฟล์แนบ |
-| GET | `/api/web/namespaces` | แสดงรายการเนมสเปซ |
-| POST | `/api/web/namespaces` | สร้างเนมสเปซ |
-| POST | `/api/config/namespaces/system/all_application_inventory` | คลังออบเจกต์แอปพลิเคชันทั้งหมด |
-| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | คลังออบเจกต์แอปพลิเคชันทั้งหมดพร้อมตัวกรอง WAF |
-| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | ดึงสถิติ API Endpoints สำหรับทุกเนมสเปซ |
-| POST | `/api/web/namespaces/system/evaluate-api-access` | ประเมินการเข้าถึง API |
-| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | ประเมินการเข้าถึง API แบบกลุ่ม |
-| POST | `/api/web/namespaces/system/lookup-user-roles` | ค้นหาบทบาทผู้ใช้ |
-| POST | `/api/config/namespaces/system/networking_inventory` | คลังออบเจกต์เครือข่าย |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | GET ผู้ติดต่อ |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | DELETE ผู้ติดต่อ |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports` | แสดงรายการตั๋วของ Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports` | สร้างตั๋วการสนับสนุนลูกค้าใน Managed Tenant |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | GET ตั๋วการสนับสนุนลูกค้าใน Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | ปิดตั๋วการสนับสนุนลูกค้าใน Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | เพิ่มความคิดเห็นในตั๋วการสนับสนุนลูกค้าใน Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | ยกระดับตั๋วใน Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | ลำดับความสำคัญของตั๋วใน Managed Tenant |
+| POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | เปิดตั๋วการสนับสนุนลูกค้าที่ปิดแล้วใน Managed Tenant อีกครั้ง |
+| GET | `/api/web/namespaces/system/managed_tenants_by_user` | GET รายการ Managed Tenant ตามผู้ใช้ |
+| GET | `/api/web/namespaces/system/managed_tenants_list` | GET รายการ Managed Tenant |
+| GET | `/api/web/namespaces/system/support-tenant/managed_tenants` | รายการ Managed Tenant ตามผู้ใช้สำหรับการดำเนินงานสนับสนุน |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants` | สร้าง Managed Tenant |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/managed_tenants/&#123;metadata.name&#125;` | แทนที่ Managed Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | แสดงรายการ Managed Tenant |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | GET Managed Tenant |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | DELETE Managed Tenant |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET ไฟล์แนบ |
+| GET | `/api/web/namespaces` | แสดงรายการ Namespace |
+| POST | `/api/web/namespaces` | สร้าง Namespace |
+| POST | `/api/config/namespaces/system/all_application_inventory` | รายการออบเจ็กต์แอปพลิเคชันทั้งหมด |
+| POST | `/api/config/namespaces/system/all_application_inventory_waf_filters` | รายการออบเจ็กต์แอปพลิเคชันทั้งหมดพร้อมตัวกรอง WAF |
+| POST | `/api/ml/data/namespaces/system/api_endpoints/all_ns_stats` | GET สถิติ API Endpoints สำหรับทุก Namespace |
+| POST | `/api/web/namespaces/system/evaluate-api-access` | ประเมินสิทธิ์การเข้าถึง API |
+| POST | `/api/web/namespaces/system/evaluate-batch-api-access` | ประเมินสิทธิ์การเข้าถึง API แบบกลุ่ม |
+| POST | `/api/web/namespaces/system/lookup-user-roles` | ค้นหาบทบาทของผู้ใช้ |
+| POST | `/api/config/namespaces/system/networking_inventory` | รายการออบเจ็กต์เครือข่าย |
 | POST | `/api/cloud-data/namespaces/system/suggest-values` | แนะนำค่า |
-| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | อัปเดตอนุญาตให้โฆษณาบนสาธารณะ |
+| POST | `/api/config/namespaces/system/update_allow_advertise_on_public` | อัปเดตการอนุญาตโฆษณาบนสาธารณะ |
 | POST | `/api/config/namespaces/system/validate_rules` | ตรวจสอบกฎ |
-| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | แทนที่เนมสเปซ |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | ดึงนโยบายการแจ้งเตือนที่ใช้งานอยู่ |
+| PUT | `/api/web/namespaces/&#123;metadata.name&#125;` | แทนที่ Namespace |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | GET นโยบายการแจ้งเตือนที่ใช้งานอยู่ |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/active_alert_policies` | ตั้งค่านโยบายการแจ้งเตือนที่ใช้งานอยู่ |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | ดึงนโยบายเครือข่ายที่ใช้งานอยู่ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | GET นโยบายเครือข่ายที่ใช้งานอยู่ |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/active_network_policies` | ตั้งค่านโยบายเครือข่ายที่ใช้งานอยู่ |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | ดึงนโยบายบริการที่ใช้งานอยู่ |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | GET นโยบายบริการที่ใช้งานอยู่ |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | ตั้งค่านโยบายบริการที่ใช้งานอยู่ |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | ดึงสถิติ API Endpoints สำหรับเนมสเปซ |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | คลังออบเจกต์แอปพลิเคชัน |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | ดึง FastACLs สำหรับ Internet VIPs |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | ตั้งค่า FastACLs สำหรับ Internet VIPs |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | GET สถิติ API Endpoints สำหรับ Namespace |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | รายการออบเจ็กต์แอปพลิเคชัน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | GET FastACL สำหรับ Internet VIP |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | ตั้งค่า FastACL สำหรับ Internet VIP |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | แนะนำค่า |
-| GET | `/api/web/namespaces/&#123;name&#125;` | ดึงข้อมูลเนมสเปซ |
-| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | ลบแบบลูกโซ่ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | แสดงรายการบทบาทเนมสเปซ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | ดึงข้อมูลบทบาทเนมสเปซ |
+| GET | `/api/web/namespaces/&#123;name&#125;` | GET Namespace |
+| POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | Cascade DELETE |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | แสดงรายการ Namespace Role |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | GET Namespace Role |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | ข้อมูลไดนามิก |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | แสดงรายการนโยบาย RBAC |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | ดึงข้อมูลนโยบาย RBAC |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | แสดงรายการบทบาทแบบกำหนดเอง |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | สร้างบทบาทแบบกำหนดเอง |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | ดึงข้อมูลบทบาทแบบกำหนดเอง |
-| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | แทนที่บทบาทแบบกำหนดเอง |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | สร้างบทบาท |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | แทนที่บทบาท |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | แสดงรายการบทบาท |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | ดึงข้อมูลบทบาท |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | ลบบทบาท |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | แสดงรายการ RBAC Policy |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | GET RBAC Policy |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Custom แสดงรายการ Role |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Custom สร้าง Role |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Custom GET Role |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | Custom แทนที่ Role |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles` | สร้าง Role |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/roles/&#123;metadata.name&#125;` | แทนที่ Role |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles` | แสดงรายการ Role |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | GET Role |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/roles/&#123;name&#125;` | DELETE Role |
 | GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;` | GET |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_provider/&#123;name&#125;/delete` | DELETE |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | List |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | Create |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | แสดงรายการ |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers` | สร้าง |
 | GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | GET |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Replace |
-| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | Replace |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | แทนที่ |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;` | แทนที่ |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/delete` | DELETE |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | ดึงข้อมูล OIDC mappers |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | GET OIDC mappers |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/mappers` | อัปเดต OIDC mappers |
-| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | อัปเดตการผสานรวม SCIM ของ OIDC provider |
-| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | แสดงรายการรัฐ/จังหวัด |
+| PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/oidc_providers/&#123;name&#125;/scim` | อัปเดตการผสานรวม SCIM ของ OIDC Provider |
+| GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | แสดงรายการรัฐ |
 | GET | `/no_auth/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | แสดงรายการเมือง |
 | GET | `/no_auth/countries/&#123;prefix&#125;` | แสดงรายการประเทศ |
 | POST | `/no_auth/login/validate_registration` | ตรวจสอบการลงทะเบียน |
 | POST | `/no_auth/send_password_email` | ส่งอีเมลรหัสผ่าน |
-| GET | `/no_auth/signup/&#123;name&#125;` | อ่านการลงทะเบียน |
+| GET | `/no_auth/signup/&#123;name&#125;` | อ่านข้อมูลการสมัคร |
 | POST | `/no_auth/validate_contact` | ตรวจสอบผู้ติดต่อ |
-| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | แสดงรายการรัฐ/จังหวัด |
+| GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;prefix&#125;` | แสดงรายการรัฐ |
 | GET | `/api/web/custom/countries/&#123;country_code&#125;/states/&#123;state_code&#125;/cities/&#123;prefix&#125;` | แสดงรายการเมือง |
 | GET | `/api/web/custom/countries/&#123;prefix&#125;` | แสดงรายการประเทศ |
 | GET | `/api/scim/namespaces/system/v2/Groups` | แสดงรายการกลุ่มตามตัวกรอง |
 | POST | `/api/scim/namespaces/system/v2/Groups` | สร้างกลุ่มพร้อมผู้ใช้ |
 | GET | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | แสดงรายการกลุ่มตาม ID |
-| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | ลบกลุ่มตาม ID |
+| DELETE | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | DELETE กลุ่มตาม ID |
 | PUT | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | แทนที่กลุ่มตาม ID |
-| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | แก้ไขกลุ่มตาม ID |
-| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | ดึงประเภททรัพยากรที่รองรับ |
-| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | ดึงประเภททรัพยากรที่รองรับ |
+| PATCH | `/api/scim/namespaces/system/v2/Groups/&#123;id&#125;` | PATCH กลุ่มตาม ID |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes` | GET ประเภททรัพยากรที่รองรับ |
+| GET | `/api/scim/namespaces/system/v2/ResourceTypes/&#123;id&#125;` | GET ประเภททรัพยากรที่รองรับ |
 | GET | `/api/scim/namespaces/system/v2/Schemas` | สคีมา |
 | GET | `/api/scim/namespaces/system/v2/Schemas/&#123;id&#125;` | สคีมาตาม ID |
-| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | แสดงรายการการกำหนดค่าผู้ให้บริการ |
-| GET | `/api/scim/namespaces/system/v2/Users` | ดึงข้อมูลผู้ใช้ทั้งหมด |
+| GET | `/api/scim/namespaces/system/v2/ServiceProviderConfig` | แสดงรายการการกำหนดค่า Service Provider |
+| GET | `/api/scim/namespaces/system/v2/Users` | GET ผู้ใช้ทั้งหมด |
 | POST | `/api/scim/namespaces/system/v2/Users` | สร้างผู้ใช้พร้อมการกำหนดบทบาท |
-| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ดึงข้อมูลผู้ใช้ตาม ID |
-| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | ลบผู้ใช้ตาม ID |
+| GET | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | GET ผู้ใช้ตาม ID |
+| DELETE | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | DELETE ผู้ใช้ตาม ID |
 | PUT | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | อัปเดตผู้ใช้และการกำหนดบทบาท |
-| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | แก้ไขผู้ใช้ |
+| PATCH | `/api/scim/namespaces/system/v2/Users/&#123;id&#125;` | PATCH ผู้ใช้ |
 | GET | `/no_auth/cname/lookup` | ค้นหา cname |
 | GET | `/no_auth/tenant/idm/settings/password_policy` | GetPasswordPolicy |
 | POST | `/api/web/namespaces/system/tenant/domain_owner/assign` | กำหนดเจ้าของโดเมน |
@@ -186,87 +186,87 @@ i18n:
 | PUT | `/api/web/namespaces/system/tenant/idm/settings` | UpdateIDMSettings |
 | GET | `/api/web/namespaces/system/tenant/idm/users/inactive` | ListInactiveUsers |
 | GET | `/api/web/namespaces/system/tenant/lookup` | ค้นหา cname |
-| POST | `/api/web/namespaces/system/tenant/request-delete` | ลบผู้เช่า |
-| GET | `/api/web/namespaces/system/tenant/settings` | การตั้งค่าผู้เช่า |
-| PUT | `/api/web/namespaces/system/tenant/settings` | การตั้งค่าผู้เช่า |
-| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | ปิดใช้งาน OTP ระดับผู้เช่า |
-| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | เปิดใช้งาน OTP ระดับผู้เช่า |
-| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | ไอคอนย่อของผู้เช่า |
-| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | รูปโปรไฟล์ของผู้เช่า |
-| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | ลบรูปโปรไฟล์ของผู้เช่า |
-| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | อัปเดตรูปโปรไฟล์ของผู้เช่า |
-| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | โลโก้ของผู้เช่า |
-| GET | `/api/web/namespaces/system/tenant/support-info` | ข้อมูลสนับสนุน |
-| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | เอกสารการยกระดับของผู้เช่า |
+| POST | `/api/web/namespaces/system/tenant/request-delete` | DELETE Tenant |
+| GET | `/api/web/namespaces/system/tenant/settings` | การตั้งค่า Tenant |
+| PUT | `/api/web/namespaces/system/tenant/settings` | การตั้งค่า Tenant |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/disable` | ปิดใช้งาน OTP ระดับ Tenant |
+| PUT | `/api/web/namespaces/system/tenant/settings/otp/enable` | เปิดใช้งาน OTP ระดับ Tenant |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/favicon` | Favicon ของ Tenant |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/image` | รูปโปรไฟล์ของ Tenant |
+| DELETE | `/api/web/namespaces/system/tenant/settings/tenant/image` | DELETE รูปโปรไฟล์ของ Tenant |
+| PUT | `/api/web/namespaces/system/tenant/settings/tenant/image` | อัปเดตรูปโปรไฟล์ของ Tenant |
+| GET | `/api/web/namespaces/system/tenant/settings/tenant/logo` | โลโก้ของ Tenant |
+| GET | `/api/web/namespaces/system/tenant/support-info` | ข้อมูลการสนับสนุน |
+| GET | `/api/web/namespaces/system/tenant/tenant-escalation-doc` | เอกสารการยกระดับของ Tenant |
 | PUT | `/api/saas/namespaces/system/v2/tenant/deactivate` | DeactivateTenant |
-| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | ไอคอนย่อของผู้เช่า |
-| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | รูปโปรไฟล์ของผู้เช่า |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/favicon` | Favicon ของ Tenant |
+| GET | `/api/web/static/namespaces/system/tenant/settings/tenant/image` | รูปโปรไฟล์ของ Tenant |
 | GET | `/api/config/tenants/&#123;tenant&#125;/summary` | สรุป |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | สร้างการกำหนดค่าผู้เช่า |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | แทนที่การกำหนดค่าผู้เช่า |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | แสดงรายการการกำหนดค่าผู้เช่า |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | ดึงข้อมูลการกำหนดค่าผู้เช่า |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | ลบการกำหนดค่าผู้เช่า |
-| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | สมัครบริการเสริมการเข้าถึงแบบมอบหมาย |
-| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | ยกเลิกสมัครบริการเสริมการเข้าถึงแบบมอบหมาย |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | สร้างโปรไฟล์ผู้เช่า |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | แทนที่โปรไฟล์ผู้เช่า |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | แสดงรายการโปรไฟล์ผู้เช่า |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | ดึงข้อมูลโปรไฟล์ผู้เช่า |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | ลบโปรไฟล์ผู้เช่า |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations` | สร้างการกำหนดค่า Tenant |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tenant_configurations/&#123;metadata.name&#125;` | แทนที่การกำหนดค่า Tenant |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations` | แสดงรายการการกำหนดค่า Tenant |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | GET การกำหนดค่า Tenant |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tenant_configurations/&#123;name&#125;` | DELETE การกำหนดค่า Tenant |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/subscribe` | สมัครใช้งาน Delegated Access Addon Service |
+| POST | `/api/web/namespaces/system/tenant_management/delegated_access/unsubscribe` | ยกเลิกการสมัครใช้งาน Delegated Access Addon Service |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles` | สร้าง Tenant Profile |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/tenant_profiles/&#123;metadata.name&#125;` | แทนที่ Tenant Profile |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles` | แสดงรายการ Tenant Profile |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | GET Tenant Profile |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/tenant_profiles/&#123;name&#125;` | DELETE Tenant Profile |
 | POST | `/api/web/custom/idm/user/sync` | ซิงค์ผู้ใช้ |
 | PUT | `/api/web/custom/namespaces/system/users/group_add` | เพิ่มผู้ใช้เข้ากลุ่ม |
 | PUT | `/api/web/custom/namespaces/system/users/group_remove` | ลบผู้ใช้ออกจากกลุ่ม |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | ยอมรับข้อกำหนดการใช้บริการ |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | ยอมรับ TOS |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | กำหนดบทบาทให้ผู้ใช้ |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | ส่งอีเมลรหัสผ่าน |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | ดึงข้อกำหนดการใช้บริการ |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | ดึงข้อมูลผู้ใช้และการกำหนดบทบาท |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | GET TOS |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | GET ผู้ใช้และการกำหนดบทบาท |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | สร้างผู้ใช้พร้อมการกำหนดบทบาท |
 | PUT | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | อัปเดตผู้ใช้และการกำหนดบทบาท |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles/&#123;name&#125;` | อัปเดตผู้ใช้และการกำหนดบทบาท |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | ลบผู้ใช้และออบเจกต์ที่เกี่ยวข้อง |
-| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | ดึงข้อมูลรายละเอียดผู้ใช้ |
+| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/users/cascade_delete` | DELETE ผู้ใช้และออบเจ็กต์ที่เกี่ยวข้อง |
+| GET | `/api/web/custom/namespaces/&#123;namespace&#125;/whoami` | GET รายละเอียดผู้ใช้ |
 | POST | `/api/web/custom/password/admin_reset` | รีเซ็ตรหัสผ่านโดยผู้ดูแลระบบ |
 | POST | `/api/web/custom/password/reset` | รีเซ็ตรหัสผ่าน |
-| GET | `/api/web/custom/namespaces/system/user_groups` | ดึงกลุ่มผู้ใช้ทั้งหมดสำหรับผู้เช่า |
+| GET | `/api/web/custom/namespaces/system/user_groups` | GET กลุ่มผู้ใช้ทั้งหมดของ Tenant |
 | POST | `/api/web/custom/namespaces/system/user_groups` | สร้างกลุ่มผู้ใช้ |
 | POST | `/api/web/custom/namespaces/system/user_groups/analyze_for_deletion` | วิเคราะห์สำหรับการลบ |
-| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | ดึงรายละเอียดทั้งหมดของกลุ่มโดยระบุ ID ของกลุ่ม |
-| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | ลบกลุ่มโดยระบุ ID ของกลุ่ม |
-| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | แทนที่ฟิลด์ / การเข้าถึง / การเชื่อมโยงของกลุ่มผู้ใช้ |
+| GET | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | ดึงรายละเอียดทั้งหมดของกลุ่มตาม Group ID ที่กำหนด |
+| DELETE | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | DELETE กลุ่มตาม Group ID ที่กำหนด |
+| PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;` | แทนที่ฟิลด์/การเข้าถึง/การเชื่อมโยงของกลุ่มผู้ใช้ |
 | PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/assign_namespace_roles` | กำหนดบทบาทให้กลุ่มผู้ใช้ |
 | PUT | `/api/web/custom/namespaces/system/user_groups/&#123;name&#125;/remove_namespace_roles` | ลบบทบาทออกจากกลุ่มผู้ใช้ |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups` | แสดงรายการกลุ่มผู้ใช้ |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | ดึงข้อมูลกลุ่มผู้ใช้ |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | สร้างการระบุตัวตนผู้ใช้ |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | แทนที่การระบุตัวตนผู้ใช้ |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | แสดงรายการการระบุตัวตนผู้ใช้ |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | ดึงข้อมูลการระบุตัวตนผู้ใช้ |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | ลบการระบุตัวตนผู้ใช้ |
-| GET | `/api/web/namespaces/system/user/admin_notifications` | ดึงการตั้งค่าการแจ้งเตือนผู้ดูแลระบบ |
-| PUT | `/api/web/namespaces/system/user/admin_notifications` | อัปเดตการตั้งค่าการแจ้งเตือนผู้ดูแลระบบ |
-| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | ยกเลิกการตั้งค่าการแจ้งเตือนผู้ดูแลระบบ |
-| GET | `/api/web/namespaces/system/user/combined_notifications` | ดึงการตั้งค่าการแจ้งเตือนรวม |
-| PUT | `/api/web/namespaces/system/user/combined_notifications` | อัปเดตการตั้งค่าการแจ้งเตือนรวม |
-| GET | `/api/web/namespaces/system/user/notifications` | ดึงการตั้งค่าการแจ้งเตือน |
-| PUT | `/api/web/namespaces/system/user/notifications` | อัปเดตการตั้งค่าการแจ้งเตือน |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/user_groups/&#123;name&#125;` | GET กลุ่มผู้ใช้ |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications` | สร้าง User Identification |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/user_identifications/&#123;metadata.name&#125;` | แทนที่ User Identification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications` | แสดงรายการ User Identification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | GET User Identification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/user_identifications/&#123;name&#125;` | DELETE User Identification |
+| GET | `/api/web/namespaces/system/user/admin_notifications` | GET ค่าการแจ้งเตือนของผู้ดูแลระบบ |
+| PUT | `/api/web/namespaces/system/user/admin_notifications` | อัปเดตค่าการแจ้งเตือนของผู้ดูแลระบบ |
+| PUT | `/api/web/namespaces/system/user/admin_notifications/unset` | ยกเลิกการตั้งค่าการแจ้งเตือนของผู้ดูแลระบบ |
+| GET | `/api/web/namespaces/system/user/combined_notifications` | GET ค่าการแจ้งเตือนรวม |
+| PUT | `/api/web/namespaces/system/user/combined_notifications` | อัปเดตค่าการแจ้งเตือนรวม |
+| GET | `/api/web/namespaces/system/user/notifications` | GET ค่าการแจ้งเตือน |
+| PUT | `/api/web/namespaces/system/user/notifications` | อัปเดตค่าการแจ้งเตือน |
 | PUT | `/api/web/namespaces/system/user/notifications/unset` | ยกเลิกการตั้งค่าการแจ้งเตือน |
 | PUT | `/api/web/namespaces/system/user/otp/admin_reset` | ResetOtpDeviceByAdmin |
 | GET | `/api/web/namespaces/system/user/sessions` | GetUserSessions |
 | GET | `/api/web/namespaces/system/user/settings` | GET |
-| PUT | `/api/web/namespaces/system/user/settings` | Update |
+| PUT | `/api/web/namespaces/system/user/settings` | อัปเดต |
 | PUT | `/api/web/namespaces/system/user/settings/idm/disable` | DisableUserInIDM |
 | PUT | `/api/web/namespaces/system/user/settings/idm/enable` | EnableUserInIDM |
 | GET | `/api/web/namespaces/system/user/settings/image` | GetUserProfileImage |
 | DELETE | `/api/web/namespaces/system/user/settings/image` | DeleteUserImage |
 | PUT | `/api/web/namespaces/system/user/settings/image` | UpdateUserImage |
-| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | ขอการเข้าถึงเริ่มต้น |
-| GET | `/api/web/namespaces/system/user/settings/view_preference` | ดึงการตั้งค่ามุมมอง |
-| PUT | `/api/web/namespaces/system/user/settings/view_preference` | ตั้งค่ามุมมอง |
-| GET | `/api/config/namespaces/system/was/user_token` | ดึงโทเค็นผู้ใช้บริการสแกนเว็บแอปพลิเคชัน |
+| PUT | `/api/web/namespaces/system/user/settings/request_initial_access` | ขอสิทธิ์การเข้าถึงครั้งแรก |
+| GET | `/api/web/namespaces/system/user/settings/view_preference` | GET การตั้งค่าการแสดงผล |
+| PUT | `/api/web/namespaces/system/user/settings/view_preference` | ตั้งค่าการแสดงผล |
+| GET | `/api/config/namespaces/system/was/user_token` | GET Token ผู้ใช้บริการการสแกนแอปเว็บ |
 
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./tenant_and_identity/)
-- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/tenant_and_identity.json)
+- [OpenAPI Specification JSON](../specifications/api/tenant_and_identity.json)

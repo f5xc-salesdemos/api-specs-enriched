@@ -1,6 +1,6 @@
 ---
-title: "\U0001F3AB Support-API"
-description: 'Tickets, Eskalationen und Netzwerkdiagnose.'
+title: "\U0001F3AB Support API"
+description: 'Tickets, Eskalationen und Netzwerkdiagnosen.'
 sidebar:
   hidden: true
 i18n:
@@ -8,10 +8,10 @@ i18n:
   translator: machine
 ---
 
-Lebenszyklus von Vorgängen mit Kommentaren, Änderungen des Schweregrads und Lösungsverfolgung. Paketerfassung für Verbindungsanalyse.
+Problemlebenszyklus mit Kommentaren, Schweregradsänderungen und Auflösungsverfolgung. Paketerfassung zur Verbindungsanalyse.
 
 - **Kategorie**: Betrieb
-- **Komplexität**: moderat
+- **Komplexität**: mittel
 - **Pfade**: 53 | **Schemas**: 167
 - **Stufe**: Standard
 - **Verwandte Domänen**: `statistics`, `observability`
@@ -19,25 +19,25 @@ Lebenszyklus von Vorgängen mit Kommentaren, Änderungen des Schweregrads und L�
 ## Anwendungsfälle
 
 - Support-Tickets einreichen und verwalten
-- Kundensupportanfragen verfolgen
-- Auf Dokumentation des operativen Supports zugreifen
+- Kundensupport-Anfragen verfolgen
+- Auf operative Support-Dokumentation zugreifen
 
 ## Primäre Ressourcen
 
-- **support_case**: Supportfall zur Problemverfolgung und -lösung
-- **alert**: Systemwarnung für betriebliche Benachrichtigungen
-- **audit_log**: Audit-Protokoll für Compliance- und Sicherheitsverfolgung
+- **support_case**: Support-Fall zur Problemverfolgung und -lösung
+- **alert**: Systemwarnung für operative Benachrichtigungen
+- **audit_log**: Audit-Protokoll zur Compliance- und Sicherheitsverfolgung
 
 ## Endpunkte
 
 | Methode | Pfad | Beschreibung |
-|---------|------|--------------|
+|--------|------|-------------|
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | CRL neu synchronisieren. |
 | POST | `/api/web/namespaces/system/child_tenant/support_tickets` | Liste der für einen untergeordneten Mandanten erstellten Support-Tickets. |
-| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | Antrag auf Steuerbefreiungsüberprüfung. |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | Anfrage zur Steuerbefreiungsüberprüfung. |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | Kundensupport erstellen. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | Alle Mandanten-Tickets auflisten. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | Ein Kundensupport-Ticket schließen. |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | Kundensupport-Ticket schließen. |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | Kommentar zu einem Kundensupport-Ticket hinzufügen. |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | Ein Ticket eskalieren. |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | Priorität eines Tickets ändern. |
@@ -45,12 +45,12 @@ Lebenszyklus von Vorgängen mit Kommentaren, Änderungen des Schweregrads und L�
 | GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | Kundensupport auflisten. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | Kundensupport abrufen. |
 | GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | Anhang abrufen. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | Debug-Informationssammlung prüfen. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | Debug-Info-Sammlung prüfen. |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | Diagnose |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | Debug-Informationssammlung herunterladen. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | Zustandsprüfung |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | Debug-Info-Sammlung herunterladen. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | Zustand |
 | POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | Passwort ändern. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | Debug-Informationssammlung starten. |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | Debug-Info-Sammlung starten. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | F5XC-Dienste auflisten. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | Status |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | Ausführen |
@@ -65,29 +65,29 @@ Lebenszyklus von Vorgängen mit Kommentaren, Änderungen des Schweregrads und L�
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE-Konfiguration abrufen. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | LTE-Konfiguration aktualisieren. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | Trennen. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | LTE-Informationen anzeigen. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | LTE-Info anzeigen. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | Dump abrufen |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | Tcpdump auflisten. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | Tcpdump stoppen. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
-| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA-Projekte & Vorgangstypen. |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA-Projekte & Issue-Typen. |
 | POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | Ticket-Tracking-System validieren. |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | Ticket-Tracking-System erstellen. |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | Ticket-Tracking-System ersetzen. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | Ticket-Tracking-Systeme auflisten. |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | Ticket-Tracking-System auflisten. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | Ticket-Tracking-System abrufen. |
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | Ticket-Tracking-System löschen. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB-Konfiguration abrufen. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | USB-Konfiguration aktualisieren. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | USB-Geräte auflisten. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | USB-Aktivierungsregeln auflisten. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | USB-Aktivierungsregeln hinzufügen. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | USB-Aktivierungsregeln löschen. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | USB-Freigaberegeln auflisten. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | USB-Freigaberegeln hinzufügen. |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | USB-Freigaberegeln löschen. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WLAN-Konfiguration abrufen. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | WLAN-Konfiguration aktualisieren. |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | Trennen. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | WLAN-Informationen anzeigen. |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | WLAN-Info anzeigen. |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | WLAN-Netzwerke auflisten. |
 
 ## Links

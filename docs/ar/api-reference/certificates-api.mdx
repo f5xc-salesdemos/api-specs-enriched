@@ -1,6 +1,6 @@
 ---
 title: "\U0001F4DC واجهة برمجة تطبيقات الشهادات"
-description: سلاسل SSL/TLS، وجهات الإصدار الموثوقة، وقوائم الإبطال.
+description: سلاسل SSL/TLS، والجهات الموثوقة لإصدار الشهادات، وقوائم الإلغاء.
 sidebar:
   hidden: true
 i18n:
@@ -8,53 +8,53 @@ i18n:
   translator: machine
 ---
 
-سلاسل الشهادات وحزم جهات الإصدار الموثوقة (CA). إدارة قوائم الإبطال وتكوين البيانات الوصفية لعمليات البنية التحتية للمفاتيح العامة (PKI).
+سلاسل الشهادات وحزم CA الموثوقة. إدارة قوائم الإلغاء وتهيئة البيانات للعمليات المتعلقة بـ PKI.
 
 - **الفئة**: الأمان
-- **التعقيد**: متوسط
+- **مستوى التعقيد**: متوسط
 - **المسارات**: 16 | **المخططات**: 74
-- **المستوى**: قياسي
-- **النطاقات ذات الصلة**: `blindfold`، `system`
+- **المستوى**: Standard
+- **المجالات ذات الصلة**: `blindfold`، `system`
 
 ## حالات الاستخدام
 
 - إدارة شهادات SSL/TLS
-- تكوين جهات الإصدار الموثوقة (CAs)
-- إدارة قوائم إبطال الشهادات (CRL)
-- تكوين بيانات الشهادات الوصفية
+- تهيئة الجهات الموثوقة لإصدار الشهادات (CAs)
+- إدارة قوائم إلغاء الشهادات (CRL)
+- تهيئة بيانات الشهادات
 
 ## الموارد الأساسية
 
-- **certificate**: شهادة TLS للاتصالات الآمنة عبر HTTPS
-- **ca_certificate**: شهادة جهة الإصدار لسلسلة الثقة
+- **certificate**: شهادة TLS للاتصالات HTTPS الآمنة
+- **ca_certificate**: شهادة الجهة المصدِّرة للشهادات لسلسلة الثقة
 - **certificate_chain**: سلسلة الشهادات للتحقق الكامل من الثقة
 
 ## نقاط النهاية
 
 | الطريقة | المسار | الوصف |
-|---------|--------|-------|
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls` | إنشاء قائمة إبطال. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls/&#123;metadata.name&#125;` | استبدال قائمة إبطال. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/crls` | عرض قوائم الإبطال |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | الحصول على قائمة إبطال |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | حذف قائمة إبطال. |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls` | إنشاء CRL. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/crls/&#123;metadata.name&#125;` | استبدال CRL. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/crls` | سرد CRL |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | استرجاع CRL |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/crls/&#123;name&#125;` | حذف CRL. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificates` | إنشاء شهادة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificates/&#123;metadata.name&#125;` | استبدال شهادة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates` | عرض الشهادات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates/&#123;name&#125;` | الحصول على شهادة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates` | سرد الشهادات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificates/&#123;name&#125;` | استرجاع شهادة. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/certificates/&#123;name&#125;` | حذف شهادة. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificate_chains` | إنشاء سلسلة شهادات. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/certificate_chains/&#123;metadata.name&#125;` | استبدال سلسلة شهادات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains` | عرض سلاسل الشهادات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains/&#123;name&#125;` | الحصول على سلسلة شهادات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains` | سرد سلاسل الشهادات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains/&#123;name&#125;` | استرجاع سلسلة شهادات. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/certificate_chains/&#123;name&#125;` | حذف سلسلة شهادات. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists` | إنشاء شهادة جهة إصدار جذرية. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists/&#123;metadata.name&#125;` | استبدال شهادة جهة إصدار جذرية. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists` | عرض شهادات جهات الإصدار الجذرية. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | الحصول على شهادة جهة إصدار جذرية. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | حذف شهادة جهة إصدار جذرية. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists` | إنشاء شهادة CA الجذر. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/trusted_ca_lists/&#123;metadata.name&#125;` | استبدال شهادة CA الجذر. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists` | سرد شهادات CA الجذر. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | استرجاع شهادة CA الجذر. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/trusted_ca_lists/&#123;name&#125;` | حذف شهادة CA الجذر. |
 
 ## الروابط
 
-- [مرجع واجهة برمجة التطبيقات التفاعلي](./certificates/)
-- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/certificates.json)
+- [مرجع API التفاعلي](./certificates/)
+- [مواصفات OpenAPI بصيغة JSON](../specifications/api/certificates.json)

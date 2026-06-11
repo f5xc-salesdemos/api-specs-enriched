@@ -1,6 +1,6 @@
 ---
 title: "\U0001F512 API de sécurité réseau"
-description: 'Politiques NAT, pare-feu et connexions de segments.'
+description: 'Politiques NAT, pare-feux et connexions de segments.'
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Règles de pare-feu avec décisions de routage basées sur la source, la destination ou le protocole. La segmentation isole les charges de travail tandis que les proxys sortants régissent l'accès.
+Règles de pare-feu avec décisions de routage basées sur la source, la destination ou le protocole. La segmentation isole les charges de travail tandis que les proxies sortants régissent les accès.
 
 - **Catégorie** : Sécurité
 - **Complexité** : avancée
@@ -18,98 +18,98 @@ Règles de pare-feu avec décisions de routage basées sur la source, la destina
 
 ## Cas d'utilisation
 
-- Configurer les politiques de pare-feu réseau et d'ACL
+- Configurer les politiques de pare-feu réseau et de listes de contrôle d'accès (ACL)
 - Gérer les politiques NAT et la redirection de ports
-- Configurer le routage basé sur des politiques
+- Configurer le routage basé sur les politiques
 - Définir les segments réseau et les politiques
-- Configurer les politiques de proxy direct
+- Configurer les politiques de proxy de transfert
 
 ## Ressources principales
 
 - **network_policy** : Politique de sécurité réseau pour le filtrage du trafic
-- **forward_proxy_policy** : Politique de proxy direct pour le contrôle du trafic sortant
-- **network_firewall** : Pare-feu réseau pour la protection du trafic de couche 3/4
+- **forward_proxy_policy** : Politique de proxy de transfert pour le contrôle du trafic sortant
+- **network_firewall** : Pare-feu réseau pour la protection du trafic aux couches 3/4
 
 ## Points de terminaison
 
 | Méthode | Chemin | Description |
-|---------|--------|-------------|
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | Créer une politique de proxy direct. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | Remplacer une politique de proxy direct. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | Occurrences de la politique de proxy direct. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | Lister la configuration des politiques de proxy direct. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | Obtenir une politique de proxy direct. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | Supprimer la configuration d'une politique de proxy direct. |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | Créer une politique de proxy de transfert. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | Remplacer une politique de proxy de transfert. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | Correspondances de politique de proxy de transfert. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | Lister les politiques de proxy de transfert configurées. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | OBTENIR une politique de proxy de transfert. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | SUPPRIMER une politique de proxy de transfert configurée. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | Créer une vue de politique réseau. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | Remplacer une vue de politique réseau. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | Occurrences de la politique réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | Lister la configuration des vues de politique réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | Obtenir une vue de politique réseau. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | Supprimer la configuration d'une vue de politique réseau. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | Correspondances de politique réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | Lister les vues de politique réseau configurées. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | OBTENIR une vue de politique réseau. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | SUPPRIMER une vue de politique réseau configurée. |
 | GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | Lister |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | Créer une ACL rapide. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | Remplacer une ACL rapide. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Occurrences de l'ACL rapide. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Correspondances d'ACL rapide. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | Lister les ACL rapides. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Obtenir une ACL rapide. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | Supprimer une ACL rapide. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | OBTENIR une ACL rapide. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | SUPPRIMER une ACL rapide. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | Créer une règle d'ACL rapide. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | Remplacer une règle d'ACL rapide. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | Lister les règles d'ACL rapide. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Obtenir une règle d'ACL rapide. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | Supprimer une règle d'ACL rapide. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | OBTENIR une règle d'ACL rapide. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | SUPPRIMER une règle d'ACL rapide. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | Créer une spécification. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | Remplacer une spécification. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | Lister les ensembles de filtres. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | Rechercher des ensembles de filtres pour une ou plusieurs clés de contexte. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | Obtenir une spécification. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | Supprimer un ensemble de filtres. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | OBTENIR une spécification. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | SUPPRIMER un ensemble de filtres. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | Créer une politique NAT. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | Remplacer une politique NAT. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | Lister les politiques NAT. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | Obtenir une politique NAT. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | Supprimer une politique NAT. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | OBTENIR une politique NAT. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | SUPPRIMER une politique NAT. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | Créer un pare-feu réseau. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | Remplacer un pare-feu réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | Lister les pare-feu réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | Obtenir un pare-feu réseau. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | Supprimer un pare-feu réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | Lister les pare-feux réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | OBTENIR un pare-feu réseau. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | SUPPRIMER un pare-feu réseau. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | Créer une politique réseau. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | Remplacer une politique réseau. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | Occurrences de la politique réseau. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | Correspondances de politique réseau. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | Lister les politiques réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | Obtenir une politique réseau. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | Supprimer une politique réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | OBTENIR une politique réseau. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | SUPPRIMER une politique réseau. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | Créer une règle de politique réseau. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | Remplacer une règle de politique réseau. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | Lister les règles de politique réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | Obtenir une règle de politique réseau. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | Supprimer une règle de politique réseau. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | OBTENIR une règle de politique réseau. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | SUPPRIMER une règle de politique réseau. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | Lister les ensembles de politiques réseau. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | Obtenir un ensemble de politiques réseau. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | Créer un routage basé sur des politiques. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | Remplacer un routage basé sur des politiques. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | Lister les routages basés sur des politiques. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | Obtenir un routage basé sur des politiques. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | Supprimer un routage basé sur des politiques. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | OBTENIR un ensemble de politiques réseau. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | Créer un routage basé sur les politiques. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | Remplacer un routage basé sur les politiques. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | Lister les routages basés sur les politiques. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | OBTENIR un routage basé sur les politiques. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | SUPPRIMER un routage basé sur les politiques. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | Créer un segment. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | Remplacer un segment. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | Lister les segments. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | Segment |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | Obtenir un segment. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | Supprimer un segment. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | OBTENIR un segment. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | SUPPRIMER un segment. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | Remplacer un connecteur de segment. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | Lister les connecteurs de segment. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | Obtenir un connecteur de segment. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | OBTENIR un connecteur de segment. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | Créer une politique de service. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | Remplacer une politique de service. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | Occurrences de la politique de service. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | Latence de la politique de service. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | Correspondances de politique de service. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | Latence de politique de service. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | Lister les politiques de service. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Obtenir une politique de service. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | Supprimer une politique de service. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | OBTENIR une politique de service. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | SUPPRIMER une politique de service. |
 
 ## Liens
 
-- [Référence interactive de l'API](./network_security/)
+- [Référence API interactive](./network_security/)
 - [Spécification OpenAPI JSON](../specifications/api/network_security.json)

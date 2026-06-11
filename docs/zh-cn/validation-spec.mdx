@@ -1,6 +1,6 @@
 ---
 title: 验证规范
-description: 验证规范的结构和内容
+description: 验证规范的结构与内容
 sidebar:
   order: 3
 i18n:
@@ -8,11 +8,11 @@ i18n:
   translator: machine
 ---
 
-本文档描述了由 api-specs-enriched 项目发布的验证规范的结构和内容。
+本文档描述由 api-specs-enriched 项目发布的验证规范的结构与内容。
 
 ## 概述
 
-验证规范将 API 验证约束、默认值和配置元数据整合到单个 JSON 文件中。该规范从增强的 OpenAPI 规范生成，并与之一同发布。
+验证规范将 API 验证约束、默认值和配置元数据整合到单个 JSON 文件中。该规范由经过丰富化处理的 OpenAPI 规范生成，并与其一同发布。
 
 **发布位置**：`docs/specifications/api/validation.json`
 
@@ -36,11 +36,11 @@ i18n:
 }
 ```
 
-## 各部分说明
+## 各节说明
 
 ### required_fields
 
-指定每种资源的每种操作类型所需的必填字段。
+指定每种资源类型各操作所需的字段。
 
 ```json
 {
@@ -61,7 +61,7 @@ i18n:
 
 ### enum_values
 
-定义受约束字段的允许值。
+定义受限字段的允许值。
 
 ```json
 {
@@ -125,7 +125,7 @@ i18n:
 
 ### defaults
 
-所有默认值按资源类型以统一结构组织。
+按资源类型组织的所有默认值，采用统一结构。
 
 ```json
 {
@@ -200,21 +200,21 @@ i18n:
 }
 ```
 
-#### 默认值类别
+#### 默认值分类
 
-| 类别 | 描述 | 来源 |
+| 分类 | 描述 | 来源 |
 |----------|-------------|--------|
-| `server_applied` | 字段省略时 API 应用的值 | 实时 API 测试 |
+| `server_applied` | 字段省略时 API 自动应用的值 | 实时 API 测试 |
 | `recommended` | F5 XC Web 控制台预填充的值 | UI 分析 |
 | `advanced_options` | advanced_options 对象内的嵌套默认值 | API 发现 |
-| `oneof_choices` | 默认的 OneOf 变体选择 | API 行为 |
+| `oneof_choices` | 默认 OneOf 变体选择 | API 行为 |
 | `oneof_recommended` | 推荐的 OneOf 变体 | 控制台默认值 |
 | `nested_recommended` | 嵌套 schema 的推荐值 | UI 分析 |
 | `ui_vs_server` | UI 默认值与 API 默认值不同的情况 | 对比分析 |
 
 ### conditional_requirements
 
-互斥字段和条件依赖关系。
+互斥字段及条件依赖关系。
 
 ```json
 {
@@ -236,7 +236,7 @@ i18n:
 
 ### minimum_configurations
 
-最小可行配置及可用示例。
+最小可行配置及其可用示例。
 
 ```json
 {
@@ -259,17 +259,17 @@ i18n:
 
 ## OpenAPI 扩展映射
 
-增强的 OpenAPI 规范使用以下扩展嵌入验证元数据：
+经过丰富化处理的 OpenAPI 规范使用以下扩展嵌入验证元数据：
 
 | 扩展 | 用途 | 位置 |
 |-----------|---------|----------|
 | `x-f5xc-required-for` | 上下文相关的必填字段 | Schema 属性 |
 | `x-f5xc-server-default` | 标记服务器应用的默认值 | Schema 属性 |
-| `x-f5xc-recommended-value` | 推荐的默认值 | Schema 属性 |
+| `x-f5xc-recommended-value` | 推荐默认值 | Schema 属性 |
 | `x-f5xc-recommended-oneof-variant` | 推荐的 OneOf 变体 | Schema 定义 |
 | `x-f5xc-conditions` | 条件要求 | Schema 属性 |
 | `x-f5xc-minimum-configuration` | 最小配置示例 | Schema 定义 |
-| `x-f5xc-validation` | 发现衍生的约束 | Schema 属性 |
+| `x-f5xc-validation` | 通过发现获取的约束 | Schema 属性 |
 
 ## 数据访问
 
@@ -282,37 +282,37 @@ i18n:
 
 ### 本地路径
 
-运行管道后：`docs/specifications/api/validation.json`
+运行流水线后：`docs/specifications/api/validation.json`
 
-## 版本管理
+## 版本控制
 
-验证规范在 `version` 字段中遵循语义版本控制：
+验证规范在 `version` 字段中遵循语义化版本控制：
 
-| 变更类型 | 版本号变更 | 示例 |
+| 变更类型 | 版本升级 | 示例 |
 |-------------|--------------|---------|
-| 破坏性结构变更 | 主版本号 | 字段重命名、移除部分 |
-| 新的验证规则或资源 | 次版本号 | 新的资源默认值 |
-| 错误修复或描述更新 | 修订号 | 拼写纠正 |
+| 破坏性结构变更 | 主版本 | 字段重命名、删除节 |
+| 新增验证规则或资源 | 次版本 | 新增资源默认值 |
+| 缺陷修复或描述更新 | 补丁版本 | 错别字更正 |
 
 ## 协调优先级
 
 当多个来源提供约束时，协调优先级为：
 
-1. **现有约束** - 原始 OpenAPI 规范中的约束（最高优先级）
-2. **发现约束** - 来自实时 API 发现的约束
-3. **推断约束** - 来自模式匹配的约束（最低优先级）
+1. **现有（Existing）** - 原始 OpenAPI 规范中的约束（最高优先级）
+2. **发现（Discovery）** - 来自实时 API 发现的约束
+3. **推断（Inferred）** - 来自模式匹配的约束（最低优先级）
 
 ## 相关文档
 
 - [健康检查增强](./Enhancements/healthcheck-enhancements/) - 健康检查 schema 增强
-- [源站池增强](./Enhancements/originpool-enhancements/) - 源站池 schema 增强
+- [源池增强](./Enhancements/originpool-enhancements/) - 源池 schema 增强
 - [CLAUDE.md](../../CLAUDE.md) - AI 助手说明
 - [DEVELOPMENT.md](./development/) - 开发者指南
 
-## 变更日志
+## 更新日志
 
 | 版本 | 日期 | 变更内容 |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | 重写为纯 API 参考文档；添加了 oneof_recommended 和 nested_recommended 类别 |
-| 2.1.0 | 2026-01-18 | 统一的默认值结构，替代了碎片化的部分 |
+| 2.1.2 | 2026-01-18 | 重写为纯 API 参考；新增 oneof_recommended 和 nested_recommended 分类 |
+| 2.1.0 | 2026-01-18 | 统一默认值结构，替换原有分散的各节 |
 | 2.0.0 | 2026-01-15 | 初始验证规范 |
