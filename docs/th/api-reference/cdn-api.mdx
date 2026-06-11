@@ -1,6 +1,6 @@
 ---
 title: "\U0001F680 Cdn API"
-description: เครือข่ายการจัดส่งเนื้อหาและการแคชที่ Edge
+description: เครือข่ายการส่งมอบเนื้อหาและการแคชที่ขอบเครือข่าย
 sidebar:
   hidden: true
 i18n:
@@ -8,50 +8,50 @@ i18n:
   translator: machine
 ---
 
-การกระจายระดับโลกพร้อมกฎการแคชและการดำเนินการล้างแคช การตรวจสอบประสิทธิภาพและการวิเคราะห์
+การกระจายทั่วโลกพร้อมกฎแคชและการดำเนินการล้างแคช การตรวจสอบประสิทธิภาพและการวิเคราะห์
 
-- **หมวดหมู่**: Networking
+- **หมวดหมู่**: เครือข่าย
 - **ความซับซ้อน**: ขั้นสูง
-- **Paths**: 29 | **Schemas**: 592
+- **เส้นทาง**: 29 | **สคีมา**: 592
 - **ระดับ**: ขั้นสูง
 - **โดเมนที่เกี่ยวข้อง**: `virtual`
 
 ## กรณีการใช้งาน
 
-- กำหนดค่าการทำโหลดบาลานซ์ CDN
-- จัดการบริการเครือข่ายจัดส่งเนื้อหา
+- กำหนดค่าการกระจายโหลด CDN
+- จัดการบริการเครือข่ายการส่งมอบเนื้อหา
 - กำหนดค่านโยบายการแคช
-- จัดการการจัดส่งและการกระจายข้อมูล
+- จัดการการส่งมอบและการกระจายข้อมูล
 
 ## ทรัพยากรหลัก
 
-- **cdn_loadbalancer**: โหลดบาลานเซอร์เครือข่ายจัดส่งเนื้อหาสำหรับการแคชที่ Edge
+- **cdn_loadbalancer**: ตัวกระจายโหลดเครือข่ายการส่งมอบเนื้อหาสำหรับการแคชที่ขอบเครือข่าย
 - **cdn_origin_pool**: พูลเซิร์ฟเวอร์ต้นทางสำหรับการดึงเนื้อหา CDN
 
 ## Endpoints
 
-| Method | Path | คำอธิบาย |
+| Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/block_client/suggestion` | แนะนำกฎบล็อกไคลเอนต์ |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | แนะนำกฎการบรรเทา DDoS ของ CDN |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/trust_client/suggestion` | แนะนำกฎไว้วางใจไคลเอนต์ |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | แนะนำกฎยกเว้น WAF |
-| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/subscribe` | สมัครสมาชิก CDN Loadbalancer |
-| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/unsubscribe` | ยกเลิกสมาชิก CDN Loadbalancer |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/block_client/suggestion` | แนะนำกฎการบล็อกไคลเอนต์ |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | แนะนำกฎการลด CDN DDoS |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/trust_client/suggestion` | แนะนำกฎการเชื่อถือไคลเอนต์ |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | แนะนำกฎการยกเว้น WAF |
+| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/subscribe` | สมัครใช้งาน CDN Loadbalancer |
+| POST | `/api/cdn/namespaces/system/lilac-cdn/addon/unsubscribe` | ยกเลิกการสมัครใช้งาน CDN Loadbalancer |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_loadbalancers` | สร้าง CDN Loadbalancer |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_loadbalancers/&#123;metadata.name&#125;` | แทนที่ CDN Loadbalancer |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs` | ดึงบันทึกการเข้าถึง CDN |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs/aggregation` | คิวรีการรวมบันทึกการเข้าถึง CDN |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/get-service-operation-status` | ดึงสถานะการดำเนินการของบริการ |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs` | ดึง CDN Access Logs |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs/aggregation` | คิวรีการรวบรวม CDN Access Log |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/get-service-operation-status` | ดึงสถานะการดำเนินการบริการ |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/list-service-operations-status` | รายการคำสั่งการดำเนินการ CDN |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/metrics` | ดึงเมตริก CDN |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/metrics` | ดึง CDN Metrics |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/&#123;name&#125;/cache-purge` | ล้างแคช CDN |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers` | แสดงรายการ CDN Loadbalancer |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/get_security_config` | ดึงการกำหนดค่าความปลอดภัยสำหรับ CDN Load Balancer |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | ดึง CDN Loadbalancer |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | ลบ CDN Loadbalancer |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | ดึงกฎการบรรเทา DoS อัตโนมัติสำหรับ CDN Load Balancer |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | ลบกฎการบรรเทา DoS อัตโนมัติสำหรับ CDN Load Balancer |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | ดึงกฎการลด DoS อัตโนมัติสำหรับ CDN Load Balancer |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | ลบกฎการลด DoS อัตโนมัติสำหรับ CDN Load Balancer |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules` | สร้างกฎแคช CDN |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules/&#123;metadata.name&#125;` | แทนที่กฎแคช CDN |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules` | แสดงรายการกฎแคช CDN |
@@ -61,11 +61,11 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands` | แสดงรายการคำสั่งล้างแคช CDN |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | ดึงคำสั่งล้างแคช CDN |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | ลบคำสั่งล้างแคช CDN |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/get-service-operation-status` | ดึงสถานะการดำเนินการของบริการสำหรับ HTTPLB เมื่อเปิดใช้งานการแคช |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/get-service-operation-status` | ดึงสถานะการดำเนินการบริการสำหรับ HTTPLB เมื่อเปิดใช้งานการแคช |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/list-service-operations-status` | รายการคำสั่งการดำเนินการ HTTPLB เมื่อเปิดใช้งานการแคช |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/&#123;name&#125;/cache-purge` | ล้างแคช LB |
 
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./cdn/)
-- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/cdn.json)
+- [OpenAPI Specification JSON](../specifications/api/cdn.json)

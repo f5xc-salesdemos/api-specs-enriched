@@ -1,8 +1,8 @@
 ---
 title: Sistema de Metadados de Restrições
 description: >-
-  Metadados abrangentes de restrições para geração determinística por IA e
-  validação
+  Metadados abrangentes de restrições para geração e validação determinística de
+  IA
 sidebar:
   order: 2
 i18n:
@@ -10,44 +10,44 @@ i18n:
   translator: machine
 ---
 
-**Propósito**: Metadados abrangentes de restrições para geração determinística por IA, validação por CLI e aplicação de esquema Terraform.
+**Objetivo**: Metadados abrangentes de restrições para geração determinística de IA, validação por CLI e imposição de esquema Terraform.
 
 **Extensão**: `x-f5xc-constraints`
 **Versão**: 3.3.0
 **Status**: Produção
-**Consumidores**: Assistentes de IA, ferramentas CLI, provedores Terraform, extensões de IDE, validadores de API
+**Consumidores**: Assistentes de IA, ferramentas de CLI, provedores Terraform, extensões de IDE, validadores de API
 
 ---
 
 ## Sumário
 
-1. [Visão Geral](#visão-geral)
-2. [Estrutura da Extensão](#estrutura-da-extensão)
-3. [Tipos de Restrições](#tipos-de-restrições)
-4. [Descrições em Linguagem Natural](#descrições-em-linguagem-natural)
-5. [Exemplos de Validação](#exemplos-de-validação)
-6. [Pontuações de Confiança](#pontuações-de-confiança)
-7. [Integração com Descoberta](#integração-com-descoberta)
-8. [Guia de Integração de Ferramentas](#guia-de-integração-de-ferramentas)
+1. [Visão Geral](#overview)
+2. [Estrutura da Extensão](#extension-structure)
+3. [Tipos de Restrição](#constraint-types)
+4. [Descrições em Linguagem Natural](#natural-language-descriptions)
+5. [Exemplos de Validação](#validation-examples)
+6. [Pontuações de Confiança](#confidence-scores)
+7. [Integração com Descoberta](#discovery-integration)
+8. [Guia de Integração com Ferramentas](#tool-integration-guide)
 
 ---
 
 ## Visão Geral
 
-A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre restrições de validação de campos, possibilitando:
+A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre restrições de validação de campos, habilitando:
 
 - **Assistentes de IA**: Gerar configurações válidas sem entrada do usuário para detalhes de restrições
-- **Ferramentas CLI**: Fornecer dicas de entrada precisas, validação e mensagens de erro
-- **Terraform**: Aplicar restrições no momento do planejamento, não no momento da aplicação
+- **Ferramentas de CLI**: Fornecer dicas de entrada precisas, validação e mensagens de erro
+- **Terraform**: Impor restrições no momento do plano, não no momento de aplicação
 - **Extensões de IDE**: Validação em tempo real e sugestões de autocompletar
 - **Validadores de API**: Validação pré-envio para reduzir erros de API
 
 ### Estatísticas de Cobertura
 
-- **9.851 restrições** em todas as especificações de API do F5 XC
+- **9.851 restrições** em todas as especificações da API F5 XC
 - **Mais de 50 tipos de padrões** (string, array, numérico)
-- **95% de confiança** em campos de alta prioridade (nomes, portas, identificadores)
-- **Reconciliação em 3 níveis**: EXISTENTE > DESCOBERTA > INFERIDO
+- **95% de confiança** nos campos de alta prioridade (nomes, portas, identificadores)
+- **Reconciliação em 3 camadas**: EXISTING > DISCOVERY > INFERRED
 
 ---
 
@@ -81,14 +81,14 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `constraintType` | string | Tipo de dado (string, array, number, object) |
-| `deterministic` | boolean | Flag de alta confiança (confiança >= 0.9) para geração por IA |
-| `category` | string | Categoria da restrição para agrupamento e relatórios |
-| *(chaves de restrição)* | diversos | Chaves de restrição específicas do tipo achatadas no nível superior (ex.: `minLength`, `maxItems`, `minimum`) |
+| `deterministic` | boolean | Indicador de alta confiança (confiança >= 0,9) para geração por IA |
+| `category` | string | Categoria de restrição para agrupamento e relatórios |
+| *(chaves de restrição)* | variado | Chaves de restrição específicas do tipo niveladas no nível superior (ex.: `minLength`, `maxItems`, `minimum`) |
 | `metadata` | object | Rastreamento de origem, confiança, timestamp de validação |
 
 ---
 
-## Tipos de Restrições
+## Tipos de Restrição
 
 ### Restrições de String
 
@@ -187,8 +187,8 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 ### Restrições de Formato de String
 
 **Rótulos DNS** (`format: "dns-label"`):
-- Nomes de rótulos DNS devem ter de 1 a 63 caracteres alfanuméricos em minúsculas
-- Hífens permitidos, mas não no início/fim (RFC 1123)
+- Nomes de rótulos DNS devem ter entre 1 e 63 caracteres alfanuméricos minúsculos
+- Hífens são permitidos, mas não no início ou no fim (RFC 1123)
 - Exemplo: `my-service`, `api-gateway`, `lb-prod-01`
 
 **Endereços de E-mail** (`format: "email"`):
@@ -197,12 +197,12 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 - Exemplo: `admin@example.com`, `api+webhook@service.io`
 
 **FQDNs** (`format: "fqdn"`):
-- Nomes de Domínio Totalmente Qualificados devem ter de 1 a 253 caracteres
+- Nomes de Domínio Totalmente Qualificados devem ter entre 1 e 253 caracteres
 - Rótulos DNS separados por ponto
 - Exemplo: `api.example.com`, `service.production.internal`
 
 **URLs** (`format: "url"`):
-- URLs devem ser URIs válidos conforme RFC 3986
+- URLs devem ser URIs válidas conforme RFC 3986
 - Devem incluir esquema (http/https)
 - Exemplo: `https://api.example.com/v1`, `http://localhost:8080`
 
@@ -233,7 +233,7 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 ### Restrições de Array
 
 **Pools de Origem**:
-- O array de pools de origem requer no mínimo 1 item, máximo de 50 itens
+- O array de pools de origem requer no mínimo 1 item e no máximo 50 itens
 - Cada item deve ser único
 
 **Tags**:
@@ -244,7 +244,7 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 
 ## Exemplos de Validação
 
-### Exemplo 1: Validação de Nome com Rótulo DNS
+### Exemplo 1: Validação de Nome de Rótulo DNS
 
 **Restrição**:
 ```json
@@ -267,7 +267,7 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 **Valores Inválidos**:
 - ❌ `My-Service` (maiúsculas não permitidas)
 - ❌ `-my-service` (hífen no início)
-- ❌ `my-service-` (hífen no final)
+- ❌ `my-service-` (hífen no fim)
 - ❌ `my_service` (sublinhado não permitido)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (muito longo)
 
@@ -286,7 +286,7 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 **Valores Válidos**:
 - ✅ `80` (HTTP)
 - ✅ `443` (HTTPS)
-- ✅ `8080` (alternativa comum para HTTP)
+- ✅ `8080` (HTTP alternativo comum)
 - ✅ `65535` (porta máxima)
 
 **Valores Inválidos**:
@@ -325,16 +325,16 @@ A extensão `x-f5xc-constraints` fornece conhecimento determinístico sobre rest
 
 | Faixa | Interpretação | Uso |
 |-------|---------------|-----|
-| 0.90-1.00 | **Alta confiança** | Flag determinístico habilitado, usar para geração por IA |
-| 0.70-0.89 | **Confiança média** | Consultivo, recomendar confirmação do usuário |
-| 0.50-0.69 | **Baixa confiança** | Apenas informativo, requer validação do usuário |
-| < 0.50 | **Muito baixa** | Não incluído nas restrições |
+| 0,90-1,00 | **Alta confiança** | Indicador determinístico habilitado, use para geração por IA |
+| 0,70-0,89 | **Confiança média** | Consultivo, recomende confirmação do usuário |
+| 0,50-0,69 | **Baixa confiança** | Apenas informativo, exija validação do usuário |
+| < 0,50 | **Muito baixa** | Não incluído nas restrições |
 
-### Flag Determinístico
+### Indicador Determinístico
 
-O flag booleano `deterministic` é definido quando:
-- Pontuação de confiança >= 0.9
-- O padrão foi validado contra dados de descoberta OU
+O sinalizador booleano `deterministic` é definido quando:
+- A pontuação de confiança é >= 0,9
+- O padrão foi validado com dados de descoberta OU
 - O padrão corresponde a padrões bem estabelecidos (RFC, ISO, etc.)
 
 **Uso na geração por IA**:
@@ -353,26 +353,26 @@ else:
 
 ### Prioridade de Origem
 
-As restrições são reconciliadas usando prioridade em 3 níveis:
+As restrições são reconciliadas usando prioridade em 3 camadas:
 
-1. **EXISTENTE** (Confiança: 1.0)
+1. **EXISTING** (Confiança: 1,0)
    - Definido explicitamente na especificação OpenAPI original
    - Nunca sobrescrito
 
-2. **DESCOBERTA** (Confiança: 0.99)
-   - Extraído de respostas ao vivo da API do F5 XC
+2. **DISCOVERY** (Confiança: 0,99)
+   - Extraído de respostas da API F5 XC em tempo real
    - Inclui regras de validação de x-ves-validation-rules
    - Sobrescreve restrições inferidas
 
-3. **INFERIDO** (Confiança: 0.50-0.95)
-   - Correspondência de padrão a partir de nomes de campos
+3. **INFERRED** (Confiança: 0,50-0,95)
+   - Correspondência de padrões a partir de nomes de campos
    - Menor prioridade, sobrescrito por descoberta ou explícito
 
 ### Fontes de Dados de Descoberta
 
 As restrições de descoberta são extraídas de:
 
-1. **x-ves-validation-rules**: Extensões nativas de validação F5
+1. **x-ves-validation-rules**: Extensões de validação nativas do F5
    - `ves.io.schema.rules.string.max_len` → `maxLength`
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
@@ -381,15 +381,15 @@ As restrições de descoberta são extraídas de:
    - "name must be 1-63 characters" → minLength/maxLength
    - "port must be between 1 and 65535" → minimum/maximum
 
-3. **Validação de Resposta**: Respostas bem-sucedidas da API demonstrando valores válidos
+3. **Validação de Resposta**: Respostas de API bem-sucedidas demonstrando valores válidos
    - Faixas de valores observados
    - Padrões de formato reais
 
 ---
 
-## Guia de Integração de Ferramentas
+## Guia de Integração com Ferramentas
 
-### Integração com Assistentes de IA
+### Integração com Assistente de IA
 
 **Gerar nomes de recursos válidos**:
 ```python
@@ -408,7 +408,7 @@ def generate_resource_name(schema_property):
     return generate_dns_label(max_length=max_len)
 ```
 
-### Integração com Ferramentas CLI
+### Integração com Ferramenta de CLI
 
 **Fornecer validação de entrada**:
 ```python
@@ -495,26 +495,26 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ---
 
-## Apêndice: Catálogo de Padrões de Restrições
+## Apêndice: Catálogo de Padrões de Restrição
 
-### Padrões de Alta Confiança (0.95-0.99)
+### Padrões de Alta Confiança (0,95-0,99)
 
 | Padrão | Regex do Nome do Campo | Tipo de Restrição | Exemplo |
 |--------|------------------------|-------------------|---------|
 | Rótulo DNS | `\bname$` | String (1-63 caracteres, dns-label) | `my-service` |
 | Namespace | `\bnamespace$` | String (1-63 caracteres, dns-label) | `production` |
-| Porta | `\bport$` | Number (1-65535) | `443` |
-| ID de VLAN | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
+| Porta | `\bport$` | Número (1-65535) | `443` |
+| ID de VLAN | `\b(vlan)?_?id$` | Número (1-4094) | `100` |
 | UUID | `\buuid$` | String (36 caracteres, formato uuid) | `550e8400-...` |
 | E-mail | `\bemail$` | String (máx. 254 caracteres, email) | `user@example.com` |
 | Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
 
-### Padrões de Confiança Média (0.80-0.94)
+### Padrões de Confiança Média (0,80-0,94)
 
 | Padrão | Regex do Nome do Campo | Tipo de Restrição | Exemplo |
 |--------|------------------------|-------------------|---------|
-| Nome de Usuário | `\b(user\|username)$` | String (1-64 caracteres, alfanumérico) | `admin` |
-| Nome de Exibição | `\b(display_?)?name$` | String (1-256 caracteres, texto livre) | `My Service` |
+| Nome de usuário | `\b(user\|username)$` | String (1-64 caracteres, alfanumérico) | `admin` |
+| Nome de exibição | `\b(display_?)?name$` | String (1-256 caracteres, texto livre) | `My Service` |
 | Descrição | `\b(comment\|description\|note)$` | String (máx. 4096 caracteres) | `Service description` |
 | Caminho | `\bpath$` | String (máx. 2048 caracteres) | `/api/v1/resources` |
 
@@ -529,6 +529,6 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 ---
 
 **Versão**: 3.3.0
-**Última Atualização**: 19/01/2026
+**Última Atualização**: 2026-01-19
 **Restrições Reconciliadas**: 9.851
 **Cobertura de Padrões**: Mais de 50 tipos

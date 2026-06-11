@@ -1,6 +1,6 @@
 ---
 title: ⚖️ 虚拟 API
-description: HTTP、TCP、UDP 负载均衡与源站池。
+description: 支持源池的 HTTP、TCP、UDP 负载均衡。
 sidebar:
   hidden: true
 i18n:
@@ -8,18 +8,18 @@ i18n:
   translator: machine
 ---
 
-跨区域的流量分配与路由规则。健康检查与故障转移策略。
+跨区域流量分发与路由规则。健康检查与故障转移策略。
 
 - **类别**：网络
 - **复杂度**：高级
-- **路径数**：133 | **模式数**：903
+- **路径数**：133 | **Schema 数**：903
 - **层级**：高级
 - **相关域**：`dns`、`service_policy`、`network`
 
-## 用例
+## 使用场景
 
 - 配置 HTTP/TCP/UDP 负载均衡器
-- 管理源站池和服务
+- 管理源池和服务
 - 配置虚拟主机和路由
 - 定义速率限制器和服务策略
 - 管理基于地理位置的路由
@@ -29,19 +29,19 @@ i18n:
 
 ## 主要资源
 
-- **http_loadbalancer**：第 7 层 HTTP/HTTPS 负载均衡器，用于应用流量分配
-- **tcp_loadbalancer**：第 4 层 TCP/UDP 负载均衡器，用于非 HTTP 协议流量
-- **origin_pool**：后端服务器组，用于负载均衡器流量分配
-- **healthcheck**：源服务器可用性的健康监控配置
+- **http_loadbalancer**：用于应用流量分发的第 7 层 HTTP/HTTPS 负载均衡器
+- **tcp_loadbalancer**：用于非 HTTP 协议流量的第 4 层 TCP/UDP 负载均衡器
+- **origin_pool**：用于负载均衡器流量分发的后端服务器组
+- **healthcheck**：用于源服务器可用性的健康监控配置
 - **app_firewall**：用于 HTTP 流量防护的 Web 应用防火墙策略
-- **service_policy**：服务级别的访问控制和流量管理规则
-- **malicious_user_detection**：恶意用户行为的自动检测和缓解
+- **service_policy**：服务级访问控制和流量管理规则
+- **malicious_user_detection**：自动检测和缓解恶意用户行为
 
 ## 端点
 
 | 方法 | 路径 | 描述 |
 |--------|------|-------------|
-| POST | `/api/data/namespaces/system/app_firewall/all_ns_metrics` | 所有命名空间指标。 |
+| POST | `/api/data/namespaces/system/app_firewall/all_ns_metrics` | 所有命名空间的指标。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls` | 创建应用防火墙。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/app_firewalls/&#123;metadata.name&#125;` | 替换应用防火墙。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_firewall/metrics` | 指标 |
@@ -55,18 +55,18 @@ i18n:
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/aggregation` | 安全事件聚合查询。 |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | 安全事件滚动查询。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | 安全事件滚动查询。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | 安全事件查询。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | 安全事件聚合查询。 |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | 安全事件滚动查询。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | 安全事件滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | 安全事故查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | 安全事故聚合查询。 |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | 安全事故滚动查询。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | 安全事故滚动查询。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/metrics` | 安全事件指标。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/search/loadbalancers` | 搜索负载均衡器。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs` | 可疑用户日志查询。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | 可疑用户日志聚合查询。 |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | 可疑用户日志滚动查询。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | 可疑用户日志滚动查询。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | 建议 API 端点保护规则。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | 建议阻止客户端规则。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | 建议 API 端点防护规则。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | 建议客户端封锁规则。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/data_exposure/suggestion` | 建议敏感数据规则。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | 建议 DDoS 缓解规则。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | 建议 Open API 规范验证规则。 |
@@ -80,43 +80,43 @@ i18n:
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/clusters/&#123;name&#125;` | 删除集群。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers` | 创建 HTTP 负载均衡器。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/http_loadbalancers/&#123;metadata.name&#125;` | 替换 HTTP 负载均衡器。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | 列出 HTTP 负载均衡器配置。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | 获取 HTTP 负载均衡器安全配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers` | 列出配置 HTTP 负载均衡器。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | 获取 HTTP 负载均衡器的安全配置。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | 获取 HTTP 负载均衡器。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | 删除 HTTP 负载均衡器配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | 删除配置 HTTP 负载均衡器。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | 分配 API 定义。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | 列出可用 API 定义。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | 获取 API 端点。 |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | 获取 HTTP 负载均衡器的 Swagger 规范。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | 获取 API 端点模式更新。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | 更新 API 端点模式。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | 获取 API 端点 Schema 更新。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | 更新 API 端点 Schema。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | 获取 HTTP 负载均衡器的 DoS 自动缓解规则。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | 删除 HTTP 负载均衡器的 DoS 自动缓解规则。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | 获取 DNS 信息。 |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | 设置第 7 层 DDoS RPS 阈值。 |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/l7ddos_rps_threshold` | 设置 L7 DDoS RPS 阈值。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections` | 创建协议检测。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/protocol_inspections/&#123;metadata.name&#125;` | 替换协议检测。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | 列出协议检测配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections` | 列出配置协议检测。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | 获取协议检测。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | 删除协议检测配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/protocol_inspections/&#123;name&#125;` | 删除配置协议检测。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers` | 创建 TCP 负载均衡器。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/tcp_loadbalancers/&#123;metadata.name&#125;` | 替换 TCP 负载均衡器。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | 列出 TCP 负载均衡器配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers` | 列出配置 TCP 负载均衡器。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | 获取 TCP 负载均衡器。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | 删除 TCP 负载均衡器配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;` | 删除配置 TCP 负载均衡器。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/tcp_loadbalancers/&#123;name&#125;/get-dns-info` | 获取 DNS 信息。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers` | 创建 UDP 负载均衡器。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/udp_loadbalancers/&#123;metadata.name&#125;` | 替换 UDP 负载均衡器。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | 列出 UDP 负载均衡器配置。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers` | 列出配置 UDP 负载均衡器。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | 获取 UDP 负载均衡器。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | 删除 UDP 负载均衡器配置。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;` | 删除配置 UDP 负载均衡器。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/udp_loadbalancers/&#123;name&#125;/get-dns-info` | 获取 DNS 信息。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | 创建增强防火墙策略。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | 替换增强防火墙策略。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | 增强防火墙策略命中。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | 列出增强防火墙策略。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 获取增强防火墙策略。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 删除增强防火墙策略。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys` | 创建增强型防火墙策略。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/enhanced_firewall_policys/&#123;metadata.name&#125;` | 替换增强型防火墙策略。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/enhanced_firewall_policy/hits` | 增强型防火墙策略命中。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys` | 列出增强型防火墙策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 获取增强型防火墙策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/enhanced_firewall_policys/&#123;name&#125;` | 删除增强型防火墙策略。 |
 | POST | `/api/config/namespaces/system/malware_protection/addon/subscribe` | 订阅恶意软件防护。 |
 | POST | `/api/config/namespaces/system/malware_protection/addon/unsubscribe` | 取消订阅恶意软件防护。 |
 | POST | `/api/config/dns/namespaces/&#123;metadata.namespace&#125;/geo_location_sets` | 创建地理位置。 |
@@ -129,11 +129,11 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks` | 列出健康检查。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | 获取健康检查。 |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/healthchecks/&#123;name&#125;` | 删除健康检查。 |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | 创建源站池。 |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | 替换源站池。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | 列出源站池。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | 获取源站池。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | 删除源站池。 |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools` | 创建源池。 |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/origin_pools/&#123;metadata.name&#125;` | 替换源池。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools` | 列出源池。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | 获取源池。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/origin_pools/&#123;name&#125;` | 删除源池。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies` | 创建代理。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/proxies/&#123;metadata.name&#125;` | 替换代理。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/proxies` | 列出代理。 |
@@ -142,9 +142,9 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/proxies/&#123;name&#125;/ca_certificate` | 获取代理服务器 CA 证书。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys` | 创建规范。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/rate_limiter_policys/&#123;metadata.name&#125;` | 替换规范。 |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | 列出速率限制器策略。 |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys` | 列出速率限制策略。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | 获取规范。 |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | 删除速率限制器策略。 |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/rate_limiter_policys/&#123;name&#125;` | 删除速率限制策略。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | 创建服务策略。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | 替换服务策略。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | 列出服务策略。 |
@@ -164,27 +164,27 @@ i18n:
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;` | 删除虚拟主机。 |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_definitions/assign` | 分配 API 定义。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint` | 获取 API 端点。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | 获取每个 API 端点的已学习模式。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/learnt_schema` | 获取每个 API 端点的已学习 Schema。 |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/pdf` | 获取 API 端点 PDF。 |
-| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | 获取每个 API 端点的相关源 OpenApi 模式。 |
+| GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/sources_openapi_schema` | 获取每个 API 端点的相关源 OpenApi Schema。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoint/unmerge_sources_openapi_schema` | 从 API 端点取消合并源。 |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints` | 获取 API 端点。 |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/stats` | 获取虚拟主机的 API 端点统计信息。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | 获取虚拟主机的总 API 调用数。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/calls_by_response_code` | 获取虚拟主机的 API 调用总量。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_active` | 获取虚拟主机的热门 API 端点。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/summary/top_sensitive_data` | 获取虚拟主机的敏感数据摘要。 |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_endpoints/swagger_spec` | 获取应用类型的 Swagger 规范。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | 获取 API 端点模式更新。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | 更新 API 端点模式。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | 获取 API 端点 Schema 更新。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | 更新 API 端点 Schema。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/create_ticket` | 为漏洞创建工单。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/get-dns-info` | 获取 DNS 信息。 |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/unlink_tickets` | 取消关联工单。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | 获取虚拟主机的漏洞。 |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | 更新虚拟主机的漏洞。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerabilities` | 获取虚拟主机的漏洞信息。 |
+| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;name&#125;/vulnerability/update_state` | 更新虚拟主机的漏洞信息。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/rule_hits` | 客户端规则命中指标。 |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/client/security_events` | 客户端安全事件指标。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | 服务器端规则命中指标。 |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | 服务器端安全事件指标。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/rule_hits` | 服务端规则命中指标。 |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/wafs/metrics/server/security_events` | 服务端安全事件指标。 |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys` | 创建 WAF 排除策略。 |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/waf_exclusion_policys/&#123;metadata.name&#125;` | 替换 WAF 排除策略。 |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | 列出 WAF 排除策略。 |

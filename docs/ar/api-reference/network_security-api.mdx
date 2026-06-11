@@ -1,5 +1,5 @@
 ---
-title: "\U0001F512 واجهة برمجة تطبيقات أمن الشبكات"
+title: "\U0001F512 واجهة برمجة تطبيقات أمان الشبكة"
 description: سياسات NAT وجدران الحماية واتصالات الشرائح.
 sidebar:
   hidden: true
@@ -8,38 +8,38 @@ i18n:
   translator: machine
 ---
 
-قواعد جدار الحماية مع قرارات التوجيه بناءً على المصدر أو الوجهة أو البروتوكول. يعمل التقسيم على عزل أحمال العمل بينما تتحكم الوكلاء الصادرة في الوصول.
+قواعد جدار الحماية مع قرارات التوجيه استناداً إلى المصدر أو الوجهة أو البروتوكول. يعمل التجزئة على عزل أحمال العمل بينما تتحكم وكلاء الوصول الخارجي في الوصول.
 
 - **الفئة**: الأمان
 - **التعقيد**: متقدم
 - **المسارات**: 62 | **المخططات**: 386
 - **المستوى**: متقدم
-- **النطاقات ذات الصلة**: `virtual`، `api`، `network`
+- **المجالات ذات الصلة**: `virtual`، `api`، `network`
 
 ## حالات الاستخدام
 
 - تكوين سياسات جدار حماية الشبكة وقوائم التحكم بالوصول (ACL)
 - إدارة سياسات NAT وإعادة توجيه المنافذ
-- تكوين التوجيه المبني على السياسات
+- تكوين التوجيه المستند إلى السياسة
 - تعريف شرائح الشبكة والسياسات
-- تكوين سياسات الوكيل الأمامي
+- تكوين سياسات وكيل التوجيه الأمامي
 
 ## الموارد الأساسية
 
 - **network_policy**: سياسة أمان الشبكة لتصفية حركة المرور
-- **forward_proxy_policy**: سياسة الوكيل الأمامي للتحكم في حركة المرور الصادرة
-- **network_firewall**: جدار حماية الشبكة لحماية حركة المرور في الطبقة 3/4
+- **forward_proxy_policy**: سياسة وكيل التوجيه الأمامي للتحكم في حركة المرور الصادرة
+- **network_firewall**: جدار حماية الشبكة لحماية حركة المرور على الطبقتين 3/4
 
 ## نقاط النهاية
 
 | الطريقة | المسار | الوصف |
-|---------|--------|-------|
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | إنشاء سياسة الوكيل الأمامي. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | استبدال سياسة الوكيل الأمامي. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | إصابات سياسة الوكيل الأمامي. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | قائمة تكوين سياسة الوكيل الأمامي. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | الحصول على سياسة الوكيل الأمامي. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | حذف تكوين سياسة الوكيل الأمامي. |
+|--------|------|-------------|
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | إنشاء سياسة وكيل التوجيه الأمامي. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | استبدال سياسة وكيل التوجيه الأمامي. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | إصابات سياسة وكيل التوجيه الأمامي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | قائمة تكوين سياسة وكيل التوجيه الأمامي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | الحصول على سياسة وكيل التوجيه الأمامي. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | حذف تكوين سياسة وكيل التوجيه الأمامي. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | إنشاء عرض سياسة الشبكة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | استبدال عرض سياسة الشبكة. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | إصابات سياسة الشبكة. |
@@ -47,23 +47,23 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | الحصول على عرض سياسة الشبكة. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | حذف تكوين عرض سياسة الشبكة. |
 | GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | قائمة |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | إنشاء قائمة تحكم وصول سريعة. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | استبدال قائمة تحكم وصول سريعة. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | إصابات قائمة التحكم بالوصول السريعة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | قائمة التحكم بالوصول السريعة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | الحصول على قائمة تحكم وصول سريعة. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | حذف قائمة تحكم وصول سريعة. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | إنشاء قاعدة تحكم وصول سريعة. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | استبدال قاعدة تحكم وصول سريعة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | قائمة قواعد التحكم بالوصول السريعة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | الحصول على قاعدة تحكم وصول سريعة. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | حذف قاعدة تحكم وصول سريعة. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | إنشاء قائمة تحكم سريعة بالوصول (Fast ACL). |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | استبدال قائمة التحكم السريعة بالوصول (Fast ACL). |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | إصابات قائمة التحكم السريعة بالوصول (Fast ACL). |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | قائمة قوائم التحكم السريعة بالوصول (Fast ACL). |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | الحصول على قائمة التحكم السريعة بالوصول (Fast ACL). |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | حذف قائمة التحكم السريعة بالوصول (Fast ACL). |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | إنشاء قاعدة قائمة التحكم السريعة بالوصول (Fast ACL). |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | استبدال قاعدة قائمة التحكم السريعة بالوصول (Fast ACL). |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | قائمة قواعد قوائم التحكم السريعة بالوصول (Fast ACL). |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | الحصول على قاعدة قائمة التحكم السريعة بالوصول (Fast ACL). |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | حذف قاعدة قائمة التحكم السريعة بالوصول (Fast ACL). |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | إنشاء مواصفة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | استبدال مواصفة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | قائمة مجموعات التصفية. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | البحث عن مجموعات التصفية لمفتاح سياق واحد أو أكثر. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | قائمة مجموعات الفلاتر. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | البحث عن مجموعات الفلاتر لمفتاح سياق واحد أو أكثر. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | الحصول على مواصفة. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | حذف مجموعة التصفية. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | حذف مجموعة الفلاتر. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | إنشاء سياسة NAT. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | استبدال سياسة NAT. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | قائمة سياسات NAT. |
@@ -87,29 +87,29 @@ i18n:
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | حذف قاعدة سياسة الشبكة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | قائمة مجموعات سياسة الشبكة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | الحصول على مجموعة سياسة الشبكة. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | إنشاء توجيه مبني على السياسات. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | استبدال توجيه مبني على السياسات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | قائمة التوجيه المبني على السياسات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | الحصول على توجيه مبني على السياسات. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | حذف توجيه مبني على السياسات. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | إنشاء توجيه مستند إلى السياسة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | استبدال التوجيه المستند إلى السياسة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | قائمة التوجيهات المستندة إلى السياسة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | الحصول على التوجيه المستند إلى السياسة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | حذف التوجيه المستند إلى السياسة. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | إنشاء شريحة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | استبدال شريحة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | قائمة الشرائح. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | شريحة |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | الحصول على شريحة. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | حذف شريحة. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | الشريحة |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | الحصول على الشريحة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | حذف الشريحة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | استبدال موصل الشريحة. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | قائمة موصلات الشرائح. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | قائمة موصلات الشريحة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | الحصول على موصل الشريحة. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | إنشاء سياسة الخدمة. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | استبدال سياسة الخدمة. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | إصابات سياسة الخدمة. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | زمن استجابة سياسة الخدمة. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | زمن الاستجابة لسياسة الخدمة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | قائمة سياسات الخدمة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | الحصول على سياسة الخدمة. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | حذف سياسة الخدمة. |
 
 ## الروابط
 
-- [مرجع واجهة برمجة التطبيقات التفاعلي](./network_security/)
-- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/network_security.json)
+- [مرجع API التفاعلي](./network_security/)
+- [مواصفة OpenAPI بصيغة JSON](../specifications/api/network_security.json)

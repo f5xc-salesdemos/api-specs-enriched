@@ -1,34 +1,24 @@
 ---
-title: एनरिचमेंट एक्सटेंशन कैटलॉग
-description: एनरिच्ड OpenAPI स्पेसिफिकेशन में प्रत्येक x-* एक्सटेंशन का आधिकारिक स्रोत
+title: संवर्धन एक्सटेंशन कैटालॉग
+description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन के लिए सत्य का स्रोत
 i18n:
   sourceHash: 7fde0afb4dac
   translator: machine
 ---
 
-# एनरिचमेंट एक्सटेंशन कैटलॉग
+# संवर्धन एक्सटेंशन कैटालॉग
 
-`docs/specifications/api/*.json` में दिखने वाले प्रत्येक `x-*` एक्सटेंशन का आधिकारिक स्रोत।
-`scripts/utils/extension_constants.py` के साथ समानता
-`tests/test_extension_catalog.py` द्वारा लागू की जाती है।
+`docs/specifications/api/*.json` में प्रकट होने वाले प्रत्येक `x-*` एक्सटेंशन के लिए सत्य का स्रोत। `scripts/utils/extension_constants.py` के साथ समानता `tests/test_extension_catalog.py` द्वारा लागू की जाती है।
 
-यहाँ तीन प्रकार के एक्सटेंशन प्रलेखित हैं:
+यहाँ तीन श्रेणियों के एक्सटेंशन प्रलेखित हैं:
 
-- **यहाँ इंजेक्ट किए गए** — वे एक्सटेंशन जो हमारे एनरिचर्स जोड़ते हैं (`x-f5xc-*` और
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / डिस्कवरी
-  वेरिएंट)। डाउनस्ट्रीम टूल्स को इन्हीं का उपभोग करना चाहिए।
-- **अपस्ट्रीम पास-थ्रू** — वे एक्सटेंशन जो F5 सोर्स स्पेक्स में उत्सर्जित करता है
-  और हम बिना बदलाव के संरक्षित रखते हैं (`x-ves-proto-*`, `x-displayname`, आदि)।
-  पारदर्शिता के लिए प्रलेखित लेकिन इस रिपॉजिटरी द्वारा नियंत्रित नहीं।
-- **भविष्य में इंजेक्ट होने वाले** — अभी तक उत्सर्जित नहीं; जिस क्षण कोई
-  एनरिचर इन्हें उत्पन्न करना शुरू करता है, यहाँ प्रलेखित किए जाते हैं (प्रारंभिक
-  जनसंख्या के समय लागू नहीं)।
+- **यहाँ इंजेक्ट किए गए** — वे एक्सटेंशन जो हमारे एन्रिचर जोड़ते हैं (`x-f5xc-*` और `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / डिस्कवरी वेरिएंट)। ये वे हैं जिन्हें डाउनस्ट्रीम उपकरणों को उपभोग करना चाहिए।
+- **अपस्ट्रीम पास-थ्रू** — वे एक्सटेंशन जो F5 स्रोत विनिर्देशों में उत्सर्जित करता है और हम अपरिवर्तित संरक्षित रखते हैं (`x-ves-proto-*`, `x-displayname`, आदि)। पारदर्शिता के लिए प्रलेखित किए गए हैं लेकिन इस रेपो द्वारा नियंत्रित नहीं।
+- **भविष्य-इंजेक्ट** — अभी तक उत्सर्जित नहीं; उस क्षण यहाँ प्रलेखित जब एक एन्रिचर इन्हें उत्पन्न करना शुरू करता है (प्रारंभिक जनसंख्या पर लागू नहीं)।
 
-## प्रविष्टि स्कीमा
+## एंट्री स्कीमा
 
-नीचे प्रत्येक प्रविष्टि का ठीक यही आकार है। `tests/test_extension_catalog.py` में समानता परीक्षण
-सेक्शन बॉडी के संक्षिप्त होने को तब तक सहन करता है जब तक `### x-name` हेडर मौजूद हो और
-`Pass-through from upstream:` फ्लैग `yes` या `no` मान के साथ उपस्थित हो।
+नीचे प्रत्येक एंट्री का ठीक यही आकार है। `tests/test_extension_catalog.py` में पैरिटी टेस्ट सेक्शन बॉडी को स्टबी होने की अनुमति देता है जब तक कि `### x-name` हेडर मौजूद हो और `Pass-through from upstream:` फ्लैग `yes` या `no` मान के साथ उपस्थित हो।
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -41,794 +31,794 @@ i18n:
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## इंजेक्ट किए गए — स्पेक-स्तर (info सेक्शन)
+## इंजेक्ट किए गए — विनिर्देश-स्तर (info अनुभाग)
 
 ### x-f5xc-cli-domain
 
-- **लागू होता है:** info
-- **उद्देश्य:** एक एनरिच्ड स्पेक के लिए CLI डोमेन स्लग (जैसे `http_loadbalancer`) की पहचान करता है।
-- **उपभोक्ता:** CLI
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-cli-domain": "http_loadbalancer"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** एक समृद्ध विनिर्देश के लिए CLI डोमेन स्लग (जैसे `http_loadbalancer`) की पहचान करता है।
+- **Consumers:** CLI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-cli-domain": "http_loadbalancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-cli-metadata
 
-- **लागू होता है:** info
-- **उद्देश्य:** CLI-व्यापी मेटाडेटा ब्लॉक (टूल नाम, संस्करण संकेत, डोमेन समूहीकरण)।
-- **उपभोक्ता:** CLI
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/cli_metadata.yaml
-- **उदाहरण:** `"x-f5xc-cli-metadata": {"tool": "xcsh", "domain": "http_loadbalancer"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** CLI-व्यापी मेटाडेटा ब्लॉक (टूल नाम, संस्करण संकेत, डोमेन समूहन)।
+- **Consumers:** CLI
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/cli_metadata.yaml
+- **Example:** `"x-f5xc-cli-metadata": {"tool": "xcsh", "domain": "http_loadbalancer"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-upstream-timestamp
 
-- **लागू होता है:** info
-- **उद्देश्य:** अपस्ट्रीम सोर्स स्पेक का टाइमस्टैम्प जिससे एनरिच्ड फ़ाइल बनाई गई थी।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "format": "date-time"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-upstream-timestamp": "2026-04-21T12:00:00Z"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** अपस्ट्रीम स्रोत विनिर्देश का टाइमस्टैम्प जिससे समृद्ध फ़ाइल बनाई गई थी।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "date-time"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-upstream-timestamp": "2026-04-21T12:00:00Z"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-upstream-etag
 
-- **लागू होता है:** info
-- **उद्देश्य:** अपस्ट्रीम सोर्स स्पेक रिलीज़ एसेट का ETag।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-upstream-etag": "\"abc123\""`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** अपस्ट्रीम स्रोत विनिर्देश रिलीज़ असेट का ETag।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-upstream-etag": "\"abc123\""`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-enriched-version
 
-- **लागू होता है:** info
-- **उद्देश्य:** पाइपलाइन द्वारा एनरिच्ड स्पेक पर अंकित सिमेंटिक संस्करण।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-enriched-version": "3.2.1"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** पाइपलाइन द्वारा समृद्ध विनिर्देश पर अंकित सिमेंटिक संस्करण।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-enriched-version": "3.2.1"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-glossary
 
-- **लागू होता है:** info
-- **उद्देश्य:** प्रत्येक डोमेन स्पेक पर लागू ब्रांडिंग/शब्दावली शब्दकोश ब्लॉक।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/branding.py
-- **कॉन्फ़िग द्वारा संचालित:** config/branding.yaml
-- **उदाहरण:** `"x-f5xc-glossary": {"XC": "F5 Distributed Cloud"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** प्रत्येक डोमेन विनिर्देश पर लागू ब्रांडिंग/शब्दावली ग्लॉसरी ब्लॉक।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/branding.py
+- **Driven by config:** config/branding.yaml
+- **Example:** `"x-f5xc-glossary": {"XC": "F5 Distributed Cloud"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-at
 
-- **लागू होता है:** info
-- **उद्देश्य:** लाइव-API डिस्कवरी पास कब निष्पादित किया गया था इसका टाइमस्टैम्प।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "format": "date-time"}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery.yaml
-- **उदाहरण:** `"x-f5xc-discovered-at": "2026-04-21T09:15:00Z"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** टाइमस्टैम्प जब लाइव-API डिस्कवरी पास निष्पादित की गई थी।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "date-time"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-discovered-at": "2026-04-21T09:15:00Z"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-api-url
 
-- **लागू होता है:** info
-- **उद्देश्य:** डिस्कवरी के दौरान जांची गई लाइव API का बेस URL।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "format": "uri"}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery.yaml
-- **उदाहरण:** `"x-f5xc-api-url": "https://f5-amer-ent.console.ves.volterra.io"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** लाइव API का बेस URL जिसे डिस्कवरी के दौरान प्रोब किया गया था।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "uri"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-api-url": "https://f5-amer-ent.console.ves.volterra.io"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-api-reference-url
 
-- **लागू होता है:** info
-- **उद्देश्य:** इस डोमेन के लिए होस्ट किए गए API संदर्भ दस्तावेज़ पृष्ठ का URL।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "format": "uri"}`
-- **इंजेक्ट करता है:** scripts/utils/external_docs_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** none (डोमेन नाम से व्युत्पन्न)
-- **उदाहरण:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** इस डोमेन के लिए होस्ट किए गए API संदर्भ दस्तावेज़ीकरण पृष्ठ का URL।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "format": "uri"}`
+- **Injected by:** scripts/utils/external_docs_enricher.py
+- **Driven by config:** none (derived from domain name)
+- **Example:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-response-time-ms
 
-- **लागू होता है:** info
-- **उद्देश्य:** डिस्कवरी के दौरान जांचे गए API का प्रेक्षित प्रतिक्रिया समय (ms)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** number
-- **मान स्कीमा:** `{"type": "number"}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery.yaml
-- **उदाहरण:** `"x-f5xc-response-time-ms": 42`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** डिस्कवरी के दौरान प्रोब किए गए API के लिए देखा गया प्रतिक्रिया समय (ms)।
+- **Consumers:** multiple
+- **Value type:** number
+- **Value schema:** `{"type": "number"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery.yaml
+- **Example:** `"x-f5xc-response-time-ms": 42`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-best-practices
 
-- **लागू होता है:** info
-- **उद्देश्य:** किसी डोमेन के लिए क्यूरेटेड सर्वोत्तम अभ्यास मार्गदर्शन।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "object"}}`
-- **इंजेक्ट करता है:** scripts/utils/best_practices_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/best_practices.yaml
-- **उदाहरण:** `"x-f5xc-best-practices": [{"id": "bp-1", "text": "Prefer HTTPS"}]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** एक डोमेन के लिए क्यूरेटेड सर्वोत्तम-अभ्यास मार्गदर्शन।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/best_practices_enricher.py
+- **Driven by config:** config/best_practices.yaml
+- **Example:** `"x-f5xc-best-practices": [{"id": "bp-1", "text": "Prefer HTTPS"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-guided-workflows
 
-- **लागू होता है:** info
-- **उद्देश्य:** किसी डोमेन में सामान्य कार्यों को पूरा करने के लिए नामित चरण-दर-चरण वर्कफ़्लो।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "object"}}`
-- **इंजेक्ट करता है:** scripts/utils/guided_workflow_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/guided_workflows.yaml
-- **उदाहरण:** `"x-f5xc-guided-workflows": [{"name": "create-lb", "steps": [...]}]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** एक डोमेन में सामान्य कार्यों को पूरा करने के लिए नामित चरण-दर-चरण वर्कफ़्लो।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/guided_workflow_enricher.py
+- **Driven by config:** config/guided_workflows.yaml
+- **Example:** `"x-f5xc-guided-workflows": [{"name": "create-lb", "steps": [...]}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-acronyms
 
-- **लागू होता है:** info
-- **उद्देश्य:** प्रति-डोमेन संक्षिप्त नाम विस्तार तालिका।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object", "additionalProperties": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/acronym_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/acronyms.yaml
-- **उदाहरण:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** प्रति-डोमेन संक्षिप्त नाम विस्तार तालिका।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
+- **Injected by:** scripts/utils/acronym_enricher.py
+- **Driven by config:** config/acronyms.yaml
+- **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
+- **Pass-through from upstream:** no
 
-## इंजेक्ट किए गए — स्कीमा-स्तर (कंपोनेंट स्कीमा)
+## इंजेक्ट किए गए — स्कीमा-स्तर (कॉम्पोनेंट स्कीमा)
 
 ### x-f5xc-minimum-configuration
 
-- **लागू होता है:** schema
-- **उद्देश्य:** इस संसाधन को सफलतापूर्वक POST/PUT करने के लिए आवश्यक न्यूनतम व्यवहार्य फ़ील्ड सेट।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/minimum_configuration_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/minimum_configs.yaml
-- **उदाहरण:** `"x-f5xc-minimum-configuration": {"required_fields": ["name"]}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema
+- **Purpose:** न्यूनतम व्यवहार्य फ़ील्ड सेट जो इस रिसोर्स को सफलतापूर्वक POST/PUT करने के लिए आवश्यक है।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/minimum_configuration_enricher.py
+- **Driven by config:** config/minimum_configs.yaml
+- **Example:** `"x-f5xc-minimum-configuration": {"required_fields": ["name"]}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-namespace-profile
 
-- **लागू होता है:** info
-- **उद्देश्य:** किसी संसाधन के लिए नेमस्पेस बाधा, अनुशंसा, और वर्गीकरण मेटाडेटा प्रदान करता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
-- **इंजेक्ट करता है:** scripts/utils/namespace_profile_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/namespace_profile.yaml
-- **उदाहरण:** `"x-f5xc-namespace-profile": {"constraint": {"allowed": ["system", "shared", "user"]}, "recommendation": {"default": "shared"}, "classification": {"multi_tenant_pattern": "shared-ref"}}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** किसी रिसोर्स के लिए नेमस्पेस बाधा, अनुशंसा और वर्गीकरण मेटाडेटा प्रदान करता है।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
+- **Injected by:** scripts/utils/namespace_profile_enricher.py
+- **Driven by config:** config/namespace_profile.yaml
+- **Example:** `"x-f5xc-namespace-profile": {"constraint": {"allowed": ["system", "shared", "user"]}, "recommendation": {"default": "shared"}, "classification": {"multi_tenant_pattern": "shared-ref"}}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-displayorder
 
-- **लागू होता है:** schema
-- **उद्देश्य:** UI/CLI प्रस्तुति के लिए गुणों का सुझाया गया क्रम।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-displayorder": ["name", "description", "spec"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema
+- **Purpose:** UI/CLI प्रस्तुति के लिए प्रॉपर्टीज़ का सुझावित क्रम।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-displayorder": ["name", "description", "spec"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-terraform-resource
 
-- **लागू होता है:** schema
-- **उद्देश्य:** इस स्कीमा से मैप होने वाला Terraform संसाधन प्रकार नाम।
-- **उपभोक्ता:** Terraform
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-terraform-resource": "volterra_http_loadbalancer"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema
+- **Purpose:** Terraform रिसोर्स प्रकार का नाम जो इस स्कीमा से मैप होता है।
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-terraform-resource": "volterra_http_loadbalancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-display-name
 
-- **लागू होता है:** schema
-- **उद्देश्य:** किसी संसाधन स्कीमा के लिए मानव-पठनीय प्रदर्शन नाम (स्वतः-उत्पादन को ओवरराइड करता है)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-display-name": "HTTP Load Balancer"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema
+- **Purpose:** किसी रिसोर्स स्कीमा के लिए मानव-पठनीय प्रदर्शन नाम (ऑटो-जनरेशन को ओवरराइड करता है)।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
+- **Pass-through from upstream:** no
 
 ## इंजेक्ट किए गए — प्रॉपर्टी-स्तर
 
 ### x-f5xc-description
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** एनरिच्ड प्रॉपर्टी विवरण जो अपस्ट्रीम `description` को पूरक करता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_descriptions.yaml
-- **उदाहरण:** `"x-f5xc-description": "Fully-qualified domain name used for TLS SNI."`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** समृद्ध प्रॉपर्टी विवरण जो अपस्ट्रीम `description` को पूरक बनाता है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_descriptions.yaml
+- **Example:** `"x-f5xc-description": "Fully-qualified domain name used for TLS SNI."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-validation
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** अपस्ट्रीम protobuf `ves.io.schema.rules` से प्राप्त घोषणात्मक सत्यापन नियम।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/validation_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/validation_rules.yaml
-- **उदाहरण:** `"x-f5xc-validation": {"min_len": 1, "max_len": 64}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** अपस्ट्रीम protobuf `ves.io.schema.rules` से व्युत्पन्न घोषणात्मक सत्यापन नियम।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/validation_enricher.py
+- **Driven by config:** config/validation_rules.yaml
+- **Example:** `"x-f5xc-validation": {"min_len": 1, "max_len": 64}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-examples
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** किसी प्रॉपर्टी के लिए एकाधिक उदाहरणात्मक मान।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array"}`
-- **इंजेक्ट करता है:** scripts/utils/resource_examples_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/resource_examples.yaml
-- **उदाहरण:** `"x-f5xc-examples": ["example.com", "api.example.com"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** किसी प्रॉपर्टी के लिए एकाधिक उदाहरण मान।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array"}`
+- **Injected by:** scripts/utils/resource_examples_enricher.py
+- **Driven by config:** config/resource_examples.yaml
+- **Example:** `"x-f5xc-examples": ["example.com", "api.example.com"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-example
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** एक एकल प्रामाणिक उदाहरण मान।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{}`
-- **इंजेक्ट करता है:** scripts/utils/field_description_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_descriptions.yaml
-- **उदाहरण:** `"x-f5xc-example": "example.com"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** एकल कैनोनिकल उदाहरण मान।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/field_description_enricher.py
+- **Driven by config:** config/field_descriptions.yaml
+- **Example:** `"x-f5xc-example": "example.com"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-completion
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** शेल पूर्णता संकेत (स्थिर enum या गतिशील कमांड)।
-- **उपभोक्ता:** CLI
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-completion": {"source": "command", "cmd": "xcsh namespace list"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** शेल कम्पलीशन संकेत (स्टेटिक enum या डायनामिक कमांड)।
+- **Consumers:** CLI
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-completion": {"source": "command", "cmd": "xcsh namespace list"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-defaults
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** जनरेटेड डॉक्स और UI में प्रदर्शित करने के लिए डिफ़ॉल्ट मान।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-defaults": {"value": "default"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** जनरेट किए गए दस्तावेज़ों और UI में प्रदर्शित करने के लिए डिफ़ॉल्ट मान।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-defaults": {"value": "default"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-required-for-operations
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** HTTP ऑपरेशन (POST/PUT/...) सूचीबद्ध करता है जिनके लिए इस प्रॉपर्टी की आवश्यकता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-required-for-operations": ["POST", "PUT"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** HTTP ऑपरेशन (POST/PUT/...) सूचीबद्ध करता है जिनके लिए यह प्रॉपर्टी आवश्यक है।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-required-for-operations": ["POST", "PUT"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-required-for
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** नामित सुविधा संयोजनों को सूचीबद्ध करता है जिनके लिए इस प्रॉपर्टी की आवश्यकता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/minimum_configuration_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/minimum_configs.yaml
-- **उदाहरण:** `"x-f5xc-required-for": ["tls-origin", "mtls"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** नामित फ़ीचर संयोजनों को सूचीबद्ध करता है जिनके लिए यह प्रॉपर्टी आवश्यक है।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/minimum_configuration_enricher.py
+- **Driven by config:** config/minimum_configs.yaml
+- **Example:** `"x-f5xc-required-for": ["tls-origin", "mtls"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-conditions
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** सशर्त आवश्यकताएँ (जैसे, जब सहोदर फ़ील्ड X के बराबर हो तब आवश्यक)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "object"}}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-conditions": [{"when": "tls.enabled == true", "require": "cert"}]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** सशर्त आवश्यकताएं (जैसे जब सिब्लिंग फ़ील्ड X के बराबर हो तब आवश्यक)।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-conditions": [{"when": "tls.enabled == true", "require": "cert"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-deprecated
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** प्रतिस्थापन मार्गदर्शन के साथ बहिष्करण सूचना।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/field_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/field_metadata.yaml
-- **उदाहरण:** `"x-f5xc-deprecated": {"since": "3.0.0", "use": "new_field"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** प्रतिस्थापन मार्गदर्शन के साथ अप्रचलन सूचना।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/field_metadata_enricher.py
+- **Driven by config:** config/field_metadata.yaml
+- **Example:** `"x-f5xc-deprecated": {"since": "3.0.0", "use": "new_field"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-server-default
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** वह डिफ़ॉल्ट मान जो क्लाइंट द्वारा प्रॉपर्टी छोड़ने पर सर्वर असाइन करता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{}`
-- **इंजेक्ट करता है:** scripts/utils/default_value_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovered_defaults.yaml
-- **उदाहरण:** `"x-f5xc-server-default": "ROUND_ROBIN"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** डिफ़ॉल्ट मान जो सर्वर तब असाइन करता है जब क्लाइंट प्रॉपर्टी को छोड़ देता है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-server-default": "ROUND_ROBIN"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-recommended-value
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** किसी फ़ील्ड के लिए अनुशंसित प्रोडक्शन मान जहाँ सर्वर डिफ़ॉल्ट अनुकूलतम नहीं है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{}`
-- **इंजेक्ट करता है:** scripts/utils/default_value_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovered_defaults.yaml
-- **उदाहरण:** `"x-f5xc-recommended-value": "LEAST_REQUEST"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** किसी फ़ील्ड के लिए अनुशंसित प्रोडक्शन मान जहाँ सर्वर डिफ़ॉल्ट सबऑप्टिमल है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-recommended-value": "LEAST_REQUEST"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-recommended-oneof-variant
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** `oneOf` ब्लॉक के लिए, इंगित करता है कि कौन सा वेरिएंट अनुशंसित है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/default_value_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovered_defaults.yaml
-- **उदाहरण:** `"x-f5xc-recommended-oneof-variant": "tls_parameters"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** `oneOf` ब्लॉक के लिए, इंगित करता है कि कौन सा वेरिएंट अनुशंसित है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/default_value_enricher.py
+- **Driven by config:** config/discovered_defaults.yaml
+- **Example:** `"x-f5xc-recommended-oneof-variant": "tls_parameters"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-conflicts-with
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** सहोदर प्रॉपर्टीज़ सूचीबद्ध करता है जिन्हें इसके साथ सेट नहीं किया जा सकता।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/conflicts_with_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** सिब्लिंग प्रॉपर्टीज़ सूचीबद्ध करता है जिन्हें इसके साथ सेट नहीं किया जा सकता।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/conflicts_with_enricher.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-requires
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** क्रॉस-फ़ील्ड निर्भरताओं को प्रलेखित करता है जहाँ एक फ़ील्ड के लिए दूसरे को सेट करना आवश्यक है।
-- **उपभोक्ता:** compile_catalog.py, xcsh CLI
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
-- **इंजेक्ट करता है:** scripts/utils/dependency_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/minimum_configs.yaml (dependencies सेक्शन)
-- **उदाहरण:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** क्रॉस-फ़ील्ड निर्भरताओं को प्रलेखित करता है जहाँ एक फ़ील्ड को दूसरे को सेट करने की आवश्यकता होती है।
+- **Consumers:** compile_catalog.py, xcsh CLI
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/dependency_enricher.py
+- **Driven by config:** config/minimum_configs.yaml (dependencies section)
+- **Example:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-constraints
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** लाइव-API प्रोबिंग या स्थिर पैटर्न से प्राप्त संख्यात्मक / स्ट्रिंग बाधाएँ।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/constraint_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/constraint_patterns.yaml
-- **उदाहरण:** `"x-f5xc-constraints": {"min": 1, "max": 65535, "source": "live-api"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** लाइव-API प्रोबिंग या स्टेटिक पैटर्न से व्युत्पन्न संख्यात्मक/स्ट्रिंग बाधाएं।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/constraint_enricher.py
+- **Driven by config:** config/constraint_patterns.yaml
+- **Example:** `"x-f5xc-constraints": {"min": 1, "max": 65535, "source": "live-api"}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-uniqueness
 
-- **लागू होता है:** schema property
-- **उद्देश्य:** घोषित करता है कि क्या किसी फ़ील्ड को अपने दायरे में अद्वितीय होना चाहिए।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/uniqueness_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** hardcoded
-- **उदाहरण:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** schema property
+- **Purpose:** घोषित करता है कि कोई फ़ील्ड अपने दायरे में अद्वितीय होनी चाहिए या नहीं।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/uniqueness_enricher.py
+- **Driven by config:** hardcoded
+- **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
+- **Pass-through from upstream:** no
 
 ## इंजेक्ट किए गए — ऑपरेशन-स्तर
 
 ### x-f5xc-required-fields
 
-- **लागू होता है:** operation
-- **उद्देश्य:** ऑपरेशन-बॉडी फ़ील्ड्स का नाम बताता है जो सफलता के लिए प्रदान किए जाने चाहिए।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/operation_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/operation_metadata.yaml
-- **उदाहरण:** `"x-f5xc-required-fields": ["metadata.name", "spec.domains"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** ऑपरेशन-बॉडी फ़ील्ड के नाम जो सफलता के लिए प्रदान किए जाने चाहिए।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-required-fields": ["metadata.name", "spec.domains"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-danger-level
 
-- **लागू होता है:** operation
-- **उद्देश्य:** किसी ऑपरेशन के प्रभाव क्षेत्र को वर्गीकृत करता है (low/medium/high/critical)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
-- **इंजेक्ट करता है:** scripts/utils/operation_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/operation_metadata.yaml
-- **उदाहरण:** `"x-f5xc-danger-level": "high"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** किसी ऑपरेशन के विस्फोट त्रिज्या को वर्गीकृत करता है (low/medium/high/critical)।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-danger-level": "high"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-confirmation-required
 
-- **लागू होता है:** operation
-- **उद्देश्य:** क्या CLI/UI को निष्पादन से पहले उपयोगकर्ता से पुष्टि के लिए पूछना चाहिए।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** boolean
-- **मान स्कीमा:** `{"type": "boolean"}`
-- **इंजेक्ट करता है:** scripts/utils/operation_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/operation_metadata.yaml
-- **उदाहरण:** `"x-f5xc-confirmation-required": true`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** क्या CLI/UI को निष्पादन से पहले उपयोगकर्ता से पुष्टि के लिए संकेत देना चाहिए।
+- **Consumers:** multiple
+- **Value type:** boolean
+- **Value schema:** `{"type": "boolean"}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-confirmation-required": true`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-side-effects
 
-- **लागू होता है:** operation
-- **उद्देश्य:** ऑपरेशन के प्रेक्षणीय दुष्प्रभावों को सूचीबद्ध करता है (पुनरारंभ, पुन:कॉन्फ़िगर, आदि)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/utils/operation_metadata_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/operation_metadata.yaml
-- **उदाहरण:** `"x-f5xc-side-effects": ["invalidates-cache"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** ऑपरेशन के अवलोकनीय साइड इफेक्ट्स सूचीबद्ध करता है (रीस्टार्ट, रीकॉन्फ़िगर, आदि)।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-side-effects": ["invalidates-cache"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-response-time
 
-- **लागू होता है:** operation
-- **उद्देश्य:** डिस्कवरी के दौरान इस ऑपरेशन के लिए अनुभवजन्य रूप से मापा गया प्रतिक्रिया समय।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery_enrichment.yaml
-- **उदाहरण:** `"x-f5xc-discovered-response-time": {"p50_ms": 40, "p95_ms": 120}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** डिस्कवरी के दौरान इस ऑपरेशन के लिए अनुभवजन्य रूप से मापा गया प्रतिक्रिया समय।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-response-time": {"p50_ms": 40, "p95_ms": 120}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-rate-limits
 
-- **लागू होता है:** operation
-- **उद्देश्य:** लाइव API से प्रकट प्रेक्षित दर-सीमा हेडर / व्यवहार।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** object
-- **मान स्कीमा:** `{"type": "object"}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery_enrichment.yaml
-- **उदाहरण:** `"x-f5xc-discovered-rate-limits": {"limit": 100, "window_s": 60}`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** लाइव API से सामने आई देखी गई रेट-लिमिट हेडर / व्यवहार।
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-rate-limits": {"limit": 100, "window_s": 60}`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-discovered-error-catalog
 
-- **लागू होता है:** operation
-- **उद्देश्य:** लाइव डिस्कवरी के दौरान प्रेक्षित त्रुटि प्रतिक्रियाओं की सूची, नमूना पेलोड के साथ।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "object"}}`
-- **इंजेक्ट करता है:** scripts/utils/discovery_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/discovery_enrichment.yaml
-- **उदाहरण:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** operation
+- **Purpose:** लाइव डिस्कवरी के दौरान देखी गई त्रुटि प्रतिक्रियाओं का कैटालॉग, नमूना पेलोड के साथ।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/discovery_enricher.py
+- **Driven by config:** config/discovery_enrichment.yaml
+- **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
+- **Pass-through from upstream:** no
 
 ## इंजेक्ट किए गए — इंडेक्स-स्तर (डोमेन मेटाडेटा)
 
 ### x-f5xc-category
 
-- **लागू होता है:** info
-- **उद्देश्य:** किसी डोमेन के लिए शीर्ष-स्तरीय CLI / UI / डॉक्स / Terraform समूहीकरण श्रेणी।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-category": "networking"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** किसी डोमेन के लिए शीर्ष-स्तरीय CLI / UI / दस्तावेज़ / Terraform समूहन श्रेणी।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-category": "networking"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-primary-resources
 
-- **लागू होता है:** info
-- **उद्देश्य:** डोमेन को परिभाषित करने वाले प्राथमिक संसाधन प्रकारों की सूची।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-primary-resources": ["http_loadbalancer"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** प्राथमिक रिसोर्स प्रकारों की सूची जो डोमेन को परिभाषित करते हैं।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-primary-resources": ["http_loadbalancer"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-critical-resources
 
-- **लागू होता है:** info
-- **उद्देश्य:** ऐसे संसाधन जिनके लिए उच्च सावधानी आवश्यक है (प्रोडक्शन-महत्वपूर्ण)।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/critical_resources.yaml
-- **उदाहरण:** `"x-f5xc-critical-resources": ["tls_certificate"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** वे रिसोर्स जिन्हें उन्नत देखभाल की आवश्यकता है (प्रोडक्शन-क्रिटिकल)।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/critical_resources.yaml
+- **Example:** `"x-f5xc-critical-resources": ["tls_certificate"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-short
 
-- **लागू होता है:** info
-- **उद्देश्य:** छोटा (~60 अक्षर) डोमेन विवरण। लंबे विवरणों के लिए प्रॉपर्टी स्तर पर भी लागू होता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/property_description_short_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/property_description_short.yaml
-- **उदाहरण:** `"x-f5xc-description-short": "Layer-7 HTTPS load balancing."`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** संक्षिप्त (~60 अक्षर) डोमेन विवरण। लंबे विवरणों के लिए प्रॉपर्टी स्तर पर भी लागू होता है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/property_description_short_enricher.py
+- **Driven by config:** config/property_description_short.yaml
+- **Example:** `"x-f5xc-description-short": "Layer-7 HTTPS load balancing."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-medium
 
-- **लागू होता है:** info
-- **उद्देश्य:** मध्यम (~150 अक्षर) डोमेन विवरण। प्रॉपर्टी स्तर पर भी लागू होता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/property_description_short_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/property_description_short.yaml
-- **उदाहरण:** `"x-f5xc-description-medium": "HTTP/HTTPS load balancer with advanced routing, WAF, and TLS."`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** मध्यम (~150 अक्षर) डोमेन विवरण। प्रॉपर्टी स्तर पर भी लागू होता है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/property_description_short_enricher.py
+- **Driven by config:** config/property_description_short.yaml
+- **Example:** `"x-f5xc-description-medium": "HTTP/HTTPS load balancer with advanced routing, WAF, and TLS."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-description-long
 
-- **लागू होता है:** info
-- **उद्देश्य:** लंबा (~500 अक्षर) डोमेन विवरण।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/utils/description_enricher.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_descriptions.yaml
-- **उदाहरण:** `"x-f5xc-description-long": "Full paragraph describing the domain..."`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** लंबा (~500 अक्षर) डोमेन विवरण।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/description_enricher.py
+- **Driven by config:** config/domain_descriptions.yaml
+- **Example:** `"x-f5xc-description-long": "Full paragraph describing the domain..."`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-complexity
 
-- **लागू होता है:** info
-- **उद्देश्य:** इस डोमेन में कॉन्फ़िगरेशन बनाने की सापेक्ष जटिलता स्तर।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string", "enum": ["low", "medium", "high"]}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-complexity": "medium"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** इस डोमेन में कॉन्फ़िगरेशन बनाने के लिए सापेक्ष जटिलता स्तर।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-complexity": "medium"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-requires-tier
 
-- **लागू होता है:** info
-- **उद्देश्य:** आवश्यक न्यूनतम F5 XC सब्सक्रिप्शन टियर।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-requires-tier": "enterprise"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** न्यूनतम F5 XC सब्सक्रिप्शन टियर जो आवश्यक है।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-requires-tier": "enterprise"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-is-preview
 
-- **लागू होता है:** info
-- **उद्देश्य:** किसी डोमेन को प्रीव्यू / बीटा सुविधा के रूप में चिह्नित करता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** boolean
-- **मान स्कीमा:** `{"type": "boolean"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-is-preview": false`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** किसी डोमेन को प्रीव्यू / बीटा फ़ीचर के रूप में चिह्नित करता है।
+- **Consumers:** multiple
+- **Value type:** boolean
+- **Value schema:** `{"type": "boolean"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-is-preview": false`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-use-cases
 
-- **लागू होता है:** info
-- **उद्देश्य:** नामित उपयोग परिदृश्य जिनका यह डोमेन समर्थन करता है।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-use-cases": ["tls-termination", "waf"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** नामित उपयोग मामले जिनका यह डोमेन समर्थन करता है।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-use-cases": ["tls-termination", "waf"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-icon
 
-- **लागू होता है:** info
-- **उद्देश्य:** UI में इस डोमेन को रेंडर करते समय उपयोग करने के लिए आइकन पहचानकर्ता।
-- **उपभोक्ता:** Web UI
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-icon": "f5xc:load-balancer"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** UI में इस डोमेन को रेंडर करते समय उपयोग किया जाने वाला आइकन पहचानकर्ता।
+- **Consumers:** Web UI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-icon": "f5xc:load-balancer"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-logo-svg
 
-- **लागू होता है:** info
-- **उद्देश्य:** डोमेन का प्रतिनिधित्व करने वाले ब्रांड लोगो के लिए इनलाइन SVG (या पथ)।
-- **उपभोक्ता:** Web UI
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-logo-svg": "<svg>...</svg>"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** डोमेन का प्रतिनिधित्व करने वाले ब्रांड लोगो के लिए इनलाइन SVG (या पथ)।
+- **Consumers:** Web UI
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-logo-svg": "<svg>...</svg>"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-related-domains
 
-- **लागू होता है:** info
-- **उद्देश्य:** आमतौर पर इसके साथ उपयोग किए जाने वाले अन्य डोमेन के क्रॉस-लिंक।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** array
-- **मान स्कीमा:** `{"type": "array", "items": {"type": "string"}}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-related-domains": ["origin_pool", "tls_certificate"]`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** अन्य डोमेन के क्रॉस-लिंक जो आमतौर पर इसके साथ मिलकर उपयोग किए जाते हैं।
+- **Consumers:** multiple
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-related-domains": ["origin_pool", "tls_certificate"]`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-doc-section
 
-- **लागू होता है:** info
-- **उद्देश्य:** रेंडर किए गए डॉक्स के लिए दस्तावेज़ सेक्शन / नेविगेशन समूहीकरण स्लग।
-- **उपभोक्ता:** multiple
-- **मान का प्रकार:** string
-- **मान स्कीमा:** `{"type": "string"}`
-- **इंजेक्ट करता है:** scripts/merge_specs.py
-- **कॉन्फ़िग द्वारा संचालित:** config/domain_patterns.yaml
-- **उदाहरण:** `"x-f5xc-doc-section": "load-balancing"`
-- **अपस्ट्रीम से पास-थ्रू:** no
+- **Applied at:** info
+- **Purpose:** रेंडर किए गए दस्तावेज़ों के लिए दस्तावेज़ीकरण अनुभाग / नेव ग्रुपिंग स्लग।
+- **Consumers:** multiple
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/merge_specs.py
+- **Driven by config:** config/domain_patterns.yaml
+- **Example:** `"x-f5xc-doc-section": "load-balancing"`
+- **Pass-through from upstream:** no
 
 ## अपस्ट्रीम पास-थ्रू
 
 ### x-ves-proto-package
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-ves-proto-package": "ves.io.schema.virtual_host"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-package": "ves.io.schema.virtual_host"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-file
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-ves-proto-file": "ves.io/schema/virtual_host/types.proto"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-file": "ves.io/schema/virtual_host/types.proto"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-message
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-ves-proto-message": "ves.io.schema.virtual_host.CreateSpecType"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-message": "ves.io.schema.virtual_host.CreateSpecType"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-service
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-ves-proto-service": "ves.io.schema.virtual_host.API"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-service": "ves.io.schema.virtual_host.API"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-proto-rpc
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-ves-proto-rpc": "ves.io.schema.api_sec.api_crawler.API.Create"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-ves-proto-rpc": "ves.io.schema.api_sec.api_crawler.API.Create"`
+- **Pass-through from upstream:** yes
 
 ### x-displayname
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** `"x-displayname": "Namespace"`
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** `"x-displayname": "Namespace"`
+- **Pass-through from upstream:** yes
 
 ### x-ves-oneof
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** F5 अपस्ट्रीम डॉक्स देखें।
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** F5 अपस्ट्रीम दस्तावेज़ देखें।
+- **Pass-through from upstream:** yes
 
 ### x-ves-default
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** F5 अपस्ट्रीम डॉक्स देखें।
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** F5 अपस्ट्रीम दस्तावेज़ देखें।
+- **Pass-through from upstream:** yes
 
 ### x-ves-required
 
-- **लागू होता है:** upstream
-- **उद्देश्य:** F5 अपस्ट्रीम स्पेक से बिना बदलाव के संरक्षित।
-- **उपभोक्ता:** N/A
-- **मान का प्रकार:** varies
-- **मान स्कीमा:** N/A
-- **इंजेक्ट करता है:** upstream
-- **कॉन्फ़िग द्वारा संचालित:** upstream
-- **उदाहरण:** F5 अपस्ट्रीम डॉक्स देखें।
-- **अपस्ट्रीम से पास-थ्रू:** yes
+- **Applied at:** upstream
+- **Purpose:** F5 अपस्ट्रीम विनिर्देश से अपरिवर्तित संरक्षित।
+- **Consumers:** N/A
+- **Value type:** varies
+- **Value schema:** N/A
+- **Injected by:** upstream
+- **Driven by config:** upstream
+- **Example:** F5 अपस्ट्रीम दस्तावेज़ देखें।
+- **Pass-through from upstream:** yes

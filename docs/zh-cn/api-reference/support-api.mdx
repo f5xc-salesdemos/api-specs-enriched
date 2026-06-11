@@ -1,6 +1,6 @@
 ---
 title: "\U0001F3AB 支持 API"
-description: 工单、升级和网络诊断。
+description: 工单、升级处理与网络诊断。
 sidebar:
   hidden: true
 i18n:
@@ -8,48 +8,48 @@ i18n:
   translator: machine
 ---
 
-包含评论、严重级别变更和解决方案跟踪的问题生命周期管理。用于连接分析的数据包捕获。
+问题生命周期管理，包含评论、严重性变更与解决追踪。用于连接分析的数据包捕获。
 
-- **类别**：运维
+- **类别**：运营
 - **复杂度**：中等
-- **路径数**：53 | **模式数**：167
+- **路径数**：53 | **Schema 数**：167
 - **层级**：标准
-- **相关领域**：`statistics`、`observability`
+- **相关域**：`statistics`、`observability`
 
 ## 使用场景
 
-- 提交和管理支持工单
-- 跟踪客户支持请求
-- 访问运维支持文档
+- 提交并管理支持工单
+- 追踪客户支持请求
+- 访问运营支持文档
 
 ## 主要资源
 
-- **support_case**：用于问题跟踪和解决的支持案例
-- **alert**：用于运维通知的系统告警
-- **audit_log**：用于合规和安全跟踪的审计日志
+- **support_case**：用于问题追踪与解决的支持案例
+- **alert**：用于运营通知的系统告警
+- **audit_log**：用于合规与安全追踪的审计日志
 
-## 端点
+## 接口端点
 
 | 方法 | 路径 | 描述 |
 |--------|------|-------------|
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | 重新同步 CRL。 |
-| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | 为子租户创建的支持工单列表。 |
-| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | 免税验证请求。 |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | 列出为子租户创建的支持工单。 |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | 税务豁免验证请求。 |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | 创建客户支持。 |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | 列出所有租户工单。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | 关闭客户支持工单。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | 向客户支持工单添加评论。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | 升级工单。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | 更改工单优先级。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | 重新打开已关闭的客户支持工单。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | 重新开启已关闭的客户支持工单。 |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | 列出客户支持。 |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | 获取客户支持。 |
 | GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | 获取附件。 |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | 检查调试信息收集。 |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | 诊断 |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | 下载调试信息收集。 |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | 健康检查 |
-| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | 修改密码。 |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | 健康状态 |
+| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | 更改密码。 |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | 启动调试信息收集。 |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | 列出 F5XC 服务。 |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | 状态 |
@@ -71,7 +71,7 @@ i18n:
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | 列出 Tcpdump。 |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | 停止 Tcpdump。 |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
-| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA 项目和问题类型。 |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA 项目与问题类型。 |
 | POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | 验证工单跟踪系统。 |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | 创建工单跟踪系统。 |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | 替换工单跟踪系统。 |

@@ -1,6 +1,6 @@
 ---
 title: "\U0001F510 Api API"
-description: คำนิยามอินเทอร์เฟซ การตรวจสอบสคีมา และการจัดกลุ่ม
+description: คำจำกัดความอินเทอร์เฟซ การตรวจสอบความถูกต้องของ schema และการจัดกลุ่ม
 sidebar:
   hidden: true
 i18n:
@@ -8,30 +8,30 @@ i18n:
   translator: machine
 ---
 
-การจัดทำรายการทรัพยากรพร้อมการจำแนกประเภทอัตโนมัติและการกำหนดโปรไฟล์ความปลอดภัย ลำดับชั้นขององค์กรแบ่งส่วนการเข้าถึงตามฟังก์ชันหรือนโยบายการป้องกัน
+การจัดทำแคตตาล็อกทรัพยากรด้วยการจำแนกประเภทอัตโนมัติและการสร้างโปรไฟล์ความปลอดภัย ลำดับชั้นขององค์กรแบ่งการเข้าถึงตามฟังก์ชันหรือนโยบายการป้องกัน
 
-- **หมวดหมู่**: ความปลอดภัย
+- **ประเภท**: ความปลอดภัย
 - **ความซับซ้อน**: ขั้นสูง
-- **เส้นทาง**: 45 | **สคีมา**: 279
+- **Paths**: 45 | **Schemas**: 279
 - **ระดับ**: ขั้นสูง
 - **โดเมนที่เกี่ยวข้อง**: `virtual`, `network_security`
 
 ## กรณีการใช้งาน
 
-- ค้นพบและจัดทำรายการ API
+- ค้นพบและจัดทำแคตตาล็อก API
 - ทดสอบความปลอดภัยและพฤติกรรมของ API
-- จัดการข้อมูลรับรองของ API
+- จัดการข้อมูลประจำตัว API
 - กำหนดกลุ่ม API และนโยบายการทดสอบ
 
 ## ทรัพยากรหลัก
 
-- **api_definition**: คำนิยามสคีมา API สำหรับการค้นพบและการป้องกัน
+- **api_definition**: คำจำกัดความ schema ของ API สำหรับการค้นพบและการป้องกัน
 - **api_endpoint**: การกำหนดค่าและการป้องกัน API endpoint แต่ละรายการ
-- **api_rate_limit**: การกำหนดค่าการจำกัดอัตรา API สำหรับการควบคุมทราฟฟิก
+- **api_rate_limit**: การกำหนดค่าการจำกัดอัตราของ API สำหรับการควบคุมทราฟฟิก
 
-## จุดเชื่อมต่อ
+## Endpoints
 
-| เมธอด | เส้นทาง | คำอธิบาย |
+| วิธีการ | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers` | สร้าง API Crawler |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_crawlers/&#123;metadata.name&#125;` | แทนที่ API crawler |
@@ -43,12 +43,12 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions` | แสดงรายการ API Definition |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | ดึงข้อมูล API Definition |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;` | ลบ API Definition |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/loadbalancers` | ดึงข้อมูล Loadbalancer ที่อ้างอิง |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/loadbalancers` | ดึงข้อมูล Loadbalancers ที่อ้างอิง |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/mark_as_non_api` | ทำเครื่องหมายว่าไม่ใช่ API |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/move_to_inventory` | ย้ายไปยัง API Inventory |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/remove_from_inventory` | ลบออกจาก API Inventory |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_definitions/&#123;name&#125;/unmark_as_non_api` | ยกเลิกเครื่องหมายว่าไม่ใช่ API |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions_without_shared` | แสดงรายการ API Definition ที่พร้อมใช้งาน |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/api_definitions_without_shared` | แสดงรายการ API Definitions ที่ใช้ได้ |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys` | สร้าง API Discovery |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/api_discoverys/&#123;metadata.name&#125;` | แทนที่ API Discovery |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/api_discoverys` | แสดงรายการ API Discovery |
@@ -71,8 +71,8 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | ดึงข้อมูล API Group |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/app_api_groups/&#123;name&#125;` | ลบ App API Group |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/api_endpoint_protection` | แนะนำกฎการป้องกัน API endpoint |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/data_exposure` | แนะนำกฎข้อมูลที่มีความละเอียดอ่อน |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/oas_validation` | แนะนำกฎการตรวจสอบ Open API specification |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/data_exposure` | แนะนำกฎข้อมูลที่ละเอียดอ่อน |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/oas_validation` | แนะนำกฎการตรวจสอบความถูกต้องของข้อกำหนด Open API |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/api_sec/rule_suggestion/rate_limit` | แนะนำกฎการจำกัดอัตรา |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations` | สร้าง Code Base Integration |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/code_base_integrations/&#123;metadata.name&#125;` | แทนที่ Code Base Integration |
@@ -89,4 +89,4 @@ i18n:
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./api/)
-- [ไฟล์ JSON ข้อกำหนด OpenAPI](../specifications/api/api.json)
+- [OpenAPI Specification JSON](../specifications/api/api.json)

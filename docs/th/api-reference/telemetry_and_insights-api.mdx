@@ -1,6 +1,6 @@
 ---
-title: "\U0001F4C9 API เทเลเมทรีและข้อมูลเชิงลึก"
-description: การเก็บรวบรวม วิเคราะห์ และแสดงผลเมตริก
+title: "\U0001F4C9 Telemetry And Insights API"
+description: การเก็บรวบรวมเมตริก การวิเคราะห์ และการแสดงภาพ
 sidebar:
   hidden: true
 i18n:
@@ -8,58 +8,58 @@ i18n:
   translator: machine
 ---
 
-เอนด์พอยต์สำหรับการเก็บรวบรวม การจัดเก็บเมตริก และการสร้างข้อมูลเชิงลึกสำหรับเวิร์กโฟลว์การสังเกตการณ์ระบบ
+จุดปลายทางการรวบรวมข้อมูล การจัดเก็บเมตริก และการสร้างข้อมูลเชิงลึกสำหรับเวิร์กโฟลว์การสังเกตการณ์
 
-- **หมวดหมู่**: Operations
+- **หมวดหมู่**: การดำเนินงาน
 - **ความซับซ้อน**: ปานกลาง
-- **Paths**: 27 | **Schemas**: 181
-- **ระดับ**: Standard
+- **เส้นทาง**: 27 | **สคีมา**: 181
+- **ระดับ**: มาตรฐาน
 - **โดเมนที่เกี่ยวข้อง**: `observability`, `statistics`
 
 ## กรณีการใช้งาน
 
-- เก็บรวบรวมและวิเคราะห์ข้อมูลเทเลเมทรี
+- รวบรวมและวิเคราะห์ข้อมูลเทเลเมทรี
 - สร้างข้อมูลเชิงลึกที่นำไปปฏิบัติได้จากเมตริก
 - กำหนดค่านโยบายการเก็บรวบรวมเทเลเมทรี
 
 ## ทรัพยากรหลัก
 
-- **telemetry_receiver**: ตัวรับเทเลเมทรีสำหรับการเก็บรวบรวมข้อมูล
+- **telemetry_receiver**: ตัวรับเทเลเมทรีสำหรับการรวบรวมข้อมูล
 - **insight_query**: คิวรีข้อมูลเชิงลึกสำหรับการวิเคราะห์
 
-## เอนด์พอยต์
+## จุดปลายทาง
 
-| เมธอด | พาธ | คำอธิบาย |
+| วิธีการ | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity` | คิวรีกราฟการเชื่อมต่อ |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity/edge` | คิวรีเอดจ์การเชื่อมต่อ |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity/edge` | คิวรีขอบการเชื่อมต่อ |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/connectivity/node` | คิวรีโหนดการเชื่อมต่อ |
 | GET | `/api/discovery/custom/namespaces/&#123;namespace&#125;/discovered_services` | แสดงรายการบริการที่ค้นพบตามประเภทที่ระบุ |
 | GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services` | แสดงรายการบริการที่ค้นพบ |
-| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | รับออบเจกต์บริการที่ค้นพบ |
-| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | สร้าง HTTP/HTTPS load balancer |
-| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | สร้าง TCP load balancer |
-| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | ปิดการมองเห็นในทุก workspace |
-| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | เปิดการมองเห็นในทุก workspace |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/health_status` | สถานะสุขภาพของบริการที่ค้นพบ |
+| GET | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;` | ดึงข้อมูลออบเจ็กต์บริการที่ค้นพบ |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_http_load_balancer` | สร้างตัวกระจายโหลด HTTP/HTTPS |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/create_tcp_load_balancer` | สร้างตัวกระจายโหลด TCP |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/disable_visibility` | ปิดใช้งานการมองเห็นในทุกเวิร์กสเปซ |
+| POST | `/api/discovery/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/enable_visibility` | เปิดใช้งานการมองเห็นในทุกเวิร์กสเปซ |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/discovered_services/&#123;name&#125;/health_status` | สถานะความสมบูรณ์ของบริการที่ค้นพบ |
 | POST | `/api/discovery/namespaces/&#123;namespace&#125;/suggest-values` | แนะนำค่า |
-| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | สมัครสมาชิก Flow Collection |
-| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | ตรวจสอบสถานะการสมัครสมาชิก Flow Collection |
-| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | ยกเลิกการสมัครสมาชิก Flow Collection |
-| POST | `/api/data/namespaces/system/flows/flow_collection` | Flow Collection |
-| POST | `/api/data/namespaces/system/flows/top_flow_anomalies` | การตรวจจับความผิดปกติของ Flow |
-| POST | `/api/data/namespaces/system/flows/top_talkers` | Top Talkers |
+| POST | `/api/config/namespaces/system/flow-collection/addon/subscribe` | สมัครรับการรวบรวมโฟลว์ |
+| GET | `/api/config/namespaces/system/flow-collection/addon/subscription-status` | ตรวจสอบสถานะการสมัครรับการรวบรวมโฟลว์ |
+| POST | `/api/config/namespaces/system/flow-collection/addon/unsubscribe` | ยกเลิกการสมัครรับการรวบรวมโฟลว์ |
+| POST | `/api/data/namespaces/system/flows/flow_collection` | การรวบรวมโฟลว์ |
+| POST | `/api/data/namespaces/system/flows/top_flow_anomalies` | การตรวจจับความผิดปกติของโฟลว์ |
+| POST | `/api/data/namespaces/system/flows/top_talkers` | ผู้ส่งข้อมูลสูงสุด |
 | POST | `/api/data/namespaces/system/graph/all_ns_service` | คิวรีกราฟบริการทุก Namespace |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/lb_cache_content` | คิวรีความสามารถในการแคช |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service` | คิวรีกราฟบริการ |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/graph/service/app_types` | ประเภทแอปพลิเคชัน |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/edge` | คิวรีเอดจ์บริการ |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/edge` | คิวรีขอบบริการ |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node` | คิวรีโหนดบริการ |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node/instance` | คิวรีอินสแตนซ์บริการ |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/service/node/instances` | คิวรีอินสแตนซ์บริการหลายรายการ |
-| GET | `/api/data/namespaces/&#123;namespace&#125;/&#123;kind&#125;/&#123;name&#125;/status_at_site` | รับสถานะ |
+| GET | `/api/data/namespaces/&#123;namespace&#125;/&#123;kind&#125;/&#123;name&#125;/status_at_site` | ดึงข้อมูลสถานะ |
 
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./telemetry_and_insights/)
-- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/telemetry_and_insights.json)
+- [ข้อกำหนด OpenAPI ในรูปแบบ JSON](../specifications/api/telemetry_and_insights.json)

@@ -12,27 +12,26 @@ i18n:
 
 Fuente de verdad para cada extensión `x-*` que aparece en
 `docs/specifications/api/*.json`. La paridad con
-`scripts/utils/extension_constants.py` es verificada por
+`scripts/utils/extension_constants.py` es aplicada por
 `tests/test_extension_catalog.py`.
 
 Aquí se documentan tres clases de extensiones:
 
-- **Inyectadas aquí** — extensiones que nuestros enriquecedores añaden (`x-f5xc-*` y
+- **Inyectadas aquí** — extensiones que agregan nuestros enriquecedores (`x-f5xc-*` y
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de
-  descubrimiento). Estas son las que las herramientas posteriores deben consumir.
-- **Paso directo desde upstream** — extensiones que F5 emite en las especificaciones fuente
+  descubrimiento). Estas son las que deben consumir las herramientas posteriores.
+- **Paso a través desde upstream** — extensiones que F5 emite en las especificaciones fuente
   y que preservamos sin cambios (`x-ves-proto-*`, `x-displayname`, etc.).
   Documentadas por transparencia, pero no controladas por este repositorio.
-- **Inyección futura** — aún no emitidas; documentadas aquí en el momento
-  en que un enriquecedor comience a producirlas (no aplicable en la
-  población inicial).
+- **Inyectadas en el futuro** — aún no emitidas; documentadas aquí en el momento
+  en que un enriquecedor comienza a producirlas (no aplica en la población inicial).
 
 ## Esquema de entrada
 
 Cada entrada a continuación tiene exactamente esta forma. La prueba de paridad en
 `tests/test_extension_catalog.py` tolera que el cuerpo de la sección sea
-reducido siempre que el encabezado `### x-name` exista y la
-bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
+básico, siempre que exista el encabezado `### x-nombre` y que el indicador
+`Pass-through from upstream:` esté presente con el valor `yes` o `no`.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -62,7 +61,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** Bloque de metadatos a nivel CLI (nombre de herramienta, indicaciones de versión, agrupación de dominio).
+- **Purpose:** Bloque de metadatos para toda la CLI (nombre de herramienta, indicaciones de versión, agrupación por dominio).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -86,7 +85,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag del activo de lanzamiento de la especificación fuente upstream.
+- **Purpose:** ETag del activo de versión de la especificación fuente upstream.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -122,7 +121,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Marca de tiempo de cuándo se ejecutó el pase de descubrimiento de la API en vivo.
+- **Purpose:** Marca de tiempo de cuando se ejecutó el paso de descubrimiento de la API en vivo.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -146,12 +145,12 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** URL a la página de documentación de referencia de la API alojada para este dominio.
+- **Purpose:** URL de la página de documentación de referencia de API alojada para este dominio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
 - **Injected by:** scripts/utils/external_docs_enricher.py
-- **Driven by config:** none (derivado del nombre de dominio)
+- **Driven by config:** none (derived from domain name)
 - **Example:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
 - **Pass-through from upstream:** no
 
@@ -170,7 +169,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** Guía curada de mejores prácticas para un dominio.
+- **Purpose:** Guía de mejores prácticas seleccionadas para un dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -208,7 +207,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Conjunto mínimo viable de campos requeridos para realizar exitosamente un POST/PUT de este recurso.
+- **Purpose:** Conjunto mínimo de campos viable requerido para hacer POST/PUT correctamente en este recurso.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -220,7 +219,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** Proporciona metadatos de restricción, recomendación y clasificación de namespace para un recurso.
+- **Purpose:** Proporciona metadatos de restricción, recomendación y clasificación de espacio de nombres para un recurso.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -232,7 +231,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Orden sugerido de propiedades para la presentación en UI/CLI.
+- **Purpose:** Ordenamiento sugerido de propiedades para la presentación en UI/CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -244,7 +243,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Nombre del tipo de recurso Terraform que corresponde a este esquema.
+- **Purpose:** Nombre del tipo de recurso de Terraform que se asigna a este esquema.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -256,7 +255,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** Nombre de visualización legible para un esquema de recurso (sobreescribe la generación automática).
+- **Purpose:** Nombre de presentación legible por humanos para un esquema de recurso (reemplaza la generación automática).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -282,7 +281,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** Reglas de validación declarativas derivadas de las `ves.io.schema.rules` de protobuf upstream.
+- **Purpose:** Reglas de validación declarativas derivadas de `ves.io.schema.rules` de protobuf upstream.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -318,7 +317,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** Sugerencias de autocompletado en shell (enumeración estática o comando dinámico).
+- **Purpose:** Sugerencias de autocompletado de shell (enumeración estática o comando dinámico).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -330,7 +329,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Valor(es) predeterminado(s) para mostrar en documentación generada e interfaces de usuario.
+- **Purpose:** Valor(es) predeterminado(s) para mostrar en documentación y UI generadas.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -354,7 +353,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Lista las combinaciones de funcionalidades con nombre que requieren esta propiedad.
+- **Purpose:** Lista combinaciones de características nombradas que requieren esta propiedad.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -366,7 +365,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** Requisitos condicionales (p. ej., requerido cuando un campo hermano es igual a X).
+- **Purpose:** Requisitos condicionales (p. ej. requerido cuando un campo hermano es igual a X).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -378,7 +377,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Aviso de deprecación con guía de reemplazo.
+- **Purpose:** Aviso de obsolescencia con orientación sobre el reemplazo.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -402,7 +401,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Valor recomendado para producción de un campo cuando el valor predeterminado del servidor es subóptimo.
+- **Purpose:** Valor de producción recomendado para un campo donde el valor predeterminado del servidor es subóptimo.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -443,14 +442,14 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
 - **Injected by:** scripts/utils/dependency_enricher.py
-- **Driven by config:** config/minimum_configs.yaml (sección dependencies)
+- **Driven by config:** config/minimum_configs.yaml (dependencies section)
 - **Example:** `"x-f5xc-requires": [{"field": "tls_config", "required": true, "reason": "use_tls requires tls_config sub-field"}]`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Restricciones numéricas / de cadena derivadas del sondeo de la API en vivo o patrones estáticos.
+- **Purpose:** Restricciones numéricas / de cadena derivadas de sondeo de API en vivo o patrones estáticos.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -476,7 +475,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** Nombra los campos del cuerpo de la operación que deben proporcionarse para tener éxito.
+- **Purpose:** Nombra los campos del cuerpo de la operación que deben proporcionarse para que tenga éxito.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -488,7 +487,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** Clasifica el radio de impacto de una operación (low/medium/high/critical).
+- **Purpose:** Clasifica el radio de impacto de una operación (bajo/medio/alto/crítico).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -500,7 +499,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Si el CLI/UI debe solicitar confirmación al usuario antes de ejecutar.
+- **Purpose:** Indica si la CLI/UI debe solicitar confirmación al usuario antes de ejecutar.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -536,7 +535,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** Cabeceras / comportamiento de límite de tasa observados desde la API en vivo.
+- **Purpose:** Encabezados / comportamiento de límite de tasa observados en la API en vivo.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -548,7 +547,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Catálogo de respuestas de error observadas durante el descubrimiento en vivo, con payloads de ejemplo.
+- **Purpose:** Catálogo de respuestas de error observadas durante el descubrimiento en vivo, con cargas de muestra.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -586,7 +585,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** Recursos que requieren cuidado elevado (críticos para producción).
+- **Purpose:** Recursos que requieren especial cuidado (críticos para producción).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -598,7 +597,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** Descripción corta (~60 caracteres) del dominio. También se aplica a nivel de propiedad para descripciones largas.
+- **Purpose:** Descripción corta del dominio (~60 caracteres). También aplica a nivel de propiedad para descripciones largas.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -610,7 +609,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** Descripción media (~150 caracteres) del dominio. También se aplica a nivel de propiedad.
+- **Purpose:** Descripción media del dominio (~150 caracteres). También aplica a nivel de propiedad.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -622,7 +621,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** Descripción larga (~500 caracteres) del dominio.
+- **Purpose:** Descripción larga del dominio (~500 caracteres).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -634,7 +633,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** Nivel de complejidad relativo para la creación de configuraciones en este dominio.
+- **Purpose:** Nivel de complejidad relativa para la creación de configuraciones en este dominio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -646,7 +645,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** Nivel mínimo de suscripción F5 XC requerido.
+- **Purpose:** Nivel mínimo de suscripción a F5 XC requerido.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -658,7 +657,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Marca un dominio como funcionalidad de vista previa / beta.
+- **Purpose:** Marca un dominio como funcionalidad en vista previa / beta.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -670,7 +669,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** Casos de uso con nombre que este dominio soporta.
+- **Purpose:** Casos de uso nombrados que admite este dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -682,7 +681,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Identificador de icono a utilizar al renderizar este dominio en una UI.
+- **Purpose:** Identificador de icono a usar al renderizar este dominio en una UI.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -706,7 +705,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** Enlaces cruzados a otros dominios que comúnmente se usan junto con este.
+- **Purpose:** Vínculos cruzados a otros dominios que se usan comúnmente junto con este.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -718,7 +717,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Sección de documentación / slug de agrupación de navegación para documentación renderizada.
+- **Purpose:** Slug de sección de documentación / agrupación de navegación para documentación renderizada.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -727,7 +726,7 @@ bandera `Pass-through from upstream:` esté presente con valor `yes` o `no`.
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## Paso directo desde upstream
+## Paso a través desde upstream
 
 ### x-ves-proto-package
 

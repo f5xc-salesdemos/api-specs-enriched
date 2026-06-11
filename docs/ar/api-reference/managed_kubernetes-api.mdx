@@ -1,6 +1,6 @@
 ---
-title: ⚙️ واجهة برمجة تطبيقات Kubernetes المُدارة
-description: التحكم في الوصول المستند إلى الأدوار للعناقيد، أمان الحاويات، وسجلات الحاويات.
+title: ⚙️ واجهة API لـ Kubernetes المُدارة
+description: إدارة RBAC للعناقيد، وأمان الـ pod، وسجلات الحاويات.
 sidebar:
   hidden: true
 i18n:
@@ -8,58 +8,58 @@ i18n:
   translator: machine
 ---
 
-ربط أدوار Kubernetes وسياسات القبول. تكامل السجلات لأحمال عمل EKS وAKS وGKE.
+ارتباطات الأدوار وسياسات القبول في Kubernetes. تكامل السجلات لأحمال عمل EKS وAKS وGKE.
 
 - **الفئة**: البنية التحتية
 - **التعقيد**: متوسط
 - **المسارات**: 20 | **المخططات**: 95
 - **المستوى**: متقدم
-- **النطاقات ذات الصلة**: `container_services`، `sites`، `service_mesh`
+- **النطاقات ذات الصلة**: `container_services`, `sites`, `service_mesh`
 
 ## حالات الاستخدام
 
-- إدارة التحكم في الوصول المستند إلى الأدوار والأمان لعناقيد XCKS (Kubernetes المُدارة)
-- تكوين سياسات أمان الحاويات ووحدات التحكم في القبول
+- إدارة RBAC للعنقود وأمانه في XCKS (Kubernetes المُدار)
+- تهيئة سياسات أمان الـ pod ووحدات التحكم في القبول
 - إدارة سجلات الحاويات لعمليات النشر المؤسسية
-- التكامل مع عناقيد Kubernetes الخارجية (EKS، AKS، GKE)
+- التكامل مع عناقيد Kubernetes الخارجية (EKS وAKS وGKE)
 
 ## الموارد الأساسية
 
-- **mk8s_cluster**: تكوين عنقود Kubernetes المُدار
-- **k8s_cluster_role**: تكوين دور التحكم في الوصول المستند إلى الأدوار لعنقود Kubernetes
+- **mk8s_cluster**: تهيئة عنقود Kubernetes المُدار
+- **k8s_cluster_role**: تهيئة دور RBAC لعنقود Kubernetes
 - **container_registry**: سجل صور الحاويات لصور أحمال العمل
 
 ## نقاط النهاية
 
 | الطريقة | المسار | الوصف |
-|---------|--------|-------|
+|--------|------|-------------|
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys` | إنشاء سجل حاويات. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys/&#123;metadata.name&#125;` | استبدال سجل حاويات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | عرض قائمة سجلات الحاويات. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | الحصول على سجل حاويات. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | حذف سجل حاويات. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | إنشاء مواصفات التكوين. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | استبدال مواصفات التكوين. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | عرض قائمة أدوار العنقود K8s. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | الحصول على مواصفات التكوين. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | حذف دور العنقود K8s. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | إنشاء مواصفات التكوين. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | استبدال مواصفات التكوين. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | عرض قائمة ربط أدوار العنقود K8s. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | الحصول على مواصفات التكوين. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | حذف ربط دور العنقود K8s. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | إنشاء مواصفات التكوين. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | استبدال مواصفات التكوين. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | عرض قائمة قبول أمان الحاويات K8s. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | الحصول على مواصفات التكوين. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | حذف قبول أمان الحاويات K8s. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | إنشاء مواصفات التكوين. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | استبدال مواصفات التكوين. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | عرض قائمة سياسات أمان الحاويات K8s. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | الحصول على مواصفات التكوين. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | حذف سياسة أمان الحاويات K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | سرد سجل الحاويات. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | الحصول على سجل الحاويات. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | حذف سجل الحاويات. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | إنشاء مواصفة التهيئة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | استبدال مواصفة التهيئة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | سرد أدوار عنقود K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | الحصول على مواصفة التهيئة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | حذف دور عنقود K8s. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | إنشاء مواصفة التهيئة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | استبدال مواصفة التهيئة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | سرد ارتباطات أدوار عنقود K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | الحصول على مواصفة التهيئة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | حذف ارتباط دور عنقود K8s. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | إنشاء مواصفة التهيئة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | استبدال مواصفة التهيئة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | سرد قبول أمان الـ Pod في K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | الحصول على مواصفة التهيئة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | حذف قبول أمان الـ Pod في K8s. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | إنشاء مواصفة التهيئة. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | استبدال مواصفة التهيئة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | سرد سياسة أمان الـ Pod في K8s. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | الحصول على مواصفة التهيئة. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | حذف سياسة أمان الـ Pod في K8s. |
 
 ## الروابط
 
-- [مرجع واجهة برمجة التطبيقات التفاعلي](./managed_kubernetes/)
-- [ملف مواصفات OpenAPI بصيغة JSON](../specifications/api/managed_kubernetes.json)
+- [مرجع API التفاعلي](./managed_kubernetes/)
+- [مواصفة OpenAPI بصيغة JSON](../specifications/api/managed_kubernetes.json)

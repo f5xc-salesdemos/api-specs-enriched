@@ -1,6 +1,6 @@
 ---
-title: 源服务器池增强
-description: 源服务器池模式的元数据增强
+title: 源池增强
+description: 源池模式的丰富元数据
 sidebar:
   order: 3
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-origin_pool 相关模式的元数据增强。有关扩展定义，请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
+origin_pool 相关模式的丰富元数据。有关扩展定义，请参阅 [OpenAPI 扩展](../development/#openapi-extensions)。
 
-## 增强的模式
+## 已丰富的模式
 
-### 模式匹配
+### 模式
 
-所有匹配 `origin_pool.*SpecType` 的模式都会接收增强：
+所有匹配 `origin_pool.*SpecType` 的模式均会接收丰富处理：
 
 - `origin_poolCreateSpecType`
 - `origin_poolReplaceSpecType`
@@ -22,7 +22,7 @@ origin_pool 相关模式的元数据增强。有关扩展定义，请参阅 [Ope
 
 ## 必填字段
 
-| 字段 | 适用操作 | 说明 |
+| 字段 | 适用操作 | 备注 |
 |-------|--------------|-------|
 | `metadata.name` | 所有操作 | 1-63 个字符，小写字母数字，模式：`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
 | `metadata.namespace` | 所有操作 | 命名空间标识符 |
@@ -52,64 +52,64 @@ origin_pool 相关模式的元数据增强。有关扩展定义，请参阅 [Ope
 
 ## 服务器应用的默认值
 
-标记为 `x-f5xc-server-default: true` 的字段，在请求中省略时，其 `default` 值由 F5 XC API 服务器应用。
+标记有 `x-f5xc-server-default: true` 的字段，在请求中省略时，其 `default` 值将由 F5 XC API 服务器自动应用。
 
-### 顶级字段
+### 顶层字段
 
 | 字段 | 默认值 | 类型 | 描述 |
 |-------|---------------|------|-------------|
-| `no_tls` | `{}` | object | 禁用到源服务器的 TLS |
+| `no_tls` | `{}` | object | 到源的 TLS 已禁用 |
 | `healthcheck` | `[]` | array | 未配置健康检查 |
 | `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | 轮询负载均衡 |
 | `endpoint_selection` | `DISTRIBUTED` | enum | 使用所有端点（本地 + 远程） |
 
 ### advanced_options 默认值
 
-当未指定 `advanced_options` 时，服务器的行为与设置了以下值相同：
+当未指定 `advanced_options` 时，服务器的行为如同已设置以下值：
 
 | 字段 | 默认值 | 类型 | 描述 |
 |-------|---------------|------|-------------|
-| `connection_timeout` | `2000` | integer | 连接超时时间（毫秒） |
-| `http_idle_timeout` | `300000` | integer | HTTP 空闲超时时间（毫秒，5 分钟） |
+| `connection_timeout` | `2000` | integer | 连接超时（毫秒） |
+| `http_idle_timeout` | `300000` | integer | HTTP 空闲超时（毫秒，5 分钟） |
 | `same_as_endpoint_port` | `{}` | object | 健康检查使用端点端口 |
 | `default_circuit_breaker` | `{}` | object | 默认熔断器设置 |
-| `disable_outlier_detection` | `{}` | object | 禁用异常值检测 |
+| `disable_outlier_detection` | `{}` | object | 异常点检测已禁用 |
 | `no_panic_threshold` | `{}` | object | 无恐慌阈值 |
-| `disable_subsets` | `{}` | object | 禁用子集负载均衡 |
+| `disable_subsets` | `{}` | object | 子集负载均衡已禁用 |
 | `auto_http_config` | `{}` | object | 自动 HTTP 协议协商 |
-| `disable_proxy_protocol` | `{}` | object | 禁用代理协议 |
-| `disable_lb_source_ip_persistance` | `{}` | object | 禁用 LB 源 IP 持久性 |
+| `disable_proxy_protocol` | `{}` | object | 代理协议已禁用 |
+| `disable_lb_source_ip_persistance` | `{}` | object | 负载均衡源 IP 持久化已禁用 |
 
 ### 嵌套对象默认值
 
 | 路径 | 默认值 | 描述 |
 |------|---------------|-------------|
 | `origin_servers[].labels` | `{}` | 空标签对象 |
-| `origin_servers[].public_name.refresh_interval` | `0` | 使用系统默认 DNS 刷新 |
+| `origin_servers[].public_name.refresh_interval` | `0` | 使用系统默认 DNS 刷新间隔 |
 
 ## UI 与服务器默认值的差异
 
-F5 XC Web UI 预选的值与省略字段时 API 应用的值不同。
+F5 XC Web 界面预选的值与省略字段时 API 应用的值不同。
 
-| 字段 | UI 预选值 | 服务器应用值 | 说明 |
+| 字段 | UI 预选值 | 服务器应用值 | 备注 |
 |-------|-----------------|----------------|------|
-| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | 省略字段时，UI 创建的资源与 API 创建的资源不同 |
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | 省略该字段时，通过 UI 创建和通过 API 创建的资源存在差异 |
 
 ## 枚举值
 
 ### loadbalancer_algorithm
 
-| 值 | 描述 | 说明 |
+| 值 | 描述 | 备注 |
 |-------|-------------|-------|
 | `ROUND_ROBIN` | 按轮询顺序选择每个健康端点 | 服务器默认值 |
-| `LEAST_REQUEST` | 选择活跃请求最少的端点 | |
+| `LEAST_REQUEST` | 选择活跃请求数最少的端点 | |
 | `RING_HASH` | 使用端点名称的环形哈希进行一致性哈希 | |
 | `RANDOM` | 随机选择健康端点 | |
-| `LB_OVERRIDE` | 从父级负载均衡器继承哈希策略 | UI 默认值 |
+| `LB_OVERRIDE` | 哈希策略继承自父级负载均衡器 | UI 默认值 |
 
 ### endpoint_selection
 
-| 值 | 描述 | 说明 |
+| 值 | 描述 | 备注 |
 |-------|-------------|-------|
 | `DISTRIBUTED` | 同时考虑远程和本地端点 | 服务器默认值 |
 | `LOCAL_ONLY` | 仅使用本地端点 | |
@@ -117,20 +117,20 @@ F5 XC Web UI 预选的值与省略字段时 API 应用的值不同。
 
 ## OneOf 字段组
 
-互斥字段组。每组中只能指定一个字段：
+互斥字段组。每组中只能指定 **一个** 字段：
 
 | 组 | 字段 | 服务器默认值 |
 |-------|--------|----------------|
-| 端口配置 | `port`, `automatic_port`, `lb_port` | `port`（显式指定） |
-| 到源服务器的 TLS | `no_tls`, `use_tls` | `no_tls` |
+| 端口配置 | `port`, `automatic_port`, `lb_port` | `port`（显式） |
+| 到源的 TLS | `no_tls`, `use_tls` | `no_tls` |
 | 健康检查端口 | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
 | 熔断器 | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
-| 异常值检测 | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
+| 异常点检测 | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
 | 恐慌阈值 | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
 | 子集负载均衡 | `disable_subsets`, `enable_subsets` | `disable_subsets` |
 | HTTP 协议 | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
 | 代理协议 | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
-| LB 源 IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
+| 负载均衡源 IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
 | 连接池 | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
 
 ## 字段约束
@@ -145,25 +145,25 @@ F5 XC Web UI 预选的值与省略字段时 API 应用的值不同。
 
 ## UI 配置选项
 
-F5 XC Web 控制台为源服务器池提供 15 个配置选项：
+F5 XC Web 控制台为源池提供 15 个配置选项：
 
 | # | UI 标签 | API 字段路径 | 类型 | 服务器默认值 |
 |---|----------|----------------|------|----------------|
-| 1 | 源服务器端口 | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port`（显式指定） |
+| 1 | 源服务器端口 | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port`（显式） |
 | 2 | 连接池复用 | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
 | 3 | 健康检查端口 | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
 | 4 | 负载均衡算法 | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
 | 5 | 端点选择 | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
-| 6 | 到源服务器的 TLS | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
+| 6 | 到源的 TLS | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
 | 7 | 连接超时 | `spec.advanced_options.connection_timeout` | integer | 2000 毫秒 |
 | 8 | HTTP 空闲超时 | `spec.advanced_options.http_idle_timeout` | integer | 300000 毫秒 |
 | 9 | 熔断器 | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
-| 10 | 异常值检测 | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
+| 10 | 异常点检测 | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
 | 11 | 恐慌阈值 | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
 | 12 | 子集负载均衡 | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
 | 13 | HTTP 协议 | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
 | 14 | 代理协议 | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
-| 15 | LB 源 IP 持久性 | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+| 15 | 负载均衡源 IP 持久化 | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
 
 ## 数据访问
 
@@ -171,7 +171,7 @@ F5 XC Web 控制台为源服务器池提供 15 个配置选项：
 
 | 文件 | 内容 |
 |------|---------|
-| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`、`origin_poolReplaceSpecType`、`origin_poolGetSpecType` |
+| `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
 | `docs/specifications/api/openapi.json` | 包含所有模式的合并规范 |
 
 ### validation.json 结构
@@ -180,21 +180,21 @@ F5 XC Web 控制台为源服务器池提供 15 个配置选项：
 defaults.resources.origin_pool
 ├── server_applied      # 带有 x-f5xc-server-default: true 的字段
 ├── recommended         # 带有 x-f5xc-recommended-value 的字段
-├── advanced_options    # 嵌套 advanced_options 默认值
+├── advanced_options    # 嵌套的 advanced_options 默认值
 ├── oneof_choices       # OneOf 默认选择
 └── ui_vs_server        # UI 与服务器的差异
 ```
 
 ## 源服务器类型
 
-源服务器可以使用不同的类型变体来指定。类型决定了需要哪些额外的必填字段。
+源服务器可以使用不同的类型变体进行指定。类型决定了所需的附加字段。
 
 ### 已实现的类型
 
 | 类型 | 描述 | 必填字段 | 状态 |
 |------|-------------|-----------------|--------|
-| `public_name` | 具有公共 DNS 名称的源服务器 | `dns_name` | ✅ 已完成 |
-| `public_ip` | 具有公共 IP 地址的源服务器 | `ip`（IPv4） | ✅ 已完成 |
+| `public_name` | 使用公共 DNS 名称的源服务器 | `dns_name` | ✅ 已完成 |
+| `public_ip` | 使用公共 IP 地址的源服务器 | `ip`（IPv4） | ✅ 已完成 |
 
 ### 示例：public_name
 
@@ -226,40 +226,40 @@ defaults.resources.origin_pool
 
 ## 待办：依赖站点的源服务器类型
 
-以下源服务器类型需要在实现之前完成"站点"资源逻辑开发：
+以下源服务器类型在实现之前需要完成"站点"资源逻辑的开发：
 
 | 类型 | 描述 | 必填字段 | 状态 |
 |------|-------------|-----------------|--------|
-| `private_ip` | 具有私有/公共 IP 和站点信息的源服务器 | `ip`、`site_locator`、`network_choice`、`snat_pool` | 🔲 等待站点逻辑 |
-| `private_name` | 具有 DNS 名称和站点信息的源服务器 | `dns_name`、`site_locator`、`network_choice`、`snat_pool` | 🔲 等待站点逻辑 |
-| `k8s_service` | 具有站点信息的 Kubernetes 服务 | `service_name`、`site_locator`、`network_choice` | 🔲 等待站点逻辑 |
-| `consul_service` | 具有站点信息的 HashiCorp Consul 服务 | `service_name`、`site_locator`、`network_choice` | 🔲 等待站点逻辑 |
+| `private_ip` | 带有私有/公共 IP 和站点信息的源服务器 | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 待完成站点逻辑 |
+| `private_name` | 带有 DNS 名称和站点信息的源服务器 | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 待完成站点逻辑 |
+| `k8s_service` | 带有站点信息的 Kubernetes 服务 | `service_name`, `site_locator`, `network_choice` | 🔲 待完成站点逻辑 |
+| `consul_service` | 带有站点信息的 HashiCorp Consul 服务 | `service_name`, `site_locator`, `network_choice` | 🔲 待完成站点逻辑 |
 
 ### 实现要求
 
-在完整记录这些类型之前，需要：
+在对这些类型进行完整记录之前，需要完成以下工作：
 
 1. **站点资源发现** - 记录 `site` 资源模式和 site_locator 模式
-2. **网络选择枚举** - 记录 `network_choice` 约束值（site_local_inside、site_local_outside 等）
+2. **网络选择枚举** - 记录 `network_choice` 的约束值（site_local_inside、site_local_outside 等）
 3. **SNAT 池选项** - 记录 SNAT 池配置模式
 4. **跨资源引用** - 定义 origin_pool 如何引用站点资源
 
 ### 跟踪
 
 - 配置占位符：`config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
-- 相关冲刺：站点资源模式增强
+- 相关迭代：站点资源模式丰富化
 
 ## 相关文档
 
-- [开发指南 - OpenAPI 扩展](../development/#openapi-extensions) - 扩展定义和用法
-- [验证规范](../validation-spec/) - validation.json 格式和结构
-- [健康检查增强](./healthcheck-enhancements/) - 健康检查模式增强
+- [开发指南 - OpenAPI 扩展](../development/#openapi-extensions) - 扩展定义与用法
+- [验证规范](../validation-spec/) - validation.json 格式与结构
+- [健康检查增强](./healthcheck-enhancements/) - 健康检查模式丰富化
 
 ## 变更日志
 
 | 版本 | 日期 | 变更内容 |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | 添加了源服务器类型章节，包含 public_name/public_ip；为依赖站点的类型添加了 TODO 标记 |
-| 2.1.1 | 2026-01-18 | 重写为纯 API 参考文档；移除了下游代码示例 |
+| 2.1.2 | 2026-01-18 | 新增包含 public_name/public_ip 的源服务器类型章节；为依赖站点的类型添加 TODO 标记 |
+| 2.1.1 | 2026-01-18 | 重写为纯 API 参考；移除下游代码示例 |
 | 2.1.0 | 2026-01-18 | 更新为 validation.json 中的统一默认值结构 |
-| 2.0.33 | 2026-01-17 | 初始源服务器池增强文档 |
+| 2.0.33 | 2026-01-17 | 源池增强文档初始版本 |

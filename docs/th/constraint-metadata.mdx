@@ -1,8 +1,8 @@
 ---
-title: ระบบเมทาดาต้าข้อจำกัด
+title: ระบบเมทาดาตาข้อจำกัด
 description: >-
-  เมทาดาต้าข้อจำกัดที่ครอบคลุมสำหรับการสร้างโดย AI
-  แบบกำหนดแน่นอนและการตรวจสอบความถูกต้อง
+  เมทาดาตาข้อจำกัดที่ครอบคลุมสำหรับการสร้างและตรวจสอบความถูกต้องด้วย AI
+  แบบกำหนดได้
 sidebar:
   order: 2
 i18n:
@@ -10,12 +10,12 @@ i18n:
   translator: machine
 ---
 
-**วัตถุประสงค์**: เมทาดาต้าข้อจำกัดที่ครอบคลุมสำหรับการสร้างโดย AI แบบกำหนดแน่นอน การตรวจสอบความถูกต้องผ่าน CLI และการบังคับใช้ schema ของ Terraform
+**วัตถุประสงค์**: เมทาดาตาข้อจำกัดที่ครอบคลุมสำหรับการสร้าง AI แบบกำหนดได้, การตรวจสอบความถูกต้อง CLI และการบังคับใช้ schema ของ Terraform
 
 **ส่วนขยาย**: `x-f5xc-constraints`
 **เวอร์ชัน**: 3.3.0
-**สถานะ**: ใช้งานจริง
-**ผู้ใช้งาน**: ผู้ช่วย AI, เครื่องมือ CLI, Terraform providers, ส่วนขยาย IDE, ตัวตรวจสอบ API
+**สถานะ**: Production
+**ผู้ใช้งาน**: AI assistants, เครื่องมือ CLI, Terraform providers, IDE extensions, API validators
 
 ---
 
@@ -24,30 +24,30 @@ i18n:
 1. [ภาพรวม](#overview)
 2. [โครงสร้างส่วนขยาย](#extension-structure)
 3. [ประเภทข้อจำกัด](#constraint-types)
-4. [คำอธิบายภาษาธรรมชาติ](#natural-language-descriptions)
+4. [คำอธิบายในภาษาธรรมชาติ](#natural-language-descriptions)
 5. [ตัวอย่างการตรวจสอบความถูกต้อง](#validation-examples)
-6. [คะแนนความเชื่อมั่น](#confidence-scores)
-7. [การผสานรวมกับการค้นพบ](#discovery-integration)
+6. [คะแนนความมั่นใจ](#confidence-scores)
+7. [การผสานรวมการค้นพบ](#discovery-integration)
 8. [คู่มือการผสานรวมเครื่องมือ](#tool-integration-guide)
 
 ---
 
 ## ภาพรวม
 
-ส่วนขยาย `x-f5xc-constraints` ให้ความรู้แบบกำหนดแน่นอนเกี่ยวกับข้อจำกัดในการตรวจสอบความถูกต้องของฟิลด์ ช่วยให้:
+ส่วนขยาย `x-f5xc-constraints` ให้ความรู้แบบกำหนดได้เกี่ยวกับข้อจำกัดการตรวจสอบความถูกต้องของฟิลด์ ช่วยให้สามารถ:
 
-- **ผู้ช่วย AI**: สร้างการกำหนดค่าที่ถูกต้องโดยไม่ต้องรับข้อมูลจากผู้ใช้สำหรับรายละเอียดข้อจำกัด
-- **เครื่องมือ CLI**: ให้คำแนะนำการป้อนข้อมูล การตรวจสอบความถูกต้อง และข้อความแสดงข้อผิดพลาดที่ถูกต้อง
+- **AI Assistants**: สร้างการกำหนดค่าที่ถูกต้องโดยไม่ต้องรับข้อมูลจากผู้ใช้สำหรับรายละเอียดข้อจำกัด
+- **เครื่องมือ CLI**: ให้คำแนะนำการป้อนข้อมูลที่ถูกต้อง การตรวจสอบความถูกต้อง และข้อความแสดงข้อผิดพลาด
 - **Terraform**: บังคับใช้ข้อจำกัดในขั้นตอน plan ไม่ใช่ขั้นตอน apply
-- **ส่วนขยาย IDE**: การตรวจสอบความถูกต้องแบบเรียลไทม์และคำแนะนำการเติมอัตโนมัติ
-- **ตัวตรวจสอบ API**: การตรวจสอบก่อนส่งเพื่อลดข้อผิดพลาดของ API
+- **IDE Extensions**: การตรวจสอบความถูกต้องแบบเรียลไทม์และคำแนะนำ autocomplete
+- **API Validators**: การตรวจสอบความถูกต้องก่อนส่งเพื่อลดข้อผิดพลาด API
 
-### สถิติความครอบคลุม
+### สถิติการครอบคลุม
 
-- **ข้อจำกัด 9,851 รายการ** ครอบคลุม F5 XC API specs ทั้งหมด
-- **รูปแบบมากกว่า 50 ประเภท** (string, array, numeric)
-- **ความเชื่อมั่น 95%** สำหรับฟิลด์ที่มีความสำคัญสูง (ชื่อ, พอร์ต, ตัวระบุ)
-- **การปรับประสาน 3 ระดับ**: EXISTING > DISCOVERY > INFERRED
+- **9,851 ข้อจำกัด** ครอบคลุม API specs ทั้งหมดของ F5 XC
+- **50+ ประเภทรูปแบบ** (string, array, numeric)
+- **ความมั่นใจ 95%** ในฟิลด์ที่มีความสำคัญสูง (ชื่อ, พอร์ต, ตัวระบุ)
+- **การประสาน 3 ระดับ**: EXISTING > DISCOVERY > INFERRED
 
 ---
 
@@ -81,16 +81,16 @@ i18n:
 | ฟิลด์ | ประเภท | คำอธิบาย |
 |-------|------|-------------|
 | `constraintType` | string | ประเภทข้อมูล (string, array, number, object) |
-| `deterministic` | boolean | แฟล็กความเชื่อมั่นสูง (ความเชื่อมั่น >= 0.9) สำหรับการสร้างโดย AI |
-| `category` | string | หมวดหมู่ข้อจำกัดสำหรับการจัดกลุ่มและรายงาน |
-| *(คีย์ข้อจำกัด)* | หลากหลาย | คีย์ข้อจำกัดเฉพาะประเภทที่แผ่อยู่ในระดับบนสุด (เช่น `minLength`, `maxItems`, `minimum`) |
-| `metadata` | object | การติดตามแหล่งที่มา ความเชื่อมั่น เวลาที่ตรวจสอบ |
+| `deterministic` | boolean | แฟล็กความมั่นใจสูง (confidence >= 0.9) สำหรับการสร้าง AI |
+| `category` | string | หมวดหมู่ข้อจำกัดสำหรับการจัดกลุ่มและการรายงาน |
+| *(constraint keys)* | various | คีย์ข้อจำกัดเฉพาะประเภทที่แบนราบอยู่ในระดับบนสุด (เช่น `minLength`, `maxItems`, `minimum`) |
+| `metadata` | object | การติดตามแหล่งที่มา ความมั่นใจ และ timestamp การตรวจสอบความถูกต้อง |
 
 ---
 
 ## ประเภทข้อจำกัด
 
-### ข้อจำกัดสตริง
+### ข้อจำกัด String
 
 ```json
 {
@@ -128,23 +128,23 @@ i18n:
 | รูปแบบ | คำอธิบาย | ตัวอย่าง |
 |--------|-------------|---------|
 | `dns-label` | DNS label ตาม RFC 1123 (1-63 ตัวอักษร) | `my-service` |
-| `fqdn` | ชื่อโดเมนแบบเต็ม (Fully qualified domain name) | `api.example.com` |
+| `fqdn` | ชื่อโดเมนแบบสมบูรณ์ (Fully qualified domain name) | `api.example.com` |
 | `email` | ที่อยู่อีเมลตาม RFC 5322 | `user@example.com` |
 | `url` | URI/URL ตาม RFC 3986 | `https://example.com/api` |
 | `ipv4` | ที่อยู่ IPv4 | `192.168.1.1` |
 | `ipv6` | ที่อยู่ IPv6 | `2001:db8::1` |
 | `uuid` | UUID ตาม RFC 4122 | `550e8400-e29b-41d4-a716-446655440000` |
-| `date-time` | เวลาประทับแบบ ISO 8601 | `2026-01-19T12:00:00Z` |
+| `date-time` | timestamp แบบ ISO 8601 | `2026-01-19T12:00:00Z` |
 | `date` | วันที่แบบ ISO 8601 | `2026-01-19` |
 | `time` | เวลาแบบ ISO 8601 | `12:00:00` |
-| `json` | สตริง JSON (แยกวิเคราะห์ได้) | `{"key": "value"}` |
-| `yaml` | สตริง YAML (แยกวิเคราะห์ได้) | `key: value` |
-| `base64` | สตริงเข้ารหัส Base64 | `SGVsbG8gV29ybGQ=` |
-| `hex` | สตริงเลขฐานสิบหก | `48656c6c6f` |
-| `mac-address` | ที่อยู่ MAC | `00:1A:2B:3C:4D:5E` |
-| `phone` | หมายเลขโทรศัพท์ E.164 | `+1-555-123-4567` |
+| `json` | JSON string (แปลงได้) | `{"key": "value"}` |
+| `yaml` | YAML string (แปลงได้) | `key: value` |
+| `base64` | String ที่เข้ารหัส Base64 | `SGVsbG8gV29ybGQ=` |
+| `hex` | String เลขฐานสิบหก | `48656c6c6f` |
+| `mac-address` | MAC address | `00:1A:2B:3C:4D:5E` |
+| `phone` | หมายเลขโทรศัพท์แบบ E.164 | `+1-555-123-4567` |
 
-### ข้อจำกัดอาร์เรย์
+### ข้อจำกัด Array
 
 ```json
 {
@@ -161,7 +161,7 @@ i18n:
 }
 ```
 
-### ข้อจำกัดตัวเลข
+### ข้อจำกัด Numeric
 
 ```json
 {
@@ -182,13 +182,13 @@ i18n:
 
 ---
 
-## คำอธิบายภาษาธรรมชาติ
+## คำอธิบายในภาษาธรรมชาติ
 
-### ข้อจำกัดรูปแบบสตริง
+### ข้อจำกัดรูปแบบ String
 
 **DNS Labels** (`format: "dns-label"`):
-- ชื่อ DNS label ต้องมี 1-63 ตัวอักษรเป็นตัวพิมพ์เล็กและตัวเลข
-- อนุญาตให้ใช้ขีดกลางแต่ไม่ใช่ที่ตำแหน่งเริ่มต้น/สิ้นสุด (RFC 1123)
+- ชื่อ DNS label ต้องเป็นตัวอักษรพิมพ์เล็กและตัวเลข 1-63 ตัวอักษร
+- อนุญาตให้ใช้ขีดกลางแต่ไม่ที่ต้นหรือปลาย (RFC 1123)
 - ตัวอย่าง: `my-service`, `api-gateway`, `lb-prod-01`
 
 **ที่อยู่อีเมล** (`format: "email"`):
@@ -197,13 +197,13 @@ i18n:
 - ตัวอย่าง: `admin@example.com`, `api+webhook@service.io`
 
 **FQDNs** (`format: "fqdn"`):
-- ชื่อโดเมนแบบเต็ม (Fully Qualified Domain Names) ต้องมี 1-253 ตัวอักษร
-- แยกด้วยจุดเป็น DNS labels
+- Fully Qualified Domain Names ต้องมี 1-253 ตัวอักษร
+- DNS labels คั่นด้วยจุด
 - ตัวอย่าง: `api.example.com`, `service.production.internal`
 
 **URLs** (`format: "url"`):
-- URLs ต้องเป็น URIs ที่ถูกต้องตาม RFC 3986
-- ต้องรวม scheme (http/https)
+- URLs ต้องเป็น URI ที่ถูกต้องตาม RFC 3986
+- ต้องมี scheme (http/https)
 - ตัวอย่าง: `https://api.example.com/v1`, `http://localhost:8080`
 
 **ที่อยู่ IPv4** (`format: "ipv4"`):
@@ -211,14 +211,14 @@ i18n:
 - ตัวอย่าง: `192.168.1.1`, `10.0.0.1`
 
 **UUIDs** (`format: "uuid"`):
-- UUIDs ต้องเป็นไปตามรูปแบบ RFC 4122
+- UUIDs ต้องเป็นรูปแบบ RFC 4122
 - ตัวอย่าง: `550e8400-e29b-41d4-a716-446655440000`
 
-**เวลาประทับ** (`format: "date-time"`):
-- เวลาประทับต้องอยู่ในรูปแบบ ISO 8601
+**Timestamps** (`format: "date-time"`):
+- Timestamps ต้องเป็นรูปแบบ ISO 8601
 - ตัวอย่าง: `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
 
-### ข้อจำกัดตัวเลข
+### ข้อจำกัด Numeric
 
 **หมายเลขพอร์ต**:
 - หมายเลขพอร์ตต้องเป็นจำนวนเต็มระหว่าง 1 ถึง 65535
@@ -227,24 +227,24 @@ i18n:
 **VLAN IDs**:
 - VLAN IDs ต้องเป็นจำนวนเต็มระหว่าง 1 ถึง 4094 (มาตรฐาน 802.1Q)
 
-**ค่าหมดเวลา**:
-- ค่าหมดเวลาต้องอยู่ระหว่าง 1-3600 วินาที (สูงสุด 1 ชั่วโมง)
+**Timeouts**:
+- Timeouts ต้องอยู่ระหว่าง 1-3600 วินาที (สูงสุด 1 ชั่วโมง)
 
-### ข้อจำกัดอาร์เรย์
+### ข้อจำกัด Array
 
 **Origin Pools**:
-- อาร์เรย์ของ origin pools ต้องมีอย่างน้อย 1 รายการ สูงสุด 50 รายการ
+- Array ของ origin pools ต้องมีอย่างน้อย 1 รายการ สูงสุด 50 รายการ
 - แต่ละรายการต้องไม่ซ้ำกัน
 
-**แท็ก**:
-- อาร์เรย์แท็กอนุญาตให้มี 0-100 รายการ
+**Tags**:
+- Array ของ tags อนุญาต 0-100 รายการ
 - รายการไม่จำเป็นต้องไม่ซ้ำกัน
 
 ---
 
 ## ตัวอย่างการตรวจสอบความถูกต้อง
 
-### ตัวอย่างที่ 1: การตรวจสอบชื่อ DNS Label
+### ตัวอย่างที่ 1: การตรวจสอบความถูกต้องของชื่อ DNS Label
 
 **ข้อจำกัด**:
 ```json
@@ -265,13 +265,13 @@ i18n:
 - ✅ `web`
 
 **ค่าที่ไม่ถูกต้อง**:
-- ❌ `My-Service` (ไม่อนุญาตตัวพิมพ์ใหญ่)
-- ❌ `-my-service` (ขีดกลางอยู่ที่ตำแหน่งเริ่มต้น)
-- ❌ `my-service-` (ขีดกลางอยู่ที่ตำแหน่งสิ้นสุด)
-- ❌ `my_service` (ไม่อนุญาตขีดล่าง)
+- ❌ `My-Service` (ไม่อนุญาตให้ใช้ตัวพิมพ์ใหญ่)
+- ❌ `-my-service` (ขีดกลางที่ต้น)
+- ❌ `my-service-` (ขีดกลางที่ปลาย)
+- ❌ `my_service` (ไม่อนุญาตให้ใช้ขีดล่าง)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (ยาวเกินไป)
 
-### ตัวอย่างที่ 2: การตรวจสอบหมายเลขพอร์ต
+### ตัวอย่างที่ 2: การตรวจสอบความถูกต้องของหมายเลขพอร์ต
 
 **ข้อจำกัด**:
 ```json
@@ -286,16 +286,16 @@ i18n:
 **ค่าที่ถูกต้อง**:
 - ✅ `80` (HTTP)
 - ✅ `443` (HTTPS)
-- ✅ `8080` (HTTP ทางเลือกที่ใช้กันทั่วไป)
+- ✅ `8080` (HTTP สำรองที่นิยมใช้)
 - ✅ `65535` (พอร์ตสูงสุด)
 
 **ค่าที่ไม่ถูกต้อง**:
 - ❌ `0` (ต่ำกว่าค่าต่ำสุด)
-- ❌ `65536` (สูงกว่าค่าสูงสุด)
+- ❌ `65536` (เกินค่าสูงสุด)
 - ❌ `-1` (ค่าลบ)
-- ❌ `"80"` (สตริง ไม่ใช่ตัวเลข)
+- ❌ `"80"` (string ไม่ใช่ number)
 
-### ตัวอย่างที่ 3: การตรวจสอบขนาดอาร์เรย์
+### ตัวอย่างที่ 3: การตรวจสอบความถูกต้องของขนาด Array
 
 **ข้อจำกัด**:
 ```json
@@ -310,120 +310,120 @@ i18n:
 
 **ค่าที่ถูกต้อง**:
 - ✅ `["origin-1"]` (1 รายการ)
-- ✅ `["origin-1", "origin-2", "origin-3"]` (3 รายการ ไม่ซ้ำกันทั้งหมด)
+- ✅ `["origin-1", "origin-2", "origin-3"]` (3 รายการ ทั้งหมดไม่ซ้ำกัน)
 
 **ค่าที่ไม่ถูกต้อง**:
-- ❌ `[]` (ต่ำกว่าค่าต่ำสุด)
-- ❌ `["origin-1", "origin-1"]` (รายการซ้ำกัน)
-- ❌ `[อาร์เรย์ที่มี 51 รายการ]` (สูงกว่าค่าสูงสุด)
+- ❌ `[]` (ต่ำกว่าจำนวนขั้นต่ำ)
+- ❌ `["origin-1", "origin-1"]` (รายการที่ซ้ำกัน)
+- ❌ `[array ที่มี 51 รายการ]` (เกินจำนวนสูงสุด)
 
 ---
 
-## คะแนนความเชื่อมั่น
+## คะแนนความมั่นใจ
 
 ### การตีความคะแนน
 
 | ช่วง | การตีความ | การใช้งาน |
 |-------|----------------|-------|
-| 0.90-1.00 | **ความเชื่อมั่นสูง** | เปิดใช้งานแฟล็ก deterministic ใช้สำหรับการสร้างโดย AI |
-| 0.70-0.89 | **ความเชื่อมั่นปานกลาง** | แนะนำเท่านั้น ควรยืนยันจากผู้ใช้ |
-| 0.50-0.69 | **ความเชื่อมั่นต่ำ** | เป็นข้อมูลเท่านั้น ต้องการการตรวจสอบจากผู้ใช้ |
+| 0.90-1.00 | **ความมั่นใจสูง** | เปิดใช้แฟล็ก deterministic ใช้สำหรับการสร้าง AI |
+| 0.70-0.89 | **ความมั่นใจปานกลาง** | เชิงคำแนะนำ แนะนำให้ผู้ใช้ยืนยัน |
+| 0.50-0.69 | **ความมั่นใจต่ำ** | เชิงข้อมูลเท่านั้น ต้องให้ผู้ใช้ตรวจสอบความถูกต้อง |
 | < 0.50 | **ต่ำมาก** | ไม่รวมอยู่ในข้อจำกัด |
 
 ### แฟล็ก Deterministic
 
-แฟล็กบูลีน `deterministic` จะถูกตั้งค่าเมื่อ:
-- คะแนนความเชื่อมั่น >= 0.9
-- รูปแบบได้รับการตรวจสอบเทียบกับข้อมูลที่ค้นพบแล้ว หรือ
-- รูปแบบตรงกับมาตรฐานที่เป็นที่ยอมรับ (RFC, ISO เป็นต้น)
+แฟล็ก boolean `deterministic` จะถูกตั้งค่าเมื่อ:
+- คะแนนความมั่นใจ >= 0.9
+- รูปแบบได้รับการตรวจสอบความถูกต้องกับข้อมูลการค้นพบ หรือ
+- รูปแบบตรงกับมาตรฐานที่ได้รับการยอมรับอย่างดี (RFC, ISO เป็นต้น)
 
-**การใช้งานในการสร้างโดย AI**:
+**การใช้งานในการสร้าง AI**:
 ```python
 if constraint.get("deterministic"):
-    # สร้างค่าอัตโนมัติโดยไม่ต้องถามผู้ใช้
+    # Generate value automatically without asking user
     value = generate_from_pattern(constraint)
 else:
-    # ถามผู้ใช้สำหรับข้อมูลพร้อมคำแนะนำจากข้อจำกัด
+    # Ask user for input with constraint hints
     value = prompt_user_with_hints(constraint)
 ```
 
 ---
 
-## การผสานรวมกับการค้นพบ
+## การผสานรวมการค้นพบ
 
 ### ลำดับความสำคัญของแหล่งที่มา
 
-ข้อจำกัดจะถูกปรับประสานโดยใช้ลำดับความสำคัญ 3 ระดับ:
+ข้อจำกัดได้รับการประสานโดยใช้ลำดับความสำคัญ 3 ระดับ:
 
-1. **EXISTING** (ความเชื่อมั่น: 1.0)
-   - ตั้งค่าอย่างชัดเจนใน OpenAPI spec ต้นฉบับ
-   - ไม่ถูกเขียนทับ
+1. **EXISTING** (ความมั่นใจ: 1.0)
+   - ตั้งค่าไว้อย่างชัดเจนใน OpenAPI spec ต้นฉบับ
+   - ไม่มีการแทนที่
 
-2. **DISCOVERY** (ความเชื่อมั่น: 0.99)
-   - สกัดจากการตอบสนองของ F5 XC API แบบสด
-   - รวมกฎการตรวจสอบจาก x-ves-validation-rules
-   - เขียนทับข้อจำกัดที่อนุมานได้
+2. **DISCOVERY** (ความมั่นใจ: 0.99)
+   - ดึงออกมาจาก API responses ของ F5 XC แบบสด
+   - รวมกฎการตรวจสอบความถูกต้องจาก x-ves-validation-rules
+   - แทนที่ข้อจำกัดที่ inferred
 
-3. **INFERRED** (ความเชื่อมั่น: 0.50-0.95)
+3. **INFERRED** (ความมั่นใจ: 0.50-0.95)
    - จับคู่รูปแบบจากชื่อฟิลด์
-   - ลำดับความสำคัญต่ำสุด ถูกเขียนทับโดย discovery หรือ explicit
+   - ลำดับความสำคัญต่ำสุด ถูกแทนที่โดย discovery หรือ explicit
 
 ### แหล่งข้อมูลการค้นพบ
 
-ข้อจำกัดที่ค้นพบถูกสกัดจาก:
+ข้อจำกัดการค้นพบถูกดึงออกมาจาก:
 
-1. **x-ves-validation-rules**: ส่วนขยายการตรวจสอบดั้งเดิมของ F5
+1. **x-ves-validation-rules**: ส่วนขยายการตรวจสอบความถูกต้องของ F5 ดั้งเดิม
    - `ves.io.schema.rules.string.max_len` → `maxLength`
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
 
-2. **แค็ตตาล็อกข้อผิดพลาด**: ข้อความแสดงข้อผิดพลาดของ API ที่ระบุการละเมิดข้อจำกัด
+2. **Error Catalog**: ข้อความแสดงข้อผิดพลาด API ที่ระบุการละเมิดข้อจำกัด
    - "name must be 1-63 characters" → minLength/maxLength
    - "port must be between 1 and 65535" → minimum/maximum
 
-3. **การตรวจสอบการตอบสนอง**: การตอบสนองของ API ที่สำเร็จซึ่งแสดงค่าที่ถูกต้อง
-   - ช่วงค่าที่สังเกตได้
-   - รูปแบบ format จริง
+3. **Response Validation**: API responses ที่สำเร็จซึ่งแสดงค่าที่ถูกต้อง
+   - ช่วงค่าที่สังเกต
+   - รูปแบบจริงของ format
 
 ---
 
 ## คู่มือการผสานรวมเครื่องมือ
 
-### การผสานรวมผู้ช่วย AI
+### การผสานรวม AI Assistant
 
-**สร้างชื่อทรัพยากรที่ถูกต้อง**:
+**สร้างชื่อ resource ที่ถูกต้อง**:
 ```python
 def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
 
     if not constraints.get("deterministic"):
-        # ถามผู้ใช้สำหรับชื่อ
+        # Ask user for name
         return prompt_user("Enter resource name: ")
 
-    # สร้างอัตโนมัติ
+    # Generate automatically
     pattern = constraints.get("pattern")
     max_len = constraints.get("maxLength", 63)
 
-    # สร้างชื่อที่ถูกต้องตรงกับรูปแบบ
+    # Generate valid name matching pattern
     return generate_dns_label(max_length=max_len)
 ```
 
 ### การผสานรวมเครื่องมือ CLI
 
-**ให้การตรวจสอบข้อมูลที่ป้อน**:
+**ให้การตรวจสอบความถูกต้องของข้อมูลที่ป้อน**:
 ```python
 def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # ตรวจสอบความยาว (คีย์ข้อจำกัดอยู่ในระดับบนสุด)
+    # Check length (constraint keys are at top level)
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
     if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
         return False, f"{field_name} must be at most {constraints['maxLength']} characters"
 
-    # ตรวจสอบรูปแบบ
+    # Check pattern
     if "pattern" in constraints:
         import re
         if not re.match(constraints["pattern"], user_value):
@@ -445,7 +445,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // คีย์ข้อจำกัดอยู่ในระดับบนสุด (ไม่มี wrapper "string" ซ้อน)
+    // Constraint keys are at top level (no nested "string" wrapper)
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -460,9 +460,9 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 }
 ```
 
-### การผสานรวมส่วนขยาย IDE
+### การผสานรวม IDE Extension
 
-**การเติมอัตโนมัติและการตรวจสอบ**:
+**Autocomplete และการตรวจสอบความถูกต้อง**:
 ```typescript
 function provideCompletions(field: FieldInfo): CompletionItem[] {
     const constraints = field.schema['x-f5xc-constraints'];
@@ -470,7 +470,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // เพิ่มการเติมอัตโนมัติเฉพาะรูปแบบ
+    // Add format-specific completions
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -479,7 +479,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
         });
     }
 
-    // เพิ่มคำแนะนำการตรวจสอบ
+    // Add validation hint
     if (constraints.deterministic) {
         items.push({
             label: '✨ Auto-generate',
@@ -495,9 +495,9 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ---
 
-## ภาคผนวก: แค็ตตาล็อกรูปแบบข้อจำกัด
+## ภาคผนวก: แคตตาล็อกรูปแบบข้อจำกัด
 
-### รูปแบบความเชื่อมั่นสูง (0.95-0.99)
+### รูปแบบที่มีความมั่นใจสูง (0.95-0.99)
 
 | รูปแบบ | Regex ชื่อฟิลด์ | ประเภทข้อจำกัด | ตัวอย่าง |
 |---------|------------------|-----------------|---------|
@@ -509,12 +509,12 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 | Email | `\bemail$` | String (สูงสุด 254 ตัวอักษร, email) | `user@example.com` |
 | Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
 
-### รูปแบบความเชื่อมั่นปานกลาง (0.80-0.94)
+### รูปแบบที่มีความมั่นใจปานกลาง (0.80-0.94)
 
 | รูปแบบ | Regex ชื่อฟิลด์ | ประเภทข้อจำกัด | ตัวอย่าง |
 |---------|------------------|-----------------|---------|
 | Username | `\b(user\|username)$` | String (1-64 ตัวอักษร, alphanumeric) | `admin` |
-| Display Name | `\b(display_?)?name$` | String (1-256 ตัวอักษร, ข้อความอิสระ) | `My Service` |
+| Display Name | `\b(display_?)?name$` | String (1-256 ตัวอักษร, free text) | `My Service` |
 | Description | `\b(comment\|description\|note)$` | String (สูงสุด 4096 ตัวอักษร) | `Service description` |
 | Path | `\bpath$` | String (สูงสุด 2048 ตัวอักษร) | `/api/v1/resources` |
 
@@ -523,12 +523,12 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 ## การสนับสนุนและข้อเสนอแนะ
 
 - **ปัญหา**: รายงานปัญหาความถูกต้องของข้อจำกัดที่ https://github.com/f5xc-salesdemos/api-specs-enriched/issues
-- **เอกสาร**: เอกสาร API ฉบับเต็มที่ https://f5xc-salesdemos.github.io/api-specs-enriched/
+- **เอกสาร**: เอกสาร API ฉบับสมบูรณ์ที่ https://f5xc-salesdemos.github.io/api-specs-enriched/
 - **การผสานรวม MCP**: ดู repository `f5xc-api-mcp` สำหรับตัวอย่างการผสานรวม MCP server
 
 ---
 
 **เวอร์ชัน**: 3.3.0
 **อัปเดตล่าสุด**: 2026-01-19
-**ข้อจำกัดที่ปรับประสานแล้ว**: 9,851
-**ความครอบคลุมรูปแบบ**: มากกว่า 50 ประเภท
+**ข้อจำกัดที่ประสานแล้ว**: 9,851
+**การครอบคลุมรูปแบบ**: 50+ ประเภท

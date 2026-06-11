@@ -1,6 +1,6 @@
 ---
-title: ☁️ واجهة برمجة تطبيقات البنية التحتية السحابية
-description: موصلات AWS وAzure وGCP ومرفقات VPC.
+title: ☁️ واجهة API للبنية التحتية السحابية
+description: موصلات AWS وAzure وGCP وإرفاقات VPC.
 sidebar:
   hidden: true
 i18n:
@@ -8,69 +8,69 @@ i18n:
   translator: machine
 ---
 
-اتصالات متعددة السحابة مع ربط البوابات وتكوين مسارات الشبكة. تكامل خزنة بيانات الاعتماد وتعداد الشبكات الفرعية.
+اتصالات موفري السحابة المتعددة مع إقران البوابات وتكوين مسار الشبكة. تكامل خزينة بيانات الاعتماد وتعداد الشبكات الفرعية.
 
 - **الفئة**: البنية التحتية
 - **التعقيد**: متوسط
 - **المسارات**: 31 | **المخططات**: 208
 - **المستوى**: قياسي
-- **النطاقات ذات الصلة**: `sites`، `customer_edge`
+- **النطاقات ذات الصلة**: `sites`, `customer_edge`
 
 ## حالات الاستخدام
 
-- الاتصال بمزودي الخدمات السحابية (AWS، Azure، GCP)
-- إدارة بيانات الاعتماد السحابية والمصادقة
-- تكوين الاتصال السحابي والتوفير المرن
-- ربط وإدارة المناطق السحابية
+- الاتصال بموفري السحابة (AWS وAzure وGCP)
+- إدارة بيانات اعتماد السحابة والمصادقة
+- تكوين الاتصال بالسحابة والتوفير المرن
+- ربط مناطق السحابة وإدارتها
 
 ## الموارد الأساسية
 
 - **aws_vpc_site**: نشر موقع AWS VPC مع توفير عقدة الحافة
 - **azure_vnet_site**: نشر موقع Azure VNet مع توفير عقدة الحافة
 - **gcp_vpc_site**: نشر موقع Google Cloud VPC مع توفير عقدة الحافة
-- **cloud_credentials**: بيانات اعتماد مصادقة مزود الخدمة السحابية لنشر المواقع
+- **cloud_credentials**: بيانات اعتماد مصادقة موفر السحابة لنشر الموقع
 
 ## نقاط النهاية
 
 | الطريقة | المسار | الوصف |
 |--------|------|-------------|
-| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | عرض قائمة الأجهزة المعتمدة. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares` | سرد الأجهزة المعتمدة. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/certified_hardwares/&#123;name&#125;` | الحصول على الأجهزة المعتمدة. |
-| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | إعادة تطبيق مرفق VPC. |
+| POST | `/api/sync-cloud-data/namespaces/system/cloud_connect_reapply_vpc_attachment` | إعادة تطبيق إرفاق VPC. |
 | POST | `/api/data/namespaces/system/cloud_connects/metrics` | جميع مقاييس الاتصال السحابي. |
 | POST | `/api/data/namespaces/system/cloud_connects/segment_metrics` | جميع مقاييس شرائح الاتصال السحابي. |
 | POST | `/api/data/namespaces/system/cloud_connects/&#123;name&#125;/metrics` | مقاييس الاتصال السحابي. |
 | POST | `/api/sync-cloud-data/namespaces/system/discover_vpc` | اكتشاف VPC للاتصال السحابي. |
-| POST | `/api/config/namespaces/system/edge_credentials` | بيانات الاعتماد السحابية. |
+| POST | `/api/config/namespaces/system/edge_credentials` | بيانات اعتماد السحابة. |
 | GET | `/api/config/namespaces/system/edge_list` | قائمة الحافة |
-| POST | `/api/data/namespaces/system/top/cloud_connects` | أعلى اتصال سحابي. |
+| POST | `/api/data/namespaces/system/top/cloud_connects` | أفضل الاتصالات السحابية. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects` | إنشاء اتصال سحابي. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_connects/&#123;metadata.name&#125;` | استبدال الاتصال السحابي. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | عرض قائمة الاتصال السحابي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects` | سرد الاتصالات السحابية. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | الحصول على الاتصال السحابي. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_connects/&#123;name&#125;` | حذف الاتصال السحابي. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | إنشاء بيانات الاعتماد السحابية. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss` | إنشاء بيانات اعتماد سحابية. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_credentialss/&#123;metadata.name&#125;` | استبدال بيانات الاعتماد السحابية. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | عرض قائمة بيانات الاعتماد السحابية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss` | سرد بيانات الاعتماد السحابية. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | الحصول على بيانات الاعتماد السحابية. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_credentialss/&#123;name&#125;` | حذف بيانات الاعتماد السحابية. |
-| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | حذف إجباري لعنوان IP المرن السحابي. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | إنشاء عنوان IP مرن سحابي. |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | استبدال عنوان IP المرن السحابي. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | عرض قائمة عناوين IP المرنة السحابية. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | الحصول على عنوان IP المرن السحابي. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | حذف عنوان IP المرن السحابي. |
+| POST | `/api/config/namespaces/system/cloud_elastic_ip/&#123;name&#125;/force-delete` | حذف IP المرن السحابي قسراً. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips` | إنشاء IP مرن سحابي. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_elastic_ips/&#123;metadata.name&#125;` | استبدال IP المرن السحابي. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips` | سرد عناوين IP المرنة السحابية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | الحصول على IP المرن السحابي. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_elastic_ips/&#123;name&#125;` | حذف IP المرن السحابي. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_regions/&#123;metadata.name&#125;` | استبدال المنطقة السحابية. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | عرض قائمة المناطق السحابية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions` | سرد المناطق السحابية. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_regions/&#123;name&#125;` | الحصول على المنطقة السحابية. |
 | POST | `/api/config/namespaces/system/cloud_links/&#123;name&#125;/reapply_config` | رابط سحابي |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links` | إنشاء رابط سحابي. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_links/&#123;metadata.name&#125;` | استبدال الرابط السحابي. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | عرض قائمة الروابط السحابية. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links` | سرد الروابط السحابية. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | الحصول على الرابط السحابي. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_links/&#123;name&#125;` | حذف الرابط السحابي. |
 
 ## الروابط
 
-- [مرجع واجهة برمجة التطبيقات التفاعلي](./cloud_infrastructure/)
-- [ملف مواصفات OpenAPI بتنسيق JSON](../specifications/api/cloud_infrastructure.json)
+- [مرجع API التفاعلي](./cloud_infrastructure/)
+- [مواصفات OpenAPI بصيغة JSON](../specifications/api/cloud_infrastructure.json)

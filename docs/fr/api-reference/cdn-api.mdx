@@ -1,6 +1,6 @@
 ---
-title: "\U0001F680 API Cdn"
-description: Réseaux de diffusion de contenu et de mise en cache en périphérie.
+title: "\U0001F680 Cdn API"
+description: Réseaux de distribution de contenu et de mise en cache en périphérie.
 sidebar:
   hidden: true
 i18n:
@@ -19,19 +19,19 @@ Distribution mondiale avec règles de cache et opérations de purge. Surveillanc
 ## Cas d'utilisation
 
 - Configurer l'équilibrage de charge CDN
-- Gérer les services de réseau de diffusion de contenu
+- Gérer les services de réseau de distribution de contenu
 - Configurer les politiques de mise en cache
-- Gérer la livraison et la distribution de données
+- Gérer la livraison et la distribution des données
 
 ## Ressources principales
 
-- **cdn_loadbalancer** : Équilibreur de charge du réseau de diffusion de contenu pour la mise en cache en périphérie
-- **cdn_origin_pool** : Pool de serveurs d'origine pour l'approvisionnement en contenu CDN
+- **cdn_loadbalancer** : Équilibreur de charge du réseau de distribution de contenu pour la mise en cache en périphérie
+- **cdn_origin_pool** : Pool de serveurs d'origine pour l'approvisionnement de contenu CDN
 
 ## Points de terminaison
 
 | Méthode | Chemin | Description |
-|---------|--------|-------------|
+|--------|------|-------------|
 | POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/block_client/suggestion` | Suggérer une règle de blocage client. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | Suggérer une règle d'atténuation DDoS CDN. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/trust_client/suggestion` | Suggérer une règle de confiance client. |
@@ -42,7 +42,7 @@ Distribution mondiale avec règles de cache et opérations de purge. Surveillanc
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_loadbalancers/&#123;metadata.name&#125;` | Remplacer un équilibreur de charge CDN. |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs` | Obtenir les journaux d'accès CDN. |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/access_logs/aggregation` | Requête d'agrégation des journaux d'accès CDN. |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/get-service-operation-status` | Obtenir le statut d'opération du service. |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/get-service-operation-status` | Obtenir le statut des opérations de service. |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/list-service-operations-status` | Liste des commandes d'opération CDN. |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/metrics` | Obtenir les métriques CDN. |
 | POST | `/api/cdn/namespaces/&#123;namespace&#125;/cdn_loadbalancer/&#123;name&#125;/cache-purge` | Purger le cache CDN. |
@@ -50,20 +50,20 @@ Distribution mondiale avec règles de cache et opérations de purge. Surveillanc
 | POST | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/get_security_config` | Obtenir la configuration de sécurité pour l'équilibreur de charge CDN. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | Obtenir un équilibreur de charge CDN. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;` | Supprimer un équilibreur de charge CDN. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | Obtenir les règles d'auto-atténuation DoS pour l'équilibreur de charge CDN. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | Supprimer une règle d'auto-atténuation DoS pour l'équilibreur de charge CDN. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | Obtenir les règles d'atténuation automatique DoS pour l'équilibreur de charge CDN. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | Supprimer une règle d'atténuation automatique DoS pour l'équilibreur de charge CDN. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules` | Créer une règle de cache CDN. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_cache_rules/&#123;metadata.name&#125;` | Remplacer une règle de cache CDN. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules` | Lister les règles de cache CDN. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules/&#123;name&#125;` | Obtenir une règle de cache CDN. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_cache_rules/&#123;name&#125;` | Supprimer une règle de cache CDN. |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_purge_commands` | Créer une commande de purge de cache CDN. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands` | Lister les commandes de purge de cache CDN. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | Obtenir une commande de purge de cache CDN. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | Supprimer une commande de purge de cache CDN. |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/get-service-operation-status` | Obtenir le statut d'opération du service pour HTTPLB lorsque la mise en cache est activée. |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/list-service-operations-status` | Liste des commandes d'opération HTTPLB lorsque la mise en cache est activée. |
-| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/&#123;name&#125;/cache-purge` | Purger le cache de l'équilibreur de charge. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cdn_purge_commands` | Créer une commande de purge du cache CDN. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands` | Lister les commandes de purge du cache CDN. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | Obtenir une commande de purge du cache CDN. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cdn_purge_commands/&#123;name&#125;` | Supprimer une commande de purge du cache CDN. |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/get-service-operation-status` | Obtenir le statut des opérations de service pour HTTPLB avec mise en cache activée. |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/list-service-operations-status` | Liste des commandes d'opération HTTPLB avec mise en cache activée. |
+| POST | `/api/cdn/namespaces/&#123;namespace&#125;/http_loadbalancer/&#123;name&#125;/cache-purge` | Purger le cache LB. |
 
 ## Liens
 

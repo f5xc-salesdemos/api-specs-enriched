@@ -1,6 +1,6 @@
 ---
-title: 유효성 검사 명세
-description: 유효성 검사 명세의 구조 및 내용
+title: 유효성 검사 사양
+description: 유효성 검사 사양의 구조 및 내용
 sidebar:
   order: 3
 i18n:
@@ -8,15 +8,15 @@ i18n:
   translator: machine
 ---
 
-이 문서는 api-specs-enriched 프로젝트에서 발행하는 유효성 검사 명세의 구조와 내용을 설명합니다.
+이 문서는 api-specs-enriched 프로젝트에서 게시한 유효성 검사 사양의 구조 및 내용을 설명합니다.
 
 ## 개요
 
-유효성 검사 명세는 API 유효성 검사 제약 조건, 기본값 및 구성 메타데이터를 단일 JSON 파일로 통합합니다. 이 명세는 보강된 OpenAPI 사양에서 생성되며 함께 발행됩니다.
+유효성 검사 사양은 API 유효성 검사 제약 조건, 기본값 및 구성 메타데이터를 단일 JSON 파일로 통합합니다. 이 사양은 강화된 OpenAPI 사양에서 생성되며 함께 게시됩니다.
 
-**발행 위치**: `docs/specifications/api/validation.json`
+**게시 위치**: `docs/specifications/api/validation.json`
 
-## 명세 구조
+## 사양 구조
 
 ```json
 {
@@ -61,7 +61,7 @@ i18n:
 
 ### enum_values
 
-제약이 있는 필드에 허용되는 값을 정의합니다.
+제한된 필드에 허용되는 값을 정의합니다.
 
 ```json
 {
@@ -83,7 +83,7 @@ i18n:
 
 ### constraints
 
-타입 수준의 유효성 검사 기본값 및 패턴 기반 규칙입니다.
+유형 수준 유효성 검사 기본값 및 패턴 기반 규칙입니다.
 
 ```json
 {
@@ -98,7 +98,7 @@ i18n:
 
 ### patterns
 
-신뢰도 점수가 포함된 필드 이름 패턴 기반 유효성 검사 규칙입니다.
+신뢰도 점수를 포함한 필드 이름 패턴 기반 유효성 검사 규칙입니다.
 
 ```json
 {
@@ -125,7 +125,7 @@ i18n:
 
 ### defaults
 
-리소스 유형별로 정리된 모든 기본값을 통합 구조로 제공합니다.
+리소스 유형별로 구성된 모든 기본값을 통합 구조로 정리합니다.
 
 ```json
 {
@@ -200,21 +200,21 @@ i18n:
 }
 ```
 
-#### 기본값 카테고리
+#### 기본값 범주
 
-| 카테고리 | 설명 | 출처 |
+| 범주 | 설명 | 출처 |
 |----------|-------------|--------|
-| `server_applied` | 필드가 생략될 때 API가 적용하는 값 | 라이브 API 테스트 |
-| `recommended` | F5 XC 웹 콘솔에서 미리 채워지는 값 | UI 분석 |
-| `advanced_options` | advanced_options 객체 내 중첩된 기본값 | API 탐색 |
+| `server_applied` | 필드가 생략될 때 API가 적용하는 값 | 실시간 API 테스트 |
+| `recommended` | F5 XC 웹 콘솔 사전 입력 값 | UI 분석 |
+| `advanced_options` | advanced_options 객체 내의 중첩된 기본값 | API 검색 |
 | `oneof_choices` | 기본 OneOf 변형 선택 | API 동작 |
 | `oneof_recommended` | 권장 OneOf 변형 | 콘솔 기본값 |
-| `nested_recommended` | 중첩 스키마에 대한 권장 값 | UI 분석 |
-| `ui_vs_server` | UI 기본값이 API 기본값과 다른 경우 | 비교 분석 |
+| `nested_recommended` | 중첩된 스키마에 대한 권장 값 | UI 분석 |
+| `ui_vs_server` | UI 기본값과 API 기본값이 다른 경우 | 비교 분석 |
 
 ### conditional_requirements
 
-상호 배타적 필드 및 조건부 종속성입니다.
+상호 배타적인 필드 및 조건부 종속성입니다.
 
 ```json
 {
@@ -236,7 +236,7 @@ i18n:
 
 ### minimum_configurations
 
-동작 가능한 예제가 포함된 최소 구성입니다.
+작동하는 예시를 포함한 최소 실행 가능 구성입니다.
 
 ```json
 {
@@ -259,21 +259,21 @@ i18n:
 
 ## OpenAPI 확장 매핑
 
-보강된 OpenAPI 사양은 다음 확장을 사용하여 유효성 검사 메타데이터를 포함합니다:
+강화된 OpenAPI 사양은 다음 확장을 사용하여 유효성 검사 메타데이터를 포함합니다:
 
-| 확장 | 용도 | 위치 |
+| 확장 | 목적 | 위치 |
 |-----------|---------|----------|
 | `x-f5xc-required-for` | 컨텍스트별 필수 필드 | 스키마 속성 |
 | `x-f5xc-server-default` | 서버 적용 기본값 표시 | 스키마 속성 |
 | `x-f5xc-recommended-value` | 권장 기본값 | 스키마 속성 |
 | `x-f5xc-recommended-oneof-variant` | 권장 OneOf 변형 | 스키마 정의 |
-| `x-f5xc-conditions` | 조건부 요구사항 | 스키마 속성 |
-| `x-f5xc-minimum-configuration` | 최소 구성 예제 | 스키마 정의 |
-| `x-f5xc-validation` | 탐색 파생 제약 조건 | 스키마 속성 |
+| `x-f5xc-conditions` | 조건부 요구 사항 | 스키마 속성 |
+| `x-f5xc-minimum-configuration` | 최소 구성 예시 | 스키마 정의 |
+| `x-f5xc-validation` | 검색 파생 제약 조건 | 스키마 속성 |
 
 ## 데이터 접근
 
-### 발행 URL
+### 게시 URL
 
 | 출처 | URL |
 |--------|-----|
@@ -286,33 +286,33 @@ i18n:
 
 ## 버전 관리
 
-유효성 검사 명세는 `version` 필드에서 시맨틱 버전 관리를 따릅니다:
+유효성 검사 사양은 `version` 필드에서 시맨틱 버전 관리를 따릅니다:
 
-| 변경 유형 | 버전 증가 | 예시 |
+| 변경 유형 | 버전 업 | 예시 |
 |-------------|--------------|---------|
-| 호환성을 깨는 구조 변경 | 메이저 | 필드 이름 변경, 섹션 제거 |
-| 새로운 유효성 검사 규칙 또는 리소스 | 마이너 | 새로운 리소스 기본값 |
+| 주요 구조 변경 | 메이저 | 필드 이름 변경, 섹션 제거 |
+| 새로운 유효성 검사 규칙 또는 리소스 | 마이너 | 새 리소스 기본값 |
 | 버그 수정 또는 설명 업데이트 | 패치 | 오타 수정 |
 
 ## 조정 우선순위
 
-여러 출처에서 제약 조건을 제공하는 경우, 조정 우선순위는 다음과 같습니다:
+여러 출처에서 제약 조건을 제공하는 경우 조정 우선순위는 다음과 같습니다:
 
-1. **기존** - 원본 OpenAPI 사양의 제약 조건 (최고 우선순위)
-2. **탐색** - 라이브 API 탐색에서 얻은 제약 조건
-3. **추론** - 패턴 매칭에서 얻은 제약 조건 (최저 우선순위)
+1. **기존(Existing)** - 원본 OpenAPI 사양의 제약 조건 (최우선순위)
+2. **검색(Discovery)** - 실시간 API 검색에서 가져온 제약 조건
+3. **추론(Inferred)** - 패턴 매칭에서 가져온 제약 조건 (최하위 우선순위)
 
 ## 관련 문서
 
-- [헬스체크 개선사항](./Enhancements/healthcheck-enhancements/) - 헬스체크 스키마 보강
-- [오리진 풀 개선사항](./Enhancements/originpool-enhancements/) - 오리진 풀 스키마 보강
+- [Healthcheck Enhancements](./Enhancements/healthcheck-enhancements/) - 헬스체크 스키마 강화
+- [Origin Pool Enhancements](./Enhancements/originpool-enhancements/) - 오리진 풀 스키마 강화
 - [CLAUDE.md](../../CLAUDE.md) - AI 어시스턴트 지침
 - [DEVELOPMENT.md](./development/) - 개발자 가이드
 
 ## 변경 이력
 
-| 버전 | 날짜 | 변경사항 |
+| 버전 | 날짜 | 변경 사항 |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | 순수 API 레퍼런스로 재작성; oneof_recommended 및 nested_recommended 카테고리 추가 |
-| 2.1.0 | 2026-01-18 | 분산된 섹션을 대체하는 통합 기본값 구조 |
-| 2.0.0 | 2026-01-15 | 최초 유효성 검사 명세 |
+| 2.1.2 | 2026-01-18 | 순수 API 레퍼런스로 재작성; oneof_recommended 및 nested_recommended 범주 추가 |
+| 2.1.0 | 2026-01-18 | 단편화된 섹션을 대체하는 통합 기본값 구조 |
+| 2.0.0 | 2026-01-15 | 초기 유효성 검사 사양 |

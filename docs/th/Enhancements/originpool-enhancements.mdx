@@ -1,6 +1,6 @@
 ---
 title: การปรับปรุง Origin Pool
-description: เมทาดาต้าเสริมสำหรับสคีมา Origin Pool
+description: ข้อมูลเมตาการเพิ่มประสิทธิภาพสำหรับสคีมา origin pool
 sidebar:
   order: 3
 i18n:
@@ -8,13 +8,13 @@ i18n:
   translator: machine
 ---
 
-เมทาดาต้าเสริมสำหรับสคีมาที่เกี่ยวข้องกับ origin_pool ดู [ส่วนขยาย OpenAPI](../development/#openapi-extensions) สำหรับคำจำกัดความของส่วนขยาย
+ข้อมูลเมตาการเพิ่มประสิทธิภาพสำหรับสคีมาที่เกี่ยวข้องกับ origin_pool ดูคำนิยามส่วนขยายได้ที่ [OpenAPI Extensions](../development/#openapi-extensions)
 
-## สคีมาที่ได้รับการเสริม
+## สคีมาที่เพิ่มประสิทธิภาพแล้ว
 
 ### รูปแบบ
 
-สคีมาทั้งหมดที่ตรงกับ `origin_pool.*SpecType` จะได้รับการเสริม:
+สคีมาทั้งหมดที่ตรงกับ `origin_pool.*SpecType` จะได้รับการเพิ่มประสิทธิภาพ:
 
 - `origin_poolCreateSpecType`
 - `origin_poolReplaceSpecType`
@@ -25,9 +25,9 @@ i18n:
 | ฟิลด์ | จำเป็นสำหรับ | หมายเหตุ |
 |-------|--------------|-------|
 | `metadata.name` | การดำเนินการทั้งหมด | 1-63 ตัวอักษร, ตัวพิมพ์เล็กและตัวเลข, รูปแบบ: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
-| `metadata.namespace` | การดำเนินการทั้งหมด | ตัวระบุ Namespace |
-| `spec.origin_servers` | สร้าง | ขั้นต่ำ 1 รายการ |
-| `spec.port` | สร้าง | 1-65535, ไม่มีค่าเริ่มต้นจากเซิร์ฟเวอร์ |
+| `metadata.namespace` | การดำเนินการทั้งหมด | ตัวระบุ namespace |
+| `spec.origin_servers` | สร้าง | อย่างน้อย 1 รายการ |
+| `spec.port` | สร้าง | 1-65535, ไม่มีค่าเริ่มต้นของเซิร์ฟเวอร์ |
 
 ## การกำหนดค่าขั้นต่ำที่ใช้งานได้
 
@@ -52,25 +52,25 @@ i18n:
 
 ## ค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนด
 
-ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-server-default: true` จะมีค่า `default` ถูกกำหนดโดยเซิร์ฟเวอร์ API ของ F5 XC เมื่อถูกละเว้นจากคำขอ
+ฟิลด์ที่ทำเครื่องหมายด้วย `x-f5xc-server-default: true` จะมีค่า `default` ถูกกำหนดโดย F5 XC API server เมื่อไม่ได้ระบุในคำขอ
 
 ### ฟิลด์ระดับบนสุด
 
-| ฟิลด์ | ค่าเริ่มต้น | ชนิด | คำอธิบาย |
+| ฟิลด์ | ค่าเริ่มต้น | ประเภท | คำอธิบาย |
 |-------|---------------|------|-------------|
 | `no_tls` | `{}` | object | ปิดใช้งาน TLS ไปยัง origin |
-| `healthcheck` | `[]` | array | ไม่มีการกำหนดค่า health check |
+| `healthcheck` | `[]` | array | ไม่ได้กำหนดค่า health check |
 | `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | การกระจายโหลดแบบ round-robin |
-| `endpoint_selection` | `DISTRIBUTED` | enum | ใช้ endpoint ทั้งหมด (ภายในและระยะไกล) |
+| `endpoint_selection` | `DISTRIBUTED` | enum | ใช้ endpoint ทั้งหมด (ในพื้นที่ + ระยะไกล) |
 
 ### ค่าเริ่มต้นของ advanced_options
 
-เมื่อไม่ได้ระบุ `advanced_options` เซิร์ฟเวอร์จะทำงานเสมือนว่าค่าเหล่านี้ถูกตั้งไว้:
+เมื่อไม่ได้ระบุ `advanced_options` เซิร์ฟเวอร์จะทำงานราวกับว่าตั้งค่าเหล่านี้ไว้:
 
-| ฟิลด์ | ค่าเริ่มต้น | ชนิด | คำอธิบาย |
+| ฟิลด์ | ค่าเริ่มต้น | ประเภท | คำอธิบาย |
 |-------|---------------|------|-------------|
 | `connection_timeout` | `2000` | integer | ระยะเวลาหมดเวลาการเชื่อมต่อในหน่วยมิลลิวินาที |
-| `http_idle_timeout` | `300000` | integer | ระยะเวลาหมดเวลา HTTP idle ในหน่วยมิลลิวินาที (5 นาที) |
+| `http_idle_timeout` | `300000` | integer | ระยะเวลา HTTP idle timeout ในหน่วยมิลลิวินาที (5 นาที) |
 | `same_as_endpoint_port` | `{}` | object | Health check ใช้พอร์ตของ endpoint |
 | `default_circuit_breaker` | `{}` | object | การตั้งค่า circuit breaker เริ่มต้น |
 | `disable_outlier_detection` | `{}` | object | ปิดใช้งานการตรวจจับ outlier |
@@ -78,22 +78,22 @@ i18n:
 | `disable_subsets` | `{}` | object | ปิดใช้งานการกระจายโหลดแบบ subset |
 | `auto_http_config` | `{}` | object | การเจรจาโปรโตคอล HTTP อัตโนมัติ |
 | `disable_proxy_protocol` | `{}` | object | ปิดใช้งาน proxy protocol |
-| `disable_lb_source_ip_persistance` | `{}` | object | ปิดใช้งานการคงอยู่ของ IP ต้นทางของ LB |
+| `disable_lb_source_ip_persistance` | `{}` | object | ปิดใช้งาน LB source IP persistence |
 
-### ค่าเริ่มต้นของออบเจ็กต์ที่ซ้อนกัน
+### ค่าเริ่มต้นของออบเจกต์ซ้อนกัน
 
 | เส้นทาง | ค่าเริ่มต้น | คำอธิบาย |
 |------|---------------|-------------|
-| `origin_servers[].labels` | `{}` | ออบเจ็กต์ labels ว่าง |
-| `origin_servers[].public_name.refresh_interval` | `0` | ใช้ค่าเริ่มต้นของระบบสำหรับการรีเฟรช DNS |
+| `origin_servers[].labels` | `{}` | ออบเจกต์ labels ว่างเปล่า |
+| `origin_servers[].public_name.refresh_interval` | `0` | ใช้การรีเฟรช DNS เริ่มต้นของระบบ |
 
-## ความไม่ตรงกันระหว่างค่าเริ่มต้นของ UI และเซิร์ฟเวอร์
+## ความไม่สอดคล้องระหว่าง UI กับค่าเริ่มต้นของเซิร์ฟเวอร์
 
-เว็บ UI ของ F5 XC เลือกค่าล่วงหน้าที่แตกต่างจากค่าที่ API กำหนดเมื่อฟิลด์ถูกละเว้น
+เว็บ UI ของ F5 XC จะเลือกค่าที่แตกต่างจากที่ API กำหนดเมื่อไม่ได้ระบุฟิลด์
 
-| ฟิลด์ | ค่าที่ UI เลือกล่วงหน้า | ค่าที่เซิร์ฟเวอร์กำหนด | หมายเหตุ |
+| ฟิลด์ | UI เลือกไว้ล่วงหน้า | เซิร์ฟเวอร์กำหนด | หมายเหตุ |
 |-------|-----------------|----------------|------|
-| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | ทรัพยากรที่สร้างจาก UI และ API จะแตกต่างกันเมื่อละเว้นฟิลด์ |
+| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | ทรัพยากรที่สร้างจาก UI และ API จะแตกต่างกันเมื่อไม่ได้ระบุฟิลด์ |
 
 ## ค่า Enum
 
@@ -101,27 +101,27 @@ i18n:
 
 | ค่า | คำอธิบาย | หมายเหตุ |
 |-------|-------------|-------|
-| `ROUND_ROBIN` | เลือก endpoint ที่มีสุขภาพดีแต่ละตัวตามลำดับ round-robin | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
-| `LEAST_REQUEST` | เลือก endpoint ที่มีคำขอที่ทำงานอยู่น้อยที่สุด | |
-| `RING_HASH` | การแฮชที่สม่ำเสมอโดยใช้ ring hash ของชื่อ endpoint | |
-| `RANDOM` | เลือก endpoint ที่มีสุขภาพดีแบบสุ่ม | |
-| `LB_OVERRIDE` | นโยบายแฮชสืบทอดจาก load balancer หลัก | ค่าเริ่มต้นของ UI |
+| `ROUND_ROBIN` | เลือก endpoint ที่ดีต่อสุขภาพแต่ละรายการตามลำดับ round-robin | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
+| `LEAST_REQUEST` | เลือก endpoint ที่มีคำขอที่ใช้งานอยู่น้อยที่สุด | |
+| `RING_HASH` | การ hashing แบบสม่ำเสมอโดยใช้ ring hash ของชื่อ endpoint | |
+| `RANDOM` | เลือก endpoint ที่ดีต่อสุขภาพแบบสุ่ม | |
+| `LB_OVERRIDE` | นโยบาย hash สืบทอดจาก load balancer หลัก | ค่าเริ่มต้นของ UI |
 
 ### endpoint_selection
 
 | ค่า | คำอธิบาย | หมายเหตุ |
 |-------|-------------|-------|
-| `DISTRIBUTED` | พิจารณา endpoint ทั้งระยะไกลและภายใน | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
-| `LOCAL_ONLY` | ใช้เฉพาะ endpoint ภายในเท่านั้น | |
-| `LOCAL_PREFERRED` | ใช้ภายในก่อน สำรองเป็นระยะไกลหากไม่พร้อมใช้งาน | |
+| `DISTRIBUTED` | พิจารณาทั้ง endpoint ระยะไกลและในพื้นที่ | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
+| `LOCAL_ONLY` | ใช้เฉพาะ endpoint ในพื้นที่เท่านั้น | |
+| `LOCAL_PREFERRED` | ให้ความสำคัญกับ endpoint ในพื้นที่ หากไม่พร้อมใช้งานจึงใช้ระยะไกล | |
 
 ## กลุ่มฟิลด์ OneOf
 
-กลุ่มฟิลด์ที่แยกจากกัน สามารถระบุได้เพียงหนึ่งฟิลด์จากแต่ละกลุ่มเท่านั้น:
+กลุ่มฟิลด์ที่ใช้ร่วมกันไม่ได้ สามารถระบุได้เพียงหนึ่งฟิลด์จากแต่ละกลุ่มเท่านั้น:
 
 | กลุ่ม | ฟิลด์ | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
 |-------|--------|----------------|
-| การกำหนดค่าพอร์ต | `port`, `automatic_port`, `lb_port` | `port` (ระบุชัดเจน) |
+| การกำหนดค่าพอร์ต | `port`, `automatic_port`, `lb_port` | `port` (กำหนดชัดเจน) |
 | TLS ไปยัง Origin | `no_tls`, `use_tls` | `no_tls` |
 | พอร์ต Health Check | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
 | Circuit Breaker | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
@@ -135,28 +135,28 @@ i18n:
 
 ## ข้อจำกัดของฟิลด์
 
-| ฟิลด์ | ชนิด | ข้อจำกัด |
+| ฟิลด์ | ประเภท | ข้อจำกัด |
 |-------|------|------------|
 | `spec.port` | integer | 1-65535 |
-| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 มิลลิวินาที |
-| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 มิลลิวินาที |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms |
+| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 ms |
 | `spec.advanced_options.panic_threshold` | integer | 0-100 (เปอร์เซ็นต์) |
 | `metadata.name` | string | 1-63 ตัวอักษร, รูปแบบ: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
 
-## ตัวเลือกการกำหนดค่า UI
+## ตัวเลือกการกำหนดค่าใน UI
 
-คอนโซลเว็บ F5 XC แสดงตัวเลือกการกำหนดค่า 15 รายการสำหรับ origin pool:
+เว็บคอนโซลของ F5 XC นำเสนอตัวเลือกการกำหนดค่า 15 รายการสำหรับ origin pool:
 
-| # | ป้ายกำกับ UI | เส้นทางฟิลด์ API | ชนิด | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
+| # | ป้ายกำกับใน UI | เส้นทางฟิลด์ API | ประเภท | ค่าเริ่มต้นของเซิร์ฟเวอร์ |
 |---|----------|----------------|------|----------------|
-| 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (ระบุชัดเจน) |
+| 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (กำหนดชัดเจน) |
 | 2 | Connection Pool Reuse | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
 | 3 | Health Check Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
 | 4 | LoadBalancer Algorithm | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
 | 5 | Endpoint Selection | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
 | 6 | TLS to Origin | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
-| 7 | Connection Timeout | `spec.advanced_options.connection_timeout` | integer | 2000 มิลลิวินาที |
-| 8 | HTTP Idle Timeout | `spec.advanced_options.http_idle_timeout` | integer | 300000 มิลลิวินาที |
+| 7 | Connection Timeout | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
+| 8 | HTTP Idle Timeout | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
 | 9 | Circuit Breaker | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
 | 10 | Outlier Detection | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
 | 11 | Panic Threshold | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
@@ -172,7 +172,7 @@ i18n:
 | ไฟล์ | เนื้อหา |
 |------|---------|
 | `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
-| `docs/specifications/api/openapi.json` | ข้อกำหนดที่รวมกันพร้อมสคีมาทั้งหมด |
+| `docs/specifications/api/openapi.json` | ข้อกำหนดที่รวมไว้พร้อมสคีมาทั้งหมด |
 
 ### โครงสร้าง validation.json
 
@@ -182,19 +182,19 @@ defaults.resources.origin_pool
 ├── recommended         # ฟิลด์ที่มี x-f5xc-recommended-value
 ├── advanced_options    # ค่าเริ่มต้นของ advanced_options ที่ซ้อนกัน
 ├── oneof_choices       # การเลือกค่าเริ่มต้นของ OneOf
-└── ui_vs_server        # ความไม่ตรงกันระหว่าง UI และเซิร์ฟเวอร์
+└── ui_vs_server        # ความไม่สอดคล้องระหว่าง UI กับเซิร์ฟเวอร์
 ```
 
-## ชนิด Origin Server
+## ประเภท Origin Server
 
-สามารถระบุ origin server ได้โดยใช้ชนิดที่แตกต่างกัน ชนิดจะกำหนดว่าต้องใช้ฟิลด์เพิ่มเติมใดบ้าง
+Origin server สามารถระบุได้โดยใช้ตัวแปรประเภทต่าง ๆ โดยประเภทจะกำหนดว่าต้องใช้ฟิลด์เพิ่มเติมใดบ้าง
 
-### ชนิดที่พัฒนาแล้ว
+### ประเภทที่นำไปใช้งานแล้ว
 
-| ชนิด | คำอธิบาย | ฟิลด์ที่จำเป็น | สถานะ |
+| ประเภท | คำอธิบาย | ฟิลด์ที่จำเป็น | สถานะ |
 |------|-------------|-----------------|--------|
-| `public_name` | Origin server ที่มีชื่อ DNS สาธารณะ | `dns_name` | ✅ เสร็จสมบูรณ์ |
-| `public_ip` | Origin server ที่มีที่อยู่ IP สาธารณะ | `ip` (IPv4) | ✅ เสร็จสมบูรณ์ |
+| `public_name` | เซิร์ฟเวอร์ต้นทางที่มีชื่อ DNS สาธารณะ | `dns_name` | ✅ สมบูรณ์ |
+| `public_ip` | เซิร์ฟเวอร์ต้นทางที่มีที่อยู่ IP สาธารณะ | `ip` (IPv4) | ✅ สมบูรณ์ |
 
 ### ตัวอย่าง: public_name
 
@@ -224,42 +224,42 @@ defaults.resources.origin_pool
 }
 ```
 
-## สิ่งที่ต้องทำ: ชนิด Origin Server ที่ขึ้นอยู่กับ Site
+## TODO: ประเภท Origin Server ที่ขึ้นอยู่กับ Site
 
-ชนิด origin server ต่อไปนี้ต้องการการพัฒนาตรรกะทรัพยากร "site" ก่อนการนำไปใช้งาน:
+ประเภท origin server ต่อไปนี้ต้องการการพัฒนาตรรกะทรัพยากร "site" ก่อนการนำไปใช้งาน:
 
-| ชนิด | คำอธิบาย | ฟิลด์ที่จำเป็น | สถานะ |
+| ประเภท | คำอธิบาย | ฟิลด์ที่จำเป็น | สถานะ |
 |------|-------------|-----------------|--------|
-| `private_ip` | Origin server ที่มี IP ส่วนตัว/สาธารณะและข้อมูล site | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 รอตรรกะ site |
-| `private_name` | Origin server ที่มีชื่อ DNS และข้อมูล site | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 รอตรรกะ site |
-| `k8s_service` | บริการ Kubernetes ที่มีข้อมูล site | `service_name`, `site_locator`, `network_choice` | 🔲 รอตรรกะ site |
-| `consul_service` | บริการ HashiCorp Consul ที่มีข้อมูล site | `service_name`, `site_locator`, `network_choice` | 🔲 รอตรรกะ site |
+| `private_ip` | เซิร์ฟเวอร์ต้นทางที่มี IP ส่วนตัว/สาธารณะและข้อมูล site | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 รอตรรกะ site |
+| `private_name` | เซิร์ฟเวอร์ต้นทางที่มีชื่อ DNS และข้อมูล site | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 รอตรรกะ site |
+| `k8s_service` | Kubernetes service ที่มีข้อมูล site | `service_name`, `site_locator`, `network_choice` | 🔲 รอตรรกะ site |
+| `consul_service` | HashiCorp Consul service ที่มีข้อมูล site | `service_name`, `site_locator`, `network_choice` | 🔲 รอตรรกะ site |
 
-### ข้อกำหนดในการพัฒนา
+### ข้อกำหนดในการนำไปใช้งาน
 
-ก่อนที่ชนิดเหล่านี้จะถูกจัดทำเอกสารได้อย่างสมบูรณ์:
+ก่อนที่ประเภทเหล่านี้จะสามารถจัดทำเอกสารได้อย่างครบถ้วน:
 
 1. **การค้นหาทรัพยากร Site** - จัดทำเอกสารสคีมาทรัพยากร `site` และรูปแบบ site_locator
-2. **Enum ของ Network Choice** - จัดทำเอกสารค่าที่จำกัดของ `network_choice` (site_local_inside, site_local_outside เป็นต้น)
+2. **Enum ของ Network Choice** - จัดทำเอกสารค่าที่จำกัดของ `network_choice` (site_local_inside, site_local_outside ฯลฯ)
 3. **ตัวเลือก SNAT Pool** - จัดทำเอกสารรูปแบบการกำหนดค่า SNAT pool
 4. **การอ้างอิงข้ามทรัพยากร** - กำหนดวิธีที่ origin_pool อ้างอิงทรัพยากร site
 
 ### การติดตาม
 
-- ตัวยึดตำแหน่งการกำหนดค่า: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
-- สปรินต์ที่เกี่ยวข้อง: การเสริมสคีมาทรัพยากร Site
+- ตัวแทนการกำหนดค่า: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
+- Sprint ที่เกี่ยวข้อง: การเพิ่มประสิทธิภาพสคีมาทรัพยากร site
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [คู่มือการพัฒนา - ส่วนขยาย OpenAPI](../development/#openapi-extensions) - คำจำกัดความและการใช้งานส่วนขยาย
+- [คู่มือการพัฒนา - OpenAPI Extensions](../development/#openapi-extensions) - คำนิยามและการใช้งานส่วนขยาย
 - [ข้อกำหนดการตรวจสอบ](../validation-spec/) - รูปแบบและโครงสร้างของ validation.json
-- [การปรับปรุง Healthcheck](./healthcheck-enhancements/) - การเสริมสคีมา Healthcheck
+- [การปรับปรุง Healthcheck](./healthcheck-enhancements/) - การเพิ่มประสิทธิภาพสคีมา healthcheck
 
 ## บันทึกการเปลี่ยนแปลง
 
 | เวอร์ชัน | วันที่ | การเปลี่ยนแปลง |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | เพิ่มส่วนชนิด origin server พร้อม public_name/public_ip; เครื่องหมาย TODO สำหรับชนิดที่ขึ้นอยู่กับ site |
-| 2.1.1 | 2026-01-18 | เขียนใหม่เป็นเอกสารอ้างอิง API ล้วน; ลบตัวอย่างโค้ดปลายทาง |
+| 2.1.2 | 2026-01-18 | เพิ่มส่วนประเภท origin server พร้อม public_name/public_ip; เครื่องหมาย TODO สำหรับประเภทที่ขึ้นอยู่กับ site |
+| 2.1.1 | 2026-01-18 | เขียนใหม่เป็นการอ้างอิง API ล้วน ๆ; ลบตัวอย่างโค้ดปลายทางออก |
 | 2.1.0 | 2026-01-18 | อัปเดตเป็นโครงสร้างค่าเริ่มต้นแบบรวมใน validation.json |
 | 2.0.33 | 2026-01-17 | เอกสารการปรับปรุง origin pool เริ่มต้น |

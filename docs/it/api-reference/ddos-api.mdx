@@ -1,6 +1,6 @@
 ---
-title: "\U0001F6D1 API Ddos"
-description: Mitigazione degli attacchi volumetrici e scrubbing del traffico.
+title: "\U0001F6D1 Ddos API"
+description: Mitigazione degli attacchi volumetrici e pulizia del traffico.
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Liste di negazione, gruppi di regole firewall e protezioni basate su tunnel. Limitazione della velocità e analisi dei pattern per la sicurezza del perimetro di rete.
+Liste di negazione, gruppi di regole firewall e protezioni basate su tunnel. Limitazione della frequenza e analisi dei pattern per la sicurezza del perimetro di rete.
 
 - **Categoria**: Sicurezza
 - **Complessità**: avanzata
@@ -18,89 +18,89 @@ Liste di negazione, gruppi di regole firewall e protezioni basate su tunnel. Lim
 
 ## Casi d'uso
 
-- Configurare le policy di protezione DDoS
+- Configurare le policy di Protezione DDoS
 - Monitorare e analizzare le minacce DDoS
 - Configurare la protezione dell'infrastruttura
 
 ## Risorse principali
 
-- **ddos_protection**: Configurazione della protezione DDoS per lo scrubbing del traffico
+- **ddos_protection**: Configurazione della Protezione DDoS per la pulizia del traffico
 - **ddos_mitigation_rule**: Regola di mitigazione DDoS per la risposta agli attacchi
 
 ## Endpoint
 
 | Metodo | Percorso | Descrizione |
-|--------|----------|-------------|
-| GET | `/api/infraprotect/namespaces/system/infraprotect/access` | Accesso del cliente. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;` | Allarme DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;/to_event` | Collegare un allarme a un evento. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alerts` | Allarmi DDoS. |
+|--------|------|-------------|
+| GET | `/api/infraprotect/namespaces/system/infraprotect/access` | Accesso cliente. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;` | Avviso DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alert/&#123;alert_id&#125;/to_event` | Collega avviso a evento. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/alerts` | Avvisi DDoS. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/bgp_peer_status` | Stato peer BGP. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | Dettagli evento. |
-| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | Modificare evento. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/alerts` | Allarmi dell'evento. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/attachments` | Allegati dell'evento. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | Eliminare dettaglio evento. |
-| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | Modificare dettaglio evento. |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;` | Modifica evento. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/alerts` | Avvisi evento. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/attachments` | Allegati evento. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | ELIMINA dettaglio evento. |
+| PUT | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/detail/&#123;event_detail_id&#125;` | Modifica dettaglio evento. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | Elenco dei dettagli evento. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | Aggiungere dettaglio evento. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/mitigation_annotations` | Annotazione di mitigazione dell'evento. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/details` | Aggiungi dettaglio evento. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/event/&#123;event_id&#125;/mitigation_annotations` | Annotazione di mitigazione evento. |
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events` | Elenco degli eventi. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | Vista semplificata degli eventi. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | Vista eventi semplificata. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;` | Dettagli mitigazione. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/annotations` | Annotazioni mitigazione. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/ips` | IP mitigazione. |
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigations` | Elenco delle mitigazioni. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | Elenco reti. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | Elenca reti. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/report/&#123;report_id&#125;` | Dettagli report. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/reports` | Elenco report. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/transit_usage` | Utilizzo del transito. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/reports` | Elenca report. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/infraprotect/transit_usage` | Utilizzo transit. |
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/suggest-values` | Suggerisci valori. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns` | Creare ASN di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns/&#123;metadata.name&#125;` | Sostituire ASN di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns` | Elenco ASN Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/update-asn-review-status` | Aggiornare stato revisione ASN. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | Ottenere ASN Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | Eliminare ASN Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs` | Creare prefisso di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs/&#123;metadata.name&#125;` | Sostituire prefisso di transito DDoS. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-irr-override` | Aggiornare override IRR prefisso ASN. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-review-status` | Aggiornare stato revisione prefisso ASN. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs` | Elenco prefissi ASN Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | Ottenere prefisso ASN Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | Eliminare prefisso ASN Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules` | Creare regola lista di negazione di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules/&#123;metadata.name&#125;` | Sostituire regola lista di negazione di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules` | Elenco regole lista di negazione Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | Ottenere regola lista di negazione Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | Eliminare regola lista di negazione Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules` | Creare regola firewall di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules/&#123;metadata.name&#125;` | Sostituire regola firewall di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules` | Elenco regole firewall Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | Ottenere regola firewall Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | Eliminare regola firewall Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups` | Sostituire gruppo di regole firewall di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups/&#123;metadata.name&#125;` | Sostituire gruppo di regole firewall di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | Elenco gruppi di regole firewall Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | Ottenere gruppo di regole firewall Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | Eliminare gruppo di regole firewall Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns` | Crea ASN transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asns/&#123;metadata.name&#125;` | Sostituisci ASN transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns` | Elenca ASN Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/update-asn-review-status` | Aggiorna stato revisione ASN. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | OTTIENI ASN Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asns/&#123;name&#125;` | ELIMINA ASN Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs` | Crea prefisso transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_asn_prefixs/&#123;metadata.name&#125;` | Sostituisci prefisso transit DDoS. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-irr-override` | Aggiorna override IRR prefisso ASN. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixes/update-asn-prefix-review-status` | Aggiorna stato revisione prefisso ASN. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs` | Elenca prefisso ASN Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | OTTIENI prefisso ASN Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_asn_prefixs/&#123;name&#125;` | ELIMINA prefisso ASN Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules` | Crea regola lista di negazione transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_deny_list_rules/&#123;metadata.name&#125;` | Sostituisci regola lista di negazione transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules` | Elenca regola lista di negazione Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | OTTIENI regola lista di negazione Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_deny_list_rules/&#123;name&#125;` | ELIMINA regola lista di negazione Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules` | Crea regola firewall transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rules/&#123;metadata.name&#125;` | Sostituisci regola firewall transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules` | Elenca regola firewall Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | OTTIENI regola firewall Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rules/&#123;name&#125;` | ELIMINA regola firewall Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups` | Sostituisci gruppo di regole firewall transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rule_groups/&#123;metadata.name&#125;` | Sostituisci gruppo di regole firewall transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | Elenca gruppo di regole firewall Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | OTTIENI gruppo di regole firewall Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | ELIMINA gruppo di regole firewall Infraprotect. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | Contromisure di mitigazione. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | Sostituire set di regole firewall di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | Elenco set di regole firewall Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | Ottenere set di regole firewall Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_informations/&#123;name&#125;` | Ottenere informazioni Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements` | Creare prefisso Internet di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;metadata.name&#125;` | Sostituire prefisso Internet di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements` | Elenco annunci prefissi Internet Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | Aggiornare annuncio prefisso Internet Infraprotect. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | Ottenere prefisso Internet Infraprotect. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | Eliminare annuncio prefisso Internet Infraprotect. |
-| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | Creare tunnel di transito DDoS. |
-| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | Sostituire tunnel di transito DDoS. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | Elenco tunnel. |
-| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | Aggiornare stato tunnel. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | Ottenere tunnel. |
-| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | Eliminare tunnel. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | Sostituisci set di regole firewall transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | Elenca set di regole firewall Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | OTTIENI set di regole firewall Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_informations/&#123;name&#125;` | OTTIENI informazioni Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements` | Crea prefisso Internet transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;metadata.name&#125;` | Sostituisci prefisso Internet transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements` | Elenca annuncio prefisso Internet Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | Aggiorna annuncio prefisso Internet Infraprotect. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | OTTIENI prefisso Internet Infraprotect. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | ELIMINA annuncio prefisso Internet Infraprotect. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | Crea tunnel transit DDoS. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | Sostituisci tunnel transit DDoS. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | Elenca tunnel. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | Aggiorna stato tunnel. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | OTTIENI tunnel. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | ELIMINA tunnel. |
 
 ## Link
 

@@ -1,5 +1,5 @@
 ---
-title: "\U0001F4B3  課金と使用状況 API"
+title: "\U0001F4B3 請求と使用状況 API"
 description: サブスクリプションプラン、支払い方法、クォータ。
 sidebar:
   hidden: true
@@ -8,59 +8,59 @@ i18n:
   translator: machine
 ---
 
-プラン移行、請求書発行、リソース消費。ネームスペースレベルのクォータ制限と使用状況の追跡。
+プラン移行、請求書発行、リソース消費。名前空間レベルのクォータ制限と使用状況の追跡。
 
-- **カテゴリ**: プラットフォーム
+- **カテゴリー**: プラットフォーム
 - **複雑度**: 中程度
 - **パス数**: 25 | **スキーマ数**: 101
-- **ティア**: Standard
+- **ティア**: スタンダード
 - **関連ドメイン**: `system`, `users`
 
 ## ユースケース
 
-- サブスクリプションプランと課金移行の管理
-- 支払い方法と請求書の設定
-- ネームスペース全体のリソースクォータ使用状況の追跡
-- 使用制限とキャパシティの監視
+- サブスクリプションプランと請求の移行を管理する
+- 支払い方法と請求書を設定する
+- 名前空間全体のリソースクォータ使用状況を追跡する
+- 使用制限とキャパシティを監視する
 
 ## 主要リソース
 
-- **subscription**: サービスエンタイトルメントのサブスクリプション
-- **quota**: 使用制限のリソースクォータ
-- **usage_report**: 消費追跡の使用状況レポート
+- **subscription**: サービス権利のサブスクリプション
+- **quota**: 使用制限のためのリソースクォータ
+- **usage_report**: 消費追跡のための使用状況レポート
 
 ## エンドポイント
 
 | メソッド | パス | 説明 |
 |--------|------|-------------|
-| POST | `/api/data/namespaces/system/billing/usage_summary` | 課金使用状況サマリー。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | 請求書PDFの取得。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | 請求書の一覧表示。 |
+| POST | `/api/data/namespaces/system/billing/usage_summary` | 請求使用状況サマリー。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | 請求書PDF取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | 請求書一覧。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | クレジットカードをプライマリに設定。 |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/secondary` | 支払い方法をセカンダリに設定。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | 支払い方法をセカンダリに設定。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | 支払い方法仕様の作成。 |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | 指定した支払い方法の削除。 |
-| GET | `/no_auth/namespaces/system/billing/plan_transition` | プラン移行の取得。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | プラン移行の開始。 |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | クォータの作成。 |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | クォータの置換。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | カスタムクォータ制限の取得。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | クォータ使用状況の取得。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | クォータの一覧表示。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | クォータの取得。 |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | クォータの削除。 |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | サブスクリプションの一覧表示。 |
-| POST | `/api/web/namespaces/system/addon/subscribe` | XCアドオンサービスへのサブスクライブ。 |
-| POST | `/api/web/namespaces/system/addon/unsubscribe` | XCアドオンサービスからのサブスクライブ解除。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | 現在の使用状況詳細の一覧表示。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | 時間別使用状況詳細の一覧表示。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | 月別使用状況詳細の一覧表示。 |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | 使用状況詳細の一覧表示。 |
-| GET | `/api/web/namespaces/system/usage_plans/current` | 現在の使用プランの取得。 |
-| GET | `/api/web/namespaces/system/usage_plans/custom_list` | 使用プランの一覧表示。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/swap-primary` | 支払い方法をセカンダリに切り替え。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods` | 支払い方法仕様を作成。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | 指定した支払い方法を削除。 |
+| GET | `/no_auth/namespaces/system/billing/plan_transition` | プラン移行取得。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | プラン移行開始。 |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | クォータを作成。 |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | クォータを置換。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | クォータ制限カスタム取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | クォータ使用状況取得。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | クォータ一覧。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | クォータ取得。 |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | クォータ削除。 |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | サブスクリプション一覧。 |
+| POST | `/api/web/namespaces/system/addon/subscribe` | XC アドオンサービスにサブスクライブ。 |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | XC アドオンサービスのサブスクライブ解除。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | 現在の使用状況詳細一覧。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | 時間別使用状況詳細一覧。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | 月次使用状況詳細一覧。 |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | 使用状況詳細一覧。 |
+| GET | `/api/web/namespaces/system/usage_plans/current` | 現在の使用プラン取得。 |
+| GET | `/api/web/namespaces/system/usage_plans/custom_list` | 使用プラン一覧。 |
 
 ## リンク
 
-- [インタラクティブAPIリファレンス](./billing_and_usage/)
-- [OpenAPI仕様JSON](../specifications/api/billing_and_usage.json)
+- [インタラクティブ API リファレンス](./billing_and_usage/)
+- [OpenAPI 仕様 JSON](../specifications/api/billing_and_usage.json)

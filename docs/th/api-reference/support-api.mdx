@@ -1,6 +1,6 @@
 ---
-title: "\U0001F3AB API การสนับสนุน"
-description: ตั๋ว การยกระดับปัญหา และการวินิจฉัยเครือข่าย
+title: "\U0001F3AB Support API"
+description: ตั๋ว การยกระดับ และการวินิจฉัยเครือข่าย
 sidebar:
   hidden: true
 i18n:
@@ -8,89 +8,89 @@ i18n:
   translator: machine
 ---
 
-วงจรชีวิตของปัญหาพร้อมความคิดเห็น การเปลี่ยนแปลงระดับความรุนแรง และการติดตามการแก้ไข การจับแพ็กเก็ตสำหรับการวิเคราะห์การเชื่อมต่อ
+วงจรชีวิตของปัญหาพร้อมความคิดเห็น การเปลี่ยนแปลงความรุนแรง และการติดตามการแก้ไข การจับแพ็กเก็ตสำหรับการวิเคราะห์การเชื่อมต่อ
 
 - **หมวดหมู่**: การดำเนินงาน
 - **ความซับซ้อน**: ปานกลาง
-- **เส้นทาง**: 53 | **สคีมา**: 167
+- **เส้นทาง**: 53 | **โครงสร้าง**: 167
 - **ระดับ**: มาตรฐาน
 - **โดเมนที่เกี่ยวข้อง**: `statistics`, `observability`
 
 ## กรณีการใช้งาน
 
 - ส่งและจัดการตั๋วสนับสนุน
-- ติดตามคำร้องขอสนับสนุนลูกค้า
+- ติดตามคำขอสนับสนุนของลูกค้า
 - เข้าถึงเอกสารสนับสนุนการดำเนินงาน
 
 ## ทรัพยากรหลัก
 
-- **support_case**: เคสสนับสนุนสำหรับการติดตามและแก้ไขปัญหา
+- **support_case**: เคสสนับสนุนสำหรับการติดตามปัญหาและการแก้ไข
 - **alert**: การแจ้งเตือนระบบสำหรับการแจ้งเตือนการดำเนินงาน
-- **audit_log**: บันทึกการตรวจสอบสำหรับการปฏิบัติตามข้อกำหนดและการติดตามความปลอดภัย
+- **audit_log**: บันทึกการตรวจสอบสำหรับการติดตามการปฏิบัติตามกฎระเบียบและความปลอดภัย
 
-## เอนด์พอยต์
+## Endpoints
 
-| เมธอด | เส้นทาง | คำอธิบาย |
+| วิธีการ | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | ซิงค์ CRL ใหม่ |
-| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | รายการตั๋วสนับสนุนที่สร้างขึ้นสำหรับผู้เช่าย่อย |
-| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | คำร้องขอการตรวจสอบการยกเว้นภาษี |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | Resync CRL. |
+| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | รายการตั๋วสนับสนุนที่สร้างสำหรับผู้เช่าย่อย |
+| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | คำขอตรวจสอบการยกเว้นภาษี |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | สร้างการสนับสนุนลูกค้า |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | แสดงรายการตั๋วผู้เช่าทั้งหมด |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | แสดงรายการตั๋วทั้งหมดของผู้เช่า |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | ปิดตั๋วสนับสนุนลูกค้า |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | เพิ่มความคิดเห็นในตั๋วสนับสนุนลูกค้า |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | ยกระดับตั๋ว |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | เปลี่ยนระดับความสำคัญของตั๋ว |
+| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | เปลี่ยนลำดับความสำคัญของตั๋ว |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | เปิดตั๋วสนับสนุนลูกค้าที่ปิดแล้วอีกครั้ง |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | แสดงรายการการสนับสนุนลูกค้า |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | ดึงข้อมูลการสนับสนุนลูกค้า |
-| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | ดึงไฟล์แนบ |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | ตรวจสอบการเก็บรวบรวมข้อมูลดีบัก |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | GET การสนับสนุนลูกค้า |
+| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET ไฟล์แนบ |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | ตรวจสอบการรวบรวมข้อมูลดีบัก |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | การวินิจฉัย |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | ดาวน์โหลดการเก็บรวบรวมข้อมูลดีบัก |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | ดาวน์โหลดการรวบรวมข้อมูลดีบัก |
 | GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | สุขภาพ |
 | POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | เปลี่ยนรหัสผ่าน |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | เริ่มการเก็บรวบรวมข้อมูลดีบัก |
+| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | เริ่มการรวบรวมข้อมูลดีบัก |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | แสดงรายการบริการ F5XC |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | สถานะ |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | ดำเนินการ |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | บันทึกการดำเนินการ |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | ดำเนินการผู้ใช้ |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | Ping โฮสต์ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | Exec |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | บันทึก Exec |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | ExecUser |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | Host Ping |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | รีบูตโหนด |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | บันทึก |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | รีสตาร์ทแบบซอฟต์ |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | แสดงการเช่า DHCP |
 | POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | อนุญาต F5 SSH |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | ดึงการกำหนดค่า LTE |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | GET การกำหนดค่า LTE |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | อัปเดตการกำหนดค่า LTE |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | ยกเลิกการเชื่อมต่อ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | ตัดการเชื่อมต่อ |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | แสดงข้อมูล LTE |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | ดึงข้อมูลดัมพ์ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | FetchDump |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | แสดงรายการ Tcpdump |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | หยุด Tcpdump |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
 | POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | โปรเจกต์ JIRA และประเภทปัญหา |
-| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | ตรวจสอบความถูกต้องของระบบติดตามตั๋ว |
+| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | ตรวจสอบระบบติดตามตั๋ว |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | สร้างระบบติดตามตั๋ว |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | แทนที่ระบบติดตามตั๋ว |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | แสดงรายการระบบติดตามตั๋ว |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | ดึงข้อมูลระบบติดตามตั๋ว |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | ลบระบบติดตามตั๋ว |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | ดึงการกำหนดค่า USB |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | GET ระบบติดตามตั๋ว |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | DELETE ระบบติดตามตั๋ว |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | GET การกำหนดค่า USB |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | อัปเดตการกำหนดค่า USB |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | แสดงรายการอุปกรณ์ USB |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | แสดงรายการกฎการเปิดใช้งาน USB |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | เพิ่มกฎการเปิดใช้งาน USB |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | ลบกฎการเปิดใช้งาน USB |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | ดึงการกำหนดค่า WIFI |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | DELETE กฎการเปิดใช้งาน USB |
+| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | GET การกำหนดค่า WIFI |
 | POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | อัปเดตการกำหนดค่า WIFI |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | ยกเลิกการเชื่อมต่อ |
+| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | ตัดการเชื่อมต่อ |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | แสดงข้อมูล WIFI |
 | GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | แสดงรายการเครือข่าย WIFI |
 
 ## ลิงก์
 
 - [เอกสารอ้างอิง API แบบโต้ตอบ](./support/)
-- [ไฟล์ข้อกำหนด OpenAPI แบบ JSON](../specifications/api/support.json)
+- [ข้อกำหนด OpenAPI JSON](../specifications/api/support.json)
