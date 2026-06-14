@@ -1,6 +1,6 @@
 ---
 title: "\U0001F50F Blindfold API"
-description: 'Crittografia dei segreti, policy delle chiavi e audit trail.'
+description: 'Cifratura dei segreti, criteri chiave e audit trail.'
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-Gestione delle chiavi di crittografia con controlli di accesso basati su policy. Registrazione degli audit e protezione sicura dei dati.
+Gestione delle chiavi di cifratura con controlli di accesso basati su criteri. Registrazione degli audit e protezione sicura dei dati.
 
 - **Categoria**: Sicurezza
 - **Complessità**: moderata
@@ -18,54 +18,54 @@ Gestione delle chiavi di crittografia con controlli di accesso basati su policy.
 
 ## Casi d'uso
 
-- Configurare policy dei segreti per la crittografia
-- Gestire la crittografia dei dati sensibili
-- Applicare policy di protezione dei dati
+- Configurare criteri segreti per la cifratura
+- Gestire la cifratura dei dati sensibili
+- Applicare criteri di protezione dei dati
 
 ## Risorse primarie
 
-- **blindfold_secret**: Segreto crittografato tramite crittografia Blindfold
-- **secret_policy**: Configurazione della policy di gestione dei segreti
-- **policy_document**: Documento di policy per le definizioni del controllo degli accessi
+- **blindfold_secret**: Segreto cifrato tramite cifratura Blindfold
+- **secret_policy**: Configurazione dei criteri di gestione dei segreti
+- **policy_document**: Documento di criteri per le definizioni del controllo degli accessi
 
 ## Endpoint
 
 | Metodo | Percorso | Descrizione |
-|--------|------|-------------|
+|--------|----------|-------------|
 | GET | `/api/secret_management/get_public_key` | Chiave pubblica. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | Documento di policy. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;/get_policy_document` | Documento di criteri. |
 | POST | `/api/secret_management/namespaces/system/voltshare/decrypt_secret` | DecryptSecret. |
 | POST | `/api/secret_management/namespaces/system/voltshare/process_policy_information` | ProcessPolicyInformation. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | Query sul conteggio degli accessi VoltShare. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | Query sul registro di audit. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | Query di aggregazione del registro di audit. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | Query di scorrimento del registro di audit. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | Query di scorrimento del registro di audit. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/access_count` | Query conteggio accessi VoltShare. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs` | Query registro audit. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/aggregation` | Query aggregazione registro audit. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | Query scroll registro audit. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare/audit_logs/scroll` | Query scroll registro audit. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss` | Crea accesso alla gestione dei segreti. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/secret_management_accesss/&#123;metadata.name&#125;` | Sostituisci accesso alla gestione dei segreti. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | Elenca accesso alla gestione dei segreti. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | OTTIENI accesso alla gestione dei segreti. |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | ELIMINA accesso alla gestione dei segreti. |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | Crea policy dei segreti. |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | Sostituisci policy dei segreti. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | Elenca policy dei segreti. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | Recupera la policy dei segreti con il nome specificato. |
-| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | ELIMINA la policy dei segreti con il nome specificato. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | Elenca le policy dei segreti. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | OTTIENI policy dei segreti. |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | ELIMINA policy dei segreti. |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | Crea regola di policy dei segreti. |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | Sostituisci regola di policy dei segreti. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | Elenca regole di policy dei segreti. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | OTTIENI regola di policy dei segreti. |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | ELIMINA regola di policy dei segreti. |
-| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | Crea policy di amministrazione VoltShare. |
-| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | Sostituisci policy di amministrazione VoltShare. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | Elenca policy di amministrazione VoltShare. |
-| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | OTTIENI policy di amministrazione VoltShare. |
-| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | ELIMINA policy di amministrazione VoltShare. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss` | Elenca accessi alla gestione dei segreti. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | GET accesso alla gestione dei segreti. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/secret_management_accesss/&#123;name&#125;` | DELETE accesso alla gestione dei segreti. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys` | Crea criteri segreti. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policys/&#123;metadata.name&#125;` | Sostituisci criteri segreti. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/list_policy/&#123;policy_state&#125;` | Elenca criteri segreti. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/recover` | Recupera criteri segreti con il nome di criterio specificato. |
+| POST | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy/&#123;name&#125;/softdelete` | DELETE criteri segreti con il nome di criterio specificato. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys` | Elenca criteri segreti. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | GET criteri segreti. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policys/&#123;name&#125;` | DELETE criteri segreti. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules` | Crea regola criteri segreti. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/secret_policy_rules/&#123;metadata.name&#125;` | Sostituisci regola criteri segreti. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules` | Elenca regole criteri segreti. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | GET regola criteri segreti. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/secret_policy_rules/&#123;name&#125;` | DELETE regola criteri segreti. |
+| POST | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys` | Crea criteri amministratore VoltShare. |
+| PUT | `/api/secret_management/namespaces/&#123;metadata.namespace&#125;/voltshare_admin_policys/&#123;metadata.name&#125;` | Sostituisci criteri amministratore VoltShare. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys` | Elenca criteri amministratore VoltShare. |
+| GET | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | GET criteri amministratore VoltShare. |
+| DELETE | `/api/secret_management/namespaces/&#123;namespace&#125;/voltshare_admin_policys/&#123;name&#125;` | DELETE criteri amministratore VoltShare. |
 
 ## Link
 
 - [Riferimento API interattivo](./blindfold/)
-- [Specifiche OpenAPI JSON](../specifications/api/blindfold.json)
+- [Specifica OpenAPI JSON](../specifications/api/blindfold.json)
