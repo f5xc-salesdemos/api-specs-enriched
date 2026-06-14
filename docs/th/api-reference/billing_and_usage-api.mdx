@@ -1,6 +1,6 @@
 ---
 title: "\U0001F4B3 Billing And Usage API"
-description: แผนการสมัครสมาชิก วิธีการชำระเงิน และโควตา
+description: แผนการสมัครใช้บริการ วิธีการชำระเงิน และโควต้า
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-การเปลี่ยนแผน การออกใบแจ้งหนี้ และการใช้ทรัพยากร ขีดจำกัดโควตาระดับ Namespace และการติดตามการใช้งาน
+การเปลี่ยนแปลงแผน การออกใบแจ้งหนี้ และการใช้งานทรัพยากร ขีดจำกัดโควต้าระดับ Namespace และการติดตามการใช้งาน
 
 - **หมวดหมู่**: แพลตฟอร์ม
 - **ความซับซ้อน**: ปานกลาง
@@ -18,22 +18,22 @@ i18n:
 
 ## กรณีการใช้งาน
 
-- จัดการแผนการสมัครสมาชิกและการเปลี่ยนแผนการเรียกเก็บเงิน
+- จัดการแผนการสมัครใช้บริการและการเปลี่ยนแปลงการเรียกเก็บเงิน
 - กำหนดค่าวิธีการชำระเงินและใบแจ้งหนี้
-- ติดตามการใช้โควตาทรัพยากรในแต่ละ Namespace
+- ติดตามการใช้งานโควต้าทรัพยากรในแต่ละ Namespace
 - ตรวจสอบขีดจำกัดการใช้งานและความจุ
 
 ## ทรัพยากรหลัก
 
-- **subscription**: การสมัครสมาชิกสำหรับสิทธิ์การใช้บริการ
-- **quota**: โควตาทรัพยากรสำหรับขีดจำกัดการใช้งาน
+- **subscription**: การสมัครใช้บริการสำหรับสิทธิ์การใช้งาน
+- **quota**: โควต้าทรัพยากรสำหรับขีดจำกัดการใช้งาน
 - **usage_report**: รายงานการใช้งานสำหรับการติดตามการบริโภค
 
 ## Endpoints
 
-| Method | Path | Description |
+| Method | Path | คำอธิบาย |
 |--------|------|-------------|
-| POST | `/api/data/namespaces/system/billing/usage_summary` | สรุปการใช้งานสำหรับการเรียกเก็บเงิน |
+| POST | `/api/data/namespaces/system/billing/usage_summary` | สรุปการใช้งานการเรียกเก็บเงิน |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoice_pdf` | GetInvoicePdf |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/usage/invoices/custom_list` | แสดงรายการใบแจ้งหนี้ |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_method/&#123;name&#125;/primary` | ตั้งบัตรเครดิตเป็นหลัก |
@@ -43,24 +43,24 @@ i18n:
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/billing/payment_methods/&#123;name&#125;` | ลบวิธีการชำระเงินที่ระบุ |
 | GET | `/no_auth/namespaces/system/billing/plan_transition` | GetPlanTransition |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/billing/plan_transition` | InitiatePlanTransition |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | สร้างโควตา |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | แทนที่โควตา |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | ดูขีดจำกัดโควตาแบบกำหนดเอง |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | ดูการใช้งานโควตา |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | แสดงรายการโควตา |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ดูโควตา |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ลบโควตา |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | แสดงรายการการสมัครสมาชิก |
-| POST | `/api/web/namespaces/system/addon/subscribe` | สมัครใช้บริการ XC addon |
-| POST | `/api/web/namespaces/system/addon/unsubscribe` | ยกเลิกการสมัครใช้บริการ XC addon |
+| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas` | สร้างโควต้า |
+| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/quotas/&#123;metadata.name&#125;` | แทนที่โควต้า |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/limits` | ดึงข้อมูลขีดจำกัดโควต้าแบบกำหนดเอง |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quota/usage` | ดึงข้อมูลการใช้งานโควต้า |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas` | แสดงรายการโควต้า |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ดึงข้อมูลโควต้า |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/quotas/&#123;name&#125;` | ลบโควต้า |
+| GET | `/api/web/namespaces/&#123;namespace&#125;/subscriptions/custom_list` | แสดงรายการการสมัครใช้บริการ |
+| POST | `/api/web/namespaces/system/addon/subscribe` | สมัครใช้บริการเสริม XC |
+| POST | `/api/web/namespaces/system/addon/unsubscribe` | ยกเลิกการสมัครใช้บริการเสริม XC |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/current_usage` | แสดงรายละเอียดการใช้งานปัจจุบัน |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/hourly_usage_details` | แสดงรายละเอียดการใช้งานรายชั่วโมง |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/monthly_usage` | แสดงรายละเอียดการใช้งานรายเดือน |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/usage_details` | แสดงรายละเอียดการใช้งาน |
-| GET | `/api/web/namespaces/system/usage_plans/current` | ดูแผนการใช้งานปัจจุบัน |
+| GET | `/api/web/namespaces/system/usage_plans/current` | ดึงข้อมูลแผนการใช้งานปัจจุบัน |
 | GET | `/api/web/namespaces/system/usage_plans/custom_list` | แสดงรายการแผนการใช้งาน |
 
 ## ลิงก์
 
-- [อ้างอิง API แบบโต้ตอบ](./billing_and_usage/)
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./billing_and_usage/)
 - [OpenAPI Specification JSON](../specifications/api/billing_and_usage.json)
