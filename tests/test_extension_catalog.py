@@ -1,4 +1,4 @@
-"""Parity test between docs/extensions/catalog.md and extension_constants.py.
+"""Parity test between docs/en/extensions/catalog.md and extension_constants.py.
 
 Prevents drift between:
   1. Every extension name declared in VALID_X_F5XC_EXTENSIONS / PRESERVED_NATIVE_EXTENSIONS
@@ -23,8 +23,8 @@ from scripts.utils.extension_constants import (
 )
 
 REPO_ROOT = Path(__file__).parent.parent
-CATALOG = REPO_ROOT / "docs" / "extensions" / "catalog.md"
-ENRICHED_DIR = REPO_ROOT / "docs" / "specifications" / "api"
+CATALOG = REPO_ROOT / "docs" / "en" / "extensions" / "catalog.md"
+ENRICHED_DIR = REPO_ROOT / "docs" / "en" / "specifications" / "api"
 
 
 def _catalog_entries() -> set[str]:
