@@ -1,6 +1,6 @@
 ---
 title: "\U0001F527 Ce Management API"
-description: 'อินเทอร์เฟซเครือข่าย, กลุ่มยานพาหนะ, และการลงทะเบียนไซต์'
+description: 'อินเทอร์เฟซเครือข่าย, กลุ่ม fleet, และการลงทะเบียนไซต์'
 sidebar:
   hidden: true
 i18n:
@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-การจัดเตรียมระบบด้วยโทเค็นพร้อมการดาวน์โหลดอิมเมจและการตรวจสอบก่อนอัปเกรด การจัดกลุ่ม Fleet ช่วยให้ดำเนินการจำนวนมากได้พร้อมกันในหลายตำแหน่งที่กระจายอยู่
+การจัดสรรทรัพยากรโดยใช้โทเค็นพร้อมการดาวน์โหลดอิมเมจและการตรวจสอบก่อนอัปเกรด การจัดกลุ่ม Fleet ช่วยให้สามารถดำเนินการจำนวนมากในสถานที่ต่างๆ ที่กระจายอยู่ได้
 
 - **หมวดหมู่**: โครงสร้างพื้นฐาน
 - **ความซับซ้อน**: ปานกลาง
@@ -18,15 +18,15 @@ i18n:
 
 ## กรณีการใช้งาน
 
-- จัดการวงจรชีวิตไซต์ Customer Edge
-- กำหนดค่าอินเทอร์เฟซเครือข่ายและการตั้งค่า Fleet
-- จัดการขั้นตอนการลงทะเบียนและโทเค็น
+- จัดการวงจรชีวิตของไซต์ Customer Edge
+- กำหนดค่าอินเทอร์เฟซเครือข่ายและการตั้งค่า fleet
+- จัดการการลงทะเบียนไซต์และขั้นตอนการทำงานของโทเค็น
 - ดำเนินการอัปเกรดไซต์พร้อมการตรวจสอบก่อนอัปเกรด
 
 ## ทรัพยากรหลัก
 
 - **site_config**: การกำหนดค่าไซต์สำหรับการตั้งค่า edge node
-- **fleet_config**: การกำหนดค่า Fleet สำหรับการจัดการหลายไซต์
+- **fleet_config**: การกำหนดค่า fleet สำหรับการจัดการหลายไซต์
 - **registration_token**: โทเค็นการลงทะเบียนสำหรับการเริ่มใช้งานไซต์
 
 ## Endpoints
@@ -39,34 +39,34 @@ i18n:
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | ดึงข้อมูล Fleet |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/fleets/&#123;name&#125;` | ลบ Fleet |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/module_management/settings` | การตั้งค่าการจัดการโมดูล |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | สร้างอินเทอร์เฟซเครือข่าย |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | แทนที่อินเทอร์เฟซเครือข่าย |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | แสดงรายการอินเทอร์เฟซเครือข่าย |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | ดึงข้อมูลอินเทอร์เฟซเครือข่าย |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | ลบอินเทอร์เฟซเครือข่าย |
-| POST | `/api/register/namespaces/system/get-image-download-url` | ดึง URL ดาวน์โหลดอิมเมจ |
-| POST | `/api/register/namespaces/system/get-registrations-by-token` | ดึง UID การลงทะเบียนด้วยโทเค็นไซต์ |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces` | สร้าง Network Interface |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_interfaces/&#123;metadata.name&#125;` | แทนที่ Network Interface |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces` | แสดงรายการ Network Interface |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | ดึงข้อมูล Network Interface |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_interfaces/&#123;name&#125;` | ลบ Network Interface |
+| POST | `/api/register/namespaces/system/get-image-download-url` | ดึงข้อมูล URL ดาวน์โหลดอิมเมจ |
+| POST | `/api/register/namespaces/system/get-registrations-by-token` | ดึงข้อมูล Registration UID ตาม Site Token |
 | POST | `/api/register/namespaces/system/suggest-values` | แนะนำค่า |
-| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | สร้างการลงทะเบียน |
-| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | แทนที่การลงทะเบียน |
-| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | แสดงรายการการลงทะเบียนตามสถานะ |
-| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | อนุมัติการลงทะเบียน |
-| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | แสดงรายการการลงทะเบียน |
-| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | ดึงข้อมูลการลงทะเบียน |
-| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | ลบการลงทะเบียน |
-| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | แสดงรายการการลงทะเบียนตามไซต์ |
-| POST | `/api/register/registerBootstrap` | สร้างการลงทะเบียน Bootstrap |
-| POST | `/api/register/requestConfig` | กำหนดค่าการลงทะเบียน |
+| POST | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations` | สร้าง Registration |
+| PUT | `/api/register/namespaces/&#123;metadata.namespace&#125;/registrations/&#123;metadata.name&#125;` | แทนที่ Registration |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/listregistrationsbystate` | แสดงรายการ Registration ตามสถานะ |
+| POST | `/api/register/namespaces/&#123;namespace&#125;/registration/&#123;name&#125;/approve` | อนุมัติ Registration |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations` | แสดงรายการ Registration |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | ดึงข้อมูล Registration |
+| DELETE | `/api/register/namespaces/&#123;namespace&#125;/registrations/&#123;name&#125;` | ลบ Registration |
+| GET | `/api/register/namespaces/&#123;namespace&#125;/registrations_by_site/&#123;site_name&#125;` | แสดงรายการ registration ตามไซต์ |
+| POST | `/api/register/registerBootstrap` | สร้าง Registration |
+| POST | `/api/register/requestConfig` | กำหนดค่า Registration |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys` | สร้างนโยบาย USB |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/usb_policys/&#123;metadata.name&#125;` | แทนที่นโยบาย USB |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys` | แสดงรายการนโยบาย USB |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | ดึงข้อมูลนโยบาย USB |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/usb_policys/&#123;name&#125;` | ลบนโยบาย USB |
 | GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/pre_upgrade_check` | ตรวจสอบก่อนอัปเกรด |
-| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | ดึงสถานะการอัปเกรด |
-| GET | `/api/maurice/upgradable_sw_versions` | ดึงเวอร์ชันซอฟต์แวร์ที่อัปเกรดได้ |
+| GET | `/api/maurice/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_status` | ดึงข้อมูลสถานะการอัปเกรด |
+| GET | `/api/maurice/upgradable_sw_versions` | ดึงข้อมูลเวอร์ชันซอฟต์แวร์ที่อัปเกรดได้ |
 
 ## ลิงก์
 
-- [เอกสาร API แบบอินเทอร์แอคทีฟ](./ce_management/)
-- [ข้อกำหนด OpenAPI รูปแบบ JSON](../specifications/api/ce_management.json)
+- [เอกสาร API แบบโต้ตอบ](./ce_management/)
+- [ข้อกำหนด OpenAPI ในรูปแบบ JSON](../specifications/api/ce_management.json)

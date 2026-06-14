@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-กฎไฟร์วอลล์พร้อมการตัดสินใจเส้นทางตามต้นทาง, ปลายทาง, หรือโปรโตคอล การแบ่งเซกเมนต์แยกเวิร์กโหลดในขณะที่พร็อกซีขาออกควบคุมการเข้าถึง
+กฎไฟร์วอลล์พร้อมการตัดสินใจเส้นทางตามแหล่งที่มา ปลายทาง หรือโปรโตคอล การแบ่งเซกเมนต์จะแยกเวิร์กโหลดในขณะที่พร็อกซีขาออกควบคุมการเข้าถึง
 
 - **หมวดหมู่**: ความปลอดภัย
 - **ความซับซ้อน**: ขั้นสูง
@@ -22,13 +22,13 @@ i18n:
 - จัดการนโยบาย NAT และการส่งต่อพอร์ต
 - กำหนดค่าการกำหนดเส้นทางตามนโยบาย
 - กำหนดเซกเมนต์เครือข่ายและนโยบาย
-- กำหนดค่านโยบายพร็อกซีส่งต่อ
+- กำหนดค่านโยบาย forward proxy
 
 ## ทรัพยากรหลัก
 
 - **network_policy**: นโยบายความปลอดภัยเครือข่ายสำหรับการกรองทราฟฟิก
-- **forward_proxy_policy**: นโยบายพร็อกซีส่งต่อสำหรับการควบคุมทราฟฟิกขาออก
-- **network_firewall**: ไฟร์วอลล์เครือข่ายสำหรับการป้องกันทราฟฟิกเลเยอร์ 3/4
+- **forward_proxy_policy**: นโยบาย forward proxy สำหรับควบคุมทราฟฟิกขาออก
+- **network_firewall**: ไฟร์วอลล์เครือข่ายสำหรับการป้องกันทราฟฟิก layer 3/4
 
 ## Endpoints
 
@@ -36,78 +36,78 @@ i18n:
 |--------|------|-------------|
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys` | สร้าง Forward Proxy Policy |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/forward_proxy_policys/&#123;metadata.name&#125;` | แทนที่ Forward Proxy Policy |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | Forward Proxy Policy Hits |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | แสดงรายการกำหนดค่า Forward Proxy Policy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | GET Forward Proxy Policy |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | DELETE กำหนดค่า Forward Proxy Policy |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/forward_proxy_policy/hits` | จำนวนการเข้าถึง Forward Proxy Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys` | แสดงรายการ Configure Forward Proxy Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | ดึงข้อมูล Forward Proxy Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/forward_proxy_policys/&#123;name&#125;` | ลบ Configure Forward Proxy Policy |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views` | สร้าง Network policy View |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_views/&#123;metadata.name&#125;` | แทนที่ Network policy View |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | Network Policy Hits |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | แสดงรายการกำหนดค่า Network policy View |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | GET Network policy View |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | DELETE กำหนดค่า Network policy View |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy_view/hits` | จำนวนการเข้าถึง Network Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views` | แสดงรายการ Configure Network policy View |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | ดึงข้อมูล Network policy View |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_views/&#123;name&#125;` | ลบ Configure Network policy View |
 | GET | `/api/bigipconnector/namespaces/&#123;namespace&#125;/uztna/applications/discovered` | แสดงรายการ |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls` | สร้าง Fast ACL |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acls/&#123;metadata.name&#125;` | แทนที่ Fast ACL |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | Fast ACL Hits |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/fast_acl/hits` | จำนวนการเข้าถึง Fast ACL |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls` | แสดงรายการ Fast ACL |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | GET Fast ACL |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | DELETE Fast ACL |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | ดึงข้อมูล Fast ACL |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acls/&#123;name&#125;` | ลบ Fast ACL |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules` | สร้าง Fast ACL Rule |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/fast_acl_rules/&#123;metadata.name&#125;` | แทนที่ Fast ACL Rule |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules` | แสดงรายการ Fast ACL Rule |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | GET Fast ACL Rule |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | DELETE Fast ACL Rule |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | ดึงข้อมูล Fast ACL Rule |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/fast_acl_rules/&#123;name&#125;` | ลบ Fast ACL Rule |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets` | สร้าง Specification |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/filter_sets/&#123;metadata.name&#125;` | แทนที่ Specification |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets` | แสดงรายการ Filter Set |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | ค้นหา Filter Sets สำหรับ 1 หรือหลาย Context Keys |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | GET Specification |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | DELETE Filter Set |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/find` | ค้นหา Filter Sets สำหรับ Context Keys ตั้งแต่ 1 รายการขึ้นไป |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | ดึงข้อมูล Specification |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/filter_sets/&#123;name&#125;` | ลบ Filter Set |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys` | สร้าง NAT Policy |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/nat_policys/&#123;metadata.name&#125;` | แทนที่ NAT Policy |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys` | แสดงรายการ NAT Policy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | GET NAT Policy |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | DELETE NAT Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | ดึงข้อมูล NAT Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/nat_policys/&#123;name&#125;` | ลบ NAT Policy |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls` | สร้าง Network Firewall |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_firewalls/&#123;metadata.name&#125;` | แทนที่ Network Firewall |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls` | แสดงรายการ Network Firewall |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | GET Network Firewall |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | DELETE Network Firewall |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | ดึงข้อมูล Network Firewall |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_firewalls/&#123;name&#125;` | ลบ Network Firewall |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys` | สร้าง Network Policy |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policys/&#123;metadata.name&#125;` | แทนที่ Network Policy |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | Network Policy Hits |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/network_policy/hits` | จำนวนการเข้าถึง Network Policy |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys` | แสดงรายการ Network Policy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | GET Network Policy |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | DELETE Network Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | ดึงข้อมูล Network Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policys/&#123;name&#125;` | ลบ Network Policy |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules` | สร้าง Network Policy Rule |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/network_policy_rules/&#123;metadata.name&#125;` | แทนที่ Network Policy Rule |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules` | แสดงรายการ Network Policy Rule |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | GET Network Policy Rule |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | DELETE Network Policy Rule |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | ดึงข้อมูล Network Policy Rule |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/network_policy_rules/&#123;name&#125;` | ลบ Network Policy Rule |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets` | แสดงรายการ Network Policy Set |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | GET Network Policy Set |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/network_policy_sets/&#123;name&#125;` | ดึงข้อมูล Network Policy Set |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings` | สร้าง Policy based Routing |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/policy_based_routings/&#123;metadata.name&#125;` | แทนที่ Policy based Routing |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings` | แสดงรายการ Policy based Routing |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | GET Policy based Routing |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | DELETE Policy based Routing |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | ดึงข้อมูล Policy based Routing |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/policy_based_routings/&#123;name&#125;` | ลบ Policy based Routing |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments` | สร้าง segment |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segments/&#123;metadata.name&#125;` | แทนที่ segment |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segments` | แสดงรายการ Segment |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/segments/graph` | Segment |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | GET segment |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | DELETE Segment |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | ดึงข้อมูล segment |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/segments/&#123;name&#125;` | ลบ Segment |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/segment_connections/&#123;metadata.name&#125;` | แทนที่ segment connector |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections` | แสดงรายการ Segment Connector |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | GET segment connector |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/segment_connections/&#123;name&#125;` | ดึงข้อมูล segment connector |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys` | สร้าง Service Policy |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/service_policys/&#123;metadata.name&#125;` | แทนที่ Service Policy |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | Service Policy Hits |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | Service Policy Latency |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/hits` | จำนวนการเข้าถึง Service Policy |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/service_policy/latency` | ความหน่วงของ Service Policy |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys` | แสดงรายการ Service Policy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | GET Service Policy |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | DELETE Service Policy |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | ดึงข้อมูล Service Policy |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/service_policys/&#123;name&#125;` | ลบ Service Policy |
 
 ## ลิงก์
 

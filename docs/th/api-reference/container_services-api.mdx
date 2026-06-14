@@ -8,7 +8,7 @@ i18n:
   translator: machine
 ---
 
-การจัดการ Pod โดยไม่ต้องมีความซับซ้อนของคลัสเตอร์เต็มรูปแบบ การประมวลผลที่ Edge site การบังคับใช้โควตา และโปรไฟล์การประมวลผลมาตรฐานสำหรับแอปพลิเคชันแบบกระจาย
+การจัดการ Pod โดยไม่ต้องใช้ความซับซ้อนของคลัสเตอร์เต็มรูปแบบ การรันที่ไซต์ Edge การบังคับใช้โควต้า และโปรไฟล์การประมวลผลมาตรฐานสำหรับแอปพลิเคชันแบบกระจาย
 
 - **หมวดหมู่**: โครงสร้างพื้นฐาน
 - **ความซับซ้อน**: ปานกลาง
@@ -18,16 +18,16 @@ i18n:
 
 ## กรณีการใช้งาน
 
-- ปรับใช้ namespace ของ XCCS (Container Services) สำหรับภาระงานแบบ multi-tenant
-- จัดการภาระงานคอนเทนเนอร์ด้วยการจัดการที่เรียบง่าย
-- กำหนดค่าการปรับใช้คอนเทนเนอร์ Edge แบบกระจาย
-- รันแอปพลิเคชันแบบคอนเทนเนอร์โดยไม่ต้องมีความซับซ้อนของ K8s เต็มรูปแบบ
+- ติดตั้ง XCCS (Container Services) namespaces สำหรับภาระงานแบบหลายผู้เช่า
+- จัดการภาระงานคอนเทนเนอร์ด้วยการจัดการออร์เคสเตรชันแบบเรียบง่าย
+- กำหนดค่าการติดตั้งคอนเทนเนอร์ที่ Edge แบบกระจาย
+- รันแอปพลิเคชันแบบคอนเทนเนอร์โดยไม่ต้องใช้ความซับซ้อนของ K8s เต็มรูปแบบ
 
 ## ทรัพยากรหลัก
 
 - **virtual_k8s**: Virtual Kubernetes namespace สำหรับภาระงานคอนเทนเนอร์
-- **workload**: การกำหนดค่าการปรับใช้ภาระงานคอนเทนเนอร์
-- **pod_security_policy**: นโยบายความปลอดภัย Pod สำหรับข้อจำกัด container runtime
+- **workload**: การกำหนดค่าการติดตั้งภาระงานคอนเทนเนอร์
+- **pod_security_policy**: นโยบายความปลอดภัย Pod สำหรับข้อจำกัดรันไทม์ของคอนเทนเนอร์
 
 ## Endpoints
 
@@ -36,21 +36,21 @@ i18n:
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss` | สร้าง Virtual Kubernetes |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/virtual_k8ss/&#123;metadata.name&#125;` | แทนที่ Virtual Kubernetes |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss` | แสดงรายการ Virtual Kubernetes |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | ดึงข้อมูล Virtual Kubernetes |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | ลบ Virtual Kubernetes |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | GET Virtual Kubernetes |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/virtual_k8ss/&#123;name&#125;` | DELETE Virtual Kubernetes |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads` | สร้าง Workload |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workloads/&#123;metadata.name&#125;` | แทนที่ Workload |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/workloads` | แสดงรายการ Workload |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/workloads/usage` | เมตริกการใช้งาน |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ดึงข้อมูล Workload |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | ลบ Workload |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | GET Workload |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workloads/&#123;name&#125;` | DELETE Workload |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors` | สร้าง Workload Flavor |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/workload_flavors/&#123;metadata.name&#125;` | แทนที่ Flavor |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors` | แสดงรายการ Workload Flavor |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ดึงข้อมูล Workload Flavor |
-| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | ลบ Workload Flavor |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | GET Workload Flavor |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/workload_flavors/&#123;name&#125;` | DELETE Workload Flavor |
 
 ## ลิงก์
 
-- [เอกสารอ้างอิง API แบบโต้ตอบ](./container_services/)
+- [เอกสาร API แบบโต้ตอบ](./container_services/)
 - [OpenAPI Specification JSON](../specifications/api/container_services.json)
