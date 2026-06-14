@@ -8,18 +8,10 @@
 
 Enriched OpenAPI specifications for F5 Distributed Cloud
 
+
 ## Documentation
 
 Full documentation is available at **[https://f5xc-salesdemos.github.io/api-specs-enriched/](https://f5xc-salesdemos.github.io/api-specs-enriched/)**.
-
-## Getting Started
-
-```bash
-git clone https://github.com/f5xc-salesdemos/api-specs-enriched.git
-```
-
-See the [documentation](https://f5xc-salesdemos.github.io/api-specs-enriched/) for detailed setup
-and usage guides.
 
 ## Contributing
 
