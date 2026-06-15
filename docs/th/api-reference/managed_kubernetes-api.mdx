@@ -8,58 +8,58 @@ i18n:
   translator: machine
 ---
 
-การกำหนด role bindings และ admission policies ของ Kubernetes การผสานรวม Registry สำหรับ workloads บน EKS, AKS และ GKE
+การผูก role ของ Kubernetes และนโยบาย admission ทะเบียนการผสานรวมสำหรับ workload ของ EKS, AKS และ GKE
 
 - **หมวดหมู่**: โครงสร้างพื้นฐาน
 - **ความซับซ้อน**: ปานกลาง
-- **Paths**: 20 | **Schemas**: 95
+- **เส้นทาง**: 20 | **สคีมา**: 95
 - **ระดับ**: ขั้นสูง
 - **โดเมนที่เกี่ยวข้อง**: `container_services`, `sites`, `service_mesh`
 
 ## กรณีการใช้งาน
 
-- จัดการ RBAC และความปลอดภัยของคลัสเตอร์ XCKS (Managed Kubernetes)
-- กำหนดค่า pod security policies และ admission controllers
+- จัดการ RBAC ของคลัสเตอร์ XCKS (Managed Kubernetes) และความปลอดภัย
+- กำหนดค่านโยบายความปลอดภัยของ pod และตัวควบคุม admission
 - จัดการ container registries สำหรับการปรับใช้งานระดับองค์กร
 - ผสานรวมกับคลัสเตอร์ Kubernetes ภายนอก (EKS, AKS, GKE)
 
 ## ทรัพยากรหลัก
 
 - **mk8s_cluster**: การกำหนดค่าคลัสเตอร์ Managed Kubernetes
-- **k8s_cluster_role**: การกำหนดค่า Kubernetes cluster RBAC role
+- **k8s_cluster_role**: การกำหนดค่า RBAC role ของคลัสเตอร์ Kubernetes
 - **container_registry**: Container image registry สำหรับ workload images
 
 ## Endpoints
 
-| เมธอด | Path | คำอธิบาย |
+| เมธอด | เส้นทาง | คำอธิบาย |
 |--------|------|-------------|
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys` | สร้าง Container Registry |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/container_registrys/&#123;metadata.name&#125;` | แทนที่ Container Registry |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys` | แสดงรายการ Container Registry |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | GET Container Registry |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/container_registrys/&#123;name&#125;` | DELETE Container Registry |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | สร้าง Configuration Specification |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles` | สร้างข้อกำหนดการกำหนดค่า |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_roles/&#123;metadata.name&#125;` | แทนที่ข้อกำหนดการกำหนดค่า |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles` | แสดงรายการ K8s Cluster Role |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | GET Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | GET ข้อกำหนดการกำหนดค่า |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_roles/&#123;name&#125;` | DELETE K8s Cluster Role |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | สร้าง Configuration Specification |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings` | สร้างข้อกำหนดการกำหนดค่า |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_cluster_role_bindings/&#123;metadata.name&#125;` | แทนที่ข้อกำหนดการกำหนดค่า |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings` | แสดงรายการ K8s Cluster Role Binding |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | GET Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | GET ข้อกำหนดการกำหนดค่า |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_cluster_role_bindings/&#123;name&#125;` | DELETE K8s Cluster Role Binding |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | สร้าง Configuration Specification |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions` | สร้างข้อกำหนดการกำหนดค่า |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_admissions/&#123;metadata.name&#125;` | แทนที่ข้อกำหนดการกำหนดค่า |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions` | แสดงรายการ K8s Pod Security Admission |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | GET Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | GET ข้อกำหนดการกำหนดค่า |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_admissions/&#123;name&#125;` | DELETE K8s Pod Security Admission |
-| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | สร้าง Configuration Specification |
-| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | แทนที่ Configuration Specification |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys` | สร้างข้อกำหนดการกำหนดค่า |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/k8s_pod_security_policys/&#123;metadata.name&#125;` | แทนที่ข้อกำหนดการกำหนดค่า |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys` | แสดงรายการ K8s Pod Security Policy |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | GET Configuration Specification |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | GET ข้อกำหนดการกำหนดค่า |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/k8s_pod_security_policys/&#123;name&#125;` | DELETE K8s Pod Security Policy |
 
 ## ลิงก์
 
-- [เอกสาร API แบบโต้ตอบ](./managed_kubernetes/)
+- [เอกสารอ้างอิง API แบบโต้ตอบ](./managed_kubernetes/)
 - [OpenAPI Specification JSON](../specifications/api/managed_kubernetes.json)
