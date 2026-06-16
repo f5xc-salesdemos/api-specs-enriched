@@ -1,0 +1,547 @@
+# Console UI Enrichment Configuration
+# Maps API resources to their F5 XC console UI locations and form structures
+# Source: Validated against live staging console (nferreira.staging.volterra.us)
+# Issue: #679
+
+version: "1.0.0"
+
+# ---------------------------------------------------------------------------
+# Workspaces — top-level console navigation containers
+# ---------------------------------------------------------------------------
+workspaces:
+  web-app-and-api-protection:
+    label: "Web App & API Protection"
+    route_prefix: "/web/workspaces/web-app-and-api-protection"
+  multi-cloud-app-connect:
+    label: "Multi-Cloud App Connect"
+    route_prefix: "/web/workspaces/multi-cloud-app-connect"
+  administration:
+    label: "Administration"
+    route_prefix: "/web/workspaces/administration"
+
+# ---------------------------------------------------------------------------
+# Resources — one entry per validated API resource
+# ---------------------------------------------------------------------------
+resources:
+
+  # =========================================================================
+  # HTTP Load Balancer
+  # =========================================================================
+  http_loadbalancer:
+    workspace: "web-app-and-api-protection"
+    menu_path:
+      - "Web App & API Protection"
+      - "Manage"
+      - "Load Balancers"
+      - "HTTP Load Balancers"
+    route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
+    breadcrumbs:
+      - "Home"
+      - "Web App & API Protection"
+      - "{namespace}"
+      - "Manage"
+      - "Load Balancers"
+      - "HTTP Load Balancers"
+    add_action:
+      type: "tab"
+      label: "Add HTTP Load Balancer"
+    save_action:
+      label: "Add HTTP Load Balancer"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "domains-and-lb-type"
+        label: "Domains and LB Type"
+        api_fields:
+          - "spec.domains"
+          - "spec.http"
+          - "spec.https"
+          - "spec.https_auto_cert"
+      - id: "origins"
+        label: "Origins"
+        show_advanced_fields: true
+        api_fields:
+          - "spec.default_route_pools"
+          - "spec.default_pool"
+          - "spec.default_pool_list"
+          - "spec.origin_server_subset_rule_list"
+      - id: "routes"
+        label: "Routes"
+        api_fields:
+          - "spec.routes"
+      - id: "cdn"
+        label: "CDN"
+        api_fields:
+          - "spec.disable_caching"
+      - id: "waf"
+        label: "Web Application Firewall"
+        api_fields:
+          - "spec.app_firewall"
+          - "spec.disable_waf"
+          - "spec.waf_exclusion"
+          - "spec.data_guard_rules"
+          - "spec.csrf_policy"
+          - "spec.graphql_rules"
+          - "spec.protected_cookies"
+      - id: "bot-protection"
+        label: "Bot Protection"
+        show_advanced_fields: true
+        api_fields:
+          - "spec.bot_defense"
+          - "spec.bot_defense_advanced"
+          - "spec.disable_bot_defense"
+      - id: "api-protection"
+        label: "API Protection"
+        api_fields:
+          - "spec.api_specification"
+          - "spec.api_protection_rules"
+          - "spec.jwt_validation"
+          - "spec.enable_api_discovery"
+          - "spec.disable_api_discovery"
+          - "spec.disable_api_definition"
+          - "spec.sensitive_data_policy"
+          - "spec.default_sensitive_data_policy"
+          - "spec.api_rate_limit"
+          - "spec.api_testing"
+          - "spec.disable_api_testing"
+          - "spec.sensitive_data_disclosure_rules"
+      - id: "malware-protection"
+        label: "Malware Protection"
+        disabled: true
+        disabled_reason: "Upgrade required"
+        api_fields:
+          - "spec.malware_protection_settings"
+          - "spec.disable_malware_protection"
+      - id: "dos-settings"
+        label: "DoS Settings"
+        api_fields:
+          - "spec.l7_ddos_protection"
+          - "spec.l7_ddos_action_block"
+          - "spec.l7_ddos_action_default"
+          - "spec.l7_ddos_action_js_challenge"
+          - "spec.ddos_mitigation_rules"
+          - "spec.slow_ddos_mitigation"
+          - "spec.captcha_challenge"
+          - "spec.js_challenge"
+          - "spec.no_challenge"
+          - "spec.policy_based_challenge"
+          - "spec.enable_challenge"
+      - id: "client-side-defense"
+        label: "Client-Side Defense"
+        disabled: true
+        disabled_reason: "Upgrade required"
+        api_fields:
+          - "spec.client_side_defense"
+          - "spec.disable_client_side_defense"
+      - id: "common-security-controls"
+        label: "Common Security Controls"
+        api_fields:
+          - "spec.active_service_policies"
+          - "spec.no_service_policies"
+          - "spec.service_policies_from_namespace"
+          - "spec.enable_ip_reputation"
+          - "spec.disable_ip_reputation"
+          - "spec.enable_threat_mesh"
+          - "spec.disable_threat_mesh"
+          - "spec.user_id_client_ip"
+          - "spec.user_identification"
+          - "spec.enable_malicious_user_detection"
+          - "spec.disable_malicious_user_detection"
+          - "spec.rate_limit"
+          - "spec.disable_rate_limit"
+          - "spec.trusted_clients"
+          - "spec.blocked_clients"
+          - "spec.cors_policy"
+      - id: "other-settings"
+        label: "Other Settings"
+        api_fields:
+          - "spec.advertise_on_public"
+          - "spec.advertise_on_public_default_vip"
+          - "spec.advertise_custom"
+          - "spec.do_not_advertise"
+          - "spec.round_robin"
+          - "spec.least_active"
+          - "spec.random"
+          - "spec.ring_hash"
+          - "spec.source_ip_stickiness"
+          - "spec.cookie_stickiness"
+          - "spec.disable_trust_client_ip_headers"
+          - "spec.enable_trust_client_ip_headers"
+          - "spec.add_location"
+          - "spec.more_option"
+          - "spec.multi_lb_app"
+          - "spec.single_lb_app"
+          - "spec.system_default_timeouts"
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Origin Pool
+  # =========================================================================
+  origin_pool:
+    workspace: "web-app-and-api-protection"
+    menu_path:
+      - "Web App & API Protection"
+      - "Manage"
+      - "Load Balancers"
+      - "Origin Pools"
+    route_pattern: "/namespaces/{namespace}/manage/load_balancers/origin_pools"
+    breadcrumbs:
+      - "Home"
+      - "Web App & API Protection"
+      - "{namespace}"
+      - "Manage"
+      - "Load Balancers"
+      - "Origin Pools"
+    add_action:
+      type: "tab"
+      label: "Add Origin Pool"
+    save_action:
+      label: "Add Origin Pool"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "origin-servers"
+        label: "Origin Servers"
+        api_fields:
+          - "spec.origin_servers"
+          - "spec.port"
+      - id: "health-checks"
+        label: "Health Checks"
+        api_fields:
+          - "spec.healthcheck"
+      - id: "tls"
+        label: "TLS"
+        api_fields:
+          - "spec.use_tls"
+      - id: "other-settings"
+        label: "Other Settings"
+        api_fields: []
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # App Firewall
+  # =========================================================================
+  app_firewall:
+    workspace: "web-app-and-api-protection"
+    menu_path:
+      - "Web App & API Protection"
+      - "Manage"
+      - "App Firewall"
+    route_pattern: "/namespaces/{namespace}/manage/app_firewall"
+    breadcrumbs:
+      - "Home"
+      - "Web App & API Protection"
+      - "{namespace}"
+      - "Manage"
+      - "App Firewall"
+    add_action:
+      type: "tab"
+      label: "Add App Firewall"
+    save_action:
+      label: "Add App Firewall"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "enforcement-mode"
+        label: "Enforcement Mode"
+        api_fields:
+          - "spec.enforcement_mode"
+      - id: "security-policy-settings"
+        label: "Security Policy Settings"
+        api_fields:
+          - "spec.detection_settings"
+      - id: "advanced-configuration"
+        label: "Advanced configuration"
+        api_fields: []
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Health Check
+  # =========================================================================
+  healthcheck:
+    workspace: "web-app-and-api-protection"
+    menu_path:
+      - "Web App & API Protection"
+      - "Manage"
+      - "Load Balancers"
+      - "Health Checks"
+    route_pattern: "/namespaces/{namespace}/manage/load_balancers/health_checks"
+    breadcrumbs:
+      - "Home"
+      - "Web App & API Protection"
+      - "{namespace}"
+      - "Manage"
+      - "Load Balancers"
+      - "Health Checks"
+    add_action:
+      type: "tab"
+      label: "Add Health Check"
+    save_action:
+      label: "Add Health Check"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "health-check-parameters"
+        label: "Health Check Parameters"
+        show_advanced_fields: true
+        api_fields:
+          - "spec.http_health_check"
+          - "spec.timeout"
+          - "spec.interval"
+          - "spec.unhealthy_threshold"
+          - "spec.healthy_threshold"
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # TCP Load Balancer
+  # =========================================================================
+  tcp_loadbalancer:
+    workspace: "multi-cloud-app-connect"
+    menu_path:
+      - "Multi-Cloud App Connect"
+      - "Manage"
+      - "Load Balancers"
+      - "TCP Load Balancers"
+    route_pattern: "/namespaces/{namespace}/manage/load_balancers/tcp_loadbalancers"
+    breadcrumbs:
+      - "Home"
+      - "Multi-Cloud App Connect"
+      - "{namespace}"
+      - "Manage"
+      - "Load Balancers"
+      - "TCP Load Balancers"
+    add_action:
+      type: "tab"
+      label: "Add TCP Load Balancer"
+    save_action:
+      label: "Add TCP Load Balancer"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "basic-configuration"
+        label: "Basic Configuration"
+        show_advanced_fields: true
+        api_fields:
+          - "spec.domains"
+          - "spec.listen_port"
+          - "spec.sni"
+          - "spec.origin_pools"
+          - "spec.advertise_on_public"
+      - id: "load-balancing-control"
+        label: "Load Balancing Control"
+        show_advanced_fields: true
+        api_fields: []
+      - id: "service-policies"
+        label: "Service Policies"
+        api_fields: []
+      - id: "advanced-configuration"
+        label: "Advanced Configuration"
+        show_advanced_fields: true
+        api_fields: []
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Service Policy
+  # =========================================================================
+  service_policy:
+    workspace: "web-app-and-api-protection"
+    menu_path:
+      - "Web App & API Protection"
+      - "Manage"
+      - "Service Policies"
+      - "Service Policies"
+    route_pattern: "/namespaces/{namespace}/manage/service_policies/service_policies"
+    breadcrumbs:
+      - "Home"
+      - "Web App & API Protection"
+      - "{namespace}"
+      - "Manage"
+      - "Service Policies"
+      - "Service Policies"
+    add_action:
+      type: "tab"
+      label: "Add Service policy"
+    save_action:
+      label: "Add Service policy"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+      - id: "servers"
+        label: "Servers"
+        api_fields: []
+      - id: "rules"
+        label: "Rules"
+        api_fields: []
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Virtual Host
+  # =========================================================================
+  virtual_host:
+    workspace: "multi-cloud-app-connect"
+    menu_path:
+      - "Multi-Cloud App Connect"
+      - "Manage"
+      - "Virtual Host"
+      - "Virtual Hosts"
+    route_pattern: "/namespaces/{namespace}/manage/virtual_host/virtual_hosts"
+    breadcrumbs:
+      - "Home"
+      - "Multi-Cloud App Connect"
+      - "{namespace}"
+      - "Manage"
+      - "Virtual Host"
+      - "Virtual Hosts"
+    add_action:
+      type: "tab"
+      label: "Add Virtual Host"
+    save_action:
+      label: "Add Virtual Host"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Route
+  # =========================================================================
+  route:
+    workspace: "multi-cloud-app-connect"
+    menu_path:
+      - "Multi-Cloud App Connect"
+      - "Manage"
+      - "Virtual Host"
+      - "Routes"
+    route_pattern: "/namespaces/{namespace}/manage/virtual_host/routes"
+    breadcrumbs:
+      - "Home"
+      - "Multi-Cloud App Connect"
+      - "{namespace}"
+      - "Manage"
+      - "Virtual Host"
+      - "Routes"
+    add_action:
+      type: "tab"
+      label: "Add Route"
+    save_action:
+      label: "Add Route"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"
+
+  # =========================================================================
+  # Namespace (system-level, not namespace-scoped)
+  # =========================================================================
+  namespace:
+    namespace_scoped: false
+    workspace: "administration"
+    menu_path:
+      - "Administration"
+      - "Personal Management"
+      - "My Namespaces"
+    route_pattern: "/personal-management/namespaces"
+    breadcrumbs:
+      - "Home"
+      - "Administration"
+      - "Personal Management"
+      - "My Namespaces"
+    add_action:
+      type: "tab"
+      label: "Add Namespace"
+    save_action:
+      label: "Add Namespace"
+    cancel_action:
+      label: "Cancel All"
+    form_tabs: ["Form", "Documentation", "JSON"]
+    form_sections:
+      - id: "metadata"
+        label: "Metadata"
+        api_fields:
+          - "metadata.name"
+          - "metadata.labels"
+          - "metadata.description"
+    metadata:
+      confidence: "validated"
+      discovered_at: "2026-06-15"
+      console_version: "2025.06"

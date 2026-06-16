@@ -18,7 +18,7 @@
 #
 # All extensions are now unified under x-f5xc-* namespace.
 
-version: "2.1"
+version: "3.5"
 namespace: "x-f5xc-"
 
 # =============================================================================
@@ -122,6 +122,16 @@ spec_level:
     added_in: "3.1.0"
     issue: "#314"
 
+  x-f5xc-console-navigation:
+    type: object
+    purpose: Global console navigation tree — workspace and menu hierarchy
+    consumers: [console-catalog, xcsh, browser-automation]
+    added_in: "3.5.0"
+    issue: "#679"
+    properties:
+      workspaces: Workspace definitions with route prefixes
+      tree: Navigation tree nodes with routes and children
+
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
 # =============================================================================
@@ -180,6 +190,27 @@ schema_level:
     consumers: [ide, cli, mcp]
     example: "HTTP Load Balancer"
     new_field: true
+
+  x-f5xc-console:
+    type: object
+    purpose: Console UI navigation, routing, and form structure for this resource
+    consumers: [console-catalog, xcsh, vscode-f5xc-tools, browser-automation]
+    added_in: "3.5.0"
+    issue: "#679"
+    properties:
+      workspace: Workspace ID (web-app-and-api-protection, multi-cloud-app-connect, administration)
+      menu_path: Sidebar navigation path array
+      route_pattern: URL path relative to workspace route_prefix
+      breadcrumbs: Full breadcrumb trail with namespace placeholder
+      add_action: How to open the create form (type + label)
+      save_action: Save button label
+      form_tabs: Tab labels on the form view
+      form_sections: Ordered sections with API field references
+      metadata: Discovery confidence, date, console version
+    example:
+      workspace: "web-app-and-api-protection"
+      menu_path: ["Manage", "Load Balancers", "HTTP Load Balancers"]
+      route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
 
 # =============================================================================
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
@@ -365,6 +396,21 @@ property_level:
         source: "inferred"
         confidence: 0.95
         validatedAt: "2026-01-19T00:00:00Z"
+
+  x-f5xc-console-field:
+    type: object
+    purpose: Console form widget metadata for this API property
+    consumers: [console-catalog, xcsh, browser-automation]
+    added_in: "3.5.0"
+    issue: "#679"
+    properties:
+      widget_type: Console widget type (textbox, listbox, spinbutton, checkbox, etc.)
+      label: Console display label when different from schema title
+      default: Console default value
+      selector: Text/aria selector for browser automation
+      form_section: Which form section this field appears in
+      show_when: Conditional visibility rule
+      advanced: Hidden behind Show Advanced Fields toggle
 
 # =============================================================================
 # OPERATION-LEVEL EXTENSIONS (path operations)
