@@ -41,6 +41,9 @@ X_F5XC_BEST_PRACTICES = "x-f5xc-best-practices"
 X_F5XC_GUIDED_WORKFLOWS = "x-f5xc-guided-workflows"
 X_F5XC_ACRONYMS = "x-f5xc-acronyms"
 
+# Console navigation tree (Issue #679)
+X_F5XC_CONSOLE_NAVIGATION = "x-f5xc-console-navigation"
+
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
 # =============================================================================
@@ -50,6 +53,9 @@ X_F5XC_NAMESPACE_PROFILE = "x-f5xc-namespace-profile"
 X_F5XC_DISPLAYORDER = "x-f5xc-displayorder"
 X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
+
+# Console UI enrichment (Issue #679)
+X_F5XC_CONSOLE = "x-f5xc-console"
 
 # =============================================================================
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
@@ -72,6 +78,9 @@ X_F5XC_CONFLICTS_WITH = "x-f5xc-conflicts-with"
 X_F5XC_CONSTRAINTS = "x-f5xc-constraints"
 X_F5XC_REQUIRES = "x-f5xc-requires"
 X_F5XC_UNIQUENESS = "x-f5xc-uniqueness"
+
+# Console UI field enrichment (Issue #679)
+X_F5XC_CONSOLE_FIELD = "x-f5xc-console-field"
 
 # =============================================================================
 # OPERATION-LEVEL EXTENSIONS (path operations)
@@ -204,6 +213,10 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_LOGO_SVG,
         X_F5XC_RELATED_DOMAINS,
         X_F5XC_DOC_SECTION,
+        # Console UI enrichment (Issue #679)
+        X_F5XC_CONSOLE,
+        X_F5XC_CONSOLE_FIELD,
+        X_F5XC_CONSOLE_NAVIGATION,
     ],
 )
 
