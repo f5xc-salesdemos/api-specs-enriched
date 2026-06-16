@@ -290,7 +290,7 @@ class DefaultValueEnricher:
 
             parent_prop = properties[parent_prop_name]
 
-            # Resolve nested properties (inline or via $ref)
+            # Resolve nested properties (inline, via $ref, or via allOf wrapping)
             nested_properties = parent_prop.get("properties", {})
             ref_schema = None
 
@@ -300,6 +300,15 @@ class DefaultValueEnricher:
                 if ref_schema_name in all_schemas:
                     ref_schema = all_schemas[ref_schema_name]
                     nested_properties = ref_schema.get("properties", {})
+            elif "allOf" in parent_prop:
+                for item in parent_prop["allOf"]:
+                    if "$ref" in item:
+                        ref_path = item["$ref"]
+                        ref_schema_name = ref_path.split("/")[-1]
+                        if ref_schema_name in all_schemas:
+                            ref_schema = all_schemas[ref_schema_name]
+                            nested_properties = ref_schema.get("properties", {})
+                        break
 
             if not nested_properties:
                 continue
@@ -400,7 +409,7 @@ class DefaultValueEnricher:
 
             parent_prop = properties[parent_prop_name]
 
-            # Resolve nested properties (inline or via $ref)
+            # Resolve nested properties (inline, via $ref, or via allOf wrapping)
             nested_properties = parent_prop.get("properties", {})
             ref_schema = None
 
@@ -410,6 +419,15 @@ class DefaultValueEnricher:
                 if ref_schema_name in all_schemas:
                     ref_schema = all_schemas[ref_schema_name]
                     nested_properties = ref_schema.get("properties", {})
+            elif "allOf" in parent_prop:
+                for item in parent_prop["allOf"]:
+                    if "$ref" in item:
+                        ref_path = item["$ref"]
+                        ref_schema_name = ref_path.split("/")[-1]
+                        if ref_schema_name in all_schemas:
+                            ref_schema = all_schemas[ref_schema_name]
+                            nested_properties = ref_schema.get("properties", {})
+                        break
 
             if not nested_properties:
                 continue
