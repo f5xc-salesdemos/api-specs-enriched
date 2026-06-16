@@ -863,12 +863,41 @@ resources:
       required: false
       form_section: "metadata"
 
+    # Origin server discriminated types (9 types)
     "spec.origin_servers":
       widget_type: "nested-resource-list"
       label: "Origin Servers"
       required: true
       add_action: "Add Item"
       form_section: "origin-servers"
+      item_types:
+        public_name:
+          label: "Public DNS Name"
+          fields: ["dns_name", "refresh_interval"]
+        public_ip:
+          label: "Public IP"
+          fields: ["ip"]
+        private_ip:
+          label: "Private IP"
+          fields: ["ip", "site_locator", "inside_network", "outside_network", "segment", "snat_pool"]
+        private_name:
+          label: "Private DNS Name"
+          fields: ["dns_name", "refresh_interval", "site_locator", "inside_network", "outside_network", "segment", "snat_pool"]
+        k8s_service:
+          label: "K8s Service"
+          fields: ["service_name", "site_locator", "inside_network", "outside_network", "protocol", "snat_pool", "vk8s_networks"]
+        consul_service:
+          label: "Consul Service"
+          fields: ["service_name", "site_locator", "inside_network", "outside_network", "snat_pool"]
+        custom_endpoint_object:
+          label: "Custom Endpoint"
+          fields: ["endpoint"]
+        vn_private_ip:
+          label: "Virtual Network Private IP"
+          fields: ["ip", "virtual_network"]
+        vn_private_name:
+          label: "Virtual Network Private Name"
+          fields: ["dns_name", "private_network"]
 
     "spec.port":
       widget_type: "spinbutton"
@@ -885,14 +914,18 @@ resources:
       form_section: "health-checks"
 
     "spec.use_tls":
-      widget_type: "listbox"
+      widget_type: "configurable"
       label: "TLS"
-      required: false
-      default: "Enable"
-      options:
-        - "Disable"
-        - "Enable"
       form_section: "tls"
+      nested_properties: 13
+      notes: "Contains tls_config, mTLS, server verification, SNI, session caching"
+
+    "spec.advanced_options":
+      widget_type: "configurable"
+      label: "Other Settings"
+      form_section: "other-settings"
+      nested_properties: 21
+      notes: "Circuit breaker, outlier detection, connection timeouts, proxy protocol, subsets"
 
   # ===========================================================================
   # App Firewall
@@ -938,3 +971,91 @@ resources:
       default_state: "Not configured"
       configure_action: "Configure"
       form_section: "security-policy-settings"
+
+  # ===========================================================================
+  # TCP Load Balancer
+  # ===========================================================================
+  tcp_loadbalancer:
+
+    "domains":
+      widget_type: "table"
+      label: "Domains"
+      add_action: "Add Item"
+      form_section: "basic-configuration"
+
+    "listen_port":
+      widget_type: "spinbutton"
+      label: "Listen Port"
+      default: 0
+      form_section: "basic-configuration"
+
+    "no_sni":
+      widget_type: "listbox"
+      label: "No SNI"
+      form_section: "basic-configuration"
+      mutually_exclusive_with: ["sni"]
+
+    "origin_pools_weights":
+      widget_type: "nested-resource-list"
+      label: "Origin Pools"
+      add_action: "Add Item"
+      form_section: "basic-configuration"
+
+    "advertise_on_public":
+      widget_type: "listbox"
+      label: "Advertise On Public"
+      default: "Advertise On Public"
+      form_section: "basic-configuration"
+
+    "tcp":
+      widget_type: "listbox"
+      label: "TCP"
+      default: "TCP"
+      form_section: "load-balancing-control"
+      mutually_exclusive_with: ["tcp_proxy", "sni_based"]
+
+    "round_robin":
+      widget_type: "listbox"
+      label: "Round Robin"
+      default: "Round Robin"
+      form_section: "load-balancing-control"
+
+    "service_policies_from_namespace":
+      widget_type: "listbox"
+      label: "Apply Namespace Service Policies"
+      form_section: "service-policies"
+
+  # ===========================================================================
+  # Health Check
+  # ===========================================================================
+  healthcheck:
+
+    "http_health_check":
+      widget_type: "configurable"
+      label: "HTTP HealthCheck"
+      form_section: "health-check-parameters"
+      mutually_exclusive_with: ["tcp_health_check"]
+
+    "timeout":
+      widget_type: "spinbutton"
+      label: "Timeout"
+      default: 3
+      form_section: "health-check-parameters"
+
+    "interval":
+      widget_type: "spinbutton"
+      label: "Interval"
+      default: 15
+      form_section: "health-check-parameters"
+
+    "unhealthy_threshold":
+      widget_type: "spinbutton"
+      label: "Unhealthy Threshold"
+      default: 1
+      form_section: "health-check-parameters"
+
+    "healthy_threshold":
+      widget_type: "spinbutton"
+      label: "Healthy Threshold"
+      default: 3
+      form_section: "health-check-parameters"
