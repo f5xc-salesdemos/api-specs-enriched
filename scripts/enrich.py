@@ -43,6 +43,7 @@ from scripts.utils import (
     SchemaFixer,
     UniquenessEnricher,
 )
+from scripts.utils.console_ui_enricher import ConsoleUIEnricher
 from scripts.utils.json_writer import write_json_file
 
 console = Console()
@@ -333,6 +334,10 @@ def enrich_spec_file(
         uniqueness_enricher = UniquenessEnricher()
         spec = uniqueness_enricher.enrich_spec(spec)
 
+        # 4.6.6. Console UI enrichment (add x-f5xc-console navigation and form metadata)
+        console_ui_enricher = ConsoleUIEnricher()
+        spec = console_ui_enricher.enrich_spec(spec)
+
         # 4.7. External docs enrichment (add externalDocs with F5 documentation links)
         external_docs_enricher = ExternalDocsEnricher()
         spec = external_docs_enricher.enrich_spec(spec, filename=spec_path.name)
@@ -397,6 +402,7 @@ def enrich_spec_file(
         minimum_config_stats = minimum_configuration_enricher.get_stats()
         namespace_profile_stats = namespace_profile_enricher.get_stats()
         constraint_stats = constraint_enricher.get_stats()
+        _ = console_ui_enricher.get_stats()
 
         return EnrichmentResult(
             filename=filename,

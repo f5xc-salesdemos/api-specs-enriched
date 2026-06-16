@@ -1,0 +1,940 @@
+# Console Field Metadata — per-field widget types and defaults
+# Applied as x-f5xc-console-field on API properties by ConsoleUIEnricher
+# Source: Validated form data from console/catalog/resources/http-load-balancer.yaml
+#         API property paths from console/catalog/mappings/http-load-balancer.yaml
+# Issue: #681
+
+version: "1.0.0"
+
+resources:
+
+  # ===========================================================================
+  # HTTP Load Balancer
+  # ===========================================================================
+  http_loadbalancer:
+
+    # -------------------------------------------------------------------------
+    # Section: Metadata
+    # -------------------------------------------------------------------------
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+      validation:
+        pattern: "^[a-z][a-z0-9-]*$"
+        max_length: 64
+
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      required: false
+      add_action: "Add Label"
+      form_section: "metadata"
+
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      required: false
+      form_section: "metadata"
+
+    # -------------------------------------------------------------------------
+    # Section: Domains and LB Type
+    # -------------------------------------------------------------------------
+    "spec.domains":
+      widget_type: "table"
+      label: "Domains"
+      required: true
+      add_action: "Add Item"
+      description: "One or more domains this load balancer serves"
+      form_section: "domains-and-lb-type"
+
+    "spec.https_auto_cert":
+      widget_type: "listbox"
+      label: "Load Balancer Type"
+      required: true
+      default: "HTTPS with Automatic Certificate"
+      options:
+        - "HTTP"
+        - "HTTPS with Automatic Certificate"
+        - "HTTPS with Custom Certificate"
+      form_section: "domains-and-lb-type"
+      notes: "Selects between spec.http, spec.https, and spec.https_auto_cert"
+      mutually_exclusive_with:
+        - "spec.http"
+        - "spec.https"
+
+    "spec.http":
+      widget_type: "listbox"
+      label: "Load Balancer Type"
+      form_section: "domains-and-lb-type"
+      hidden: true
+      notes: "Active when LB Type is HTTP; mutually exclusive with https variants"
+      mutually_exclusive_with:
+        - "spec.https_auto_cert"
+        - "spec.https"
+
+    "spec.https":
+      widget_type: "listbox"
+      label: "Load Balancer Type"
+      form_section: "domains-and-lb-type"
+      hidden: true
+      notes: "Active when LB Type is HTTPS with Custom Certificate"
+      mutually_exclusive_with:
+        - "spec.https_auto_cert"
+        - "spec.http"
+
+    # -------------------------------------------------------------------------
+    # Section: Origins
+    # -------------------------------------------------------------------------
+    "spec.default_route_pools":
+      widget_type: "nested-resource-list"
+      label: "Origin Pools"
+      required: false
+      add_action: "Add Item"
+      nested_resource: "origin_pool"
+      form_section: "origins"
+
+    "spec.default_pool":
+      widget_type: "resource-selector"
+      label: "Default Pool"
+      required: false
+      form_section: "origins"
+      notes: "Alternative to default_route_pools for single pool"
+
+    "spec.default_pool_list":
+      widget_type: "nested-resource-list"
+      label: "Default Pool List"
+      required: false
+      form_section: "origins"
+
+    "spec.origin_server_subset_rule_list":
+      widget_type: "configurable"
+      label: "Origin Server Subset Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "origins"
+      show_advanced_fields: true
+
+    # -------------------------------------------------------------------------
+    # Section: Routes
+    # -------------------------------------------------------------------------
+    "spec.routes":
+      widget_type: "configurable"
+      label: "Routes"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "routes"
+
+    # -------------------------------------------------------------------------
+    # Section: CDN
+    # -------------------------------------------------------------------------
+    "spec.disable_caching":
+      widget_type: "listbox"
+      label: "Caching"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "cdn"
+      notes: "Empty object sentinel — presence means caching is disabled"
+
+    # -------------------------------------------------------------------------
+    # Section: Web Application Firewall (WAF)
+    # -------------------------------------------------------------------------
+    "spec.app_firewall":
+      widget_type: "resource-selector"
+      label: "WAF"
+      resource_type: "app_firewall"
+      required: false
+      form_section: "waf"
+      notes: "Enable WAF by selecting an App Firewall resource"
+      mutually_exclusive_with:
+        - "spec.disable_waf"
+
+    "spec.disable_waf":
+      widget_type: "listbox"
+      label: "WAF"
+      default: "Disable"
+      form_section: "waf"
+      notes: "Empty object sentinel — presence means WAF is disabled"
+      mutually_exclusive_with:
+        - "spec.app_firewall"
+
+    "spec.waf_exclusion":
+      widget_type: "listbox"
+      label: "WAF Exclusion"
+      required: false
+      default: "Inline Rules"
+      options:
+        - "Inline Rules"
+        - "Custom Rules"
+      form_section: "waf"
+      depends_on: "spec.app_firewall"
+
+    "spec.data_guard_rules":
+      widget_type: "configurable"
+      label: "Data Guard Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "waf"
+
+    "spec.csrf_policy":
+      widget_type: "configurable"
+      label: "CSRF Protection"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "waf"
+
+    "spec.graphql_rules":
+      widget_type: "configurable"
+      label: "GraphQL Inspection"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "waf"
+
+    "spec.protected_cookies":
+      widget_type: "configurable"
+      label: "Cookie Protection"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "waf"
+
+    # -------------------------------------------------------------------------
+    # Section: Bot Protection
+    # -------------------------------------------------------------------------
+    "spec.bot_defense":
+      widget_type: "listbox"
+      label: "Bot Defense"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "bot-protection"
+      mutually_exclusive_with:
+        - "spec.disable_bot_defense"
+
+    "spec.bot_defense_advanced":
+      widget_type: "configurable"
+      label: "Bot Defense Advanced"
+      required: false
+      form_section: "bot-protection"
+      show_advanced_fields: true
+      depends_on: "spec.bot_defense"
+
+    "spec.disable_bot_defense":
+      widget_type: "listbox"
+      label: "Bot Defense"
+      default: "Disable"
+      form_section: "bot-protection"
+      notes: "Empty object sentinel — presence means bot defense is disabled"
+      mutually_exclusive_with:
+        - "spec.bot_defense"
+        - "spec.bot_defense_advanced"
+
+    # -------------------------------------------------------------------------
+    # Section: API Protection
+    # -------------------------------------------------------------------------
+    "spec.api_specification":
+      widget_type: "configurable"
+      label: "API Definition"
+      required: false
+      form_section: "api-protection"
+      notes: "Upload or reference an API spec for schema enforcement"
+      mutually_exclusive_with:
+        - "spec.disable_api_definition"
+
+    "spec.disable_api_definition":
+      widget_type: "listbox"
+      label: "API Definition"
+      default: "Disable"
+      form_section: "api-protection"
+      notes: "Empty object sentinel — presence means API definition is disabled"
+      mutually_exclusive_with:
+        - "spec.api_specification"
+
+    "spec.api_protection_rules":
+      widget_type: "configurable"
+      label: "API Protection Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "api-protection"
+      depends_on: "spec.api_specification"
+
+    "spec.jwt_validation":
+      widget_type: "configurable"
+      label: "JWT Validation"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "api-protection"
+
+    "spec.enable_api_discovery":
+      widget_type: "listbox"
+      label: "API Discovery"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "api-protection"
+      mutually_exclusive_with:
+        - "spec.disable_api_discovery"
+
+    "spec.disable_api_discovery":
+      widget_type: "listbox"
+      label: "API Discovery"
+      default: "Disable"
+      form_section: "api-protection"
+      notes: "Empty object sentinel — presence means API discovery is disabled"
+      mutually_exclusive_with:
+        - "spec.enable_api_discovery"
+
+    "spec.sensitive_data_policy":
+      widget_type: "listbox"
+      label: "Sensitive Data Discovery"
+      required: false
+      default: "Default"
+      options:
+        - "Default"
+        - "Custom"
+      form_section: "api-protection"
+      mutually_exclusive_with:
+        - "spec.default_sensitive_data_policy"
+
+    "spec.default_sensitive_data_policy":
+      widget_type: "listbox"
+      label: "Sensitive Data Discovery"
+      default: "Default"
+      form_section: "api-protection"
+      notes: "Empty object sentinel — uses default sensitive data policy"
+      mutually_exclusive_with:
+        - "spec.sensitive_data_policy"
+
+    "spec.api_rate_limit":
+      widget_type: "configurable"
+      label: "API Rate Limit"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "api-protection"
+
+    "spec.api_testing":
+      widget_type: "listbox"
+      label: "API Testing"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "api-protection"
+      mutually_exclusive_with:
+        - "spec.disable_api_testing"
+
+    "spec.disable_api_testing":
+      widget_type: "listbox"
+      label: "API Testing"
+      default: "Disable"
+      form_section: "api-protection"
+      notes: "Empty object sentinel — presence means API testing is disabled"
+      mutually_exclusive_with:
+        - "spec.api_testing"
+
+    "spec.sensitive_data_disclosure_rules":
+      widget_type: "configurable"
+      label: "Sensitive Data Exposure Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "api-protection"
+
+    # -------------------------------------------------------------------------
+    # Section: DoS Settings
+    # -------------------------------------------------------------------------
+    "spec.l7_ddos_protection":
+      widget_type: "configurable"
+      label: "DDoS Protection"
+      required: false
+      form_section: "dos-settings"
+      notes: "Contains mitigation_action, rps_threshold, and client_side_challenge settings"
+
+    "spec.l7_ddos_action_block":
+      widget_type: "listbox"
+      label: "Mitigation Action"
+      default: "Block"
+      form_section: "dos-settings"
+      notes: "Empty object sentinel — block mitigation action"
+      mutually_exclusive_with:
+        - "spec.l7_ddos_action_default"
+        - "spec.l7_ddos_action_js_challenge"
+
+    "spec.l7_ddos_action_default":
+      widget_type: "listbox"
+      label: "Mitigation Action"
+      default: "None"
+      form_section: "dos-settings"
+      notes: "Empty object sentinel — no mitigation action"
+      mutually_exclusive_with:
+        - "spec.l7_ddos_action_block"
+        - "spec.l7_ddos_action_js_challenge"
+
+    "spec.l7_ddos_action_js_challenge":
+      widget_type: "listbox"
+      label: "Mitigation Action"
+      default: "JavaScript Challenge"
+      form_section: "dos-settings"
+      mutually_exclusive_with:
+        - "spec.l7_ddos_action_block"
+        - "spec.l7_ddos_action_default"
+
+    "spec.ddos_mitigation_rules":
+      widget_type: "configurable"
+      label: "DDoS Mitigation Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "dos-settings"
+
+    "spec.slow_ddos_mitigation":
+      widget_type: "listbox"
+      label: "Slow DDoS Mitigation"
+      required: false
+      default: "Default"
+      options:
+        - "Default"
+        - "Custom"
+      form_section: "dos-settings"
+
+    "spec.captcha_challenge":
+      widget_type: "configurable"
+      label: "Captcha Challenge"
+      required: false
+      form_section: "dos-settings"
+      mutually_exclusive_with:
+        - "spec.js_challenge"
+        - "spec.no_challenge"
+        - "spec.policy_based_challenge"
+
+    "spec.js_challenge":
+      widget_type: "configurable"
+      label: "JavaScript Challenge"
+      required: false
+      form_section: "dos-settings"
+      mutually_exclusive_with:
+        - "spec.captcha_challenge"
+        - "spec.no_challenge"
+        - "spec.policy_based_challenge"
+
+    "spec.no_challenge":
+      widget_type: "listbox"
+      label: "Client-Side Challenge"
+      default: "None"
+      form_section: "dos-settings"
+      notes: "Empty object sentinel — no client-side challenge"
+      mutually_exclusive_with:
+        - "spec.captcha_challenge"
+        - "spec.js_challenge"
+        - "spec.policy_based_challenge"
+
+    "spec.policy_based_challenge":
+      widget_type: "configurable"
+      label: "Policy-Based Challenge"
+      required: false
+      form_section: "dos-settings"
+      mutually_exclusive_with:
+        - "spec.captcha_challenge"
+        - "spec.js_challenge"
+        - "spec.no_challenge"
+
+    "spec.enable_challenge":
+      widget_type: "configurable"
+      label: "Challenge Settings"
+      required: false
+      form_section: "dos-settings"
+
+    # -------------------------------------------------------------------------
+    # Section: Common Security Controls
+    # -------------------------------------------------------------------------
+    "spec.service_policies_from_namespace":
+      widget_type: "listbox"
+      label: "Service Policies"
+      required: false
+      default: "Apply Namespace Service Policies"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — applies namespace-level service policies"
+      mutually_exclusive_with:
+        - "spec.active_service_policies"
+        - "spec.no_service_policies"
+
+    "spec.active_service_policies":
+      widget_type: "configurable"
+      label: "Service Policies"
+      required: false
+      form_section: "common-security-controls"
+      notes: "Apply specified service policies"
+      mutually_exclusive_with:
+        - "spec.service_policies_from_namespace"
+        - "spec.no_service_policies"
+
+    "spec.no_service_policies":
+      widget_type: "listbox"
+      label: "Service Policies"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — do not apply service policies"
+      mutually_exclusive_with:
+        - "spec.service_policies_from_namespace"
+        - "spec.active_service_policies"
+
+    "spec.enable_ip_reputation":
+      widget_type: "listbox"
+      label: "IP Reputation"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "common-security-controls"
+      mutually_exclusive_with:
+        - "spec.disable_ip_reputation"
+
+    "spec.disable_ip_reputation":
+      widget_type: "listbox"
+      label: "IP Reputation"
+      default: "Disable"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — IP reputation disabled"
+      mutually_exclusive_with:
+        - "spec.enable_ip_reputation"
+
+    "spec.enable_threat_mesh":
+      widget_type: "listbox"
+      label: "Threat Mesh"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "common-security-controls"
+      mutually_exclusive_with:
+        - "spec.disable_threat_mesh"
+
+    "spec.disable_threat_mesh":
+      widget_type: "listbox"
+      label: "Threat Mesh"
+      default: "Disable"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — threat mesh disabled"
+      mutually_exclusive_with:
+        - "spec.enable_threat_mesh"
+
+    "spec.user_id_client_ip":
+      widget_type: "listbox"
+      label: "User Identifier"
+      required: false
+      default: "Client IP Address"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — use client IP as user identifier"
+      mutually_exclusive_with:
+        - "spec.user_identification"
+
+    "spec.user_identification":
+      widget_type: "resource-selector"
+      label: "User Identifier"
+      required: false
+      form_section: "common-security-controls"
+      notes: "Custom user identification policy (TLS fingerprint or custom)"
+      mutually_exclusive_with:
+        - "spec.user_id_client_ip"
+
+    "spec.enable_malicious_user_detection":
+      widget_type: "listbox"
+      label: "Malicious User Detection"
+      required: false
+      default: "Disable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "common-security-controls"
+      mutually_exclusive_with:
+        - "spec.disable_malicious_user_detection"
+
+    "spec.disable_malicious_user_detection":
+      widget_type: "listbox"
+      label: "Malicious User Detection"
+      default: "Disable"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — malicious user detection disabled"
+      mutually_exclusive_with:
+        - "spec.enable_malicious_user_detection"
+
+    "spec.rate_limit":
+      widget_type: "configurable"
+      label: "Rate Limiting"
+      required: false
+      default_state: "Not configured"
+      form_section: "common-security-controls"
+      notes: "Enable and configure rate limiting rules"
+      mutually_exclusive_with:
+        - "spec.disable_rate_limit"
+
+    "spec.disable_rate_limit":
+      widget_type: "listbox"
+      label: "Rate Limiting"
+      default: "Disable"
+      form_section: "common-security-controls"
+      notes: "Empty object sentinel — rate limiting disabled"
+      mutually_exclusive_with:
+        - "spec.rate_limit"
+
+    "spec.trusted_clients":
+      widget_type: "configurable"
+      label: "Trusted Client Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "common-security-controls"
+
+    "spec.blocked_clients":
+      widget_type: "configurable"
+      label: "Client Blocking Rules"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "common-security-controls"
+
+    "spec.cors_policy":
+      widget_type: "configurable"
+      label: "CORS Policy"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "common-security-controls"
+
+    # -------------------------------------------------------------------------
+    # Section: Other Settings
+    # -------------------------------------------------------------------------
+    "spec.advertise_on_public":
+      widget_type: "listbox"
+      label: "VIP Advertisement"
+      required: false
+      default: "Internet"
+      options:
+        - "Internet"
+        - "Internet with VIP on RE"
+        - "Custom"
+      form_section: "other-settings"
+      mutually_exclusive_with:
+        - "spec.advertise_on_public_default_vip"
+        - "spec.advertise_custom"
+        - "spec.do_not_advertise"
+
+    "spec.advertise_on_public_default_vip":
+      widget_type: "listbox"
+      label: "VIP Advertisement"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — advertise on public with default VIP"
+      mutually_exclusive_with:
+        - "spec.advertise_on_public"
+        - "spec.advertise_custom"
+        - "spec.do_not_advertise"
+
+    "spec.advertise_custom":
+      widget_type: "configurable"
+      label: "VIP Advertisement"
+      form_section: "other-settings"
+      notes: "Custom advertisement configuration"
+      mutually_exclusive_with:
+        - "spec.advertise_on_public"
+        - "spec.advertise_on_public_default_vip"
+        - "spec.do_not_advertise"
+
+    "spec.do_not_advertise":
+      widget_type: "listbox"
+      label: "VIP Advertisement"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — do not advertise"
+      mutually_exclusive_with:
+        - "spec.advertise_on_public"
+        - "spec.advertise_on_public_default_vip"
+        - "spec.advertise_custom"
+
+    "spec.round_robin":
+      widget_type: "listbox"
+      label: "LB Algorithm"
+      required: false
+      default: "Round Robin"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — round-robin load balancing"
+      mutually_exclusive_with:
+        - "spec.least_active"
+        - "spec.random"
+        - "spec.ring_hash"
+        - "spec.source_ip_stickiness"
+        - "spec.cookie_stickiness"
+
+    "spec.least_active":
+      widget_type: "listbox"
+      label: "LB Algorithm"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — least active request"
+      mutually_exclusive_with:
+        - "spec.round_robin"
+        - "spec.random"
+        - "spec.ring_hash"
+        - "spec.source_ip_stickiness"
+        - "spec.cookie_stickiness"
+
+    "spec.random":
+      widget_type: "listbox"
+      label: "LB Algorithm"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — random selection"
+      mutually_exclusive_with:
+        - "spec.round_robin"
+        - "spec.least_active"
+        - "spec.ring_hash"
+        - "spec.source_ip_stickiness"
+        - "spec.cookie_stickiness"
+
+    "spec.ring_hash":
+      widget_type: "configurable"
+      label: "LB Algorithm"
+      form_section: "other-settings"
+      notes: "Ring hash with configurable hash policy"
+      mutually_exclusive_with:
+        - "spec.round_robin"
+        - "spec.least_active"
+        - "spec.random"
+        - "spec.source_ip_stickiness"
+        - "spec.cookie_stickiness"
+
+    "spec.source_ip_stickiness":
+      widget_type: "listbox"
+      label: "LB Algorithm"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — source IP stickiness"
+      mutually_exclusive_with:
+        - "spec.round_robin"
+        - "spec.least_active"
+        - "spec.random"
+        - "spec.ring_hash"
+        - "spec.cookie_stickiness"
+
+    "spec.cookie_stickiness":
+      widget_type: "configurable"
+      label: "LB Algorithm"
+      form_section: "other-settings"
+      notes: "Cookie-based stickiness with configurable cookie"
+      mutually_exclusive_with:
+        - "spec.round_robin"
+        - "spec.least_active"
+        - "spec.random"
+        - "spec.ring_hash"
+        - "spec.source_ip_stickiness"
+
+    "spec.disable_trust_client_ip_headers":
+      widget_type: "listbox"
+      label: "Trusted Client IP Headers"
+      required: false
+      default: "Disable"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — trusted client IP headers disabled"
+      mutually_exclusive_with:
+        - "spec.enable_trust_client_ip_headers"
+
+    "spec.enable_trust_client_ip_headers":
+      widget_type: "configurable"
+      label: "Trusted Client IP Headers"
+      required: false
+      form_section: "other-settings"
+      notes: "Configure which headers to trust for client IP"
+      mutually_exclusive_with:
+        - "spec.disable_trust_client_ip_headers"
+
+    "spec.add_location":
+      widget_type: "checkbox"
+      label: "Add Location"
+      required: false
+      default: true
+      form_section: "other-settings"
+
+    "spec.more_option":
+      widget_type: "expandable"
+      label: "More Options"
+      required: false
+      form_section: "other-settings"
+      notes: "Expands to reveal advanced configuration options"
+
+    "spec.multi_lb_app":
+      widget_type: "listbox"
+      label: "Multi-LB Application"
+      form_section: "other-settings"
+      notes: "Empty object sentinel — multi load balancer application mode"
+      mutually_exclusive_with:
+        - "spec.single_lb_app"
+
+    "spec.single_lb_app":
+      widget_type: "configurable"
+      label: "Single-LB Application"
+      form_section: "other-settings"
+      notes: "Single load balancer application settings"
+      mutually_exclusive_with:
+        - "spec.multi_lb_app"
+
+    "spec.system_default_timeouts":
+      widget_type: "listbox"
+      label: "Timeouts"
+      form_section: "other-settings"
+      default: "Default"
+      notes: "Empty object sentinel — use system default timeout values"
+
+    # -------------------------------------------------------------------------
+    # Section: Disabled sections (require license upgrade)
+    # -------------------------------------------------------------------------
+    "spec.malware_protection_settings":
+      widget_type: "configurable"
+      label: "Malware Protection"
+      form_section: "malware-protection"
+      disabled: true
+      disabled_reason: "Upgrade required"
+      mutually_exclusive_with:
+        - "spec.disable_malware_protection"
+
+    "spec.disable_malware_protection":
+      widget_type: "listbox"
+      label: "Malware Protection"
+      form_section: "malware-protection"
+      disabled: true
+      disabled_reason: "Upgrade required"
+      mutually_exclusive_with:
+        - "spec.malware_protection_settings"
+
+    "spec.client_side_defense":
+      widget_type: "configurable"
+      label: "Client-Side Defense"
+      form_section: "client-side-defense"
+      disabled: true
+      disabled_reason: "Upgrade required"
+      mutually_exclusive_with:
+        - "spec.disable_client_side_defense"
+
+    "spec.disable_client_side_defense":
+      widget_type: "listbox"
+      label: "Client-Side Defense"
+      form_section: "client-side-defense"
+      disabled: true
+      disabled_reason: "Upgrade required"
+      mutually_exclusive_with:
+        - "spec.client_side_defense"
+
+  # ===========================================================================
+  # Origin Pool
+  # ===========================================================================
+  origin_pool:
+
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+      validation:
+        pattern: "^[a-z][a-z0-9-]*$"
+        max_length: 64
+
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      required: false
+      add_action: "Add Label"
+      form_section: "metadata"
+
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      required: false
+      form_section: "metadata"
+
+    "spec.origin_servers":
+      widget_type: "nested-resource-list"
+      label: "Origin Servers"
+      required: true
+      add_action: "Add Item"
+      form_section: "origin-servers"
+
+    "spec.port":
+      widget_type: "spinbutton"
+      label: "Port"
+      required: true
+      default: 443
+      form_section: "origin-servers"
+
+    "spec.healthcheck":
+      widget_type: "resource-selector"
+      label: "Health Checks"
+      resource_type: "healthcheck"
+      required: false
+      form_section: "health-checks"
+
+    "spec.use_tls":
+      widget_type: "listbox"
+      label: "TLS"
+      required: false
+      default: "Enable"
+      options:
+        - "Disable"
+        - "Enable"
+      form_section: "tls"
+
+  # ===========================================================================
+  # App Firewall
+  # ===========================================================================
+  app_firewall:
+
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+      validation:
+        pattern: "^[a-z][a-z0-9-]*$"
+        max_length: 64
+
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      required: false
+      add_action: "Add Label"
+      form_section: "metadata"
+
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      required: false
+      form_section: "metadata"
+
+    "spec.enforcement_mode":
+      widget_type: "listbox"
+      label: "Enforcement Mode"
+      required: true
+      default: "Blocking"
+      options:
+        - "Monitoring"
+        - "Blocking"
+      form_section: "enforcement-mode"
+
+    "spec.detection_settings":
+      widget_type: "configurable"
+      label: "Detection Settings"
+      required: false
+      default_state: "Not configured"
+      configure_action: "Configure"
+      form_section: "security-policy-settings"
