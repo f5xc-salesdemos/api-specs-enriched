@@ -1167,3 +1167,693 @@ resources:
       widget_type: "textbox"
       label: "Description"
       form_section: "metadata"
+
+  # ===========================================================================
+  # CDN Load Balancer
+  # ===========================================================================
+  cdn_loadbalancer:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.domains":
+      widget_type: "table"
+      label: "Domains"
+      required: true
+      add_action: "Add Item"
+      form_section: "basic"
+    "spec.https_auto_cert":
+      widget_type: "listbox"
+      label: "Load Balancer Type"
+      required: true
+      default: "HTTPS with Automatic Certificate"
+      form_section: "basic"
+    "spec.app_firewall":
+      widget_type: "resource-selector"
+      label: "WAF"
+      form_section: "waf"
+
+  # ===========================================================================
+  # AWS VPC Site
+  # ===========================================================================
+  aws_vpc_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.aws_region":
+      widget_type: "listbox"
+      label: "AWS Region"
+      required: true
+      form_section: "basic"
+    "spec.aws_cred":
+      widget_type: "resource-selector"
+      label: "AWS Credentials"
+      required: true
+      form_section: "basic"
+    "spec.instance_type":
+      widget_type: "listbox"
+      label: "Instance Type"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Azure VNET Site
+  # ===========================================================================
+  azure_vnet_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.azure_region":
+      widget_type: "listbox"
+      label: "Azure Region"
+      required: true
+      form_section: "basic"
+    "spec.azure_cred":
+      widget_type: "resource-selector"
+      label: "Azure Credentials"
+      required: true
+      form_section: "basic"
+    "spec.machine_type":
+      widget_type: "listbox"
+      label: "Machine Type"
+      form_section: "basic"
+
+  # ===========================================================================
+  # GCP VPC Site
+  # ===========================================================================
+  gcp_vpc_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.cloud_credentials":
+      widget_type: "resource-selector"
+      label: "GCP Credentials"
+      required: true
+      form_section: "basic"
+    "spec.gcp_region":
+      widget_type: "listbox"
+      label: "GCP Region"
+      form_section: "basic"
+
+  # ===========================================================================
+  # DNS Zone
+  # ===========================================================================
+  dns_zone:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.primary":
+      widget_type: "configurable"
+      label: "Primary DNS Zone"
+      form_section: "zone-type"
+    "spec.domain":
+      widget_type: "textbox"
+      label: "Domain"
+      required: true
+      form_section: "basic"
+
+  # ===========================================================================
+  # DNS Load Balancer
+  # ===========================================================================
+  dns_load_balancer:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.record_type":
+      widget_type: "listbox"
+      label: "Record Type"
+      required: true
+      form_section: "basic"
+    "spec.dns_lb_pool":
+      widget_type: "resource-selector"
+      label: "DNS LB Pool"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Global Log Receiver
+  # ===========================================================================
+  global_log_receiver:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.filter":
+      widget_type: "configurable"
+      label: "Log Filter"
+      form_section: "basic"
+    "spec.receiver":
+      widget_type: "configurable"
+      label: "Receiver Configuration"
+      required: true
+      form_section: "basic"
+
+  # ===========================================================================
+  # K8s Cluster
+  # ===========================================================================
+  k8s_cluster:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.cluster_wide_app_list":
+      widget_type: "configurable"
+      label: "Cluster-Wide Apps"
+      form_section: "basic"
+
+  # ===========================================================================
+  # HTTP Monitor
+  # ===========================================================================
+  v1_http_monitor:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.url":
+      widget_type: "textbox"
+      label: "URL"
+      required: true
+      form_section: "basic"
+    "spec.interval":
+      widget_type: "spinbutton"
+      label: "Interval"
+      form_section: "basic"
+
+  # ===========================================================================
+  # DNS Monitor
+  # ===========================================================================
+  v1_dns_monitor:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.domain":
+      widget_type: "textbox"
+      label: "Domain"
+      required: true
+      form_section: "basic"
+    "spec.interval":
+      widget_type: "spinbutton"
+      label: "Interval"
+      form_section: "basic"
+
+  # ===========================================================================
+  # AWS TGW Site
+  # ===========================================================================
+  aws_tgw_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.aws_parameters":
+      widget_type: "configurable"
+      label: "AWS Parameters"
+      required: true
+      form_section: "basic"
+
+  # ===========================================================================
+  # Voltstack Site
+  # ===========================================================================
+  voltstack_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.master_nodes":
+      widget_type: "configurable"
+      label: "Master Nodes"
+      form_section: "basic"
+
+  # ===========================================================================
+  # UDP Load Balancer
+  # ===========================================================================
+  udp_loadbalancer:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.domains":
+      widget_type: "table"
+      label: "Domains"
+      add_action: "Add Item"
+      form_section: "basic"
+    "spec.listen_port":
+      widget_type: "spinbutton"
+      label: "Listen Port"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Forward Proxy Policy
+  # ===========================================================================
+  forward_proxy_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.any_proxy":
+      widget_type: "listbox"
+      label: "Proxy"
+      default: "Any Proxy"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Network Policy
+  # ===========================================================================
+  network_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.endpoint":
+      widget_type: "configurable"
+      label: "Endpoint"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Rate Limiter Policy
+  # ===========================================================================
+  rate_limiter_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.rules":
+      widget_type: "configurable"
+      label: "Rate Limit Rules"
+      form_section: "basic"
+
+  # ===========================================================================
+  # WAF Exclusion Policy
+  # ===========================================================================
+  waf_exclusion_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.waf_exclusion_rules":
+      widget_type: "configurable"
+      label: "Exclusion Rules"
+      form_section: "basic"
+
+  # ===========================================================================
+  # API Discovery
+  # ===========================================================================
+  api_discovery:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.discovered_api_settings":
+      widget_type: "configurable"
+      label: "Discovery Settings"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Sensitive Data Policy
+  # ===========================================================================
+  sensitive_data_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.sensitive_data_detection_rules":
+      widget_type: "configurable"
+      label: "Detection Rules"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Data Type
+  # ===========================================================================
+  data_type:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.rules":
+      widget_type: "configurable"
+      label: "Data Type Rules"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Virtual Site
+  # ===========================================================================
+  virtual_site:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.site_selector":
+      widget_type: "configurable"
+      label: "Site Selector"
+      form_section: "selector"
+    "spec.site_type":
+      widget_type: "listbox"
+      label: "Site Type"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Alert Policy
+  # ===========================================================================
+  alert_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.receivers":
+      widget_type: "configurable"
+      label: "Receivers"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Secret Policy
+  # ===========================================================================
+  secret_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.rules":
+      widget_type: "configurable"
+      label: "Policy Rules"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Alert Receiver
+  # ===========================================================================
+  alert_receiver:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.receiver":
+      widget_type: "configurable"
+      label: "Receiver Configuration"
+      required: true
+      form_section: "basic"
+
+  # ===========================================================================
+  # DNS LB Pool
+  # ===========================================================================
+  dns_lb_pool:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.members":
+      widget_type: "configurable"
+      label: "Pool Members"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Site Mesh Group
+  # ===========================================================================
+  site_mesh_group:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.type":
+      widget_type: "listbox"
+      label: "Mesh Type"
+      form_section: "basic"
+
+  # ===========================================================================
+  # IKE Gateway
+  # ===========================================================================
+  ike_gateway:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.remote_address":
+      widget_type: "textbox"
+      label: "Remote Address"
+      form_section: "basic"
+
+  # ===========================================================================
+  # Route
+  # ===========================================================================
+  route:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.simple_static_route":
+      widget_type: "configurable"
+      label: "Static Route"
+      form_section: "basic"
