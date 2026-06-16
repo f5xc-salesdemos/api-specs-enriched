@@ -1059,3 +1059,111 @@ resources:
       label: "Healthy Threshold"
       default: 3
       form_section: "health-check-parameters"
+
+  # ===========================================================================
+  # Service Policy
+  # ===========================================================================
+  service_policy:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.any_server":
+      widget_type: "listbox"
+      label: "Any Server"
+      default: "Any Server"
+      form_section: "servers"
+      mutually_exclusive_with: ["spec.server_name", "spec.server_name_matcher", "spec.server_selector"]
+    "spec.rule_list":
+      widget_type: "configurable"
+      label: "Custom Rule List"
+      form_section: "rules"
+      mutually_exclusive_with: ["spec.allow_all_requests", "spec.deny_all_requests", "spec.allow_list", "spec.deny_list"]
+      notes: "Opens nested rule editor with match conditions and actions"
+
+  # ===========================================================================
+  # Virtual Host
+  # ===========================================================================
+  virtual_host:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+    "metadata.labels":
+      widget_type: "key-value-pairs"
+      label: "Labels"
+      form_section: "metadata"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
+    "spec.domains":
+      widget_type: "table"
+      label: "Domains"
+      required: true
+      add_action: "Add Item"
+      form_section: "basic"
+    "spec.routes":
+      widget_type: "nested-resource-list"
+      label: "Routes"
+      add_action: "Add Item"
+      form_section: "routes"
+    "spec.proxy":
+      widget_type: "configurable"
+      label: "Proxy"
+      form_section: "proxy"
+      notes: "Proxy settings including connection and routing behavior"
+    "spec.tls_parameters":
+      widget_type: "configurable"
+      label: "TLS Parameters"
+      form_section: "tls"
+      notes: "Downstream TLS configuration"
+    "spec.cors_policy":
+      widget_type: "configurable"
+      label: "CORS Policy"
+      form_section: "security"
+    "spec.csrf_policy":
+      widget_type: "configurable"
+      label: "CSRF Policy"
+      form_section: "security"
+    "spec.waf_type":
+      widget_type: "configurable"
+      label: "WAF Type"
+      form_section: "security"
+    "spec.buffer_policy":
+      widget_type: "configurable"
+      label: "Buffer Policy"
+      form_section: "advanced"
+    "spec.compression_params":
+      widget_type: "configurable"
+      label: "Compression"
+      form_section: "advanced"
+    "spec.retry_policy":
+      widget_type: "configurable"
+      label: "Retry Policy"
+      form_section: "advanced"
+
+  # ===========================================================================
+  # Namespace
+  # ===========================================================================
+  namespace:
+    "metadata.name":
+      widget_type: "textbox"
+      label: "Name"
+      required: true
+      form_section: "metadata"
+      notes: "System-level resource — no namespace scope"
+    "metadata.description":
+      widget_type: "textbox"
+      label: "Description"
+      form_section: "metadata"
