@@ -198,6 +198,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-navigation
+
+- **Applied at:** spec info
+- **Purpose:** Global console navigation tree — workspace and menu hierarchy.
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
+- **Pass-through from upstream:** no
+
 ## Injected — schema-level (component schemas)
 
 ### x-f5xc-minimum-configuration
@@ -258,6 +270,18 @@ stubby as long as the `### x-name` header exists and the
 - **Injected by:** scripts/utils/field_metadata_enricher.py
 - **Driven by config:** config/field_metadata.yaml
 - **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
+- **Pass-through from upstream:** no
+
+### x-f5xc-console
+
+- **Applied at:** schema
+- **Purpose:** Console UI navigation, routing, and form structure for this resource.
+- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
 ## Injected — property-level
@@ -464,6 +488,18 @@ stubby as long as the `### x-name` header exists and the
 - **Injected by:** scripts/utils/uniqueness_enricher.py
 - **Driven by config:** hardcoded
 - **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-console-field
+
+- **Applied at:** schema property
+- **Purpose:** Console form widget metadata for this API property.
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_field_metadata.yaml
+- **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
 - **Pass-through from upstream:** no
 
 ## Injected — operation-level
