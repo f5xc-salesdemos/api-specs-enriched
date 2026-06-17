@@ -1,24 +1,27 @@
 ---
-title: エンリッチメント拡張機能カタログ
-description: エンリッチされた OpenAPI 仕様における全 x-* 拡張機能の信頼できる情報源
+title: 拡充拡張機能カタログ
+description: 拡充 OpenAPI 仕様に含まれるすべての x-* 拡張機能の信頼できる情報源
 i18n:
-  sourceHash: 7fde0afb4dac
+  sourceHash: 70e0912cf4b0
   translator: machine
 ---
 
-# エンリッチメント拡張機能カタログ
+# 拡充拡張機能カタログ
 
-`docs/specifications/api/*.json` に記載されているすべての `x-*` 拡張機能の信頼できる情報源です。`scripts/utils/extension_constants.py` との整合性は `tests/test_extension_catalog.py` によって保証されています。
+`docs/specifications/api/*.json` に含まれるすべての `x-*` 拡張機能の信頼できる情報源です。`scripts/utils/extension_constants.py` との整合性は `tests/test_extension_catalog.py` によって検証されます。
 
-ここでは3種類の拡張機能を記載しています:
+ここでは 3 種類の拡張機能を説明しています。
 
-- **ここで注入** — エンリッチャーが追加する拡張機能（`x-f5xc-*` および `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / ディスカバリーバリアント）。下流ツールが使用するべき拡張機能です。
-- **アップストリームパススルー** — F5 がソーススペックで出力し、そのまま保持される拡張機能（`x-ves-proto-*`、`x-displayname` など）。透明性のために記載していますが、このリポジトリでは制御しません。
-- **将来注入予定** — 現時点では未出力。エンリッチャーが生成を開始した時点でここに記載されます（初回作成時は該当なし）。
+- **ここで注入** — エンリッチャーが追加する拡張機能（`x-f5xc-*` および
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / ディスカバリー
+  バリアント）。これらはダウンストリームのツールが利用する対象です。
+- **上流パススルー** — F5 がソース仕様に含めて発行し、変更せず保持する拡張機能（`x-ves-proto-*`、`x-displayname` など）。
+  透明性のために記載しますが、このリポジトリでは制御しません。
+- **将来注入予定** — まだ出力されていません。エンリッチャーが生成を開始した時点でここに記載します（初回投入時点では該当なし）。
 
 ## エントリースキーマ
 
-以下の各エントリーは正確にこの形式を持ちます。`tests/test_extension_catalog.py` のパリティテストは、`### x-name` ヘッダーが存在し、`Pass-through from upstream:` フラグが `yes` または `no` の値で存在する限り、セクション本文が簡潔でも許容します。
+以下の各エントリーは、厳密にこの形式に従います。`tests/test_extension_catalog.py` のパリティテストでは、`### x-name` ヘッダーが存在し、`Pass-through from upstream:` フラグが `yes` または `no` の値で存在する限り、セクション本文が簡略化されていても許容します。
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -31,12 +34,12 @@ i18n:
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## 注入済み — スペックレベル（info セクション）
+## 注入済み — 仕様レベル（info セクション）
 
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** エンリッチされたスペックの CLI ドメインスラッグ（例: `http_loadbalancer`）を識別します。
+- **Purpose:** 拡充仕様の CLI ドメインスラッグ（例：`http_loadbalancer`）を識別します。
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -48,7 +51,7 @@ i18n:
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** CLI 全体のメタデータブロック（ツール名、バージョンヒント、ドメイングルーピング）。
+- **Purpose:** CLI 全体のメタデータブロック（ツール名、バージョンヒント、ドメイングループ）。
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -60,7 +63,7 @@ i18n:
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** エンリッチされたファイルのビルド元となったアップストリームソーススペックのタイムスタンプ。
+- **Purpose:** 拡充ファイルのビルド元となった上流ソース仕様のタイムスタンプ。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -72,7 +75,7 @@ i18n:
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** アップストリームソーススペックのリリースアセットの ETag。
+- **Purpose:** 上流ソース仕様リリースアセットの ETag。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -84,7 +87,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** パイプラインによってエンリッチされたスペックに付与されるセマンティックバージョン。
+- **Purpose:** パイプラインによって拡充仕様にスタンプされるセマンティックバージョン。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -96,7 +99,7 @@ i18n:
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** 各ドメインスペックに適用されるブランディング／用語集ブロック。
+- **Purpose:** 各ドメイン仕様に適用されるブランディング／用語集ブロック。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -120,7 +123,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** ディスカバリー時にプローブされたライブ API のベース URL。
+- **Purpose:** ディスカバリー中にプローブされたライブ API のベース URL。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -132,7 +135,7 @@ i18n:
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** このドメインのホストされた API リファレンスドキュメントページの URL。
+- **Purpose:** このドメインのホスト型 API リファレンスドキュメントページの URL。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -144,7 +147,7 @@ i18n:
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** ディスカバリー時にプローブされた API の観測応答時間（ミリ秒）。
+- **Purpose:** ディスカバリー中にプローブされた API の観測応答時間（ミリ秒）。
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -168,7 +171,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** ドメイン内の一般的なタスクを実行するための名前付きステップバイステップワークフロー。
+- **Purpose:** ドメインにおける一般的なタスクを達成するための名前付きステップバイステップワークフロー。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -189,12 +192,24 @@ i18n:
 - **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-navigation
+
+- **Applied at:** spec info
+- **Purpose:** グローバルコンソールナビゲーションツリー — ワークスペースとメニュー階層。
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
+- **Pass-through from upstream:** no
+
 ## 注入済み — スキーマレベル（コンポーネントスキーマ）
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** このリソースへの POST/PUT を成功させるために必要な最小限のフィールドセット。
+- **Purpose:** このリソースへの POST/PUT を正常に実行するために必要な最小限のフィールドセット。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -206,7 +221,7 @@ i18n:
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** リソースの名前空間制約、推奨事項、および分類メタデータを提供します。
+- **Purpose:** リソースのネームスペース制約、推奨事項、および分類メタデータを提供します。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -218,7 +233,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** UI/CLI 表示のためのプロパティの推奨順序。
+- **Purpose:** UI/CLI での表示用のプロパティ推奨順序。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -242,7 +257,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** リソーススキーマの人間が読めるディスプレイ名（自動生成をオーバーライド）。
+- **Purpose:** リソーススキーマの人間が読みやすい表示名（自動生成を上書きします）。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -251,12 +266,24 @@ i18n:
 - **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console
+
+- **Applied at:** schema
+- **Purpose:** このリソースのコンソール UI ナビゲーション、ルーティング、およびフォーム構造。
+- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
 ## 注入済み — プロパティレベル
 
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** アップストリームの `description` を補足するエンリッチされたプロパティ説明。
+- **Purpose:** 上流の `description` を補完する拡充プロパティ説明。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -268,7 +295,7 @@ i18n:
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** アップストリームの protobuf `ves.io.schema.rules` から導出された宣言的バリデーションルール。
+- **Purpose:** 上流の protobuf `ves.io.schema.rules` から派生した宣言的バリデーションルール。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -280,7 +307,7 @@ i18n:
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** プロパティに対する複数の例示値。
+- **Purpose:** プロパティの複数の例示値。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -304,7 +331,7 @@ i18n:
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** シェル補完ヒント（静的な列挙型または動的コマンド）。
+- **Purpose:** シェル補完ヒント（静的な列挙または動的なコマンド）。
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -328,7 +355,7 @@ i18n:
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** このプロパティを必要とする HTTP 操作（POST/PUT/...）のリスト。
+- **Purpose:** このプロパティが必須となる HTTP オペレーション（POST/PUT/...）の一覧。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -340,7 +367,7 @@ i18n:
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** このプロパティを必要とする名前付き機能の組み合わせのリスト。
+- **Purpose:** このプロパティが必須となる名前付きフィーチャーの組み合わせの一覧。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -352,7 +379,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** 条件付き要件（例: 兄弟フィールドが X に等しい場合に必要）。
+- **Purpose:** 条件付き要件（例：兄弟フィールドが X と等しい場合に必須）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -364,7 +391,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** 代替ガイダンスを含む非推奨通知。
+- **Purpose:** 代替手段のガイダンスを含む非推奨通知。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -400,7 +427,7 @@ i18n:
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** `oneOf` ブロックに対して、推奨されるバリアントを示します。
+- **Purpose:** `oneOf` ブロックにおいて、推奨されるバリアントを示します。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -412,7 +439,7 @@ i18n:
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** このプロパティと同時に設定できない兄弟プロパティのリスト。
+- **Purpose:** このプロパティと同時に設定できない兄弟プロパティの一覧。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -436,7 +463,7 @@ i18n:
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** ライブ API プローブまたは静的パターンから導出された数値／文字列制約。
+- **Purpose:** ライブ API プローブまたは静的パターンから派生した数値／文字列制約。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -448,7 +475,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** フィールドがそのスコープ内で一意でなければならないかどうかを宣言します。
+- **Purpose:** フィールドがそのスコープ内で一意である必要があるかどうかを宣言します。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -457,12 +484,24 @@ i18n:
 - **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-field
+
+- **Applied at:** schema property
+- **Purpose:** この API プロパティのコンソールフォームウィジェットメタデータ。
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_field_metadata.yaml
+- **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
+- **Pass-through from upstream:** no
+
 ## 注入済み — オペレーションレベル
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** 成功のために提供しなければならないオペレーションボディフィールドの名前。
+- **Purpose:** 成功のために提供する必要があるオペレーションボディフィールドの名前。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -486,7 +525,7 @@ i18n:
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** CLI/UI が実行前にユーザーへ確認プロンプトを表示すべきかどうか。
+- **Purpose:** 実行前に CLI/UI がユーザーに確認を求める必要があるかどうか。
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -498,7 +537,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** オペレーションの観測可能な副作用（再起動、再設定など）のリスト。
+- **Purpose:** オペレーションの観測可能な副作用の一覧（再起動、再設定など）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -510,7 +549,7 @@ i18n:
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** ディスカバリー時にこのオペレーションで実測された応答時間。
+- **Purpose:** ディスカバリー中にこのオペレーションに対して実測された応答時間。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -522,7 +561,7 @@ i18n:
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** ライブ API から表面化した観測済みレート制限ヘッダー／動作。
+- **Purpose:** ライブ API から確認されたレート制限ヘッダー／動作。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -534,7 +573,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** ライブディスカバリー中に観測されたエラーレスポンスのカタログ（サンプルペイロードを含む）。
+- **Purpose:** ライブディスカバリー中に観測されたエラーレスポンスのカタログ（サンプルペイロード付き）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -548,7 +587,7 @@ i18n:
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** ドメインの CLI / UI / ドキュメント / Terraform の最上位グルーピングカテゴリ。
+- **Purpose:** ドメインのトップレベル CLI / UI / ドキュメント / Terraform グループ化カテゴリ。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -560,7 +599,7 @@ i18n:
 ### x-f5xc-primary-resources
 
 - **Applied at:** info
-- **Purpose:** ドメインを定義する主要リソースタイプのリスト。
+- **Purpose:** ドメインを定義するプライマリリソースタイプの一覧。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -572,7 +611,7 @@ i18n:
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** 高い注意を要するリソース（本番クリティカル）。
+- **Purpose:** 高い注意が必要なリソース（プロダクションクリティカル）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -584,7 +623,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** 短い（約60文字）ドメイン説明。プロパティレベルの長い説明にも適用されます。
+- **Purpose:** 短い（約 60 文字）ドメイン説明。プロパティレベルの長い説明にも適用されます。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -596,7 +635,7 @@ i18n:
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** 中程度（約150文字）のドメイン説明。プロパティレベルにも適用されます。
+- **Purpose:** 中程度（約 150 文字）のドメイン説明。プロパティレベルにも適用されます。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -608,7 +647,7 @@ i18n:
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** 長い（約500文字）ドメイン説明。
+- **Purpose:** 長い（約 500 文字）ドメイン説明。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -620,7 +659,7 @@ i18n:
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** このドメインで設定をオーサリングする際の相対的な複雑度ティア。
+- **Purpose:** このドメインで設定を作成する際の相対的な複雑さのティア。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -644,7 +683,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** ドメインをプレビュー／ベータ機能としてフラグ付けします。
+- **Purpose:** ドメインをプレビュー／ベータフィーチャーとしてフラグを立てます。
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -692,7 +731,7 @@ i18n:
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** このドメインとよく一緒に使用される他のドメインへのクロスリンク。
+- **Purpose:** このドメインとともに一般的に使用される他のドメインへのクロスリンク。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -704,7 +743,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** レンダリングされたドキュメントのドキュメントセクション／ナビゲーショングルーピングスラッグ。
+- **Purpose:** レンダリングされたドキュメントのドキュメントセクション／ナビゲーショングループスラッグ。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -713,12 +752,12 @@ i18n:
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## アップストリームパススルー
+## 上流パススルー
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -730,7 +769,7 @@ i18n:
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -742,7 +781,7 @@ i18n:
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -754,7 +793,7 @@ i18n:
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -766,7 +805,7 @@ i18n:
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -778,7 +817,7 @@ i18n:
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -790,35 +829,35 @@ i18n:
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** F5 アップストリームドキュメントを参照してください。
+- **Example:** F5 上流ドキュメントを参照してください。
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** F5 アップストリームドキュメントを参照してください。
+- **Example:** F5 上流ドキュメントを参照してください。
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** F5 アップストリームスペックからそのまま保持されます。
+- **Purpose:** F5 上流仕様から変更せずに保持されます。
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** F5 アップストリームドキュメントを参照してください。
+- **Example:** F5 上流ドキュメントを参照してください。
 - **Pass-through from upstream:** yes
