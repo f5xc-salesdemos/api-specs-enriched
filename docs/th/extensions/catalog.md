@@ -1,54 +1,55 @@
 ---
-title: แคตตาล็อกส่วนขยายการเพิ่มประสิทธิภาพ
+title: แคตตาล็อก Extension การเพิ่มประสิทธิภาพ
 description: >-
-  แหล่งข้อมูลหลักสำหรับส่วนขยาย x-* ทุกรายการในข้อกำหนด OpenAPI
-  ที่เพิ่มประสิทธิภาพแล้ว
+  แหล่งข้อมูลอ้างอิงหลักสำหรับ x-* extension ทุกรายการในข้อกำหนด OpenAPI
+  ที่เพิ่มประสิทธิภาพ
 i18n:
-  sourceHash: 7fde0afb4dac
+  sourceHash: 70e0912cf4b0
   translator: machine
 ---
 
-# แคตตาล็อกส่วนขยายการเพิ่มประสิทธิภาพ
+# แคตตาล็อก Extension การเพิ่มประสิทธิภาพ
 
-แหล่งข้อมูลหลักสำหรับส่วนขยาย `x-*` ทุกรายการที่ปรากฏใน
+แหล่งข้อมูลอ้างอิงหลักสำหรับ `x-*` extension ทุกรายการที่ปรากฏใน
 `docs/specifications/api/*.json` ความสอดคล้องกับ
 `scripts/utils/extension_constants.py` ถูกบังคับใช้โดย
 `tests/test_extension_catalog.py`
 
-ส่วนขยายสามประเภทได้รับการจัดทำเอกสารไว้ที่นี่:
+มี extension สามประเภทที่บันทึกไว้ที่นี่:
 
-- **ฉีดเข้าที่นี่** — ส่วนขยายที่ตัวเพิ่มประสิทธิภาพของเราเพิ่มเข้าไป (`x-f5xc-*` และ
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / ตัวแปรการค้นพบ)
-  เหล่านี้คือส่วนขยายที่เครื่องมือปลายทางควรนำไปใช้
-- **ส่งผ่านจากต้นทาง** — ส่วนขยายที่ F5 ส่งออกในข้อกำหนดต้นทางและเราเก็บรักษาไว้โดยไม่เปลี่ยนแปลง (`x-ves-proto-*`, `x-displayname` ฯลฯ)
-  จัดทำเอกสารไว้เพื่อความโปร่งใสแต่ไม่ได้ควบคุมโดย repo นี้
-- **จะฉีดในอนาคต** — ยังไม่ได้ส่งออก จะจัดทำเอกสารทันทีที่
-  ตัวเพิ่มประสิทธิภาพเริ่มสร้าง (ไม่มีผลในการเติมข้อมูลครั้งแรก)
+- **ฉีดเข้าที่นี่** — extensions ที่ enricher ของเราเพิ่มเข้าไป (`x-f5xc-*` และ
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / discovery
+  variants) นี่คือรายการที่เครื่องมือปลายทางควรใช้
+- **ส่งผ่านจาก upstream** — extensions ที่ F5 ปล่อยออกมาในสเปกต้นทาง
+  และเราเก็บรักษาไว้โดยไม่เปลี่ยนแปลง (`x-ves-proto-*`, `x-displayname`, ฯลฯ)
+  บันทึกไว้เพื่อความโปร่งใสแต่ไม่ได้ถูกควบคุมโดย repo นี้
+- **จะฉีดในอนาคต** — ยังไม่ได้ปล่อยออกมา; บันทึกไว้ทันทีที่
+  enricher เริ่มผลิตออกมา (ไม่มีผลในการเติมข้อมูลเริ่มต้น)
 
-## รูปแบบรายการ
+## โครงสร้างของแต่ละรายการ
 
-ทุกรายการด้านล่างมีรูปแบบดังนี้ การทดสอบความสอดคล้องใน
-`tests/test_extension_catalog.py` ยอมรับให้เนื้อหาส่วนนี้สั้นได้
-ตราบใดที่หัวข้อ `### x-name` มีอยู่และ
+ทุกรายการด้านล่างมีรูปแบบนี้อย่างแน่นอน การทดสอบ parity ใน
+`tests/test_extension_catalog.py` ยอมรับให้เนื้อหาของส่วนมีรายละเอียดน้อย
+ตราบใดที่ส่วนหัว `### x-name` มีอยู่และ
 แฟล็ก `Pass-through from upstream:` ระบุค่าเป็น `yes` หรือ `no`
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
-    - **Purpose:** <one sentence>
+    - **Purpose:** <ประโยคเดียว>
     - **Consumers:** <CLI | VSCode | Terraform | Web UI | multiple | N/A>
     - **Value type:** <string | number | boolean | object | array>
     - **Value schema:** <JSON Schema snippet, or N/A>
     - **Injected by:** <scripts/utils/<enricher>.py, or "upstream">
     - **Driven by config:** <config/<file>.yaml, or "hardcoded", or "upstream">
-    - **Example:** <short snippet>
+    - **Example:** <ตัวอย่างสั้น>
     - **Pass-through from upstream:** <yes/no>
 
-## ฉีดเข้า — ระดับสเปค (ส่วน info)
+## ฉีดเข้า — ระดับสเปก (ส่วน info)
 
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** ระบุสลัก CLI domain (เช่น `http_loadbalancer`) สำหรับสเปคที่เพิ่มประสิทธิภาพแล้ว
+- **Purpose:** ระบุ slug ของ CLI domain (เช่น `http_loadbalancer`) สำหรับสเปกที่เพิ่มประสิทธิภาพ
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -60,7 +61,7 @@ i18n:
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** บล็อกข้อมูลเมตาสำหรับ CLI ทั้งระบบ (ชื่อเครื่องมือ, คำแนะนำเวอร์ชัน, การจัดกลุ่ม domain)
+- **Purpose:** บล็อก metadata สำหรับ CLI ทั้งหมด (ชื่อเครื่องมือ, คำแนะนำเวอร์ชัน, การจัดกลุ่ม domain)
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -72,7 +73,7 @@ i18n:
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** การประทับเวลาของสเปคต้นทางที่ใช้สร้างไฟล์ที่เพิ่มประสิทธิภาพแล้ว
+- **Purpose:** Timestamp ของสเปกต้นทาง upstream ที่ใช้สร้างไฟล์ที่เพิ่มประสิทธิภาพ
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -84,7 +85,7 @@ i18n:
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag ของ asset รีลีสสเปคต้นทาง
+- **Purpose:** ETag ของ release asset สเปกต้นทาง upstream
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -96,7 +97,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** เวอร์ชัน Semantic ที่ประทับไว้บนสเปคที่เพิ่มประสิทธิภาพแล้วโดย pipeline
+- **Purpose:** Semantic version ที่ประทับตราบนสเปกที่เพิ่มประสิทธิภาพโดย pipeline
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -108,7 +109,7 @@ i18n:
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** บล็อกคำศัพท์การสร้างแบรนด์/คำศัพท์เทคนิคที่ใช้กับแต่ละสเปค domain
+- **Purpose:** บล็อก glossary สำหรับ branding/คำศัพท์ที่ใช้กับสเปกของแต่ละ domain
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -120,7 +121,7 @@ i18n:
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** การประทับเวลาเมื่อรันการค้นพบ live-API
+- **Purpose:** Timestamp เมื่อการรัน live-API discovery ถูกดำเนินการ
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -132,7 +133,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** URL พื้นฐานของ live API ที่ถูกตรวจสอบระหว่างการค้นพบ
+- **Purpose:** Base URL ของ live API ที่ถูกตรวจสอบในระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -144,19 +145,19 @@ i18n:
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** URL ไปยังหน้าเอกสารอ้างอิง API ที่โฮสต์ไว้สำหรับ domain นี้
+- **Purpose:** URL ไปยังหน้าเอกสาร API reference ที่โฮสต์ไว้สำหรับ domain นี้
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
 - **Injected by:** scripts/utils/external_docs_enricher.py
-- **Driven by config:** none (derived from domain name)
+- **Driven by config:** none (ได้มาจากชื่อ domain)
 - **Example:** `"x-f5xc-api-reference-url": "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference/sites/"`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** เวลาตอบสนองที่สังเกตได้ (มิลลิวินาที) สำหรับ API ที่ถูกตรวจสอบระหว่างการค้นพบ
+- **Purpose:** เวลาตอบสนองที่สังเกตได้ (ms) สำหรับ API ที่ถูกตรวจสอบในระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -168,7 +169,7 @@ i18n:
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** คำแนะนำแนวปฏิบัติที่ดีที่สุดสำหรับ domain
+- **Purpose:** คำแนะนำ best practice ที่คัดสรรสำหรับ domain
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -180,7 +181,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** เวิร์กโฟลว์แบบขั้นตอนที่มีชื่อสำหรับการดำเนินงานทั่วไปใน domain
+- **Purpose:** workflows ที่มีชื่อแบบ step-by-step เพื่อทำงานทั่วไปใน domain
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -192,7 +193,7 @@ i18n:
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** ตารางขยายคำย่อเฉพาะ domain
+- **Purpose:** ตารางขยายคำย่อตาม domain
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -201,12 +202,24 @@ i18n:
 - **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-navigation
+
+- **Applied at:** spec info
+- **Purpose:** โครงสร้างการนำทางใน console ทั่วโลก — ลำดับชั้นของ workspace และเมนู
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
+- **Pass-through from upstream:** no
+
 ## ฉีดเข้า — ระดับ schema (component schemas)
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** ชุดฟิลด์ขั้นต่ำที่จำเป็นสำหรับการ POST/PUT ทรัพยากรนี้ให้สำเร็จ
+- **Purpose:** ชุดฟิลด์ขั้นต่ำที่จำเป็นต้องใช้เพื่อ POST/PUT resource นี้ให้สำเร็จ
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -218,7 +231,7 @@ i18n:
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** ให้ข้อมูลเมตาเกี่ยวกับข้อจำกัด, คำแนะนำ และการจำแนกประเภท namespace สำหรับทรัพยากร
+- **Purpose:** ให้ข้อมูล metadata ด้านข้อจำกัด คำแนะนำ และการจัดประเภทของ namespace สำหรับ resource
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -242,7 +255,7 @@ i18n:
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** ชื่อประเภท Terraform resource ที่แมปกับ schema นี้
+- **Purpose:** ชื่อประเภท Terraform resource ที่จับคู่กับ schema นี้
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -254,7 +267,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** ชื่อที่แสดงอ่านได้สำหรับมนุษย์สำหรับ resource schema (แทนที่การสร้างอัตโนมัติ)
+- **Purpose:** ชื่อที่อ่านได้สำหรับมนุษย์ของ resource schema (แทนที่การสร้างอัตโนมัติ)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -263,12 +276,24 @@ i18n:
 - **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console
+
+- **Applied at:** schema
+- **Purpose:** การนำทาง Console UI, routing และโครงสร้างฟอร์มสำหรับ resource นี้
+- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
 ## ฉีดเข้า — ระดับ property
 
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** คำอธิบาย property ที่เพิ่มประสิทธิภาพซึ่งเสริม `description` จากต้นทาง
+- **Purpose:** คำอธิบาย property ที่เพิ่มประสิทธิภาพซึ่งเสริมจาก `description` ของ upstream
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -280,7 +305,7 @@ i18n:
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** กฎการตรวจสอบแบบ Declarative ที่ได้จาก `ves.io.schema.rules` ของ protobuf ต้นทาง
+- **Purpose:** กฎ validation แบบ declarative ที่ได้มาจาก `ves.io.schema.rules` ของ upstream protobuf
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -292,7 +317,7 @@ i18n:
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** ค่าตัวอย่างหลายรายการสำหรับ property
+- **Purpose:** ค่าตัวอย่างหลายรายการที่แสดงถึง property
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -304,7 +329,7 @@ i18n:
 ### x-f5xc-example
 
 - **Applied at:** schema property
-- **Purpose:** ค่าตัวอย่างมาตรฐานเดียว
+- **Purpose:** ค่าตัวอย่าง canonical เดี่ยว
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -316,7 +341,7 @@ i18n:
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** คำแนะนำสำหรับการเติมข้อความ shell (enum แบบ static หรือคำสั่งแบบ dynamic)
+- **Purpose:** คำแนะนำสำหรับ shell completion (enum แบบ static หรือคำสั่งแบบ dynamic)
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -328,7 +353,7 @@ i18n:
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** ค่าเริ่มต้นที่แสดงในเอกสารที่สร้างขึ้นและ UI
+- **Purpose:** ค่าเริ่มต้นที่จะแสดงในเอกสารที่สร้างขึ้นและ UI
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -352,7 +377,7 @@ i18n:
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** แสดงรายการชุดฟีเจอร์ที่มีชื่อซึ่งต้องการ property นี้
+- **Purpose:** แสดงรายการการรวมกันของฟีเจอร์ที่มีชื่อซึ่งต้องการ property นี้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -364,7 +389,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** ข้อกำหนดแบบมีเงื่อนไข (เช่น จำเป็นเมื่อฟิลด์ข้างเคียงมีค่าเท่ากับ X)
+- **Purpose:** ข้อกำหนดแบบมีเงื่อนไข (เช่น required เมื่อฟิลด์ sibling มีค่าเท่ากับ X)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -376,7 +401,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** ประกาศการเลิกใช้พร้อมคำแนะนำทางเลือกแทน
+- **Purpose:** ประกาศการเลิกใช้งานพร้อมคำแนะนำสำหรับสิ่งที่จะมาแทนที่
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -388,7 +413,7 @@ i18n:
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** ค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนดเมื่อ client ละเว้น property
+- **Purpose:** ค่าเริ่มต้นที่ server กำหนดเมื่อ client ไม่ได้ระบุ property
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -400,7 +425,7 @@ i18n:
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** ค่าที่แนะนำสำหรับการใช้งานจริงสำหรับฟิลด์ที่ค่าเริ่มต้นของเซิร์ฟเวอร์ไม่เหมาะสม
+- **Purpose:** ค่าที่แนะนำสำหรับ production ของฟิลด์ที่ค่าเริ่มต้นของ server ไม่เหมาะสมที่สุด
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -412,7 +437,7 @@ i18n:
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** สำหรับบล็อก `oneOf` ระบุว่าตัวแปรใดที่แนะนำ
+- **Purpose:** สำหรับบล็อก `oneOf` ระบุว่า variant ใดที่แนะนำ
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -424,7 +449,7 @@ i18n:
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** แสดงรายการ properties ข้างเคียงที่ไม่สามารถตั้งค่าพร้อมกับ property นี้ได้
+- **Purpose:** แสดงรายการ properties sibling ที่ไม่สามารถตั้งค่าพร้อมกับรายการนี้ได้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -436,7 +461,7 @@ i18n:
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** จัดทำเอกสารการพึ่งพาข้ามฟิลด์ซึ่งฟิลด์หนึ่งต้องการให้อีกฟิลด์หนึ่งถูกตั้งค่า
+- **Purpose:** บันทึก cross-field dependencies ที่ฟิลด์หนึ่งต้องการให้ฟิลด์อื่นถูกตั้งค่าด้วย
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -448,7 +473,7 @@ i18n:
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** ข้อจำกัดตัวเลข / สตริงที่ได้จากการตรวจสอบ live-API หรือรูปแบบ static
+- **Purpose:** ข้อจำกัดด้านตัวเลข / string ที่ได้มาจากการตรวจสอบ live-API หรือรูปแบบ static
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -460,7 +485,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** ประกาศว่าฟิลด์ต้องมีค่าเฉพาะภายในขอบเขตของตัวหรือไม่
+- **Purpose:** ประกาศว่าฟิลด์ต้องมีความเป็นเอกลักษณ์ภายใน scope ของมันหรือไม่
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -469,12 +494,24 @@ i18n:
 - **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-field
+
+- **Applied at:** schema property
+- **Purpose:** metadata ของ widget ในฟอร์ม Console สำหรับ API property นี้
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_field_metadata.yaml
+- **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
+- **Pass-through from upstream:** no
+
 ## ฉีดเข้า — ระดับ operation
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** ระบุชื่อฟิลด์ใน operation body ที่ต้องระบุเพื่อให้สำเร็จ
+- **Purpose:** ระบุชื่อฟิลด์ในเนื้อหาของ operation ที่ต้องระบุเพื่อให้สำเร็จ
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -486,7 +523,7 @@ i18n:
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** จำแนกระดับผลกระทบของ operation (low/medium/high/critical)
+- **Purpose:** จัดประเภทขนาดผลกระทบของ operation (low/medium/high/critical)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -498,7 +535,7 @@ i18n:
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** ระบุว่า CLI/UI ควรแจ้งให้ผู้ใช้ยืนยันก่อนดำเนินการหรือไม่
+- **Purpose:** CLI/UI ควรแจ้งให้ผู้ใช้ยืนยันก่อนดำเนินการหรือไม่
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -510,7 +547,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** แสดงรายการผลข้างเคียงที่สังเกตได้จาก operation (restart, reconfigure ฯลฯ)
+- **Purpose:** แสดงรายการผลข้างเคียงที่สังเกตได้ของ operation (restart, reconfigure, ฯลฯ)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -522,7 +559,7 @@ i18n:
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** เวลาตอบสนองที่วัดได้จากการทดลองจริงสำหรับ operation นี้ระหว่างการค้นพบ
+- **Purpose:** เวลาตอบสนองที่วัดได้จริงสำหรับ operation นี้ในระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -546,7 +583,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** แคตตาล็อกของการตอบสนองข้อผิดพลาดที่สังเกตได้ระหว่างการค้นพบสด พร้อม payload ตัวอย่าง
+- **Purpose:** แคตตาล็อกของ error responses ที่สังเกตพบระหว่าง live discovery พร้อม sample payloads
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -555,12 +592,12 @@ i18n:
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## ฉีดเข้า — ระดับ index (ข้อมูลเมตา domain)
+## ฉีดเข้า — ระดับ index (domain metadata)
 
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** หมวดหมู่การจัดกลุ่มระดับสูงสุดสำหรับ CLI / UI / เอกสาร / Terraform ของ domain
+- **Purpose:** หมวดหมู่การจัดกลุ่มระดับบนสุดของ CLI / UI / docs / Terraform สำหรับ domain
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -572,7 +609,7 @@ i18n:
 ### x-f5xc-primary-resources
 
 - **Applied at:** info
-- **Purpose:** รายการประเภททรัพยากรหลักที่กำหนด domain
+- **Purpose:** รายการประเภท resource หลักที่กำหนด domain
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -584,7 +621,7 @@ i18n:
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** ทรัพยากรที่ต้องการความระมัดระวังสูง (สำคัญต่อการใช้งานจริง)
+- **Purpose:** ทรัพยากรที่ต้องการความระมัดระวังสูง (สำคัญต่อ production)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -596,7 +633,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain สั้น (~60 ตัวอักษร) ใช้ได้ที่ระดับ property สำหรับคำอธิบายยาวด้วย
+- **Purpose:** คำอธิบาย domain สั้น (~60 ตัวอักษร) ใช้ได้กับระดับ property ด้วยสำหรับคำอธิบายที่ยาว
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -608,7 +645,7 @@ i18n:
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain ระดับกลาง (~150 ตัวอักษร) ใช้ได้ที่ระดับ property ด้วย
+- **Purpose:** คำอธิบาย domain ขนาดกลาง (~150 ตัวอักษร) ใช้ได้กับระดับ property ด้วย
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -620,7 +657,7 @@ i18n:
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain แบบยาว (~500 ตัวอักษร)
+- **Purpose:** คำอธิบาย domain ขนาดยาว (~500 ตัวอักษร)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -632,7 +669,7 @@ i18n:
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** ระดับความซับซ้อนสัมพัทธ์สำหรับการเขียนการกำหนดค่าใน domain นี้
+- **Purpose:** ระดับความซับซ้อนสัมพัทธ์สำหรับการสร้าง configurations ใน domain นี้
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -644,7 +681,7 @@ i18n:
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** ระดับการสมัครใช้งาน F5 XC ขั้นต่ำที่ต้องการ
+- **Purpose:** ระดับการสมัครสมาชิก F5 XC ขั้นต่ำที่จำเป็น
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -668,7 +705,7 @@ i18n:
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** กรณีการใช้งานที่มีชื่อซึ่ง domain นี้รองรับ
+- **Purpose:** use cases ที่มีชื่อซึ่ง domain นี้รองรับ
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -680,7 +717,7 @@ i18n:
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** ตัวระบุไอคอนที่ใช้เมื่อแสดง domain นี้ใน UI
+- **Purpose:** ตัวระบุไอคอนที่จะใช้เมื่อแสดง domain นี้ใน UI
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -692,7 +729,7 @@ i18n:
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** SVG แบบ inline (หรือ path) สำหรับโลโก้แบรนด์ที่แสดงถึง domain
+- **Purpose:** SVG แบบ inline (หรือ path) สำหรับโลโก้แบรนด์ที่แทน domain
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -704,7 +741,7 @@ i18n:
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** ลิงก์ข้ามไปยัง domain อื่นที่มักใช้ร่วมกับ domain นี้
+- **Purpose:** cross-link ไปยัง domains อื่นที่มักใช้ร่วมกับ domain นี้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -716,7 +753,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** สลักส่วนเอกสาร / การจัดกลุ่มนำทางสำหรับเอกสารที่แสดงผล
+- **Purpose:** slug ของส่วนเอกสาร / การจัดกลุ่ม nav สำหรับเอกสารที่แสดงผล
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -725,12 +762,12 @@ i18n:
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## ส่งผ่านจากต้นทาง
+## ส่งผ่านจาก upstream
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -742,7 +779,7 @@ i18n:
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -754,7 +791,7 @@ i18n:
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -766,7 +803,7 @@ i18n:
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -778,7 +815,7 @@ i18n:
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -790,7 +827,7 @@ i18n:
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -802,35 +839,35 @@ i18n:
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสารต้นทาง F5
+- **Example:** ดูเอกสาร upstream ของ F5
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสารต้นทาง F5
+- **Example:** ดูเอกสาร upstream ของ F5
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปคต้นทาง F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปก upstream ของ F5
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสารต้นทาง F5
+- **Example:** ดูเอกสาร upstream ของ F5
 - **Pass-through from upstream:** yes

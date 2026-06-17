@@ -1,24 +1,24 @@
 ---
 title: 강화 확장 카탈로그
-description: 강화된 OpenAPI 사양에 있는 모든 x-* 확장에 대한 단일 진실 공급원
+description: 강화된 OpenAPI 사양의 모든 x-* 확장에 대한 단일 진실 공급원
 i18n:
-  sourceHash: 7fde0afb4dac
+  sourceHash: 70e0912cf4b0
   translator: machine
 ---
 
 # 강화 확장 카탈로그
 
-`docs/specifications/api/*.json`에 나타나는 모든 `x-*` 확장에 대한 단일 진실 공급원입니다. `scripts/utils/extension_constants.py`와의 일치는 `tests/test_extension_catalog.py`에 의해 강제됩니다.
+`docs/specifications/api/*.json`에 나타나는 모든 `x-*` 확장의 단일 진실 공급원입니다. `scripts/utils/extension_constants.py`와의 동등성은 `tests/test_extension_catalog.py`에 의해 적용됩니다.
 
-여기에 세 가지 종류의 확장이 문서화되어 있습니다:
+여기에는 세 가지 클래스의 확장이 문서화되어 있습니다:
 
-- **여기서 주입됨** — 인리처가 추가하는 확장 (`x-f5xc-*` 및 `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / 디스커버리 변형). 다운스트림 도구에서 소비해야 하는 확장입니다.
-- **업스트림 패스스루** — F5가 소스 사양에서 내보내고 변경 없이 보존하는 확장 (`x-ves-proto-*`, `x-displayname` 등). 투명성을 위해 문서화되었지만 이 저장소에서 제어되지 않습니다.
-- **향후 주입 예정** — 아직 내보내지 않음; 인리처가 생성하기 시작하는 즉시 문서화됩니다 (초기 배포 시에는 해당 없음).
+- **여기서 주입됨** — 강화기(enricher)가 추가하는 확장 (`x-f5xc-*` 및 `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / 디스커버리 변형). 이것들이 다운스트림 도구가 사용해야 하는 항목입니다.
+- **업스트림 통과** — F5가 소스 사양에서 방출하고 우리가 변경 없이 보존하는 확장 (`x-ves-proto-*`, `x-displayname` 등). 투명성을 위해 문서화되었지만 이 레포지토리에서 제어하지 않습니다.
+- **향후 주입 예정** — 아직 방출되지 않음; 강화기가 생성하기 시작하는 순간 여기에 문서화됩니다 (초기 작성 시에는 해당 없음).
 
 ## 항목 스키마
 
-아래의 모든 항목은 정확히 이 형태를 가집니다. `tests/test_extension_catalog.py`의 일치 테스트는 `### x-name` 헤더가 존재하고 `Pass-through from upstream:` 플래그가 `yes` 또는 `no` 값과 함께 있는 한 섹션 본문이 간략해도 허용합니다.
+아래의 모든 항목은 정확히 이 형태를 가집니다. `tests/test_extension_catalog.py`의 동등성 테스트는 `### x-name` 헤더가 존재하고 `Pass-through from upstream:` 플래그가 `yes` 또는 `no` 값으로 존재하는 한 섹션 본문이 간략한 것을 허용합니다.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -36,7 +36,7 @@ i18n:
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** 강화된 사양에 대한 CLI 도메인 슬러그(예: `http_loadbalancer`)를 식별합니다.
+- **Purpose:** 강화된 사양의 CLI 도메인 슬러그 (예: `http_loadbalancer`)를 식별합니다.
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -84,7 +84,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** 파이프라인에 의해 강화된 사양에 스탬프된 시맨틱 버전.
+- **Purpose:** 파이프라인에 의해 강화된 사양에 찍힌 시맨틱 버전.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -96,7 +96,7 @@ i18n:
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** 각 도메인 사양에 적용되는 브랜딩/용어 용어집 블록.
+- **Purpose:** 각 도메인 사양에 적용된 브랜딩/용어 용어집 블록.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -120,7 +120,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** 디스커버리 중에 탐색된 라이브 API의 기본 URL.
+- **Purpose:** 디스커버리 중에 조사된 라이브 API의 기본 URL.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -132,7 +132,7 @@ i18n:
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** 이 도메인에 대해 호스팅된 API 참조 문서 페이지의 URL.
+- **Purpose:** 이 도메인에 대한 호스팅된 API 참조 문서 페이지의 URL.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -144,7 +144,7 @@ i18n:
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** 디스커버리 중에 탐색된 API에 대해 관측된 응답 시간 (ms).
+- **Purpose:** 디스커버리 중에 조사된 API에 대해 관측된 응답 시간 (ms).
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -156,7 +156,7 @@ i18n:
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** 도메인에 대해 엄선된 모범 사례 안내.
+- **Purpose:** 도메인에 대한 선별된 모범 사례 지침.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -168,7 +168,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** 도메인에서 일반적인 작업을 수행하기 위한 이름이 지정된 단계별 워크플로.
+- **Purpose:** 도메인에서 일반적인 작업을 수행하기 위한 명명된 단계별 워크플로우.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -187,6 +187,18 @@ i18n:
 - **Injected by:** scripts/utils/acronym_enricher.py
 - **Driven by config:** config/acronyms.yaml
 - **Example:** `"x-f5xc-acronyms": {"LB": "Load Balancer"}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-console-navigation
+
+- **Applied at:** spec info
+- **Purpose:** 전역 콘솔 탐색 트리 — 워크스페이스 및 메뉴 계층 구조.
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
 ## 주입됨 — 스키마 수준 (구성 요소 스키마)
@@ -218,7 +230,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** UI/CLI 표시를 위한 속성의 권장 순서.
+- **Purpose:** UI/CLI 표시를 위한 속성의 제안된 순서.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -242,13 +254,25 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** 리소스 스키마에 대한 사람이 읽을 수 있는 표시 이름 (자동 생성을 재정의).
+- **Purpose:** 리소스 스키마에 대한 사람이 읽을 수 있는 표시 이름 (자동 생성 재정의).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
 - **Injected by:** scripts/utils/field_metadata_enricher.py
 - **Driven by config:** config/field_metadata.yaml
 - **Example:** `"x-f5xc-display-name": "HTTP Load Balancer"`
+- **Pass-through from upstream:** no
+
+### x-f5xc-console
+
+- **Applied at:** schema
+- **Purpose:** 이 리소스에 대한 콘솔 UI 탐색, 라우팅 및 폼 구조.
+- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_ui.yaml
+- **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
 ## 주입됨 — 속성 수준
@@ -328,7 +352,7 @@ i18n:
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** 이 속성을 필요로 하는 HTTP 작업 (POST/PUT/...)을 나열합니다.
+- **Purpose:** 이 속성이 필요한 HTTP 작업 (POST/PUT/...)을 나열합니다.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -340,7 +364,7 @@ i18n:
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** 이 속성을 필요로 하는 명명된 기능 조합을 나열합니다.
+- **Purpose:** 이 속성이 필요한 명명된 기능 조합을 나열합니다.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -352,7 +376,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** 조건부 요구 사항 (예: 형제 필드가 X와 같을 때 필수).
+- **Purpose:** 조건부 요구사항 (예: 형제 필드가 X와 같을 때 필요).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -364,7 +388,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** 대체 안내가 포함된 사용 중단 알림.
+- **Purpose:** 대체 지침이 포함된 사용 중단 공지.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -400,7 +424,7 @@ i18n:
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** `oneOf` 블록의 경우 권장 변형을 나타냅니다.
+- **Purpose:** `oneOf` 블록의 경우 권장되는 변형을 나타냅니다.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -424,7 +448,7 @@ i18n:
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** 한 필드가 다른 필드를 필요로 하는 교차 필드 종속성을 문서화합니다.
+- **Purpose:** 한 필드가 다른 필드의 설정을 필요로 하는 교차 필드 의존성을 문서화합니다.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -436,7 +460,7 @@ i18n:
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** 라이브 API 탐색 또는 정적 패턴에서 파생된 숫자/문자열 제약.
+- **Purpose:** 라이브 API 탐지 또는 정적 패턴에서 파생된 숫자/문자열 제약.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -457,12 +481,24 @@ i18n:
 - **Example:** `"x-f5xc-uniqueness": {"scope": "namespace"}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-console-field
+
+- **Applied at:** schema property
+- **Purpose:** 이 API 속성에 대한 콘솔 폼 위젯 메타데이터.
+- **Consumers:** console-catalog, xcsh, browser-automation
+- **Value type:** object
+- **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
+- **Injected by:** scripts/utils/console_ui_enricher.py
+- **Driven by config:** config/console_field_metadata.yaml
+- **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
+- **Pass-through from upstream:** no
+
 ## 주입됨 — 작업 수준
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** 성공을 위해 제공해야 하는 작업 본문 필드의 이름을 지정합니다.
+- **Purpose:** 성공을 위해 제공되어야 하는 작업 본문 필드를 명명합니다.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -474,7 +510,7 @@ i18n:
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** 작업의 영향 범위를 분류합니다 (low/medium/high/critical).
+- **Purpose:** 작업의 영향 범위를 분류합니다 (낮음/중간/높음/위험).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -486,7 +522,7 @@ i18n:
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** CLI/UI가 실행 전에 사용자에게 확인을 요청해야 하는지 여부.
+- **Purpose:** 실행 전에 CLI/UI가 사용자에게 확인을 요청해야 하는지 여부.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -498,7 +534,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** 작업의 관측 가능한 부작용을 나열합니다 (재시작, 재구성 등).
+- **Purpose:** 작업의 관측 가능한 부작용 목록 (재시작, 재구성 등).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -534,7 +570,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** 라이브 디스커버리 중에 관측된 오류 응답 카탈로그 (샘플 페이로드 포함).
+- **Purpose:** 샘플 페이로드와 함께 라이브 디스커버리 중에 관측된 오류 응답 카탈로그.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -572,7 +608,7 @@ i18n:
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** 높은 주의가 필요한 리소스 (프로덕션 중요).
+- **Purpose:** 높은 주의가 필요한 리소스 (프로덕션 크리티컬).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -584,7 +620,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** 짧은 (~60자) 도메인 설명. 긴 설명의 속성 수준에도 적용됩니다.
+- **Purpose:** 짧은 (~60자) 도메인 설명. 긴 설명의 경우 속성 수준에도 적용됩니다.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -620,7 +656,7 @@ i18n:
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** 이 도메인에서 구성을 작성하는 상대적 복잡도 등급.
+- **Purpose:** 이 도메인에서 구성을 작성하기 위한 상대적 복잡도 수준.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -632,7 +668,7 @@ i18n:
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** 필요한 최소 F5 XC 구독 등급.
+- **Purpose:** 필요한 최소 F5 XC 구독 티어.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -644,7 +680,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** 도메인을 미리보기/베타 기능으로 표시합니다.
+- **Purpose:** 도메인을 프리뷰/베타 기능으로 표시합니다.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -680,7 +716,7 @@ i18n:
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** 도메인을 나타내는 브랜드 로고에 대한 인라인 SVG (또는 경로).
+- **Purpose:** 도메인을 나타내는 브랜드 로고의 인라인 SVG (또는 경로).
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -704,7 +740,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** 렌더링된 문서에 대한 문서 섹션 / 탐색 그룹화 슬러그.
+- **Purpose:** 렌더링된 문서의 문서 섹션/탐색 그룹화 슬러그.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -713,7 +749,7 @@ i18n:
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## 업스트림 패스스루
+## 업스트림 통과
 
 ### x-ves-proto-package
 
