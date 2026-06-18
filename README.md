@@ -1,3 +1,17 @@
+🌐 English |
+[日本語](https://f5xc-salesdemos.github.io/api-specs-enriched/ja/) |
+[한국어](https://f5xc-salesdemos.github.io/api-specs-enriched/ko/) |
+[简体中文](https://f5xc-salesdemos.github.io/api-specs-enriched/zh-cn/) |
+[繁體中文](https://f5xc-salesdemos.github.io/api-specs-enriched/zh-tw/) |
+[Español](https://f5xc-salesdemos.github.io/api-specs-enriched/es/) |
+[Português](https://f5xc-salesdemos.github.io/api-specs-enriched/pt-br/) |
+[Français](https://f5xc-salesdemos.github.io/api-specs-enriched/fr/) |
+[Deutsch](https://f5xc-salesdemos.github.io/api-specs-enriched/de/) |
+[Italiano](https://f5xc-salesdemos.github.io/api-specs-enriched/it/) |
+[العربية](https://f5xc-salesdemos.github.io/api-specs-enriched/ar/) |
+[हिन्दी](https://f5xc-salesdemos.github.io/api-specs-enriched/hi/) |
+[ไทย](https://f5xc-salesdemos.github.io/api-specs-enriched/th/)
+
 # API Specs Enriched
 
 [![GitHub Pages Deploy](https://github.com/f5xc-salesdemos/api-specs-enriched/actions/workflows/github-pages-deploy.yml/badge.svg)](https://github.com/f5xc-salesdemos/api-specs-enriched/actions/workflows/github-pages-deploy.yml)
