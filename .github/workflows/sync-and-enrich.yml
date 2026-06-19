@@ -684,7 +684,8 @@ jobs:
           # Copy domain specifications to domains/ subdirectory
           for spec_file in docs/specifications/api/*.json; do
             basename_f=$(basename "$spec_file")
-            if [ "$basename_f" != "openapi.json" ] && [ "$basename_f" != "index.json" ]; then
+            if [ "$basename_f" != "openapi.json" ] && [ "$basename_f" != "index.json" ] \
+               && [ "$basename_f" != "minimal-export-defaults.json" ]; then
               cp "$spec_file" "$RELEASE_DIR/domains/"
               echo "Copied domain: $basename_f"
             fi
@@ -733,6 +734,7 @@ jobs:
             "${zip_name}" \
             docs/specifications/api/openapi.json \
             docs/specifications/api/index.json \
+            docs/specifications/api/minimal-export-defaults.json \
             release/api-catalog.json
 
           echo "::notice::Created release: v$VERSION"

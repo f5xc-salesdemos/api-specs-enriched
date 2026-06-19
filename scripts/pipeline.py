@@ -128,6 +128,7 @@ from scripts.utils.extension_constants import (
 )
 from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
+from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
@@ -1807,6 +1808,24 @@ def run_pipeline(
                 )
             except Exception as e:
                 console.print(f"[yellow]Warning: Failed to export validation spec: {e}[/yellow]")
+
+            # Export minimal-export-defaults.json for downstream minimum-settings
+            # export (xcsh, vscode-f5xc-tools). Walks each covered SpecType schema
+            # and emits the flat per-kind defaults table.
+            try:
+                minimal_exporter = MinimalDefaultsExporter()
+                minimal_schemas = MinimalDefaultsExporter.collect_schemas(domain_specs.values())
+                minimal_artifact = minimal_exporter.export(
+                    minimal_schemas,
+                    output_dir / "minimal-export-defaults.json",
+                    version=version,
+                )
+                console.print(
+                    f"[green]Exported minimal-export-defaults.json: "
+                    f"{len(minimal_artifact['resources'])} resources[/green]",
+                )
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to export minimal defaults: {e}[/yellow]")
 
             console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
 
