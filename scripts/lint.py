@@ -249,8 +249,8 @@ def lint_all_specs(
     """
     stats = LintStats()
 
-    # Find all JSON spec files (exclude index.json which is metadata, not OpenAPI)
-    non_openapi_files = {"index.json", "validation.json"}
+    # Find all JSON spec files (exclude metadata/artifact files that are not OpenAPI)
+    non_openapi_files = {"index.json", "validation.json", "minimal-export-defaults.json"}
     spec_files = sorted(f for f in input_dir.glob("*.json") if f.name not in non_openapi_files)
     if not spec_files:
         console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
