@@ -1901,6 +1901,12 @@ resources:
       add_action: Add Item
       form_section: app-type-settings
       description: 'Feedback loop: table widget → nested-resource-list (uses Add Item sub-form)'
+    spec.feature_type:
+      required: true
+      label: AI/ML Feature Type
+      widget_type: listbox
+      form_section: app-type-settings
+      description: '''Field AI/ML Feature Type is required'' — nested inside app_type_settings'
   authorization_server:
     metadata.name:
       widget_type: textbox
@@ -1983,11 +1989,12 @@ resources:
       label: Description
       form_section: metadata
     spec.as_numbers:
-      widget_type: table
+      widget_type: nested-resource-list
       label: AS Numbers
-      form_section: list-of-as-numbers
+      form_section: spec
       required: true
-      description: 'Server-required: Minimum items of 1'
+      description: '''Field AS Numbers in Spec is required'' — minimum 1 item'
+      add_action: Add Item
   bigip_virtual_server: null
   cdn_cache_rule:
     metadata.name:
@@ -2280,11 +2287,12 @@ resources:
       label: Description
       form_section: metadata
     spec.code_base:
-      widget_type: listbox
+      widget_type: configurable
       label: Code Base
       required: true
       default: ''
       form_section: integration-data
+      description: '''Field Code Base in Integration Data is required'''
   container_registry:
     metadata.name:
       widget_type: textbox
@@ -3144,6 +3152,13 @@ resources:
       label: Policer Type
       default: Single-Rate Two-Color Policer
       form_section: policer-type
+    spec.policer_rules:
+      required: true
+      label: Policer Rules
+      widget_type: nested-resource-list
+      add_action: Add Item
+      form_section: policer
+      description: '''We found 2 errors'' — needs policer rules + burst_size'
   protocol_policer:
     metadata.name:
       widget_type: textbox
@@ -3545,10 +3560,11 @@ resources:
       default: Virtual Site
       form_section: advertise-policy
     spec.reference:
-      widget_type: listbox
+      widget_type: configurable
       label: Reference
       required: true
-      form_section: advertise-policy
+      form_section: spec
+      description: '''Field Reference is required'''
     spec.network_type:
       widget_type: listbox
       label: Network Type
