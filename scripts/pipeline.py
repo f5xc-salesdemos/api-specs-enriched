@@ -1810,7 +1810,7 @@ def run_pipeline(
                 console.print(f"[yellow]Warning: Failed to export validation spec: {e}[/yellow]")
 
             # Export minimal-export-defaults.json for downstream minimum-settings
-            # export (xcsh, vscode-f5xc-tools). Walks each covered SpecType schema
+            # export (xcsh, vscode-xcsh). Walks each covered SpecType schema
             # and emits the flat per-kind defaults table.
             try:
                 minimal_exporter = MinimalDefaultsExporter()

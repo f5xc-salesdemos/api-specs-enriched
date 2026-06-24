@@ -2,7 +2,7 @@
 title: 강화 확장 카탈로그
 description: 강화된 OpenAPI 사양의 모든 x-* 확장에 대한 단일 진실 공급원
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
@@ -267,7 +267,7 @@ i18n:
 
 - **Applied at:** schema
 - **Purpose:** 이 리소스에 대한 콘솔 UI 탐색, 라우팅 및 폼 구조.
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py
