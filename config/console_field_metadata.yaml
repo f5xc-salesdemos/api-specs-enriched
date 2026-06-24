@@ -1834,6 +1834,13 @@ resources:
       label: HTTP Load Balancer
       required: true
       form_section: api-endpoints
+    spec.http_loadbalancer:
+      required: true
+      label: HTTP Load Balancer
+      widget_type: resource-selector
+      resource_type: http_loadbalancer
+      form_section: http-loadbalancer
+      description: 'Feedback loop: ''Field HTTP Load Balancer in HTTP Load Balancer is required'''
   app_setting:
     metadata.name:
       widget_type: textbox
@@ -1887,6 +1894,13 @@ resources:
       label: Purge Duration for Inactive Discovered APIs from Traffic (d)
       default: 2
       form_section: api-discovery-settings
+    spec.app_type_settings:
+      required: true
+      label: App Type Settings
+      widget_type: nested-resource-list
+      add_action: Add Item
+      form_section: app-type-settings
+      description: 'Feedback loop: table widget → nested-resource-list (uses Add Item sub-form)'
   authorization_server:
     metadata.name:
       widget_type: textbox
@@ -1905,7 +1919,8 @@ resources:
       widget_type: textbox
       label: JWKS URI
       required: true
-      form_section: jwks
+      form_section: spec
+      description: 'Feedback loop: ''Field JWKS URI in Spec must be a valid absolute URI'''
   bgp:
     metadata.name:
       widget_type: textbox
@@ -2563,10 +2578,11 @@ resources:
       default: Virtual Site
       form_section: origin-server
     spec.reference:
-      widget_type: listbox
+      widget_type: configurable
       label: Reference
       required: true
-      form_section: origin-server
+      form_section: spec
+      description: 'Feedback loop: ''Field Reference is required'''
     spec.network_type:
       widget_type: listbox
       label: Network Type
