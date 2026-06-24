@@ -280,7 +280,7 @@ solange der `### x-name`-Header vorhanden ist und das
 
 - **Applied at:** schema
 - **Purpose:** Konsolen-UI-Navigation, Routing und Formularstruktur für diese Ressource.
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py

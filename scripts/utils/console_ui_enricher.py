@@ -7,7 +7,7 @@ Applies console UI metadata from config/console_ui.yaml to OpenAPI specs:
 - x-f5xc-console-field (property-level): Widget type, selector, visibility
 - x-f5xc-console-navigation (spec-level): Global navigation tree
 
-This enrichment enables downstream consumers (xcsh, vscode-f5xc-tools,
+This enrichment enables downstream consumers (xcsh, vscode-xcsh,
 console catalog) to derive console navigation and form metadata directly
 from the enriched API specs — the single source of truth.
 

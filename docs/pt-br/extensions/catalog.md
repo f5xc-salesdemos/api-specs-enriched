@@ -280,7 +280,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 
 - **Applied at:** schema
 - **Purpose:** Navegação da UI do console, roteamento e estrutura de formulário para este recurso.
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py
