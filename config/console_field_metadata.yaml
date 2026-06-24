@@ -974,6 +974,10 @@ resources:
       form_section: basic-configuration
       description: 'Server-required: Field should be not nil'
       widget_type: configurable
+      # API-required OneOf, but the console pre-selects a default Rule Choice
+      # variant — a minimal create needs no step (verified: the validated
+      # service-policy create workflow succeeds without touching this field).
+      console_preselected: true
   virtual_host:
     metadata.name:
       widget_type: textbox
@@ -1834,6 +1838,13 @@ resources:
       label: HTTP Load Balancer
       required: true
       form_section: api-endpoints
+    spec.http_loadbalancer:
+      required: true
+      label: HTTP Load Balancer
+      widget_type: resource-selector
+      resource_type: http_loadbalancer
+      form_section: http-loadbalancer
+      description: 'Feedback loop: ''Field HTTP Load Balancer in HTTP Load Balancer is required'''
   app_setting:
     metadata.name:
       widget_type: textbox
@@ -1887,6 +1898,19 @@ resources:
       label: Purge Duration for Inactive Discovered APIs from Traffic (d)
       default: 2
       form_section: api-discovery-settings
+    spec.app_type_settings:
+      required: true
+      label: App Type Settings
+      widget_type: nested-resource-list
+      add_action: Add Item
+      form_section: app-type-settings
+      description: 'Feedback loop: table widget → nested-resource-list (uses Add Item sub-form)'
+    spec.feature_type:
+      required: true
+      label: AI/ML Feature Type
+      widget_type: listbox
+      form_section: app-type-settings
+      description: '''Field AI/ML Feature Type is required'' — nested inside app_type_settings'
   authorization_server:
     metadata.name:
       widget_type: textbox
@@ -1905,7 +1929,8 @@ resources:
       widget_type: textbox
       label: JWKS URI
       required: true
-      form_section: jwks
+      form_section: spec
+      description: 'Feedback loop: ''Field JWKS URI in Spec must be a valid absolute URI'''
   bgp:
     metadata.name:
       widget_type: textbox
@@ -1970,9 +1995,12 @@ resources:
     spec.as_numbers:
       widget_type: table
       label: AS Numbers
-      form_section: list-of-as-numbers
+      form_section: spec
       required: true
-      description: 'Server-required: Minimum items of 1'
+      description: List of AS Numbers — a row pre-exists with value 0; fill it with a valid ASN (e.g. 64512). Uses ngx-datatable
+        input.
+      add_action: Add Item
+      default: null
   bigip_virtual_server: null
   cdn_cache_rule:
     metadata.name:
@@ -2265,11 +2293,12 @@ resources:
       label: Description
       form_section: metadata
     spec.code_base:
-      widget_type: listbox
+      widget_type: configurable
       label: Code Base
       required: true
       default: ''
       form_section: integration-data
+      description: '''Field Code Base in Integration Data is required'''
   container_registry:
     metadata.name:
       widget_type: textbox
@@ -2563,10 +2592,11 @@ resources:
       default: Virtual Site
       form_section: origin-server
     spec.reference:
-      widget_type: listbox
+      widget_type: configurable
       label: Reference
       required: true
-      form_section: origin-server
+      form_section: spec
+      description: 'Feedback loop: ''Field Reference is required'''
     spec.network_type:
       widget_type: listbox
       label: Network Type
@@ -2823,9 +2853,12 @@ resources:
     spec.prefix:
       required: true
       label: Prefix
-      form_section: basic-configuration
-      description: 'Server-required: At least one IP prefix required'
-      widget_type: configurable
+      widget_type: nested-resource-list
+      add_action: Add Item
+      form_section: prefix
+      description: IP prefixes — Add Item creates an inline row (NO Apply button). Fill IPv4 Prefix directly.
+      sub_field_label: IPv4 Prefix
+      no_apply: true
   log_receiver:
     metadata.name:
       widget_type: textbox
@@ -2887,6 +2920,13 @@ resources:
       widget_type: table
       label: Rules
       form_section: rules
+    spec.mitigation_rules:
+      required: true
+      label: Rules
+      form_section: rules
+      widget_type: nested-resource-list
+      add_action: Add Item
+      description: 'At least one mitigation rule is required. Server error: ''Field Rules in Mitigation Rules is required.'''
   nat_policy:
     metadata.name:
       widget_type: textbox
@@ -3121,6 +3161,13 @@ resources:
       label: Policer Type
       default: Single-Rate Two-Color Policer
       form_section: policer-type
+    spec.policer_rules:
+      required: true
+      label: Policer Rules
+      widget_type: nested-resource-list
+      add_action: Add Item
+      form_section: policer
+      description: '''We found 2 errors'' — needs policer rules + burst_size'
   protocol_policer:
     metadata.name:
       widget_type: textbox
@@ -3136,9 +3183,12 @@ resources:
       label: Description
       form_section: metadata
     spec.protocol_policer:
-      widget_type: table
+      widget_type: nested-resource-list
       label: Protocol Policer
       form_section: protocol-policer
+      required: true
+      add_action: Add Item
+      description: At least one protocol policer entry required. Uses Add Item sub-form, not a datatable input.
   proxy:
     metadata.name:
       widget_type: textbox
@@ -3519,10 +3569,11 @@ resources:
       default: Virtual Site
       form_section: advertise-policy
     spec.reference:
-      widget_type: listbox
+      widget_type: configurable
       label: Reference
       required: true
-      form_section: advertise-policy
+      form_section: spec
+      description: '''Field Reference is required'''
     spec.network_type:
       widget_type: listbox
       label: Network Type
