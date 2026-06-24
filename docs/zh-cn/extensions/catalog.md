@@ -2,7 +2,7 @@
 title: 扩展字段目录
 description: 富化 OpenAPI 规范中每个 x-* 扩展的权威来源
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 

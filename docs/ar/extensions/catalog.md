@@ -2,7 +2,7 @@
 title: كتالوج امتداد الإثراء
 description: المرجع الأساسي لكل امتداد x-* في مواصفات OpenAPI المحسّنة
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 

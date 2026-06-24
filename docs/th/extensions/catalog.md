@@ -4,7 +4,7 @@ description: >-
   แหล่งข้อมูลอ้างอิงหลักสำหรับ x-* extension ทุกรายการในข้อกำหนด OpenAPI
   ที่เพิ่มประสิทธิภาพ
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 

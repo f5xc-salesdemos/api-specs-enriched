@@ -2,7 +2,7 @@
 title: 강화 확장 카탈로그
 description: 강화된 OpenAPI 사양의 모든 x-* 확장에 대한 단일 진실 공급원
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 

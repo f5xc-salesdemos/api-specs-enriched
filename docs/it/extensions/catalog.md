@@ -4,7 +4,7 @@ description: >-
   Fonte ufficiale di riferimento per ogni estensione x-* nelle specifiche
   OpenAPI arricchite
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 

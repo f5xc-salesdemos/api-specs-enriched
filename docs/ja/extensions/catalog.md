@@ -2,7 +2,7 @@
 title: 拡充拡張機能カタログ
 description: 拡充 OpenAPI 仕様に含まれるすべての x-* 拡張機能の信頼できる情報源
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
