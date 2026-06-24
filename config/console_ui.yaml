@@ -1,3175 +1,3884 @@
-# Console UI Enrichment Configuration
-# Maps API resources to their F5 XC console UI locations and form structures
-# Source: Validated against live staging console (nferreira.staging.volterra.us)
-# Issue: #679
-
-version: "1.0.0"
-
-# ---------------------------------------------------------------------------
-# Workspaces — top-level console navigation containers
-# ---------------------------------------------------------------------------
+version: 1.0.0
 workspaces:
   web-app-and-api-protection:
-    label: "Web App & API Protection"
-    route_prefix: "/web/workspaces/web-app-and-api-protection"
+    label: Web App & API Protection
+    route_prefix: /web/workspaces/web-app-and-api-protection
   multi-cloud-app-connect:
-    label: "Multi-Cloud App Connect"
-    route_prefix: "/web/workspaces/multi-cloud-app-connect"
+    label: Multi-Cloud App Connect
+    route_prefix: /web/workspaces/multi-cloud-app-connect
   multi-cloud-network-connect:
-    label: "Multi-Cloud Network Connect"
-    route_prefix: "/web/workspaces/multi-cloud-network-connect"
+    label: Multi-Cloud Network Connect
+    route_prefix: /web/workspaces/multi-cloud-network-connect
   distributed-apps:
-    label: "Distributed Apps"
-    route_prefix: "/web/workspaces/distributed-apps"
+    label: Distributed Apps
+    route_prefix: /web/workspaces/distributed-apps
   dns-management:
-    label: "DNS Management"
-    route_prefix: "/web/workspaces/dns-management"
+    label: DNS Management
+    route_prefix: /web/workspaces/dns-management
   content-delivery-network:
-    label: "Content Delivery Network"
-    route_prefix: "/web/workspaces/content-delivery-network"
+    label: Content Delivery Network
+    route_prefix: /web/workspaces/content-delivery-network
   observability:
-    label: "Observability"
-    route_prefix: "/web/workspaces/observability"
+    label: Observability
+    route_prefix: /web/workspaces/observability
   shared-configuration:
-    label: "Shared Configuration"
-    route_prefix: "/web/workspaces/shared-configuration"
+    label: Shared Configuration
+    route_prefix: /web/workspaces/shared-configuration
   audit-logs-and-alerts:
-    label: "Audit Logs & Alerts"
-    route_prefix: "/web/workspaces/audit-logs-and-alerts"
+    label: Audit Logs & Alerts
+    route_prefix: /web/workspaces/audit-logs-and-alerts
   administration:
-    label: "Administration"
-    route_prefix: "/web/workspaces/administration"
-
-# ---------------------------------------------------------------------------
-# Resources — one entry per validated API resource
-# ---------------------------------------------------------------------------
+    label: Administration
+    route_prefix: /web/workspaces/administration
 resources:
-
-  # =========================================================================
-  # HTTP Load Balancer
-  # =========================================================================
   http_loadbalancer:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "Load Balancers"
-      - "HTTP Load Balancers"
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
+    - Web App & API Protection
+    - Manage
+    - Load Balancers
+    - HTTP Load Balancers
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/http_loadbalancers
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "Load Balancers"
-      - "HTTP Load Balancers"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - HTTP Load Balancers
     add_action:
-      type: "tab"
-      label: "Add HTTP Load Balancer"
+      type: tab
+      label: Add HTTP Load Balancer
     save_action:
-      label: "Add HTTP Load Balancer"
+      label: Add HTTP Load Balancer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "domains-and-lb-type"
-        label: "Domains and LB Type"
-        api_fields:
-          - "spec.domains"
-          - "spec.http"
-          - "spec.https"
-          - "spec.https_auto_cert"
-      - id: "origins"
-        label: "Origins"
-        show_advanced_fields: true
-        api_fields:
-          - "spec.default_route_pools"
-          - "spec.default_pool"
-          - "spec.default_pool_list"
-          - "spec.origin_server_subset_rule_list"
-      - id: "routes"
-        label: "Routes"
-        api_fields:
-          - "spec.routes"
-      - id: "cdn"
-        label: "CDN"
-        api_fields:
-          - "spec.disable_caching"
-      - id: "waf"
-        label: "Web Application Firewall"
-        api_fields:
-          - "spec.app_firewall"
-          - "spec.disable_waf"
-          - "spec.waf_exclusion"
-          - "spec.data_guard_rules"
-          - "spec.csrf_policy"
-          - "spec.graphql_rules"
-          - "spec.protected_cookies"
-      - id: "bot-protection"
-        label: "Bot Protection"
-        show_advanced_fields: true
-        api_fields:
-          - "spec.bot_defense"
-          - "spec.bot_defense_advanced"
-          - "spec.disable_bot_defense"
-      - id: "api-protection"
-        label: "API Protection"
-        api_fields:
-          - "spec.api_specification"
-          - "spec.api_protection_rules"
-          - "spec.jwt_validation"
-          - "spec.enable_api_discovery"
-          - "spec.disable_api_discovery"
-          - "spec.disable_api_definition"
-          - "spec.sensitive_data_policy"
-          - "spec.default_sensitive_data_policy"
-          - "spec.api_rate_limit"
-          - "spec.api_testing"
-          - "spec.disable_api_testing"
-          - "spec.sensitive_data_disclosure_rules"
-      - id: "malware-protection"
-        label: "Malware Protection"
-        disabled: true
-        disabled_reason: "Upgrade required"
-        api_fields:
-          - "spec.malware_protection_settings"
-          - "spec.disable_malware_protection"
-      - id: "dos-settings"
-        label: "DoS Settings"
-        api_fields:
-          - "spec.l7_ddos_protection"
-          - "spec.l7_ddos_action_block"
-          - "spec.l7_ddos_action_default"
-          - "spec.l7_ddos_action_js_challenge"
-          - "spec.ddos_mitigation_rules"
-          - "spec.slow_ddos_mitigation"
-          - "spec.captcha_challenge"
-          - "spec.js_challenge"
-          - "spec.no_challenge"
-          - "spec.policy_based_challenge"
-          - "spec.enable_challenge"
-      - id: "client-side-defense"
-        label: "Client-Side Defense"
-        disabled: true
-        disabled_reason: "Upgrade required"
-        api_fields:
-          - "spec.client_side_defense"
-          - "spec.disable_client_side_defense"
-      - id: "common-security-controls"
-        label: "Common Security Controls"
-        api_fields:
-          - "spec.active_service_policies"
-          - "spec.no_service_policies"
-          - "spec.service_policies_from_namespace"
-          - "spec.enable_ip_reputation"
-          - "spec.disable_ip_reputation"
-          - "spec.enable_threat_mesh"
-          - "spec.disable_threat_mesh"
-          - "spec.user_id_client_ip"
-          - "spec.user_identification"
-          - "spec.enable_malicious_user_detection"
-          - "spec.disable_malicious_user_detection"
-          - "spec.rate_limit"
-          - "spec.disable_rate_limit"
-          - "spec.trusted_clients"
-          - "spec.blocked_clients"
-          - "spec.cors_policy"
-      - id: "other-settings"
-        label: "Other Settings"
-        api_fields:
-          - "spec.advertise_on_public"
-          - "spec.advertise_on_public_default_vip"
-          - "spec.advertise_custom"
-          - "spec.do_not_advertise"
-          - "spec.round_robin"
-          - "spec.least_active"
-          - "spec.random"
-          - "spec.ring_hash"
-          - "spec.source_ip_stickiness"
-          - "spec.cookie_stickiness"
-          - "spec.disable_trust_client_ip_headers"
-          - "spec.enable_trust_client_ip_headers"
-          - "spec.add_location"
-          - "spec.more_option"
-          - "spec.multi_lb_app"
-          - "spec.single_lb_app"
-          - "spec.system_default_timeouts"
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: domains-and-lb-type
+      label: Domains and LB Type
+      api_fields:
+      - spec.domains
+      - spec.http
+      - spec.https
+      - spec.https_auto_cert
+    - id: origins
+      label: Origins
+      show_advanced_fields: true
+      api_fields:
+      - spec.default_route_pools
+      - spec.default_pool
+      - spec.default_pool_list
+      - spec.origin_server_subset_rule_list
+    - id: routes
+      label: Routes
+      api_fields:
+      - spec.routes
+    - id: cdn
+      label: CDN
+      api_fields:
+      - spec.disable_caching
+    - id: waf
+      label: Web Application Firewall
+      api_fields:
+      - spec.app_firewall
+      - spec.disable_waf
+      - spec.waf_exclusion
+      - spec.data_guard_rules
+      - spec.csrf_policy
+      - spec.graphql_rules
+      - spec.protected_cookies
+    - id: bot-protection
+      label: Bot Protection
+      show_advanced_fields: true
+      api_fields:
+      - spec.bot_defense
+      - spec.bot_defense_advanced
+      - spec.disable_bot_defense
+    - id: api-protection
+      label: API Protection
+      api_fields:
+      - spec.api_specification
+      - spec.api_protection_rules
+      - spec.jwt_validation
+      - spec.enable_api_discovery
+      - spec.disable_api_discovery
+      - spec.disable_api_definition
+      - spec.sensitive_data_policy
+      - spec.default_sensitive_data_policy
+      - spec.api_rate_limit
+      - spec.api_testing
+      - spec.disable_api_testing
+      - spec.sensitive_data_disclosure_rules
+    - id: malware-protection
+      label: Malware Protection
+      disabled: true
+      disabled_reason: Upgrade required
+      api_fields:
+      - spec.malware_protection_settings
+      - spec.disable_malware_protection
+    - id: dos-settings
+      label: DoS Settings
+      api_fields:
+      - spec.l7_ddos_protection
+      - spec.l7_ddos_action_block
+      - spec.l7_ddos_action_default
+      - spec.l7_ddos_action_js_challenge
+      - spec.ddos_mitigation_rules
+      - spec.slow_ddos_mitigation
+      - spec.captcha_challenge
+      - spec.js_challenge
+      - spec.no_challenge
+      - spec.policy_based_challenge
+      - spec.enable_challenge
+    - id: client-side-defense
+      label: Client-Side Defense
+      disabled: true
+      disabled_reason: Upgrade required
+      api_fields:
+      - spec.client_side_defense
+      - spec.disable_client_side_defense
+    - id: common-security-controls
+      label: Common Security Controls
+      api_fields:
+      - spec.active_service_policies
+      - spec.no_service_policies
+      - spec.service_policies_from_namespace
+      - spec.enable_ip_reputation
+      - spec.disable_ip_reputation
+      - spec.enable_threat_mesh
+      - spec.disable_threat_mesh
+      - spec.user_id_client_ip
+      - spec.user_identification
+      - spec.enable_malicious_user_detection
+      - spec.disable_malicious_user_detection
+      - spec.rate_limit
+      - spec.disable_rate_limit
+      - spec.trusted_clients
+      - spec.blocked_clients
+      - spec.cors_policy
+    - id: other-settings
+      label: Other Settings
+      api_fields:
+      - spec.advertise_on_public
+      - spec.advertise_on_public_default_vip
+      - spec.advertise_custom
+      - spec.do_not_advertise
+      - spec.round_robin
+      - spec.least_active
+      - spec.random
+      - spec.ring_hash
+      - spec.source_ip_stickiness
+      - spec.cookie_stickiness
+      - spec.disable_trust_client_ip_headers
+      - spec.enable_trust_client_ip_headers
+      - spec.add_location
+      - spec.more_option
+      - spec.multi_lb_app
+      - spec.single_lb_app
+      - spec.system_default_timeouts
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Origin Pool
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   origin_pool:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "Load Balancers"
-      - "Origin Pools"
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/origin_pools"
+    - Web App & API Protection
+    - Manage
+    - Load Balancers
+    - Origin Pools
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/origin_pools
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "Load Balancers"
-      - "Origin Pools"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - Origin Pools
     add_action:
-      type: "tab"
-      label: "Add Origin Pool"
+      type: tab
+      label: Add Origin Pool
     save_action:
-      label: "Add Origin Pool"
+      label: Add Origin Pool
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "origin-servers"
-        label: "Origin Servers"
-        api_fields:
-          - "spec.origin_servers"
-          - "spec.port"
-      - id: "health-checks"
-        label: "Health Checks"
-        api_fields:
-          - "spec.healthcheck"
-      - id: "tls"
-        label: "TLS"
-        api_fields:
-          - "spec.use_tls"
-      - id: "other-settings"
-        label: "Other Settings"
-        api_fields: []
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: origin-servers
+      label: Origin Servers
+      api_fields:
+      - spec.origin_servers
+      - spec.port
+    - id: health-checks
+      label: Health Checks
+      api_fields:
+      - spec.healthcheck
+    - id: tls
+      label: TLS
+      api_fields:
+      - spec.use_tls
+    - id: other-settings
+      label: Other Settings
+      api_fields: []
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # App Firewall
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   app_firewall:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "App Firewall"
-    route_pattern: "/namespaces/{namespace}/manage/app_firewall"
+    - Web App & API Protection
+    - Manage
+    - App Firewall
+    route_pattern: /namespaces/{namespace}/manage/app_firewall
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "App Firewall"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - App Firewall
     add_action:
-      type: "tab"
-      label: "Add App Firewall"
+      type: tab
+      label: Add App Firewall
     save_action:
-      label: "Add App Firewall"
+      label: Add App Firewall
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "enforcement-mode"
-        label: "Enforcement Mode"
-        api_fields:
-          - "spec.enforcement_mode"
-      - id: "security-policy-settings"
-        label: "Security Policy Settings"
-        api_fields:
-          - "spec.detection_settings"
-      - id: "advanced-configuration"
-        label: "Advanced configuration"
-        api_fields: []
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: enforcement-mode
+      label: Enforcement Mode
+      api_fields:
+      - spec.enforcement_mode
+    - id: security-policy-settings
+      label: Security Policy Settings
+      api_fields:
+      - spec.detection_settings
+    - id: advanced-configuration
+      label: Advanced configuration
+      api_fields: []
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Health Check
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   healthcheck:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "Load Balancers"
-      - "Health Checks"
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/health_checks"
+    - Web App & API Protection
+    - Manage
+    - Load Balancers
+    - Health Checks
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/health_checks
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "Load Balancers"
-      - "Health Checks"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - Health Checks
     add_action:
-      type: "tab"
-      label: "Add Health Check"
+      type: tab
+      label: Add Health Check
     save_action:
-      label: "Add Health Check"
+      label: Add Health Check
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "health-check-parameters"
-        label: "Health Check Parameters"
-        show_advanced_fields: true
-        api_fields:
-          - "spec.http_health_check"
-          - "spec.timeout"
-          - "spec.interval"
-          - "spec.unhealthy_threshold"
-          - "spec.healthy_threshold"
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: health-check-parameters
+      label: Health Check Parameters
+      show_advanced_fields: true
+      api_fields:
+      - spec.http_health_check
+      - spec.timeout
+      - spec.interval
+      - spec.unhealthy_threshold
+      - spec.healthy_threshold
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # CDN Distribution (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   cdn_loadbalancer:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "CDN"
-      - "CDN Distributions"
-    route_pattern: "/namespaces/{namespace}/manage/cdn/distributions"
+    - Web App & API Protection
+    - Manage
+    - CDN
+    - CDN Distributions
+    route_pattern: /namespaces/{namespace}/manage/cdn/distributions
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "CDN"
-      - "CDN Distributions"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - CDN
+    - CDN Distributions
     add_action:
-      type: "tab"
-      label: "Add CDN Distribution"
+      type: tab
+      label: Add CDN Distribution
     save_action:
-      label: "Add CDN Distribution"
+      label: Add CDN Distribution
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Rate Limiter Policy (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   rate_limiter_policy:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "Rate Limiter Policies"
-    route_pattern: "/namespaces/{namespace}/manage/rate_limiter_policies"
+    - Web App & API Protection
+    - Manage
+    - Rate Limiter Policies
+    route_pattern: /namespaces/{namespace}/manage/rate_limiter_policies
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "Rate Limiter Policies"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Rate Limiter Policies
     add_action:
-      type: "tab"
-      label: "Add Rate Limiter"
+      type: tab
+      label: Add Rate Limiter
     save_action:
-      label: "Add Rate Limiter"
+      label: Add Rate Limiter
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # WAF Exclusion Policy (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   waf_exclusion_policy:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "App Firewall"
-      - "WAF Exclusion Rules"
-    route_pattern: "/namespaces/{namespace}/manage/app_firewall/waf_exclusion_rules"
+    - Web App & API Protection
+    - Manage
+    - App Firewall
+    - WAF Exclusion Rules
+    route_pattern: /namespaces/{namespace}/manage/app_firewall/waf_exclusion_rules
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "App Firewall"
-      - "WAF Exclusion Rules"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - App Firewall
+    - WAF Exclusion Rules
     add_action:
-      type: "tab"
-      label: "Add WAF Exclusion Rule"
+      type: tab
+      label: Add WAF Exclusion Rule
     save_action:
-      label: "Add WAF Exclusion Rule"
+      label: Add WAF Exclusion Rule
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # API Discovery (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   api_discovery:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "API Security"
-      - "API Discovery"
-    route_pattern: "/namespaces/{namespace}/manage/api_security/api_discovery"
+    - Web App & API Protection
+    - Manage
+    - API Security
+    - API Discovery
+    route_pattern: /namespaces/{namespace}/manage/api_security/api_discovery
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "API Security"
-      - "API Discovery"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - API Discovery
     add_action:
-      type: "tab"
-      label: "Add API Discovery Policy"
+      type: tab
+      label: Add API Discovery Policy
     save_action:
-      label: "Add API Discovery Policy"
+      label: Add API Discovery Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Sensitive Data Policy (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   sensitive_data_policy:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "API Security"
-      - "Sensitive Data Policies"
-    route_pattern: "/namespaces/{namespace}/manage/api_security/sensitive_data_policies"
+    - Web App & API Protection
+    - Manage
+    - API Security
+    - Sensitive Data Policies
+    route_pattern: /namespaces/{namespace}/manage/api_security/sensitive_data_policies
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "API Security"
-      - "Sensitive Data Policies"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - Sensitive Data Policies
     add_action:
-      type: "tab"
-      label: "Add Sensitive Data Policy"
+      type: tab
+      label: Add Sensitive Data Policy
     save_action:
-      label: "Add Sensitive Data Policy"
+      label: Add Sensitive Data Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Data Type (Web App & API Protection)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   data_type:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "API Security"
-      - "Data Types"
-    route_pattern: "/namespaces/{namespace}/manage/api_security/data_types"
+    - Web App & API Protection
+    - Manage
+    - API Security
+    - Data Types
+    route_pattern: /namespaces/{namespace}/manage/api_security/data_types
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "API Security"
-      - "Data Types"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - Data Types
     add_action:
-      type: "tab"
-      label: "Add Data Type"
+      type: tab
+      label: Add Data Type
     save_action:
-      label: "Add Data Type"
+      label: Add Data Type
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # TCP Load Balancer
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   tcp_loadbalancer:
-    workspace: "multi-cloud-app-connect"
+    workspace: multi-cloud-app-connect
     menu_path:
-      - "Multi-Cloud App Connect"
-      - "Manage"
-      - "Load Balancers"
-      - "TCP Load Balancers"
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/tcp_loadbalancers"
+    - Multi-Cloud App Connect
+    - Manage
+    - Load Balancers
+    - TCP Load Balancers
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/tcp_loadbalancers
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud App Connect"
-      - "{namespace}"
-      - "Manage"
-      - "Load Balancers"
-      - "TCP Load Balancers"
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - TCP Load Balancers
     add_action:
-      type: "tab"
-      label: "Add TCP Load Balancer"
+      type: tab
+      label: Add TCP Load Balancer
     save_action:
-      label: "Add TCP Load Balancer"
+      label: Add TCP Load Balancer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "basic-configuration"
-        label: "Basic Configuration"
-        show_advanced_fields: true
-        api_fields:
-          - "spec.domains"
-          - "spec.listen_port"
-          - "spec.sni"
-          - "spec.origin_pools"
-          - "spec.advertise_on_public"
-      - id: "load-balancing-control"
-        label: "Load Balancing Control"
-        show_advanced_fields: true
-        api_fields: []
-      - id: "service-policies"
-        label: "Service Policies"
-        api_fields: []
-      - id: "advanced-configuration"
-        label: "Advanced Configuration"
-        show_advanced_fields: true
-        api_fields: []
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: basic-configuration
+      label: Basic Configuration
+      show_advanced_fields: true
+      api_fields:
+      - spec.domains
+      - spec.listen_port
+      - spec.sni
+      - spec.origin_pools
+      - spec.advertise_on_public
+    - id: load-balancing-control
+      label: Load Balancing Control
+      show_advanced_fields: true
+      api_fields: []
+    - id: service-policies
+      label: Service Policies
+      api_fields: []
+    - id: advanced-configuration
+      label: Advanced Configuration
+      show_advanced_fields: true
+      api_fields: []
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Service Policy
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   service_policy:
-    workspace: "web-app-and-api-protection"
+    workspace: web-app-and-api-protection
     menu_path:
-      - "Web App & API Protection"
-      - "Manage"
-      - "Service Policies"
-      - "Service Policies"
-    route_pattern: "/namespaces/{namespace}/manage/service_policies/service_policies"
+    - Web App & API Protection
+    - Manage
+    - Service Policies
+    - Service Policies
+    route_pattern: /namespaces/{namespace}/manage/service_policies/service_policies
     breadcrumbs:
-      - "Home"
-      - "Web App & API Protection"
-      - "{namespace}"
-      - "Manage"
-      - "Service Policies"
-      - "Service Policies"
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Service Policies
+    - Service Policies
     add_action:
-      type: "tab"
-      label: "Add Service policy"
+      type: tab
+      label: Add Service policy
     save_action:
-      label: "Add Service policy"
+      label: Add Service policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
-      - id: "servers"
-        label: "Servers"
-        api_fields: []
-      - id: "rules"
-        label: "Rules"
-        api_fields: []
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
+    - id: servers
+      label: Servers
+      api_fields: []
+    - id: rules
+      label: Rules
+      api_fields: []
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Virtual Host
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   virtual_host:
-    workspace: "multi-cloud-app-connect"
+    workspace: multi-cloud-app-connect
     menu_path:
-      - "Multi-Cloud App Connect"
-      - "Manage"
-      - "Virtual Host"
-      - "Virtual Hosts"
-    route_pattern: "/namespaces/{namespace}/manage/virtual_host/virtual_hosts"
+    - Multi-Cloud App Connect
+    - Manage
+    - Virtual Host
+    - Virtual Hosts
+    route_pattern: /namespaces/{namespace}/manage/virtual_host/virtual_hosts
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud App Connect"
-      - "{namespace}"
-      - "Manage"
-      - "Virtual Host"
-      - "Virtual Hosts"
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Virtual Host
+    - Virtual Hosts
     add_action:
-      type: "tab"
-      label: "Add Virtual Host"
+      type: tab
+      label: Add Virtual Host
     save_action:
-      label: "Add Virtual Host"
+      label: Add Virtual Host
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Route
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   route:
-    workspace: "multi-cloud-app-connect"
+    workspace: multi-cloud-app-connect
     menu_path:
-      - "Multi-Cloud App Connect"
-      - "Manage"
-      - "Virtual Host"
-      - "Routes"
-    route_pattern: "/namespaces/{namespace}/manage/virtual_host/routes"
+    - Multi-Cloud App Connect
+    - Manage
+    - Virtual Host
+    - Routes
+    route_pattern: /namespaces/{namespace}/manage/virtual_host/routes
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud App Connect"
-      - "{namespace}"
-      - "Manage"
-      - "Virtual Host"
-      - "Routes"
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Virtual Host
+    - Routes
     add_action:
-      type: "tab"
-      label: "Add Route"
+      type: tab
+      label: Add Route
     save_action:
-      label: "Add Route"
+      label: Add Route
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Forward Proxy Policy (Multi-Cloud App Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   forward_proxy_policy:
-    workspace: "multi-cloud-app-connect"
+    workspace: multi-cloud-app-connect
     menu_path:
-      - "Multi-Cloud App Connect"
-      - "Manage"
-      - "Security"
-      - "Forward Proxy Policies"
-    route_pattern: "/namespaces/{namespace}/manage/security/forward_proxy_policies"
+    - Multi-Cloud App Connect
+    - Manage
+    - Security
+    - Forward Proxy Policies
+    route_pattern: /namespaces/{namespace}/manage/security/forward_proxy_policies
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud App Connect"
-      - "{namespace}"
-      - "Manage"
-      - "Security"
-      - "Forward Proxy Policies"
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Security
+    - Forward Proxy Policies
     add_action:
-      type: "tab"
-      label: "Add Forward Proxy Policy"
+      type: tab
+      label: Add Forward Proxy Policy
     save_action:
-      label: "Add Forward Proxy Policy"
+      label: Add Forward Proxy Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # UDP Load Balancer (Multi-Cloud App Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   udp_loadbalancer:
-    workspace: "multi-cloud-app-connect"
+    workspace: multi-cloud-app-connect
     menu_path:
-      - "Multi-Cloud App Connect"
-      - "Manage"
-      - "Load Balancers"
-      - "UDP Load Balancers"
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/udp_loadbalancers"
+    - Multi-Cloud App Connect
+    - Manage
+    - Load Balancers
+    - UDP Load Balancers
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/udp_loadbalancers
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud App Connect"
-      - "{namespace}"
-      - "Manage"
-      - "Load Balancers"
-      - "UDP Load Balancers"
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - UDP Load Balancers
     add_action:
-      type: "tab"
-      label: "Add UDP Load Balancer"
+      type: tab
+      label: Add UDP Load Balancer
     save_action:
-      label: "Add UDP Load Balancer"
+      label: Add UDP Load Balancer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # AWS VPC Site (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   aws_vpc_site:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "AWS VPC Sites"
-    route_pattern: "/manage/site_management/legacy_configs/aws_vpc_site"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - AWS VPC Sites
+    route_pattern: /manage/site_management/legacy_configs/aws_vpc_site
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "AWS VPC Sites"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - AWS VPC Sites
     add_action:
-      type: "tab"
-      label: "Add AWS VPC Site"
+      type: tab
+      label: Add AWS VPC Site
     save_action:
-      label: "Add AWS VPC Site"
+      label: Add AWS VPC Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # AWS TGW Site (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   aws_tgw_site:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "AWS TGW Sites"
-    route_pattern: "/manage/site_management/legacy_configs/aws_tgw_site"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - AWS TGW Sites
+    route_pattern: /manage/site_management/legacy_configs/aws_tgw_site
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "AWS TGW Sites"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - AWS TGW Sites
     add_action:
-      type: "tab"
-      label: "Add AWS TGW Site"
+      type: tab
+      label: Add AWS TGW Site
     save_action:
-      label: "Add AWS TGW Site"
+      label: Add AWS TGW Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Azure VNET Site (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   azure_vnet_site:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "Azure VNET Sites"
-    route_pattern: "/manage/site_management/legacy_configs/azure_site"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Azure VNET Sites
+    route_pattern: /manage/site_management/legacy_configs/azure_site
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "Azure VNET Sites"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Azure VNET Sites
     add_action:
-      type: "tab"
-      label: "Add Azure VNET Site"
+      type: tab
+      label: Add Azure VNET Site
     save_action:
-      label: "Add Azure VNET Site"
+      label: Add Azure VNET Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # GCP VPC Site (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   gcp_vpc_site:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "GCP VPC Sites"
-    route_pattern: "/manage/site_management/legacy_configs/gcp_vpc_site"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - GCP VPC Sites
+    route_pattern: /manage/site_management/legacy_configs/gcp_vpc_site
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "GCP VPC Sites"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - GCP VPC Sites
     add_action:
-      type: "tab"
-      label: "Add GCP VPC Site"
+      type: tab
+      label: Add GCP VPC Site
     save_action:
-      label: "Add GCP VPC Site"
+      label: Add GCP VPC Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # App Stack Site (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   voltstack_site:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "App Stack Sites"
-    route_pattern: "/manage/site_management/cloud_sites/appstack_site"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - App Stack Sites
+    route_pattern: /manage/site_management/cloud_sites/appstack_site
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Site Management"
-      - "App Stack Sites"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - App Stack Sites
     add_action:
-      type: "tab"
-      label: "Add App Stack Site"
+      type: tab
+      label: Add App Stack Site
     save_action:
-      label: "Add App Stack Site"
+      label: Add App Stack Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Site Mesh Group / CloudLinks (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   site_mesh_group:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Networking"
-      - "Site to Site Connectivity"
-      - "Site Mesh Groups"
-    route_pattern: "/manage/networking/site_to_site_connectivity/site_mesh_groups"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Site to Site Connectivity
+    - Site Mesh Groups
+    route_pattern: /manage/networking/site_to_site_connectivity/site_mesh_groups
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Networking"
-      - "Site to Site Connectivity"
-      - "Site Mesh Groups"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Site to Site Connectivity
+    - Site Mesh Groups
     add_action:
-      type: "tab"
-      label: "Add Site Mesh Group"
+      type: tab
+      label: Add Site Mesh Group
     save_action:
-      label: "Add Site Mesh Group"
+      label: Add Site Mesh Group
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated — MCN workspace has no namespace in URLs"
-
-  # =========================================================================
-  # IKE Gateway / External Connectors (Multi-Cloud Network Connect)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated — MCN workspace has no namespace in URLs
   ike_gateway:
     namespace_scoped: false
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     menu_path:
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Networking"
-      - "External Connectivity"
-      - "IKE Profiles"
-    route_pattern: "/manage/networking/external_connectivity/ike_profiles"
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - External Connectivity
+    - IKE Profiles
+    route_pattern: /manage/networking/external_connectivity/ike_profiles
     breadcrumbs:
-      - "Home"
-      - "Multi-Cloud Network Connect"
-      - "Manage"
-      - "Networking"
-      - "External Connectivity"
-      - "IKE Profiles"
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - External Connectivity
+    - IKE Profiles
     add_action:
-      type: "tab"
-      label: "Add IKE Profile"
+      type: tab
+      label: Add IKE Profile
     save_action:
-      label: "Add IKE Profile"
+      label: Add IKE Profile
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated — MCN workspace has no namespace in URLs"
-
-  # =========================================================================
-  # K8s Cluster (Distributed Apps)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated — MCN workspace has no namespace in URLs
   k8s_cluster:
-    workspace: "distributed-apps"
+    workspace: distributed-apps
     menu_path:
-      - "Distributed Apps"
-      - "Manage"
-      - "Virtual K8s"
-      - "K8s Clusters"
-    route_pattern: "/namespaces/{namespace}/manage/virtual_k8s/k8s_clusters"
+    - Distributed Apps
+    - Manage
+    - Virtual K8s
+    - K8s Clusters
+    route_pattern: /namespaces/{namespace}/manage/virtual_k8s/k8s_clusters
     breadcrumbs:
-      - "Home"
-      - "Distributed Apps"
-      - "{namespace}"
-      - "Manage"
-      - "Virtual K8s"
-      - "K8s Clusters"
+    - Home
+    - Distributed Apps
+    - '{namespace}'
+    - Manage
+    - Virtual K8s
+    - K8s Clusters
     add_action:
-      type: "tab"
-      label: "Add K8s Cluster"
+      type: tab
+      label: Add K8s Cluster
     save_action:
-      label: "Add K8s Cluster"
+      label: Add K8s Cluster
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Network Policy (Distributed Apps)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   network_policy:
-    workspace: "distributed-apps"
+    workspace: distributed-apps
     menu_path:
-      - "Distributed Apps"
-      - "Manage"
-      - "Networking"
-      - "Network Policies"
-    route_pattern: "/namespaces/{namespace}/manage/networking/network_policies"
+    - Distributed Apps
+    - Manage
+    - Networking
+    - Network Policies
+    route_pattern: /namespaces/{namespace}/manage/networking/network_policies
     breadcrumbs:
-      - "Home"
-      - "Distributed Apps"
-      - "{namespace}"
-      - "Manage"
-      - "Networking"
-      - "Network Policies"
+    - Home
+    - Distributed Apps
+    - '{namespace}'
+    - Manage
+    - Networking
+    - Network Policies
     add_action:
-      type: "tab"
-      label: "Add Network Policy"
+      type: tab
+      label: Add Network Policy
     save_action:
-      label: "Add Network Policy"
+      label: Add Network Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # DNS Zone (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   dns_zone:
     namespace_scoped: false
-    workspace: "dns-management"
+    workspace: dns-management
     menu_path:
-      - "DNS Management"
-      - "Manage"
-      - "DNS Zone Management"
-      - "DNS Zones"
-    route_pattern: "/manage/zone_management"
+    - DNS Management
+    - Manage
+    - DNS Zone Management
+    - DNS Zones
+    route_pattern: /manage/zone_management
     breadcrumbs:
-      - "Home"
-      - "DNS Management"
-      - "Manage"
-      - "DNS Zone Management"
-      - "DNS Zones"
+    - Home
+    - DNS Management
+    - Manage
+    - DNS Zone Management
+    - DNS Zones
     add_action:
-      type: "tab"
-      label: "Add DNS Zone"
+      type: tab
+      label: Add DNS Zone
     save_action:
-      label: "Add DNS Zone"
+      label: Add DNS Zone
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # DNS Load Balancer (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   dns_load_balancer:
     namespace_scoped: false
-    workspace: "dns-management"
+    workspace: dns-management
     menu_path:
-      - "DNS Management"
-      - "Manage"
-      - "DNS Load Balancer Management"
-      - "DNS Load Balancers"
-    route_pattern: "/manage/dns_lb_management/dns_load_balancer"
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancers
+    route_pattern: /manage/dns_lb_management/dns_load_balancer
     breadcrumbs:
-      - "Home"
-      - "DNS Management"
-      - "Manage"
-      - "DNS Load Balancer Management"
-      - "DNS Load Balancers"
+    - Home
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancers
     add_action:
-      type: "tab"
-      label: "Add DNS Load Balancer"
+      type: tab
+      label: Add DNS Load Balancer
     save_action:
-      label: "Add DNS Load Balancer"
+      label: Add DNS Load Balancer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # DNS LB Pool (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   dns_lb_pool:
-    workspace: "dns-management"
+    workspace: dns-management
     menu_path:
-      - "DNS Management"
-      - "Manage"
-      - "DNS Load Balancer Management"
-      - "DNS Load Balancer Pools"
-    route_pattern: "/manage/dns_lb_management/dns_lb_pool"
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancer Pools
+    route_pattern: /manage/dns_lb_management/dns_lb_pool
     namespace_scoped: false
     breadcrumbs:
-      - "Home"
-      - "DNS Management"
-      - "Manage"
-      - "DNS Load Balancer Management"
-      - "DNS Load Balancer Pools"
+    - Home
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancer Pools
     add_action:
-      type: "tab"
-      label: "Add DNS Load Balancer Pool"
+      type: tab
+      label: Add DNS Load Balancer Pool
     save_action:
-      label: "Add DNS Load Balancer Pool"
+      label: Add DNS Load Balancer Pool
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Inferred from API spec and console home page workspace listing"
-
-  # =========================================================================
-  # HTTP Monitor (Observability)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Inferred from API spec and console home page workspace listing
   v1_http_monitor:
     namespace_scoped: false
-    workspace: "observability"
+    workspace: observability
     menu_path:
-      - "Observability"
-      - "Manage"
-      - "Monitors"
-      - "HTTP Monitors"
-    route_pattern: "/namespaces/system/manage/monitors/http_monitors"
+    - Observability
+    - Manage
+    - Monitors
+    - HTTP Monitors
+    route_pattern: /namespaces/system/manage/monitors/http_monitors
     breadcrumbs:
-      - "Home"
-      - "Observability"
-      - "system"
-      - "Manage"
-      - "Monitors"
-      - "HTTP Monitors"
+    - Home
+    - Observability
+    - system
+    - Manage
+    - Monitors
+    - HTTP Monitors
     add_action:
-      type: "tab"
-      label: "Add HTTP Monitor"
+      type: tab
+      label: Add HTTP Monitor
     save_action:
-      label: "Add HTTP Monitor"
+      label: Add HTTP Monitor
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # DNS Monitor (Observability)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   v1_dns_monitor:
     namespace_scoped: false
-    workspace: "observability"
+    workspace: observability
     menu_path:
-      - "Observability"
-      - "Manage"
-      - "DNS Monitors"
-    route_pattern: "/namespaces/system/manage/dns_monitors"
+    - Observability
+    - Manage
+    - DNS Monitors
+    route_pattern: /namespaces/system/manage/dns_monitors
     breadcrumbs:
-      - "Home"
-      - "Observability"
-      - "system"
-      - "Manage"
-      - "DNS Monitors"
+    - Home
+    - Observability
+    - system
+    - Manage
+    - DNS Monitors
     add_action:
-      type: "tab"
-      label: "Add DNS Monitor"
+      type: tab
+      label: Add DNS Monitor
     save_action:
-      label: "Add DNS Monitor"
+      label: Add DNS Monitor
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Virtual Site (Shared Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   virtual_site:
     namespace_scoped: false
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     menu_path:
-      - "Shared Configuration"
-      - "Manage"
-      - "Virtual Sites"
-    route_pattern: "/namespaces/shared/manage/virtual_sites"
+    - Shared Configuration
+    - Manage
+    - Virtual Sites
+    route_pattern: /namespaces/shared/manage/virtual_sites
     breadcrumbs:
-      - "Home"
-      - "Shared Configuration"
-      - "shared"
-      - "Manage"
-      - "Virtual Sites"
+    - Home
+    - Shared Configuration
+    - shared
+    - Manage
+    - Virtual Sites
     add_action:
-      type: "tab"
-      label: "Add Virtual Site"
+      type: tab
+      label: Add Virtual Site
     save_action:
-      label: "Add Virtual Site"
+      label: Add Virtual Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Alert Policy (Shared Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   alert_policy:
     namespace_scoped: false
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     menu_path:
-      - "Shared Configuration"
-      - "Manage"
-      - "Alert Policies"
-    route_pattern: "/namespaces/shared/manage/alert_policies"
+    - Shared Configuration
+    - Manage
+    - Alert Policies
+    route_pattern: /namespaces/shared/manage/alert_policies
     breadcrumbs:
-      - "Home"
-      - "Shared Configuration"
-      - "shared"
-      - "Manage"
-      - "Alert Policies"
+    - Home
+    - Shared Configuration
+    - shared
+    - Manage
+    - Alert Policies
     add_action:
-      type: "tab"
-      label: "Add Alert Policy"
+      type: tab
+      label: Add Alert Policy
     save_action:
-      label: "Add Alert Policy"
+      label: Add Alert Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Secret Policy (Shared Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   secret_policy:
     namespace_scoped: false
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     menu_path:
-      - "Shared Configuration"
-      - "Manage"
-      - "Secret Policies"
-    route_pattern: "/namespaces/shared/manage/secret_policies"
+    - Shared Configuration
+    - Manage
+    - Secret Policies
+    route_pattern: /namespaces/shared/manage/secret_policies
     breadcrumbs:
-      - "Home"
-      - "Shared Configuration"
-      - "shared"
-      - "Manage"
-      - "Secret Policies"
+    - Home
+    - Shared Configuration
+    - shared
+    - Manage
+    - Secret Policies
     add_action:
-      type: "tab"
-      label: "Add Secret Policy"
+      type: tab
+      label: Add Secret Policy
     save_action:
-      label: "Add Secret Policy"
+      label: Add Secret Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Alert Receiver (Audit Logs & Alerts)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   alert_receiver:
     namespace_scoped: false
-    workspace: "audit-logs-and-alerts"
+    workspace: audit-logs-and-alerts
     menu_path:
-      - "Audit Logs & Alerts"
-      - "Manage"
-      - "Alert Receivers"
-    route_pattern: "/namespaces/system/manage/alert_receivers"
+    - Audit Logs & Alerts
+    - Manage
+    - Alert Receivers
+    route_pattern: /namespaces/system/manage/alert_receivers
     breadcrumbs:
-      - "Home"
-      - "Audit Logs & Alerts"
-      - "system"
-      - "Manage"
-      - "Alert Receivers"
+    - Home
+    - Audit Logs & Alerts
+    - system
+    - Manage
+    - Alert Receivers
     add_action:
-      type: "tab"
-      label: "Add Alert Receiver"
+      type: tab
+      label: Add Alert Receiver
     save_action:
-      label: "Add Alert Receiver"
+      label: Add Alert Receiver
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Global Log Receiver (Audit Logs & Alerts)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   global_log_receiver:
     namespace_scoped: false
-    workspace: "audit-logs-and-alerts"
+    workspace: audit-logs-and-alerts
     menu_path:
-      - "Audit Logs & Alerts"
-      - "Manage"
-      - "Global Log Receivers"
-    route_pattern: "/namespaces/system/manage/global_log_receivers"
+    - Audit Logs & Alerts
+    - Manage
+    - Global Log Receivers
+    route_pattern: /namespaces/system/manage/global_log_receivers
     breadcrumbs:
-      - "Home"
-      - "Audit Logs & Alerts"
-      - "system"
-      - "Manage"
-      - "Global Log Receivers"
+    - Home
+    - Audit Logs & Alerts
+    - system
+    - Manage
+    - Global Log Receivers
     add_action:
-      type: "tab"
-      label: "Add Global Log Receiver"
+      type: tab
+      label: Add Global Log Receiver
     save_action:
-      label: "Add Global Log Receiver"
+      label: Add Global Log Receiver
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-      notes: "Validated via URL probe against live staging console"
-
-  # =========================================================================
-  # Namespace (system-level, not namespace-scoped)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
+      notes: Validated via URL probe against live staging console
   namespace:
     namespace_scoped: false
-    workspace: "administration"
+    workspace: administration
     menu_path:
-      - "Administration"
-      - "Personal Management"
-      - "My Namespaces"
-    route_pattern: "/personal-management/namespaces"
+    - Administration
+    - Personal Management
+    - My Namespaces
+    route_pattern: /personal-management/namespaces
     breadcrumbs:
-      - "Home"
-      - "Administration"
-      - "Personal Management"
-      - "My Namespaces"
+    - Home
+    - Administration
+    - Personal Management
+    - My Namespaces
     add_action:
-      type: "tab"
-      label: "Add Namespace"
+      type: tab
+      label: Add Namespace
     save_action:
-      label: "Add Namespace"
+      label: Add Namespace
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields:
-          - "metadata.name"
-          - "metadata.labels"
-          - "metadata.description"
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-15"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # CDN Cache Rule (WAAP — CDN section)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-15'
+      console_version: '2025.06'
   cdn_cache_rule:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "CDN", "CDN Cache Rules"]
-    route_pattern: "/namespaces/{namespace}/manage/cdn/cdn_cache_rule"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "CDN", "CDN Cache Rules"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - CDN
+    - CDN Cache Rules
+    route_pattern: /namespaces/{namespace}/manage/cdn/cdn_cache_rule
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - CDN
+    - CDN Cache Rules
     add_action:
-      type: "tab"
-      label: "Add CDN Cache Rule"
+      type: tab
+      label: Add CDN Cache Rule
     save_action:
-      label: "Add CDN Cache Rule"
+      label: Add CDN Cache Rule
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # API Credentials (Administration — Personal Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   api_credential:
-    workspace: "administration"
-    menu_path: ["Personal Management", "Credentials"]
-    route_pattern: "/personal-management/api_credentials"
-    breadcrumbs: ["Home", "Administration", "Personal Management", "Credentials"]
+    workspace: administration
+    menu_path:
+    - Personal Management
+    - Credentials
+    route_pattern: /personal-management/api_credentials
+    breadcrumbs:
+    - Home
+    - Administration
+    - Personal Management
+    - Credentials
     add_action:
-      type: "tab"
-      label: "Add Credentials"
+      type: tab
+      label: Add Credentials
     save_action:
-      label: "Add Credentials"
+      label: Add Credentials
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # BIG-IP Virtual Servers (WAAP workspace)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   bigip_virtual_server:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "BIG-IP Virtual Servers"]
-    route_pattern: "/namespaces/{namespace}/manage/bigip_virtual_server"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "BIG-IP Virtual Servers"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - BIG-IP Virtual Servers
+    route_pattern: /namespaces/{namespace}/manage/bigip_virtual_server
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - BIG-IP Virtual Servers
     add_action:
-      type: "tab"
-      label: "Add BIG-IP Virtual Server"
+      type: tab
+      label: Add BIG-IP Virtual Server
     save_action:
-      label: "Add BIG-IP Virtual Server"
+      label: Add BIG-IP Virtual Server
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "inferred"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Public IP Addresses (WAAP workspace)
-  # =========================================================================
+      confidence: inferred
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   public_ip:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Public IP Addresses"]
-    route_pattern: "/namespaces/{namespace}/manage/public_ip"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Public IP Addresses"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Public IP Addresses
+    route_pattern: /namespaces/{namespace}/manage/public_ip
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Public IP Addresses
     add_action:
-      type: "tab"
-      label: "Add Public IP"
+      type: tab
+      label: Add Public IP
     save_action:
-      label: "Add Public IP"
+      label: Add Public IP
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "inferred"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Third-Party Application (WAAP workspace)
-  # =========================================================================
+      confidence: inferred
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   third_party_application:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Third-Party Applications"]
-    route_pattern: "/namespaces/{namespace}/manage/third_party_application"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Third-Party Applications"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Third-Party Applications
+    route_pattern: /namespaces/{namespace}/manage/third_party_application
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Third-Party Applications
     add_action:
-      type: "tab"
-      label: "Add Third-Party Application"
+      type: tab
+      label: Add Third-Party Application
     save_action:
-      label: "Add Third-Party Application"
+      label: Add Third-Party Application
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "inferred"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # NFV Services (MCN workspace — tenant-scoped)
-  # =========================================================================
+      confidence: inferred
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   nfv_service:
-    workspace: "multi-cloud-network-connect"
-    menu_path: ["Manage", "Connectors", "NFV Services"]
-    route_pattern: "/manage/nfv_services"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Connectors", "NFV Services"]
+    workspace: multi-cloud-network-connect
+    menu_path:
+    - Manage
+    - Connectors
+    - NFV Services
+    route_pattern: /manage/nfv_services
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Connectors
+    - NFV Services
     namespace_scoped: false
     add_action:
-      type: "tab"
-      label: "Add NFV Service"
+      type: tab
+      label: Add NFV Service
     save_action:
-      label: "Add NFV Service"
+      label: Add NFV Service
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "inferred"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Container Registries (Distributed Apps workspace)
-  # =========================================================================
+      confidence: inferred
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   container_registry:
-    workspace: "distributed-apps"
-    menu_path: ["Manage", "Container Registries"]
-    route_pattern: "/namespaces/{namespace}/manage/container_registries"
-    breadcrumbs: ["Home", "Distributed Apps", "{namespace}", "Manage", "Container Registries"]
+    workspace: distributed-apps
+    menu_path:
+    - Manage
+    - Container Registries
+    route_pattern: /namespaces/{namespace}/manage/container_registries
+    breadcrumbs:
+    - Home
+    - Distributed Apps
+    - '{namespace}'
+    - Manage
+    - Container Registries
     add_action:
-      type: "tab"
-      label: "Add Container Registry"
+      type: tab
+      label: Add Container Registry
     save_action:
-      label: "Add Container Registry"
+      label: Add Container Registry
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "inferred"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # IP Prefix Sets (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: inferred
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   ip_prefix_set:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "IP Prefix Sets"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/ip_prefix_sets"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "IP Prefix Sets"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - IP Prefix Sets
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/ip_prefix_sets
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - IP Prefix Sets
     add_action:
-      type: "tab"
-      label: "Add IP Prefix Set"
+      type: tab
+      label: Add IP Prefix Set
     save_action:
-      label: "Add IP Prefix Set"
+      label: Add IP Prefix Set
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Rate Limiters (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   rate_limiter:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "Rate Limiters"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/rate_limiters"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "Rate Limiters"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - Rate Limiters
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/rate_limiters
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - Rate Limiters
     add_action:
-      type: "tab"
-      label: "Add Rate Limiter"
+      type: tab
+      label: Add Rate Limiter
     save_action:
-      label: "Add Rate Limiter"
+      label: Add Rate Limiter
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # User Identification (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   user_identification:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "User Identifications"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/user_identification"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "User Identifications"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - User Identifications
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/user_identification
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - User Identifications
     add_action:
-      type: "tab"
-      label: "Add User Identification"
+      type: tab
+      label: Add User Identification
     save_action:
-      label: "Add User Identification"
+      label: Add User Identification
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Malicious User Mitigation (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   malicious_user_mitigation:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "Malicious User Mitigation"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/malicious_user_mitigation"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "Malicious User Mitigation"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - Malicious User Mitigation
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/malicious_user_mitigation
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - Malicious User Mitigation
     add_action:
-      type: "tab"
-      label: "Add Malicious User Mitigation"
+      type: tab
+      label: Add Malicious User Mitigation
     save_action:
-      label: "Add Malicious User Mitigation"
+      label: Add Malicious User Mitigation
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # API Definition (WAAP — API Security)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   api_definition:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "API Security", "API Definition"]
-    route_pattern: "/namespaces/{namespace}/manage/api_security/api_definition"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "API Security", "API Definition"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - API Security
+    - API Definition
+    route_pattern: /namespaces/{namespace}/manage/api_security/api_definition
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - API Definition
     add_action:
-      type: "tab"
-      label: "Add API Definition"
+      type: tab
+      label: Add API Definition
     save_action:
-      label: "Add API Definition"
+      label: Add API Definition
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # TLS Certificate (WAAP — Certificate Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   certificate:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Certificate Management", "TLS Certificates"]
-    route_pattern: "/namespaces/{namespace}/manage/certificate_management/tls_certificate"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Certificate Management", "TLS Certificates"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Certificate Management
+    - TLS Certificates
+    route_pattern: /namespaces/{namespace}/manage/certificate_management/tls_certificate
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Certificate Management
+    - TLS Certificates
     add_action:
-      type: "tab"
-      label: "Add TLS Certificate"
+      type: tab
+      label: Add TLS Certificate
     save_action:
-      label: "Add TLS Certificate"
+      label: Add TLS Certificate
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Service Policy Rule (WAAP — Service Policies)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   service_policy_rule:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Service Policies", "Service Policy Rules"]
-    route_pattern: "/namespaces/{namespace}/manage/service_policies/service_policy_rules"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Service Policies", "Service Policy Rules"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Service Policies
+    - Service Policy Rules
+    route_pattern: /namespaces/{namespace}/manage/service_policies/service_policy_rules
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Service Policies
+    - Service Policy Rules
     add_action:
-      type: "tab"
-      label: "Add Service Policy Rule"
+      type: tab
+      label: Add Service Policy Rule
     save_action:
-      label: "Add Service Policy Rule"
+      label: Add Service Policy Rule
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # App Settings (WAAP — AI & ML)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   app_setting:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "AI & ML", "App Settings"]
-    route_pattern: "/namespaces/{namespace}/manage/ai_ml/app_settings"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "AI & ML", "App Settings"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - AI & ML
+    - App Settings
+    route_pattern: /namespaces/{namespace}/manage/ai_ml/app_settings
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - AI & ML
+    - App Settings
     add_action:
-      type: "tab"
-      label: "Add App Setting"
+      type: tab
+      label: Add App Setting
     save_action:
-      label: "Add App Setting"
+      label: Add App Setting
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Cloud Credentials (MCN — Site Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   cloud_credentials:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Site Management", "Other Configurations", "Cloud Credentials"]
-    route_pattern: "/manage/site_management/other_configs/cloud_credential"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Site Management", "Other Configurations", "Cloud Credentials"]
+    menu_path:
+    - Manage
+    - Site Management
+    - Other Configurations
+    - Cloud Credentials
+    route_pattern: /manage/site_management/other_configs/cloud_credential
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Other Configurations
+    - Cloud Credentials
     add_action:
-      type: "tab"
-      label: "Add Cloud Credential"
+      type: tab
+      label: Add Cloud Credential
     save_action:
-      label: "Add Cloud Credential"
+      label: Add Cloud Credential
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Secure Mesh Site v2 (MCN — Site Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   securemesh_site_v2:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Site Management", "Customer Edges", "Secure Mesh Sites v2"]
-    route_pattern: "/manage/site_management/cloud_sites/securemesh_site_v2"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Site Management", "Customer Edges", "Secure Mesh Sites v2"]
+    menu_path:
+    - Manage
+    - Site Management
+    - Customer Edges
+    - Secure Mesh Sites v2
+    route_pattern: /manage/site_management/cloud_sites/securemesh_site_v2
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Customer Edges
+    - Secure Mesh Sites v2
     add_action:
-      type: "tab"
-      label: "Add Secure Mesh Site v2"
+      type: tab
+      label: Add Secure Mesh Site v2
     save_action:
-      label: "Add Secure Mesh Site v2"
+      label: Add Secure Mesh Site v2
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Network Firewall (MCN — Firewall)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   network_firewall:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Firewall", "Network Firewalls"]
-    route_pattern: "/manage/firewall/network_firewall"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Firewall", "Network Firewalls"]
+    menu_path:
+    - Manage
+    - Firewall
+    - Network Firewalls
+    route_pattern: /manage/firewall/network_firewall
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Firewall
+    - Network Firewalls
     add_action:
-      type: "tab"
-      label: "Add Network Firewall"
+      type: tab
+      label: Add Network Firewall
     save_action:
-      label: "Add Network Firewall"
+      label: Add Network Firewall
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Enhanced Firewall Policy (MCN — Firewall)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   enhanced_firewall_policy:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Firewall", "Enhanced Firewall Policies"]
-    route_pattern: "/manage/firewall/enhanced_firewall_policy"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Firewall", "Enhanced Firewall Policies"]
+    menu_path:
+    - Manage
+    - Firewall
+    - Enhanced Firewall Policies
+    route_pattern: /manage/firewall/enhanced_firewall_policy
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Firewall
+    - Enhanced Firewall Policies
     add_action:
-      type: "tab"
-      label: "Add Enhanced Firewall Policy"
+      type: tab
+      label: Add Enhanced Firewall Policy
     save_action:
-      label: "Add Enhanced Firewall Policy"
+      label: Add Enhanced Firewall Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Segment (MCN — Networking)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   segment:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Network Configuration", "Segments"]
-    route_pattern: "/manage/networking/network_configuration/segment"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Network Configuration", "Segments"]
+    menu_path:
+    - Manage
+    - Networking
+    - Network Configuration
+    - Segments
+    route_pattern: /manage/networking/network_configuration/segment
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Network Configuration
+    - Segments
     add_action:
-      type: "tab"
-      label: "Add Segment"
+      type: tab
+      label: Add Segment
     save_action:
-      label: "Add Segment"
+      label: Add Segment
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Cloud Connect (MCN — Connectors)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   cloud_connect:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Connectors", "Cloud Connects"]
-    route_pattern: "/manage/connectors/cloud_connect"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Connectors", "Cloud Connects"]
+    menu_path:
+    - Manage
+    - Connectors
+    - Cloud Connects
+    route_pattern: /manage/connectors/cloud_connect
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Connectors
+    - Cloud Connects
     add_action:
-      type: "tab"
-      label: "Add Cloud Connect"
+      type: tab
+      label: Add Cloud Connect
     save_action:
-      label: "Add Cloud Connect"
+      label: Add Cloud Connect
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # DNS LB Health Check (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   dns_lb_health_check:
-    workspace: "dns-management"
+    workspace: dns-management
     namespace_scoped: false
-    menu_path: ["Manage", "DNS Load Balancer Management", "DNS Load Balancer Health Checks"]
-    route_pattern: "/manage/dns_lb_management/dns_lb_health_check"
-    breadcrumbs: ["Home", "DNS Management", "Manage", "DNS Load Balancer Management", "DNS Load Balancer Health Checks"]
+    menu_path:
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancer Health Checks
+    route_pattern: /manage/dns_lb_management/dns_lb_health_check
+    breadcrumbs:
+    - Home
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - DNS Load Balancer Health Checks
     add_action:
-      type: "tab"
-      label: "Add DNS LB Health Check"
+      type: tab
+      label: Add DNS LB Health Check
     save_action:
-      label: "Add DNS LB Health Check"
+      label: Add DNS LB Health Check
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Geo-Location Set (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   geo_location_set:
-    workspace: "dns-management"
+    workspace: dns-management
     namespace_scoped: false
-    menu_path: ["Manage", "DNS Load Balancer Management", "Geo-Location Sets"]
-    route_pattern: "/manage/dns_lb_management/geo_location_set"
-    breadcrumbs: ["Home", "DNS Management", "Manage", "DNS Load Balancer Management", "Geo-Location Sets"]
+    menu_path:
+    - Manage
+    - DNS Load Balancer Management
+    - Geo-Location Sets
+    route_pattern: /manage/dns_lb_management/geo_location_set
+    breadcrumbs:
+    - Home
+    - DNS Management
+    - Manage
+    - DNS Load Balancer Management
+    - Geo-Location Sets
     add_action:
-      type: "tab"
-      label: "Add Geo-Location Set"
+      type: tab
+      label: Add Geo-Location Set
     save_action:
-      label: "Add Geo-Location Set"
+      label: Add Geo-Location Set
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Virtual K8s (Distributed Apps)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   virtual_k8s:
-    workspace: "distributed-apps"
-    menu_path: ["Applications", "Virtual K8s"]
-    route_pattern: "/namespaces/{namespace}/applications/virtual_k8s"
-    breadcrumbs: ["Home", "Distributed Apps", "{namespace}", "Applications", "Virtual K8s"]
+    workspace: distributed-apps
+    menu_path:
+    - Applications
+    - Virtual K8s
+    route_pattern: /namespaces/{namespace}/applications/virtual_k8s
+    breadcrumbs:
+    - Home
+    - Distributed Apps
+    - '{namespace}'
+    - Applications
+    - Virtual K8s
     add_action:
-      type: "tab"
-      label: "Add Virtual K8s"
+      type: tab
+      label: Add Virtual K8s
     save_action:
-      label: "Add Virtual K8s"
+      label: Add Virtual K8s
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # BGP ASN Set (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   bgp_asn_set:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "BGP ASN Sets"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/bgp_asn_sets"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "BGP ASN Sets"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - BGP ASN Sets
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/bgp_asn_sets
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - BGP ASN Sets
     add_action:
-      type: "tab"
-      label: "Add BGP ASN Set"
+      type: tab
+      label: Add BGP ASN Set
     save_action:
-      label: "Add BGP ASN Set"
+      label: Add BGP ASN Set
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Authorization Server (WAAP — Shared Objects)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   authorization_server:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Shared Objects", "Authorization Server"]
-    route_pattern: "/namespaces/{namespace}/manage/shared_objects/authorization_server"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Shared Objects", "Authorization Server"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Shared Objects
+    - Authorization Server
+    route_pattern: /namespaces/{namespace}/manage/shared_objects/authorization_server
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Shared Objects
+    - Authorization Server
     add_action:
-      type: "tab"
-      label: "Add Authorization Server"
+      type: tab
+      label: Add Authorization Server
     save_action:
-      label: "Add Authorization Server"
+      label: Add Authorization Server
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Segment Connector (MCN — Networking)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   segment_connection:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Network Configuration", "Segment Connector"]
-    route_pattern: "/manage/networking/network_configuration/segment_connection"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Network Configuration", "Segment Connector"]
+    menu_path:
+    - Manage
+    - Networking
+    - Network Configuration
+    - Segment Connector
+    route_pattern: /manage/networking/network_configuration/segment_connection
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Network Configuration
+    - Segment Connector
     add_action:
-      type: "tab"
-      label: "Add Segment Connector"
+      type: tab
+      label: Add Segment Connector
     save_action:
-      label: "Add Segment Connector"
+      label: Add Segment Connector
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # NAT Policy (MCN — Networking)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   nat_policy:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Network Configuration", "NAT Policies"]
-    route_pattern: "/manage/networking/network_configuration/nat_policy"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Network Configuration", "NAT Policies"]
+    menu_path:
+    - Manage
+    - Networking
+    - Network Configuration
+    - NAT Policies
+    route_pattern: /manage/networking/network_configuration/nat_policy
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Network Configuration
+    - NAT Policies
     add_action:
-      type: "tab"
-      label: "Add NAT Policy"
+      type: tab
+      label: Add NAT Policy
     save_action:
-      label: "Add NAT Policy"
+      label: Add NAT Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Cloud Elastic IP (MCN — Networking)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   cloud_elastic_ip:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Network Configuration", "Cloud Elastic IPs"]
-    route_pattern: "/manage/networking/network_configuration/cloud_elastic_ip"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Network Configuration", "Cloud Elastic IPs"]
+    menu_path:
+    - Manage
+    - Networking
+    - Network Configuration
+    - Cloud Elastic IPs
+    route_pattern: /manage/networking/network_configuration/cloud_elastic_ip
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Network Configuration
+    - Cloud Elastic IPs
     add_action:
-      type: "tab"
-      label: "Add Cloud Elastic IP"
+      type: tab
+      label: Add Cloud Elastic IP
     save_action:
-      label: "Add Cloud Elastic IP"
+      label: Add Cloud Elastic IP
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # CloudLink (MCN — External Connectivity)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   cloud_link:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "External Connectivity", "CloudLinks"]
-    route_pattern: "/manage/networking/external_connectivity/cloud_links"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "External Connectivity", "CloudLinks"]
+    menu_path:
+    - Manage
+    - Networking
+    - External Connectivity
+    - CloudLinks
+    route_pattern: /manage/networking/external_connectivity/cloud_links
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - External Connectivity
+    - CloudLinks
     add_action:
-      type: "tab"
-      label: "Add CloudLink"
+      type: tab
+      label: Add CloudLink
     save_action:
-      label: "Add CloudLink"
+      label: Add CloudLink
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # External Connector (MCN — External Connectivity)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   external_connector:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "External Connectivity", "External Connectors"]
-    route_pattern: "/manage/networking/external_connectivity/external_connector"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "External Connectivity", "External Connectors"]
+    menu_path:
+    - Manage
+    - Networking
+    - External Connectivity
+    - External Connectors
+    route_pattern: /manage/networking/external_connectivity/external_connector
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - External Connectivity
+    - External Connectors
     add_action:
-      type: "tab"
-      label: "Add External Connector"
+      type: tab
+      label: Add External Connector
     save_action:
-      label: "Add External Connector"
+      label: Add External Connector
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # BGP (MCN — External Connectivity)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   bgp:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "External Connectivity", "BGP Peers & Policies"]
-    route_pattern: "/manage/networking/external_connectivity/bgp"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "External Connectivity", "BGP Peers & Policies"]
+    menu_path:
+    - Manage
+    - Networking
+    - External Connectivity
+    - BGP Peers & Policies
+    route_pattern: /manage/networking/external_connectivity/bgp
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - External Connectivity
+    - BGP Peers & Policies
     add_action:
-      type: "tab"
-      label: "Add BGP"
+      type: tab
+      label: Add BGP
     save_action:
-      label: "Add BGP"
+      label: Add BGP
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # DC Cluster Group (MCN — Site-to-Site Connectivity)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   dc_cluster_group:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Site-to-Site Connectivity", "DC Cluster Groups"]
-    route_pattern: "/manage/networking/site_to_site_connectivity/dc_cluster_groups"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Site-to-Site Connectivity", "DC Cluster Groups"]
+    menu_path:
+    - Manage
+    - Networking
+    - Site-to-Site Connectivity
+    - DC Cluster Groups
+    route_pattern: /manage/networking/site_to_site_connectivity/dc_cluster_groups
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Site-to-Site Connectivity
+    - DC Cluster Groups
     add_action:
-      type: "tab"
-      label: "Add DC Cluster Group"
+      type: tab
+      label: Add DC Cluster Group
     save_action:
-      label: "Add DC Cluster Group"
+      label: Add DC Cluster Group
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Virtual Network (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   virtual_network:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "Virtual Networks"]
-    route_pattern: "/manage/networking/legacy_network_configuration/virtual_networks"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "Virtual Networks"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Virtual Networks
+    route_pattern: /manage/networking/legacy_network_configuration/virtual_networks
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Virtual Networks
     add_action:
-      type: "tab"
-      label: "Add Virtual Network"
+      type: tab
+      label: Add Virtual Network
     save_action:
-      label: "Add Virtual Network"
+      label: Add Virtual Network
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Network Connector (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   network_connector:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "Network Connectors"]
-    route_pattern: "/manage/networking/legacy_network_configuration/network_connectors"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "Network Connectors"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Network Connectors
+    route_pattern: /manage/networking/legacy_network_configuration/network_connectors
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Network Connectors
     add_action:
-      type: "tab"
-      label: "Add Network Connector"
+      type: tab
+      label: Add Network Connector
     save_action:
-      label: "Add Network Connector"
+      label: Add Network Connector
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Network Interface (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   network_interface:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "Network Interfaces"]
-    route_pattern: "/manage/networking/legacy_network_configuration/network_interfaces"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "Network Interfaces"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Network Interfaces
+    route_pattern: /manage/networking/legacy_network_configuration/network_interfaces
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Network Interfaces
     add_action:
-      type: "tab"
-      label: "Add Network Interface"
+      type: tab
+      label: Add Network Interface
     save_action:
-      label: "Add Network Interface"
+      label: Add Network Interface
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Fast ACL (MCN — Firewall)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   fast_acl:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Firewall", "Fast ACLs"]
-    route_pattern: "/manage/firewall/fast_acls"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Firewall", "Fast ACLs"]
+    menu_path:
+    - Manage
+    - Firewall
+    - Fast ACLs
+    route_pattern: /manage/firewall/fast_acls
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Firewall
+    - Fast ACLs
     add_action:
-      type: "tab"
-      label: "Add Fast ACL"
+      type: tab
+      label: Add Fast ACL
     save_action:
-      label: "Add Fast ACL"
+      label: Add Fast ACL
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Policer (MCN — Firewall)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   policer:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Firewall", "Policers"]
-    route_pattern: "/manage/firewall/policers"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Firewall", "Policers"]
+    menu_path:
+    - Manage
+    - Firewall
+    - Policers
+    route_pattern: /manage/firewall/policers
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Firewall
+    - Policers
     add_action:
-      type: "tab"
-      label: "Add Policer"
+      type: tab
+      label: Add Policer
     save_action:
-      label: "Add Policer"
+      label: Add Policer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Secure Mesh Site (MCN — Legacy)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   securemesh_site:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Site Management", "Legacy Configurations", "Secure Mesh Sites"]
-    route_pattern: "/manage/site_management/legacy_configs/securemesh_site"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Site Management", "Legacy Configurations", "Secure Mesh Sites"]
+    menu_path:
+    - Manage
+    - Site Management
+    - Legacy Configurations
+    - Secure Mesh Sites
+    route_pattern: /manage/site_management/legacy_configs/securemesh_site
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Legacy Configurations
+    - Secure Mesh Sites
     add_action:
-      type: "tab"
-      label: "Add Secure Mesh Site"
+      type: tab
+      label: Add Secure Mesh Site
     save_action:
-      label: "Add Secure Mesh Site"
+      label: Add Secure Mesh Site
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Fleet (MCN — Legacy)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   fleet:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Site Management", "Legacy Configurations", "Fleets"]
-    route_pattern: "/manage/site_management/legacy_configs/fleets"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Site Management", "Legacy Configurations", "Fleets"]
+    menu_path:
+    - Manage
+    - Site Management
+    - Legacy Configurations
+    - Fleets
+    route_pattern: /manage/site_management/legacy_configs/fleets
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Legacy Configurations
+    - Fleets
     add_action:
-      type: "tab"
-      label: "Add Fleet"
+      type: tab
+      label: Add Fleet
     save_action:
-      label: "Add Fleet"
+      label: Add Fleet
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Delegated Domain Management (DNS Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   dns_domain:
-    workspace: "dns-management"
+    workspace: dns-management
     namespace_scoped: false
-    menu_path: ["Manage", "Delegated Domain Management"]
-    route_pattern: "/manage/dns_domain"
-    breadcrumbs: ["Home", "DNS Management", "Manage", "Delegated Domain Management"]
+    menu_path:
+    - Manage
+    - Delegated Domain Management
+    route_pattern: /manage/dns_domain
+    breadcrumbs:
+    - Home
+    - DNS Management
+    - Manage
+    - Delegated Domain Management
     add_action:
-      type: "tab"
-      label: "Add Domain"
+      type: tab
+      label: Add Domain
     save_action:
-      label: "Add Domain"
+      label: Add Domain
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Role (Administration — IAM)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   role:
-    workspace: "administration"
+    workspace: administration
     namespace_scoped: false
-    menu_path: ["IAM", "Roles"]
-    route_pattern: "/iam/roles"
-    breadcrumbs: ["Home", "Administration", "IAM", "Roles"]
+    menu_path:
+    - IAM
+    - Roles
+    route_pattern: /iam/roles
+    breadcrumbs:
+    - Home
+    - Administration
+    - IAM
+    - Roles
     add_action:
-      type: "tab"
-      label: "Add Role"
+      type: tab
+      label: Add Role
     save_action:
-      label: "Add Role"
+      label: Add Role
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Service Credential (Administration — IAM)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   service_credential:
-    workspace: "administration"
+    workspace: administration
     namespace_scoped: false
-    menu_path: ["IAM", "Service Credentials"]
-    route_pattern: "/iam/service_credentials"
-    breadcrumbs: ["Home", "Administration", "IAM", "Service Credentials"]
+    menu_path:
+    - IAM
+    - Service Credentials
+    route_pattern: /iam/service_credentials
+    breadcrumbs:
+    - Home
+    - Administration
+    - IAM
+    - Service Credentials
     add_action:
-      type: "tab"
-      label: "Add Service Credential"
+      type: tab
+      label: Add Credential
     save_action:
-      label: "Add Service Credential"
+      label: Add Service Credential
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-16"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Secret Policy Rule (MCN — Secrets)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-16'
+      console_version: '2025.06'
   mcn_secret_policy_rule:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Secrets", "Secret Policy Rules"]
-    route_pattern: "/manage/secrets/secret_policy_rules"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Secrets", "Secret Policy Rules"]
+    menu_path:
+    - Manage
+    - Secrets
+    - Secret Policy Rules
+    route_pattern: /manage/secrets/secret_policy_rules
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Secrets
+    - Secret Policy Rules
     add_action:
-      type: "tab"
-      label: "Add Secret Policy Rule"
+      type: tab
+      label: Add Secret Policy Rule
     save_action:
-      label: "Add Secret Policy Rule"
+      label: Add Secret Policy Rule
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Log Receiver (MCN — Log Management)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   log_receiver:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Log Management", "Log Receivers"]
-    route_pattern: "/manage/log_management/log_receivers"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Log Management", "Log Receivers"]
+    menu_path:
+    - Manage
+    - Log Management
+    - Log Receivers
+    route_pattern: /manage/log_management/log_receivers
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Log Management
+    - Log Receivers
     add_action:
-      type: "tab"
-      label: "Add Log Receiver"
+      type: tab
+      label: Add Log Receiver
     save_action:
-      label: "Add Log Receiver"
+      label: Add Log Receiver
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Subnet (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   subnet:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "Subnets"]
-    route_pattern: "/manage/networking/legacy_network_configuration/subnets"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "Subnets"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Subnets
+    route_pattern: /manage/networking/legacy_network_configuration/subnets
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Subnets
     add_action:
-      type: "tab"
-      label: "Add Subnet"
+      type: tab
+      label: Add Subnet
     save_action:
-      label: "Add Subnet"
+      label: Add Subnet
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Tunnel (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   tunnel:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "Tunnels"]
-    route_pattern: "/manage/networking/legacy_network_configuration/tunnels"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "Tunnels"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Tunnels
+    route_pattern: /manage/networking/legacy_network_configuration/tunnels
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - Tunnels
     add_action:
-      type: "tab"
-      label: "Add Tunnel"
+      type: tab
+      label: Add Tunnel
     save_action:
-      label: "Add Tunnel"
+      label: Add Tunnel
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Address Allocator (MCN — Legacy Network Configuration)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   address_allocator:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Networking", "Legacy Network Configuration", "IP Address Allocators"]
-    route_pattern: "/manage/networking/legacy_network_configuration/address_allocators"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Networking", "Legacy Network Configuration", "IP Address Allocators"]
+    menu_path:
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - IP Address Allocators
+    route_pattern: /manage/networking/legacy_network_configuration/address_allocators
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Networking
+    - Legacy Network Configuration
+    - IP Address Allocators
     add_action:
-      type: "tab"
-      label: "Add IP Address Allocator"
+      type: tab
+      label: Add IP Address Allocator
     save_action:
-      label: "Add IP Address Allocator"
+      label: Add IP Address Allocator
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Protocol Policer (MCN — Firewall)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   protocol_policer:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Firewall", "Protocol Policers"]
-    route_pattern: "/manage/firewall/protocol_policers"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Firewall", "Protocol Policers"]
+    menu_path:
+    - Manage
+    - Firewall
+    - Protocol Policers
+    route_pattern: /manage/firewall/protocol_policers
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Firewall
+    - Protocol Policers
     add_action:
-      type: "tab"
-      label: "Add Protocol Policer"
+      type: tab
+      label: Add Protocol Policer
     save_action:
-      label: "Add Protocol Policer"
+      label: Add Protocol Policer
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # HTTP Connect / DRP Proxy (MCAC — Load Balancers)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   proxy:
-    workspace: "multi-cloud-app-connect"
-    menu_path: ["Manage", "Load Balancers", "HTTP Connect & DRPs"]
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/proxy"
-    breadcrumbs: ["Home", "Multi-Cloud App Connect", "{namespace}", "Manage", "Load Balancers", "HTTP Connect & DRPs"]
+    workspace: multi-cloud-app-connect
+    menu_path:
+    - Manage
+    - Load Balancers
+    - HTTP Connect & DRPs
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/proxy
+    breadcrumbs:
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - HTTP Connect & DRPs
     add_action:
-      type: "tab"
-      label: "Add HTTP Connect / DRP"
+      type: tab
+      label: Add HTTP Connect / DRP
     save_action:
-      label: "Add HTTP Connect / DRP"
+      label: Add HTTP Connect / DRP
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Certificate Revocation List (MCAC — Load Balancers)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   crl:
-    workspace: "multi-cloud-app-connect"
-    menu_path: ["Manage", "Load Balancers", "Certificate Revocation List"]
-    route_pattern: "/namespaces/{namespace}/manage/load_balancers/crl"
-    breadcrumbs: ["Home", "Multi-Cloud App Connect", "{namespace}", "Manage", "Load Balancers", "Certificate Revocation List"]
+    workspace: multi-cloud-app-connect
+    menu_path:
+    - Manage
+    - Load Balancers
+    - Certificate Revocation List
+    route_pattern: /namespaces/{namespace}/manage/load_balancers/crl
+    breadcrumbs:
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Load Balancers
+    - Certificate Revocation List
     add_action:
-      type: "tab"
-      label: "Add CRL"
+      type: tab
+      label: Add CRL
     save_action:
-      label: "Add CRL"
+      label: Add CRL
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Cluster (MCAC — Virtual Host)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   cluster:
-    workspace: "multi-cloud-app-connect"
-    menu_path: ["Manage", "Virtual Host", "Clusters"]
-    route_pattern: "/namespaces/{namespace}/manage/virtual_host/clusters"
-    breadcrumbs: ["Home", "Multi-Cloud App Connect", "{namespace}", "Manage", "Virtual Host", "Clusters"]
+    workspace: multi-cloud-app-connect
+    menu_path:
+    - Manage
+    - Virtual Host
+    - Clusters
+    route_pattern: /namespaces/{namespace}/manage/virtual_host/clusters
+    breadcrumbs:
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Virtual Host
+    - Clusters
     add_action:
-      type: "tab"
-      label: "Add Cluster"
+      type: tab
+      label: Add Cluster
     save_action:
-      label: "Add Cluster"
+      label: Add Cluster
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Endpoint (MCAC — Virtual Host)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   endpoint:
-    workspace: "multi-cloud-app-connect"
-    menu_path: ["Manage", "Virtual Host", "Endpoints"]
-    route_pattern: "/namespaces/{namespace}/manage/virtual_host/endpoints"
-    breadcrumbs: ["Home", "Multi-Cloud App Connect", "{namespace}", "Manage", "Virtual Host", "Endpoints"]
+    workspace: multi-cloud-app-connect
+    menu_path:
+    - Manage
+    - Virtual Host
+    - Endpoints
+    route_pattern: /namespaces/{namespace}/manage/virtual_host/endpoints
+    breadcrumbs:
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Virtual Host
+    - Endpoints
     add_action:
-      type: "tab"
-      label: "Add Endpoint"
+      type: tab
+      label: Add Endpoint
     save_action:
-      label: "Add Endpoint"
+      label: Add Endpoint
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Advertise Policy (MCAC — Virtual Host)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   advertise_policy:
-    workspace: "multi-cloud-app-connect"
-    menu_path: ["Manage", "Virtual Host", "Advertise Policies"]
-    route_pattern: "/namespaces/{namespace}/manage/virtual_host/advertise_policies"
-    breadcrumbs: ["Home", "Multi-Cloud App Connect", "{namespace}", "Manage", "Virtual Host", "Advertise Policies"]
+    workspace: multi-cloud-app-connect
+    menu_path:
+    - Manage
+    - Virtual Host
+    - Advertise Policies
+    route_pattern: /namespaces/{namespace}/manage/virtual_host/advertise_policies
+    breadcrumbs:
+    - Home
+    - Multi-Cloud App Connect
+    - '{namespace}'
+    - Manage
+    - Virtual Host
+    - Advertise Policies
     add_action:
-      type: "tab"
-      label: "Add Advertise Policy"
+      type: tab
+      label: Add Advertise Policy
     save_action:
-      label: "Add Advertise Policy"
+      label: Add Advertise Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # App Type (Shared Config — AI & ML)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   app_type:
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     namespace_scoped: false
-    menu_path: ["Security", "AI & ML", "App Types"]
-    route_pattern: "/security/ai_ml/app_types"
-    breadcrumbs: ["Home", "Shared Configuration", "Security", "AI & ML", "App Types"]
+    menu_path:
+    - Security
+    - AI & ML
+    - App Types
+    route_pattern: /security/ai_ml/app_types
+    breadcrumbs:
+    - Home
+    - Shared Configuration
+    - Security
+    - AI & ML
+    - App Types
     add_action:
-      type: "tab"
-      label: "Add App Type"
+      type: tab
+      label: Add App Type
     save_action:
-      label: "Add App Type"
+      label: Add App Type
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Discovery / Service Discoveries (Shared Config — Manage)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   discovery:
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     namespace_scoped: false
-    menu_path: ["Manage", "Service Discoveries"]
-    route_pattern: "/manage/discovery"
-    breadcrumbs: ["Home", "Shared Configuration", "Manage", "Service Discoveries"]
+    menu_path:
+    - Manage
+    - Service Discoveries
+    route_pattern: /manage/discovery
+    breadcrumbs:
+    - Home
+    - Shared Configuration
+    - Manage
+    - Service Discoveries
     add_action:
-      type: "tab"
-      label: "Add Service Discovery"
+      type: tab
+      label: Add Service Discovery
     save_action:
-      label: "Add Service Discovery"
+      label: Add Service Discovery
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Workload Flavor (Shared Config — Manage)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   workload_flavor:
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     namespace_scoped: false
-    menu_path: ["Manage", "Workload Flavors"]
-    route_pattern: "/manage/workload_flavors"
-    breadcrumbs: ["Home", "Shared Configuration", "Manage", "Workload Flavors"]
+    menu_path:
+    - Manage
+    - Workload Flavors
+    route_pattern: /manage/workload_flavors
+    breadcrumbs:
+    - Home
+    - Shared Configuration
+    - Manage
+    - Workload Flavors
     add_action:
-      type: "tab"
-      label: "Add Workload Flavor"
+      type: tab
+      label: Add Workload Flavor
     save_action:
-      label: "Add Workload Flavor"
+      label: Add Workload Flavor
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Advertise Policy (Shared Config — Manage)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   shared_advertise_policy:
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     namespace_scoped: false
-    menu_path: ["Manage", "Advertise Policies"]
-    route_pattern: "/manage/advertise_policies"
-    breadcrumbs: ["Home", "Shared Configuration", "Manage", "Advertise Policies"]
+    menu_path:
+    - Manage
+    - Advertise Policies
+    route_pattern: /manage/advertise_policies
+    breadcrumbs:
+    - Home
+    - Shared Configuration
+    - Manage
+    - Advertise Policies
     add_action:
-      type: "tab"
-      label: "Add Advertise Policy"
+      type: tab
+      label: Add Advertise Policy
     save_action:
-      label: "Add Advertise Policy"
+      label: Add Advertise Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Network Policy Rule (Distributed Apps — Manage)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   network_policy_rule:
-    workspace: "distributed-apps"
-    menu_path: ["Manage", "vK8s Network Policies", "Network Policy Rules"]
-    route_pattern: "/namespaces/{namespace}/manage/network_policies/network_policy_rules"
-    breadcrumbs: ["Home", "Distributed Apps", "{namespace}", "Manage", "vK8s Network Policies", "Network Policy Rules"]
+    workspace: distributed-apps
+    menu_path:
+    - Manage
+    - vK8s Network Policies
+    - Network Policy Rules
+    route_pattern: /namespaces/{namespace}/manage/network_policies/network_policy_rules
+    breadcrumbs:
+    - Home
+    - Distributed Apps
+    - '{namespace}'
+    - Manage
+    - vK8s Network Policies
+    - Network Policy Rules
     add_action:
-      type: "tab"
-      label: "Add Network Policy Rule"
+      type: tab
+      label: Add Network Policy Rule
     save_action:
-      label: "Add Network Policy Rule"
+      label: Add Network Policy Rule
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # USB Policy (MCN — Site Management → Other Configurations)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   usb_policy:
-    workspace: "multi-cloud-network-connect"
+    workspace: multi-cloud-network-connect
     namespace_scoped: false
-    menu_path: ["Manage", "Site Management", "Other Configurations", "USB Policies"]
-    route_pattern: "/manage/site_management/other_configs/usb_policies"
-    breadcrumbs: ["Home", "Multi-Cloud Network Connect", "Manage", "Site Management", "Other Configurations", "USB Policies"]
+    menu_path:
+    - Manage
+    - Site Management
+    - Other Configurations
+    - USB Policies
+    route_pattern: /manage/site_management/other_configs/usb_policies
+    breadcrumbs:
+    - Home
+    - Multi-Cloud Network Connect
+    - Manage
+    - Site Management
+    - Other Configurations
+    - USB Policies
     add_action:
-      type: "tab"
-      label: "Add USB Policy"
+      type: tab
+      label: Add USB Policy
     save_action:
-      label: "Add USB Policy"
+      label: Add USB Policy
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Code Base Integration (WAAP — API Security)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   code_base_integration:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "API Security", "Code Base Integration"]
-    route_pattern: "/namespaces/{namespace}/manage/api_security/code_base_integration"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "API Security", "Code Base Integration"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - API Security
+    - Code Base Integration
+    route_pattern: /namespaces/{namespace}/manage/api_security/code_base_integration
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - Code Base Integration
     add_action:
-      type: "tab"
-      label: "Add Code Base Integration"
+      type: tab
+      label: Add Code Base Integration
     save_action:
-      label: "Add Code Base Integration"
+      label: Add Code Base Integration
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # API Groups (WAAP — API Security)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   app_api_group:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "API Security", "API Groups"]
-    route_pattern: "/namespaces/{namespace}/manage/api_security/api_groups"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "API Security", "API Groups"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - API Security
+    - API Groups
+    route_pattern: /namespaces/{namespace}/manage/api_security/api_groups
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - API Security
+    - API Groups
     add_action:
-      type: "tab"
-      label: "Add API Group"
+      type: tab
+      label: Add API Group
     save_action:
-      label: "Add API Group"
+      label: Add API Group
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # OpenAPI Files (WAAP — Files)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   openapi_file:
-    workspace: "web-app-and-api-protection"
-    menu_path: ["Manage", "Files", "OpenAPI Files"]
-    route_pattern: "/namespaces/{namespace}/manage/files/openapi"
-    breadcrumbs: ["Home", "Web App & API Protection", "{namespace}", "Manage", "Files", "OpenAPI Files"]
+    workspace: web-app-and-api-protection
+    menu_path:
+    - Manage
+    - Files
+    - OpenAPI Files
+    route_pattern: /namespaces/{namespace}/manage/files/openapi
+    breadcrumbs:
+    - Home
+    - Web App & API Protection
+    - '{namespace}'
+    - Manage
+    - Files
+    - OpenAPI Files
     add_action:
-      type: "tab"
-      label: "Add OpenAPI File"
+      type: tab
+      label: Add OpenAPI File
     save_action:
-      label: "Add OpenAPI File"
+      label: Add OpenAPI File
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
-
-  # =========================================================================
-  # Ticket Tracking System (Shared Config — Manage)
-  # =========================================================================
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
   ticket_tracking_system:
-    workspace: "shared-configuration"
+    workspace: shared-configuration
     namespace_scoped: false
-    menu_path: ["Manage", "Ticket Tracking System"]
-    route_pattern: "/manage/ticket_tracking_system"
-    breadcrumbs: ["Home", "Shared Configuration", "Manage", "Ticket Tracking System"]
+    menu_path:
+    - Manage
+    - Ticket Tracking System
+    route_pattern: /manage/ticket_tracking_system
+    breadcrumbs:
+    - Home
+    - Shared Configuration
+    - Manage
+    - Ticket Tracking System
     add_action:
-      type: "tab"
-      label: "Add Ticket Tracking System"
+      type: tab
+      label: Add Ticket Tracking System
     save_action:
-      label: "Add Ticket Tracking System"
+      label: Add Ticket Tracking System
     cancel_action:
-      label: "Cancel All"
-    form_tabs: ["Form", "Documentation", "JSON"]
+      label: Cancel All
+    form_tabs:
+    - Form
+    - Documentation
+    - JSON
     form_sections:
-      - id: "metadata"
-        label: "Metadata"
-        api_fields: ["metadata.name", "metadata.labels", "metadata.description"]
+    - id: metadata
+      label: Metadata
+      api_fields:
+      - metadata.name
+      - metadata.labels
+      - metadata.description
     metadata:
-      confidence: "validated"
-      discovered_at: "2026-06-17"
-      console_version: "2025.06"
+      confidence: validated
+      discovered_at: '2026-06-17'
+      console_version: '2025.06'
