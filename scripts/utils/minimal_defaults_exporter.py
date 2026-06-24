@@ -2,7 +2,7 @@
 
 """Emit ``minimal-export-defaults.json`` for downstream minimum-settings export.
 
-Downstream tools (xcsh, vscode-f5xc-tools) export F5XC resources with only the
+Downstream tools (xcsh, vscode-xcsh) export F5XC resources with only the
 settings that differ from server-applied defaults. Rather than have each tool
 re-walk the enriched OpenAPI, this exporter computes the per-kind defaults once
 here — the single source of truth — and publishes a flat artifact:

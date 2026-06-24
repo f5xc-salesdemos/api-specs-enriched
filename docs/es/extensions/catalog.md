@@ -4,7 +4,7 @@ description: >-
   Fuente de verdad para cada extensión x-* en las especificaciones OpenAPI
   enriquecidas
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
@@ -280,7 +280,7 @@ siempre que exista el encabezado `### x-name` y el indicador
 
 - **Applied at:** schema
 - **Purpose:** Navegación de la UI de consola, enrutamiento y estructura de formularios para este recurso.
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py

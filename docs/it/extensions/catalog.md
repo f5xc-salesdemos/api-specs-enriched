@@ -4,7 +4,7 @@ description: >-
   Fonte ufficiale di riferimento per ogni estensione x-* nelle specifiche
   OpenAPI arricchite
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
@@ -280,7 +280,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 
 - **Applied at:** schema
 - **Purpose:** Navigazione nell'interfaccia utente della console, routing e struttura del form per questa risorsa.
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py

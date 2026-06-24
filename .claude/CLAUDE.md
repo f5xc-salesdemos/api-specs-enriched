@@ -24,7 +24,7 @@ Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre
 
 ## Upstream/Downstream
 - **Upstream**: f5xc-salesdemos/api-specs (pre-validated OpenAPI specs)
-- **Downstream**: f5xc-salesdemos/xcsh, f5xc-salesdemos/vscode-f5xc-tools
+- **Downstream**: f5xc-salesdemos/xcsh, f5xc-salesdemos/vscode-xcsh
 
 ## Environment Variables
 ```

@@ -4,7 +4,7 @@ description: >-
   แหล่งข้อมูลอ้างอิงหลักสำหรับ x-* extension ทุกรายการในข้อกำหนด OpenAPI
   ที่เพิ่มประสิทธิภาพ
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
@@ -280,7 +280,7 @@ i18n:
 
 - **Applied at:** schema
 - **Purpose:** การนำทาง Console UI, routing และโครงสร้างฟอร์มสำหรับ resource นี้
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py

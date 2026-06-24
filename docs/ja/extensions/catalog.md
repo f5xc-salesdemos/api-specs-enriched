@@ -2,7 +2,7 @@
 title: 拡充拡張機能カタログ
 description: 拡充 OpenAPI 仕様に含まれるすべての x-* 拡張機能の信頼できる情報源
 i18n:
-  sourceHash: 70e0912cf4b0
+  sourceHash: 395df1e3c471
   translator: machine
 ---
 
@@ -270,7 +270,7 @@ i18n:
 
 - **Applied at:** schema
 - **Purpose:** このリソースのコンソール UI ナビゲーション、ルーティング、およびフォーム構造。
-- **Consumers:** console-catalog, xcsh, vscode-f5xc-tools, browser-automation
+- **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
 - **Injected by:** scripts/utils/console_ui_enricher.py
