@@ -129,6 +129,7 @@ from scripts.utils.extension_constants import (
 from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
+from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
@@ -381,8 +382,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     return spec, {
         "field_count": field_count,
         "schemas_fixed": schema_stats.get("fixes_applied", 0),
-        "descriptions_generated": desc_stats.get("operations_generated", 0)
-        + desc_stats.get("schemas_generated", 0),
+        "descriptions_generated": desc_stats.get("operations_generated", 0) + desc_stats.get("schemas_generated", 0),
         "consistency_issues": consistency_stats.get("total_issues", 0),
         "domains_normalized": domain_normalize_count,
         "field_descriptions_added": field_desc_stats.get("descriptions_added", 0),
@@ -663,11 +663,7 @@ def _remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]
             del path_item[method]
             removed_count += 1
 
-        remaining = [
-            m
-            for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]
-            if m in path_item
-        ]
+        remaining = [m for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"] if m in path_item]
         if not remaining:
             paths_to_remove.append(path)
 
@@ -853,8 +849,7 @@ def validate_upstream_spec(spec: dict[str, Any]) -> list[str]:
 
     if ops_without_tags:
         warnings.append(
-            f"Upstream regression: {len(ops_without_tags)} operations missing tags "
-            f"(first: {ops_without_tags[0]})"
+            f"Upstream regression: {len(ops_without_tags)} operations missing tags (first: {ops_without_tags[0]})"
         )
 
     def _has_script_tags(obj: Any) -> bool:
@@ -1121,17 +1116,14 @@ def merge_specs_by_domain(
             domain_specs["data_intelligence"].append((filename, spec))
 
         # Also add specs to threat_campaign domain if they contain threat_campaign/threat_mesh paths
-        has_threat_campaign_paths = any(
-            "/api/waf/threat_campaign" in p or "/threat_mesh" in p for p in paths
-        )
+        has_threat_campaign_paths = any("/api/waf/threat_campaign" in p or "/threat_mesh" in p for p in paths)
         if has_threat_campaign_paths and domain != "threat_campaign":
             domain_specs["threat_campaign"].append((filename, spec))
 
         # Also add specs to system domain if they contain credential management paths
         # Pattern-based detection for credential/token management under /api/web/
         has_credential_paths = any(
-            "/api/web/" in p
-            and ("/api_credentials" in p or "/service_credentials" in p or "/scim_token" in p)
+            "/api/web/" in p and ("/api_credentials" in p or "/service_credentials" in p or "/scim_token" in p)
             for p in paths
         )
         if has_credential_paths and domain != "authentication":
@@ -1239,9 +1231,7 @@ def merge_specs_by_domain(
                     continue
 
                 # Skip threat_campaign/threat_mesh paths if not merging into threat_campaign domain
-                if not is_threat_campaign_domain and (
-                    "/api/waf/threat_campaign" in path or "/threat_mesh" in path
-                ):
+                if not is_threat_campaign_domain and ("/api/waf/threat_campaign" in path or "/threat_mesh" in path):
                     continue
 
                 # Skip data-intelligence paths if not merging into data_intelligence domain
@@ -1255,9 +1245,7 @@ def merge_specs_by_domain(
                 # Skip credential management paths if not merging into authentication domain
                 # Pattern-based: /api/web/ + (api_credentials|service_credentials|scim_token)
                 is_credential_path = "/api/web/" in path and (
-                    "/api_credentials" in path
-                    or "/service_credentials" in path
-                    or "/scim_token" in path
+                    "/api_credentials" in path or "/service_credentials" in path or "/scim_token" in path
                 )
                 if not is_auth_domain and is_credential_path:
                     continue
@@ -1276,9 +1264,7 @@ def merge_specs_by_domain(
                         if method not in merged_spec["paths"][path]:
                             merged_spec["paths"][path][method] = operation
                             stats["paths"] += 1
-                        elif isinstance(operation, dict) and isinstance(
-                            merged_spec["paths"][path].get(method), dict
-                        ):
+                        elif isinstance(operation, dict) and isinstance(merged_spec["paths"][path].get(method), dict):
                             existing = merged_spec["paths"][path][method]
                             for k, v in operation.items():
                                 if k not in existing:
@@ -1826,6 +1812,23 @@ def run_pipeline(
                 )
             except Exception as e:
                 console.print(f"[yellow]Warning: Failed to export minimal defaults: {e}[/yellow]")
+
+            # Export namespace_profiles.json — the authoritative resource->namespace
+            # scope map consumed by downstream tree filtering (vscode-xcsh, xcsh).
+            # Rides alongside the domain specs (like validation.json) and is read by
+            # the consumer via an explicit path, not parsed as a domain spec.
+            try:
+                np_profiles_exporter = NamespaceProfilesExporter()
+                np_profiles_artifact = np_profiles_exporter.export(
+                    output_dir / "namespace_profiles.json",
+                    version=version,
+                )
+                console.print(
+                    f"[green]Exported namespace_profiles.json: "
+                    f"{len(np_profiles_artifact['resources'])} resource overrides + default[/green]",
+                )
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to export namespace profiles: {e}[/yellow]")
 
             console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
 
