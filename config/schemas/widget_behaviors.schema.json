@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Widget Behavior Catalog",
+  "description": "Declarative per-widget interaction protocols + global operational notes for xcsh console automation.",
+  "type": "object",
+  "required": ["version", "widgets", "global"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "widgets": {
+      "type": "object",
+      "description": "Per widget_type interaction protocols. Keys must match the widget_type values in console_field_metadata.yaml.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["summary"],
+        "properties": {
+          "summary": { "type": "string" },
+          "extends": { "type": "string" },
+          "skip": { "type": "boolean" },
+          "sub_form": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["action"],
+              "properties": {
+                "action": { "type": "string", "enum": ["click", "fill", "select", "selectLabel", "check", "scroll"] },
+                "selector": { "type": "string" },
+                "value": { "type": "string" },
+                "when": { "type": "string" },
+                "note": { "type": "string" },
+                "then": { "type": "array" }
+              }
+            }
+          },
+          "timing": {
+            "type": "object",
+            "properties": {
+              "sub_form_render_ms": { "type": "integer", "minimum": 0 },
+              "option_poll_ms": { "type": "integer", "minimum": 0 },
+              "click_timeout_ms": { "type": "integer", "minimum": 0 },
+              "after_open_ms": { "type": "integer", "minimum": 0 },
+              "portal_render_ms": { "type": "integer", "minimum": 0 }
+            }
+          },
+          "quirks": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "global": {
+      "type": "object",
+      "description": "Cross-cutting operational notes (environment, click determinism, navigation, routes, etc.).",
+      "additionalProperties": {
+        "oneOf": [{ "type": "array", "items": { "type": "string" } }, { "type": "string" }]
+      }
+    }
+  }
+}
