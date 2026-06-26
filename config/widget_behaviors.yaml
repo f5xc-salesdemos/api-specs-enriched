@@ -1,154 +1,194 @@
+---
 # Widget Behavior Catalog — the single, shipped source of truth for HOW to operate
-# every F5 XC console widget, with timing and quirks. Consumed by BOTH:
-#   1. the deterministic workflow generator (console/scripts/generate-workflows.ts),
-#      which interprets each widget's `steps` template with per-field metadata, and
-#   2. the xcsh NL assistant, surfaced via xcsh://console/widgets and inline in
-#      xcsh://console/<resource>.
+# every F5 XC console widget, with timing and quirks.
+# See api-specs-enriched/config/schemas/widget_behaviors.schema.json for validation.
 #
-# This replaces knowledge that used to live as procedural code + tribal memory, so
-# anyone who downloads the xcsh CLI gets 100% deterministic NL-driven browsing.
-#
-# `steps` use the PageActions verbs (click | fill | select | selectLabel | check)
-# and these template tokens, resolved per-field by the generator:
-#   {param}                  the field's workflow parameter name
-#   {label}                  the field's console label
-#   {configure_action|X}     a metadata value, else default X
-#   {secret ? a : b}         conditional on a boolean metadata flag
-#   when: <flag>             emit this step only when the metadata flag is true
-#   listbox[name='{label}']|listbox   scoped form (left) when resource_type is set, else bare
-version: "1.0.0"
-
+version: 1.0.0
 widgets:
   textbox:
-    summary: "Single-line text input."
+    summary: Single-line text input.
     steps:
-      - { action: fill, selector: "textbox[name='{label}']", value: "{param}" }
+      - action: fill
+        selector: textbox[name='{label}']
+        value: '{param}'
     quirks:
-      - "Honor validation.pattern (DNS-1035 names: lowercase alnum + hyphen, start letter) and max_length."
-      - "Commit via the native value-setter + input/change/blur events; the agent uses real typing only for grid/secret cases below."
-
+      - 'Honor validation.pattern (DNS-1035 names: lowercase alnum + hyphen, start letter) and max_length.'
+      - Commit via the native value-setter + input/change/blur events; the agent uses real typing only for grid/secret cases
+        below.
   textarea:
-    summary: "Multi-line text input."
+    summary: Multi-line text input.
     steps:
-      - { action: fill, selector: "textbox[name='{label}']", value: "{param}" }
+      - action: fill
+        selector: textbox[name='{label}']
+        value: '{param}'
     quirks:
-      - "A <textarea> inside a vsui secret/Blindfold sub-form does NOT accept the synthetic value-setter — it needs REAL CDP keystrokes (Tab to blur, never Enter). The fill action detects tag===TEXTAREA and real-types automatically."
-
+      - A <textarea> inside a vsui secret/Blindfold sub-form does NOT accept the synthetic value-setter — it needs REAL CDP
+        keystrokes (Tab to blur, never Enter). The fill action detects tag===TEXTAREA and real-types automatically.
   spinbutton:
-    summary: "Numeric stepper input."
+    summary: Numeric stepper input.
     steps:
-      - { action: fill, selector: "spinbutton[name='{label}']", value: "{param}" }
-
+      - action: fill
+        selector: spinbutton[name='{label}']
+        value: '{param}'
   checkbox:
-    summary: "Boolean toggle."
+    summary: Boolean toggle.
     steps:
-      - { action: check, selector: "checkbox[name='{label}']", value: "{param}" }
-
+      - action: check
+        selector: checkbox[name='{label}']
+        value: '{param}'
   listbox:
-    summary: "vsui dropdown (enum OR a reference to another resource)."
+    summary: vsui dropdown (enum OR a reference to another resource).
     steps:
-      - { action: select, selector: "listbox[name='{label}']|listbox", value: "{param}" }
-    timing: { option_poll_ms: 6000, click_timeout_ms: 12000, after_open_ms: 1200 }
+      - action: select
+        selector: listbox[name='{label}']|listbox
+        value: '{param}'
+    timing:
+      option_poll_ms: 6000
+      click_timeout_ms: 12000
+      after_open_ms: 1200
     quirks:
-      - "Click to OPEN — do NOT type into it; typing filter text corrupts the vsui display."
-      - "Scope by [name='{label}'] when the listbox references a resource (resource_type set); a BARE `listbox` resolves the FIRST listbox on the form."
-      - "Option selection is best-effort: if the option never renders (many selects have a sensible default), press Escape and continue."
-      - "Do NOT click away / press Escape AFTER a successful selection — that resets the vsui field. The option click already closes the dropdown."
-      - "Valid options come from metadata.options when present (e.g. Site Type: RE | CE)."
-
+      - Click to OPEN — do NOT type into it; typing filter text corrupts the vsui display.
+      - Scope by [name='{label}'] when the listbox references a resource (resource_type set); a BARE `listbox` resolves the
+        FIRST listbox on the form.
+      - 'Option selection is best-effort: if the option never renders (many selects have a sensible default), press Escape
+        and continue.'
+      - Do NOT click away / press Escape AFTER a successful selection — that resets the vsui field. The option click already
+        closes the dropdown.
+      - 'Valid options come from metadata.options when present (e.g. Site Type: RE | CE).'
   configurable:
-    summary: "A field hidden behind a 'Configure' control that expands an inline sub-form."
+    summary: A field hidden behind a 'Configure' control that expands an inline sub-form.
     steps:
-      - { action: click, selector: "text('{configure_action|Configure}')",
-          note: "'Configure' is a LINK, not a button — button:text('Configure') is a SILENT no-op." }
-      - { action: fill, selector: "{secret ? textarea : textbox}", value: "{param}",
-          note: "Secret fields fill the value TEXTAREA via real typing; non-secret fill the first textbox." }
-      - { action: click, selector: "button:text('Apply')", when: secret,
-          note: "Only secret fields need Apply to commit the sub-form." }
-    timing: { sub_form_render_ms: 1500 }
-
+      - action: click
+        selector: text('{configure_action|Configure}')
+        note: '''Configure'' is a LINK, not a button — button:text(''Configure'') is a SILENT no-op.'
+      - action: fill
+        selector: '{secret ? textarea : textbox}'
+        value: '{param}'
+        note: Secret fields fill the value TEXTAREA via real typing; non-secret fill the first textbox.
+      - action: click
+        selector: button:text('Apply')
+        when: secret
+        note: Only secret fields need Apply to commit the sub-form.
+    timing:
+      sub_form_render_ms: 1500
   secret:
-    summary: "A Blindfold secret/password (a `configurable` whose value is a secret)."
+    summary: A Blindfold secret/password (a `configurable` whose value is a secret).
     extends: configurable
-    sub_form: >-
-      Configure (LINK) opens the Blindfold form: Secret Type = 'Blindfolded Secret',
-      Action = 'Blindfold New Secret', Policy Type = 'Built-in' all DEFAULT — leave
-      them. Fill the required 'Secret to Blindfold' TEXTAREA with the value (real
-      typing — the native setter leaves it empty), then click Apply.
-    timing: { sub_form_render_ms: 1500 }
+    sub_form: 'Configure (LINK) opens the Blindfold form: Secret Type = ''Blindfolded Secret'', Action = ''Blindfold New Secret'',
+      Policy Type = ''Built-in'' all DEFAULT — leave them. Fill the required ''Secret to Blindfold'' TEXTAREA with the value
+      (real typing — the native setter leaves it empty), then click Apply.'
+    timing:
+      sub_form_render_ms: 1500
     quirks:
-      - "PREREQUISITE: disable iCloud Passwords / any password-manager extension first — it injects a chrome-extension:// autofill overlay on the password field that breaks the CDP debugger ('different extension' error → bridge hang)."
-      - "Credential expiry dates have a 90-DAY maximum from today (format MM/DD/YYYY); Credential Email is a DNS-1035 name (the form appends the domain)."
-
+      - 'PREREQUISITE: disable iCloud Passwords / any password-manager extension first — it injects a chrome-extension://
+        autofill overlay on the password field that breaks the CDP debugger (''different extension'' error → bridge hang).'
+      - Credential expiry dates have a 90-DAY maximum from today (format MM/DD/YYYY); Credential Email is a DNS-1035 name
+        (the form appends the domain).
   table:
-    summary: "An editable ngx-datatable that ships with one empty inline row."
+    summary: An editable ngx-datatable that ships with one empty inline row.
     steps:
-      - { action: fill, selector: "ngx-datatable input.form-control", value: "{param}",
-          note: "No 'Add Item' — fill the empty row directly. Selector is size-agnostic (matches -sm and -md)." }
+      - action: fill
+        selector: ngx-datatable input.form-control
+        value: '{param}'
+        note: No 'Add Item' — fill the empty row directly. Selector is size-agnostic (matches -sm and -md).
     quirks:
-      - "Inline grid cells need REAL CDP keystrokes (each keydown runs in Angular's NgZone); a synthetic value-setter leaves the cell ng-untouched and the form reports it empty at save. Enter commits the row."
-
+      - Inline grid cells need REAL CDP keystrokes (each keydown runs in Angular's NgZone); a synthetic value-setter leaves
+        the cell ng-untouched and the form reports it empty at save. Enter commits the row.
   resource-selector:
-    summary: "Pick an existing object via an Add-Item modal."
+    summary: Pick an existing object via an Add-Item modal.
     steps:
       - action: click
-        selector: "text('{add_action|Add Item}')"
+        selector: text('{add_action|Add Item}')
         then:
-          - { action: select, selector: "listbox", value: "{param}", note: "scoped inside the modal" }
-          - { action: click, selector: "button:text('Apply')" }
-
+          - action: select
+            selector: listbox
+            value: '{param}'
+            note: scoped inside the modal
+          - action: click
+            selector: button:text('Apply')
   nested-resource-list:
-    summary: "Add one or more sub-objects, each via an Add-Item sub-form."
+    summary: Add one or more sub-objects, each via an Add-Item sub-form.
     steps:
       - action: click
-        selector: "text('{add_action|Add Item}')"
+        selector: text('{add_action|Add Item}')
         then:
-          # The generator picks ONE of these by metadata, then Apply (unless no_apply):
-          #  - sub_select_label set: select from listbox[name='{sub_select_label}'] (scoped — drawer has many listboxes)
-          #  - sub_field_label set:  fill textbox[name='{sub_field_label}']
-          #  - item_types present:   fill the first field of item_types[0]
-          - { action: fill, selector: "textbox", value: "{param}", note: "shape chosen from sub_field_label / sub_select_label / item_types" }
-          - { action: click, selector: "button:text('Apply')", when: "not no_apply" }
-
+          - action: fill
+            selector: textbox
+            value: '{param}'
+            note: shape chosen from sub_field_label / sub_select_label / item_types
+          - action: click
+            selector: button:text('Apply')
+            when: not no_apply
   label-selector:
-    summary: "A CDK-portal label-expression typeahead (e.g. virtual_site Site Selector Expression). THREE steps: key → operator → value."
+    summary: 'A CDK-portal label-expression typeahead (e.g. virtual_site Site Selector Expression). THREE steps: key → operator
+      → value.'
     steps:
-      - { action: click, selector: "text('Add Label')", note: "opens the 'Type to search' typeahead" }
-      - { action: selectLabel, selector: "input[placeholder='Type to search']", value: "{param}",
-          note: "STEP 1 key: type a prefix (e.g. 'ves'), pick ves.io/interface etc. from the .cdk-overlay-container portal" }
-      - { action: selectLabel, selector: "input[placeholder='Select item']", value: "In",
-          note: "STEP 2 operator: pick In | Not in | = | == | != | Present | Not-Present from the portal" }
-      - { action: selectLabel, selector: "input[placeholder='Type to search']", value: "{param}",
-          note: "STEP 3 value: enter the value, or 'Assign a Custom Key'" }
-    timing: { portal_render_ms: 1000 }
+      - action: click
+        selector: text('Add Label')
+        note: opens the 'Type to search' typeahead
+      - action: selectLabel
+        selector: input[placeholder='Type to search']
+        value: '{param}'
+        note: 'STEP 1 key: type a prefix (e.g. ''ves''), pick ves.io/interface etc. from the .cdk-overlay-container portal'
+      - action: selectLabel
+        selector: input[placeholder='Select item']
+        value: In
+        note: 'STEP 2 operator: pick In | Not in | = | == | != | Present | Not-Present from the portal'
+      - action: selectLabel
+        selector: input[placeholder='Type to search']
+        value: '{param}'
+        note: 'STEP 3 value: enter the value, or ''Assign a Custom Key'''
+    timing:
+      portal_render_ms: 1000
     quirks:
-      - "Options render in a CDK portal (.cdk-overlay-container) at document body level — only the focus-preserving `label_select` extension tool can operate it; a `javascript_tool` eval defocuses the input and closes the portal."
-      - "Do NOT click away / press Escape after a selection — it resets the field (vsui)."
-      - "The dropdown repositions and renders ~1s async — poll the portal, don't assume fixed coords."
-
-  # Optional/skipped widgets — present for completeness; the generator emits no step.
-  key-value-pairs: { summary: "Optional key/value labels editor.", skip: true }
-  file-import-button: { summary: "File import (cert/openapi) — out of band.", skip: true }
-  file-upload-button: { summary: "File upload — out of band.", skip: true }
-  expandable: { summary: "Expandable section header.", skip: true }
-  info-text: { summary: "Read-only info label.", skip: true }
-
-# ── Cross-cutting operational nuances (not per-widget) ─────────────────────────
+      - Options render in a CDK portal (.cdk-overlay-container) at document body level — only the focus-preserving `label_select`
+        extension tool can operate it; a `javascript_tool` eval defocuses the input and closes the portal.
+      - Do NOT click away / press Escape after a selection — it resets the field (vsui).
+      - The dropdown repositions and renders ~1s async — poll the portal, don't assume fixed coords.
+  key-value-pairs:
+    summary: Optional key/value labels editor.
+    skip: true
+  file-import-button:
+    summary: File import (cert/openapi) — out of band.
+    skip: true
+  file-upload-button:
+    summary: File upload — out of band.
+    skip: true
+  expandable:
+    summary: Expandable section header.
+    skip: true
+  info-text:
+    summary: Read-only info label.
+    skip: true
 global:
   environment_prereqs:
-    - "Disable iCloud Passwords / any password-manager or other CDP-using extension (e.g. Claude-in-Chrome) before driving secret/password forms — they inject a chrome-extension:// overlay that breaks the debugger ('Cannot access a chrome-extension:// URL of different extension' → bridge hang)."
+    - Disable iCloud Passwords / any password-manager or other CDP-using extension (e.g. Claude-in-Chrome) before driving
+      secret/password forms — they inject a chrome-extension:// overlay that breaks the debugger ('Cannot access a chrome-extension://
+      URL of different extension' → bridge hang).
   click_determinism:
-    - "Trusted clicks resolve geometry from the renderer (DOM.getContentQuads) and hit-test the point (document.elementFromPoint) before dispatching — deterministic across window size and zoom. Occlusion fails loudly naming the occluder rather than silently mis-clicking."
-    - "CSS body zoom is NOT used — it desyncs JS-rect coords from the input layer. Resize the window for more visible content instead."
+    - Trusted clicks resolve geometry from the renderer (DOM.getContentQuads) and hit-test the point (document.elementFromPoint)
+      before dispatching — deterministic across window size and zoom. Occlusion fails loudly naming the occluder rather than
+      silently mis-clicking.
+    - CSS body zoom is NOT used — it desyncs JS-rect coords from the input layer. Resize the window for more visible content
+      instead.
   save_submit:
-    - "The footer Save/Submit selector is the union `[class*='save-bt'],[class*='submit-button']` — standard forms use save-bt; Administration / dns-management / shared-configuration forms use a primary submit-button ('Add Namespace', 'Add DNS Load Balancer')."
+    - The footer Save/Submit selector is the union `[class*='save-bt'],[class*='submit-button']` — standard forms use save-bt;
+      Administration / dns-management / shared-configuration forms use a primary submit-button ('Add Namespace', 'Add DNS
+      Load Balancer').
   form_lifecycle:
-    - "Navigating away from a dirty form pops a native 'Leave site?' (beforeunload); the bridge navigate auto-accepts it."
-    - "Verify the form actually opened (the Name field is present) before filling — a failed Add-tab click otherwise leaves fills hitting the always-present workspace selector."
-    - "Fill the Name field with REAL typing (click → type → Tab); the native value-setter can double-append across Angular re-renders."
+    - Navigating away from a dirty form pops a native 'Leave site?' (beforeunload); the bridge navigate auto-accepts it.
+    - Verify the form actually opened (the Name field is present) before filling — a failed Add-tab click otherwise leaves
+      fills hitting the always-present workspace selector.
+    - Fill the Name field with REAL typing (click → type → Tab); the native value-setter can double-append across Angular
+      re-renders.
   routes:
-    - "Most ~99 create routes are correct; the WAAP API Security / Shared Objects routes use the SINGULAR resource name (sensitive_data_policy, data_type, waf_exclusion_policy — not plural). udp-loadbalancer, k8s-cluster, and the observability monitors are feature-gated on some tenants."
+    - Most ~99 create routes are correct; the WAAP API Security / Shared Objects routes use the SINGULAR resource name (sensitive_data_policy,
+      data_type, waf_exclusion_policy — not plural). udp-loadbalancer, k8s-cluster, and the observability monitors are feature-gated
+      on some tenants.
   read_update:
-    - "Rows have NO clickable name → detail page. Read = row kebab → 'Manage Configuration' (read-only Form/JSON view). Update = → button:text('Edit Configuration') (must be button-scoped) → modify → save via the union selector."
+    - Rows have NO clickable name → detail page. Read = row kebab → 'Manage Configuration' (read-only Form/JSON view). Update
+      = → button:text('Edit Configuration') (must be button-scoped) → modify → save via the union selector.
   admin:
-    - "Administration (IAM / Personal Management) forms: the Name field's label is the resource-specific 'Role Name' / 'Credential Name', not 'Name'. Credentials end with a downloadable P12. The Add control is a button, not a [role=tab] — resolve it with text('Add …')."
+    - 'Administration (IAM / Personal Management) forms: the Name field''s label is the resource-specific ''Role Name'' /
+      ''Credential Name'', not ''Name''. Credentials end with a downloadable P12. The Add control is a button, not a [role=tab]
+      — resolve it with text(''Add …'').'
