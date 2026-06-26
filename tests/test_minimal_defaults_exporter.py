@@ -5,7 +5,7 @@
 Verifies that the exporter walks each covered resource's SpecType schema
 (resolving allOf/$ref, building spec.-prefixed dot-paths) and emits the flat
 {serverDefaultFields, fieldDefaults, minimumConfigFields, fieldConflicts}
-artifact consumed by @f5xc-salesdemos/pi-resource-management.
+artifact consumed by @f5-sales-demo/pi-resource-management.
 """
 
 import pytest
