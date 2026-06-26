@@ -8,7 +8,7 @@ repository's GitHub releases. It uses release version-based caching to avoid
 unnecessary downloads.
 
 Architecture:
-    Source: GitHub Releases (f5xc-salesdemos/api-specs)
+    Source: GitHub Releases (f5-sales-demo/api-specs)
     Format: ZIP archive with domains/*.json files
     Caching: .github_release version tracking (replaces ETag)
     Extraction: Secure ZIP processing with validation
@@ -58,7 +58,7 @@ DEFAULT_CONFIG = {
     "source": {
         "type": "github_release",
         "repository": {
-            "owner": "f5xc-salesdemos",
+            "owner": "f5-sales-demo",
             "name": "api-specs",
         },
         "asset_pattern": "api-specs-v*.zip",

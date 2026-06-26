@@ -454,7 +454,7 @@ class TestApiReferenceRewrite:
     """Test operation-level externalDocs URL rewriting."""
 
     OLD_PREFIX = "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/"
-    NEW_BASE = "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference"
+    NEW_BASE = "https://f5-sales-demo.github.io/api-specs-enriched/api-reference"
 
     def _make_spec(self, op_url: str, domain: str = "shape") -> dict:
         """Build a minimal spec with one operation-level externalDocs."""
@@ -573,7 +573,7 @@ class TestApiReferenceRewrite:
 class TestApiReferenceUrlField:
     """Test x-f5xc-api-reference-url extension field generation."""
 
-    NEW_BASE = "https://f5xc-salesdemos.github.io/api-specs-enriched/api-reference"
+    NEW_BASE = "https://f5-sales-demo.github.io/api-specs-enriched/api-reference"
 
     def test_api_reference_url_set_on_enrichment(self):
         """Test that x-f5xc-api-reference-url is added during enrichment."""

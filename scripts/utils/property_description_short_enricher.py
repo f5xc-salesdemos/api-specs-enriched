@@ -11,7 +11,7 @@ Follows Azure/AWS Terraform provider conventions:
 - Single sentence (short) or 2-3 sentences (medium), no code examples
 - Includes defaults and constraints inline
 
-Issue #330: https://github.com/f5xc-salesdemos/api-specs-enriched/issues/330
+Issue #330: https://github.com/f5-sales-demo/api-specs-enriched/issues/330
 """
 
 import re

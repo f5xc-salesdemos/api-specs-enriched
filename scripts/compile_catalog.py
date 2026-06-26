@@ -651,7 +651,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         "service": "f5xc",
         "displayName": "F5 Distributed Cloud",
         "version": version,
-        "specSource": "f5xc-salesdemos/api-specs-enriched",
+        "specSource": "f5-sales-demo/api-specs-enriched",
         "auth": F5XC_AUTH,
         "defaults": F5XC_DEFAULTS,
         "categories": categories,

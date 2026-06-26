@@ -7,7 +7,7 @@ Reads the current ``reports/contract_diff.json`` and emits
 
 Run after ``python -m scripts.contract_diff ...`` has produced the
 report. Each emitted entry is fingerprinted and linked to one of four
-tracking issues (f5xc-salesdemos/api-specs-enriched #193-#196) based
+tracking issues (f5-sales-demo/api-specs-enriched #193-#196) based
 on category. Re-running this script against a fresh report regenerates
 the fixture with today's date and the canonical issue refs.
 """
@@ -24,11 +24,11 @@ from pathlib import Path
 from scripts.contract_diff import _fingerprint_violation, _normalize_pointer
 
 _CATEGORY_ISSUES = {
-    "maxLength-tightened": "f5xc-salesdemos/api-specs-enriched#193",
-    "removal": "f5xc-salesdemos/api-specs-enriched#194",
-    "ref-retarget": "f5xc-salesdemos/api-specs-enriched#195",
-    "operationId-rename": "f5xc-salesdemos/api-specs-enriched#196",
-    "misc": "f5xc-salesdemos/api-specs-enriched#196",
+    "maxLength-tightened": "f5-sales-demo/api-specs-enriched#193",
+    "removal": "f5-sales-demo/api-specs-enriched#194",
+    "ref-retarget": "f5-sales-demo/api-specs-enriched#195",
+    "operationId-rename": "f5-sales-demo/api-specs-enriched#196",
+    "misc": "f5-sales-demo/api-specs-enriched#196",
 }
 
 

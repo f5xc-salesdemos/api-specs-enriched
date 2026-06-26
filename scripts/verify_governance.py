@@ -135,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     for path in violations:
         print(f"  - {path}", file=sys.stderr)
     print(
-        "These files are owned by f5xc-salesdemos/docs-control. "
+        "These files are owned by f5-sales-demo/docs-control. "
         "Open an upstream issue/PR there instead of editing locally.",
         file=sys.stderr,
     )
