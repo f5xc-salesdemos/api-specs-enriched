@@ -205,7 +205,7 @@ If you find constraint mismatches:
 1. **Note the field path**: e.g., `metadata.name`, `spec.port`
 2. **Document the test case**: What value was tested?
 3. **Include API response**: What did the API return?
-4. **Report at**: [GitHub Issues](https://github.com/f5xc-salesdemos/api-specs-enriched/issues)
+4. **Report at**: [GitHub Issues](https://github.com/f5-sales-demo/api-specs-enriched/issues)
 
 **Issue Template**:
 

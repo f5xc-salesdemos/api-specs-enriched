@@ -1,7 +1,7 @@
 # API Specs Enriched — Repo-Specific Instructions
 
 ## Project Overview
-Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre-validated specs from f5xc-salesdemos/api-specs, enriches them with descriptions, metadata, and branding, then publishes developer-friendly documentation.
+Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre-validated specs from f5-sales-demo/api-specs, enriches them with descriptions, metadata, and branding, then publishes developer-friendly documentation.
 
 ## Key Commands
 - `make install` — production setup
@@ -23,8 +23,8 @@ Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre
 - `examples/` — Example constraint outputs
 
 ## Upstream/Downstream
-- **Upstream**: f5xc-salesdemos/api-specs (pre-validated OpenAPI specs)
-- **Downstream**: f5xc-salesdemos/xcsh, f5xc-salesdemos/vscode-xcsh
+- **Upstream**: f5-sales-demo/api-specs (pre-validated OpenAPI specs)
+- **Downstream**: f5-sales-demo/xcsh, f5-sales-demo/vscode-xcsh
 
 ## Environment Variables
 ```

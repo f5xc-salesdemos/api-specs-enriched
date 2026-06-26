@@ -17,7 +17,7 @@ for file in "$@"; do
     if grep -qn "$pattern" "$file" 2>/dev/null; then
       echo "ERROR: Deprecated reference '$pattern' found in $file:"
       grep -n "$pattern" "$file"
-      echo "  Use f5xc-salesdemos/f5xc instead."
+      echo "  Use f5-sales-demo/f5xc instead."
       echo ""
       EXIT_CODE=1
     fi

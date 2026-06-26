@@ -107,7 +107,7 @@ Details: plan §7 (Task 7).
 
 - Create `scripts/contract_diff_seed_drift.py` (one-shot seed script).
 - Run it, produce `tests/fixtures/contract_diff_known_drift.json` with ~3,754 entries grouped into five categories (`maxLength-tightened`, `removal`, `ref-retarget`, `operationId-rename`, `misc`).
-- File four tracking issues in `f5xc-salesdemos/api-specs-enriched` via `f5xc-github-ops:github-ops`:
+- File four tracking issues in `f5-sales-demo/api-specs-enriched` via `f5xc-github-ops:github-ops`:
   1. `fix(enricher): reconcile maxLength-tightened overrides with upstream`
   2. `fix(enricher): investigate removals against upstream-preserved fields`
   3. `fix(contract): $ref retargets detected — upstream schema renames`
