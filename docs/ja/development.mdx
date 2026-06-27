@@ -4,7 +4,7 @@ description: F5 XC API エンリッチメントパイプラインの開発ワー
 sidebar:
   order: 1
 i18n:
-  sourceHash: cd6be8e70b79
+  sourceHash: 050098d0edca
   translator: machine
 ---
 
@@ -15,39 +15,39 @@ i18n:
 ### 初回セットアップ
 
 ```bash
-# リポジトリをクローン
+# Clone the repository
 git clone https://github.com/f5-sales-demo/api-specs-enriched.git
 cd api-specs-enriched
 
-# 仮想環境を作成して依存関係をインストール
+# Create virtual environment and install dependencies
 make install
 
-# pre-commit フックをインストール
+# Install pre-commit hooks
 make pre-commit-install
 
-# 仕様をダウンロードしてパイプラインを実行
+# Download specs and run pipeline
 make build
 
-# ドキュメントをローカルでプレビュー
+# Preview documentation locally
 make serve
 ```
 
-### 日常の開発
+### 日常的な開発
 
 ```bash
-# クイックリビルド（キャッシュ済み仕様を使用）
+# Quick rebuild (uses cached specs)
 make rebuild
 
-# すべての品質チェックを実行
+# Run all quality checks
 make pre-commit-run
 
-# ドキュメントをプレビュー
+# Preview documentation
 make serve
 ```
 
-## アーキテクチャ概要
+## アーキテクチャの概要
 
-### 2フォルダ設計
+### 2フォルダ構成
 
 ```text
 ┌─────────────────────┐     ┌─────────────────────────────┐
@@ -73,9 +73,9 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 
 | ディレクトリ | 用途 | Git ステータス |
 |-----------|---------|------------|
-| `specs/original/` | F5 ソース仕様 | Gitignored |
+| `specs/original/` | F5 ソーススペック | Gitignored |
 | `specs/discovered/` | API ディスカバリー出力 | トラッキング済み (openapi.json, session.json) |
-| `docs/specifications/api/` | 生成されたドメイン仕様 | Gitignored |
+| `docs/specifications/api/` | 生成されたドメインスペック | Gitignored |
 | `scripts/` | Python パイプラインスクリプト | トラッキング済み |
 | `config/` | パイプライン設定 | トラッキング済み |
 | `reports/` | 生成されたレポート | Gitignored |
@@ -89,78 +89,78 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 - 有効な API 認証情報
 
 ```bash
-# 認証情報を設定
+# Set credentials
 export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
 export F5XC_API_TOKEN="your-api-token"
 
-# ディスカバリーを実行
+# Run discovery
 make discover
 
-# 結果を確認
+# View results
 jq '.statistics' specs/discovered/session.json
 
-# CI/CD 用にコミット
+# Commit for CI/CD
 make push-discovery
 ```
 
-**ディスカバリーで取得される情報**:
-- 実際の必須/任意フィールド
+**ディスカバリーによって取得される情報**:
+- 実際の必須/オプションフィールド
 - ライブレスポンスからの列挙値
 - デフォルト値
 - パターンバリデーション
-- レスポンス例
+- レスポンスの例
 
 ### 2. リリースワークフロー
 
-リリースは自動化されています:
+リリースは自動化されています。
 
-1. 毎日のスケジュール（UTC 午前 6 時）またはメインへのプッシュでワークフローがトリガーされる
-2. ETag チェックで F5 仕様が変更されたか判定する
-3. パイプラインが仕様を処理してエンリッチする
-4. バージョンは git タグから計算される: `git describe --tags --abbrev=0`
-5. 直接コミット + タグが作成される（バージョンバンプ PR なし）
-6. 変更履歴付きの GitHub リリースが作成される
-7. ドキュメントが GitHub Pages にデプロイされる
+1. 毎日のスケジュール (UTC 午前 6 時) またはメインへのプッシュがワークフローをトリガー
+2. ETag チェックにより F5 スペックの変更を確認
+3. パイプラインがスペックを処理・エンリッチ
+4. バージョンは git タグから算出: `git describe --tags --abbrev=0`
+5. 直接コミット + タグ作成 (バージョンバンプ PR なし)
+6. 変更ログ付きの GitHub Release を作成
+7. ドキュメントを GitHub Pages にデプロイ
 
 **バージョンバンプルール**:
 
 | 条件 | バンプ種別 | 例 |
 |-----------|-----------|---------|
-| コミットに `[major]` を含む | メジャー | 1.0.0 → 2.0.0 |
-| コミットに `BREAKING CHANGE` を含む | メジャー | 1.0.0 → 2.0.0 |
-| 新しいドメイン仕様が追加された | マイナー | 1.0.0 → 1.1.0 |
+| コミットに `[major]` | メジャー | 1.0.0 → 2.0.0 |
+| コミットに `BREAKING CHANGE` | メジャー | 1.0.0 → 2.0.0 |
+| 新しいドメインスペックの追加 | マイナー | 1.0.0 → 1.1.0 |
 | その他の変更 | パッチ | 1.0.0 → 1.0.1 |
 
 ### 3. 開発ワークフロー
 
 ```bash
-# フィーチャーブランチを作成
+# Create feature branch
 git checkout -b feature/my-change
 
-# 設定またはスクリプトに変更を加える
+# Make changes to config or scripts
 
-# ローカルでテスト
+# Test locally
 make pipeline
 make lint
 
-# コミット（pre-commit フックが自動的に実行される）
+# Commit (pre-commit hooks run automatically)
 git add .
 git commit -m "feat: add new enrichment rule"
 
-# プッシュして PR を作成
+# Push and create PR
 git push -u origin feature/my-change
 gh pr create
 ```
 
-## ディスカバリー詳細解説
+## ディスカバリーの詳細
 
 ### ディスカバリーとは？
 
-ディスカバリーはライブ F5 XC API を探索して以下を検出します:
+ディスカバリーはライブの F5 XC API を探索し、以下の情報を取得します。
 
-- **未文書化の制約**: OpenAPI にマークされていない必須フィールド
-- **実際の列挙値**: 本番環境で確認された実際の値
-- **デフォルト動作**: フィールドが省略された場合にサーバーが適用する値
+- **未ドキュメントの制約**: OpenAPI にマークされていない必須フィールド
+- **実際の列挙値**: 本番環境で確認された実値
+- **デフォルトの動作**: フィールドが省略された際にサーバーが適用する値
 - **レスポンスパターン**: 実際のデータ形状
 
 ### ディスカバリー設定
@@ -185,7 +185,7 @@ discovery:
 
 ### ディスカバリー拡張
 
-ディスカバリーは `x-discovered-*` 拡張を仕様に追加します:
+ディスカバリーはスペックに `x-discovered-*` 拡張を追加します。
 
 ```json
 {
@@ -204,7 +204,7 @@ discovery:
 
 ```bash
 make constraint-report
-# 出力: reports/constraint-analysis.md
+# Output: reports/constraint-analysis.md
 ```
 
 ## リリースプロセス
@@ -213,15 +213,15 @@ make constraint-report
 
 ```text
 f5xc-api-specs-v1.0.14.zip
-├── openapi.json       # マスター結合仕様
-├── openapi.yaml       # YAML フォーマット
-├── domains/           # 個別ドメイン仕様
+├── openapi.json       # Master combined spec
+├── openapi.yaml       # YAML format
+├── domains/           # Individual domain specs
 │   ├── api_security.json
 │   ├── load_balancer.json
 │   └── ...
-├── index.json         # メタデータ
-├── CHANGELOG.md       # リリースノート
-└── README.md          # 使用方法
+├── index.json         # Metadata
+├── CHANGELOG.md       # Release notes
+└── README.md          # Usage instructions
 ```
 
 ### ワークフローの手動トリガー
@@ -282,43 +282,43 @@ rules:
 
 ## OpenAPI 拡張
 
-エンリッチメントパイプラインはベンダー拡張を使用して、バリデーションとデフォルト値のメタデータを埋め込みます。
+エンリッチメントパイプラインはベンダー拡張を使用して、バリデーションおよびデフォルト値のメタデータを埋め込みます。
 
 ### 拡張カテゴリ
 
-| 拡張 | 意味 | 含意 |
+| 拡張 | 意味 | 影響 |
 |-----------|---------|-------------|
-| `x-f5xc-server-default` | F5 XC API サーバーがフィールド省略時にこの値を適用する | フィールドは任意であり、省略すると文書化されたデフォルト動作が生成される |
-| `x-f5xc-recommended-value` | F5 XC Web コンソールが新規リソース作成時にこの値をプリポピュレートする | フィールドにサーバーデフォルトはないが、この値が典型的な設定を表す |
-| `x-f5xc-recommended-oneof-variant` | F5 XC コンソールがこの OneOf バリアントを事前選択する | 複数の相互排他オプションが存在する場合の典型的な選択を識別する |
-| `x-f5xc-conflicts-with` | このフィールドと同時に使用できない他のプロパティを列挙する | プロパティは OneOf グループの一部であり、競合するプロパティの1つのみ指定できる |
+| `x-f5xc-server-default` | フィールドが省略された際に F5 XC API サーバーがこの値を適用する | フィールドはオプション。省略するとドキュメント化されたデフォルト動作が適用される |
+| `x-f5xc-recommended-value` | F5 XC Web コンソールが新規リソース作成時にこの値を事前入力する | フィールドにサーバーデフォルトはないが、この値が典型的な設定を表す |
+| `x-f5xc-recommended-oneof-variant` | F5 XC コンソールがこの OneOf バリアントを事前選択する | 複数の相互排他的なオプションが存在する場合の典型的な選択肢を識別する |
+| `x-f5xc-conflicts-with` | このフィールドと同時に使用できない他のプロパティを列挙する | プロパティは OneOf グループの一部。競合するプロパティのうち 1 つのみ指定可能 |
 
 ### 必須フィールド拡張
 
-| 拡張 | ソース | 目的 |
+| 拡張 | ソース | 用途 |
 |-----------|--------|---------|
-| `x-ves-required: "true"` | F5 XC 元仕様 | フィールドにゼロ以外/空以外の値が必要 |
+| `x-ves-required: "true"` | F5 XC オリジナルスペック | フィールドにゼロ値または空値以外の値が必要 |
 | `x-f5xc-required-for` | エンリッチメントパイプライン | コンテキスト固有の必須ステータス |
 
-**x-f5xc-required-for コンテキスト**:
+**x-f5xc-required-for のコンテキスト**:
 - `create`: リソース作成時に必須
 - `update`: リソース更新時に必須
-- `minimum_config`: 最小限の実行可能な設定に必須
+- `minimum_config`: 最小限の有効な設定に必須
 
-### デフォルト値と OneOf 拡張
+### デフォルト値および OneOf 拡張
 
-| 拡張 | 目的 |
+| 拡張 | 用途 |
 |-----------|---------|
-| `x-f5xc-server-default: true` | サーバーが適用するデフォルトをマーク |
-| `x-f5xc-recommended-value` | F5 XC コンソールがプリポピュレートする値 |
-| `x-f5xc-recommended-oneof-variant` | 推奨 OneOf バリアント |
+| `x-f5xc-server-default: true` | サーバー適用デフォルトのマーク |
+| `x-f5xc-recommended-value` | F5 XC コンソールの事前入力値 |
+| `x-f5xc-recommended-oneof-variant` | 推奨される OneOf バリアント |
 | `x-f5xc-conflicts-with` | 他の OneOf プロパティとの相互排他性 |
 
 #### x-f5xc-server-default
 
 **型**: `boolean`
 
-`true` の場合、付随する `default` 値が F5 XC API サーバーによって強制されることを示します。この拡張を持つフィールドは API リクエストから安全に省略できます — サーバーが自動的にデフォルトを適用します。
+`true` の場合、付随する `default` 値が F5 XC API サーバーによって強制適用されることを示します。この拡張を持つフィールドは API リクエストから安全に省略できます — サーバーがデフォルト値を自動的に適用します。
 
 ```yaml
 use_http2:
@@ -329,9 +329,9 @@ use_http2:
 
 #### x-f5xc-recommended-value
 
-**型**: `any`（フィールド型に対応）
+**型**: `any` (フィールドの型に一致)
 
-F5 XC Web コンソールがプリポピュレートされたデフォルトとして使用する値を指定します。この値はサーバーによって強制されませんが、コンソールを通じて作成された新規リソースの典型的な初期設定を表します。
+F5 XC Web コンソールが事前入力デフォルトとして使用する値を指定します。この値はサーバーで強制適用されるものではありませんが、コンソール経由で作成される新規リソースの典型的な初期設定を表します。
 
 ```yaml
 timeout:
@@ -341,9 +341,9 @@ timeout:
 
 #### x-f5xc-recommended-oneof-variant
 
-**型**: `object`（グループ名からバリアント名へのマップ）
+**型**: `object` (グループ名からバリアント名へのマップ)
 
-相互排他フィールドグループを持つスキーマにおいて、どのバリアントがデフォルトまたは最も一般的な選択かを識別します。キーは OneOf グループ名、値は推奨バリアントのフィールド名です。
+相互排他的なフィールドグループを持つスキーマにおいて、デフォルトまたは最も一般的な選択肢であるバリアントを識別します。キーは OneOf グループ名、値は推奨バリアントのフィールド名です。
 
 ```yaml
 healthcheckCreateSpecType:
@@ -356,9 +356,9 @@ healthcheckCreateSpecType:
 
 **型**: 文字列の `array`
 
-**追加**: v3.2.0（Issue #494）
+**追加バージョン**: v3.2.0 (Issue #494)
 
-OneOf グループメンバー間の相互排他関係を宣言します。`x-ves-oneof-field-*` 拡張から自動導出されます。これにより、ダウンストリームツール（Terraform、CLI、MCP）がランタイムではなくスキーマレベルで競合を検証できます。
+OneOf グループメンバー間の相互排他的な関係を宣言します。`x-ves-oneof-field-*` 拡張から自動導出されます。これにより、下流ツール (Terraform、CLI、MCP) がランタイムではなくスキーマレベルで競合を検証できます。
 
 ```yaml
 host_header:
@@ -376,22 +376,22 @@ use_origin_server_name:
 - AI アシスタントが正しい OneOf 設定を生成できる
 - IDE 拡張機能が競合を考慮したオートコンプリートを提供できる
 
-**ソース**: パイプラインエンリッチメント中に F5 ネイティブの `x-ves-oneof-field-*` 拡張から自動導出。
+**ソース**: パイプラインエンリッチメント時に F5 ネイティブの `x-ves-oneof-field-*` 拡張から自動導出されます。
 
-### バリデーションルールの含意
+### バリデーションルールの影響
 
-エンリッチャーは `x-ves-validation-rules` を検査して必須ステータスを推定します:
+エンリッチャーは `x-ves-validation-rules` を検査して必須ステータスを推定します。
 
-| ルール | 含意 |
+| ルール | 影響 |
 |------|-------------|
 | `ves.io.schema.rules.message.required: "true"` | フィールドは必須 |
 | `ves.io.schema.rules.uint32.gte: N` | N >= 1 かつサーバーデフォルトがない場合、フィールドは必須 |
-| `ves.io.schema.rules.repeated.min_items: N` | N >= 1 の場合、配列には少なくとも N 個のアイテムが必要 |
+| `ves.io.schema.rules.repeated.min_items: N` | N >= 1 の場合、配列には少なくとも N 個の要素が必要 |
 | `ves.io.schema.rules.string.min_bytes: N` | N >= 1 の場合、文字列には少なくとも N バイトが必要 |
 
 ### サーバー適用デフォルトを持つリソース
 
-一部のリソースはサーバーがデフォルトを適用するため、空のスペックを受け入れます:
+一部のリソースはサーバーがデフォルト値を適用するため、空のスペックを受け入れます。
 
 | リソース | サーバー適用デフォルト |
 |----------|------------------------|
@@ -400,55 +400,55 @@ use_origin_server_name:
 | `api_definition` | `swagger_specs: []`, デフォルト `api_groups` |
 | `healthcheck` | `jitter: 0`, `jitter_percent: 0`, ネストされた http_health_check デフォルト |
 
-これらのリソースでは、`x-ves-required` が `true` の場合でも `x-f5xc-required-for.create` が `false` になる場合があります。
+これらのリソースでは、`x-ves-required` が `true` の場合でも `x-f5xc-required-for.create` が `false` になることがあります。
 
-### デフォルト値パターン
+### デフォルト値のパターン
 
 | パターン | 型 | 例 |
 |---------|------|---------|
-| `\{\}` | 空オブジェクト（選択肢の選択） | `monitoring: \{\}` |
+| `\{\}` | 空オブジェクト (選択選択) | `monitoring: \{\}` |
 | `[]` | 空配列 | `expected_status_codes: []` |
 | `0` | 数値 | `jitter: 0` |
 | `""` | 文字列 | `expected_response: ""` |
-| `false` | 真偽値 | `use_http2: false` |
+| `false` | ブール値 | `use_http2: false` |
 
-### 検出済みデフォルトの追加
+### 発見されたデフォルトの追加
 
-1. API 経由で最小スペックを使用して F5 XC でリソースを作成する
-2. リソースを読み返してサーバーが適用した値を確認する
-3. `config/discovered_defaults.yaml` にデフォルトを記録する
-4. パイプラインを実行する: `make pipeline`
-5. 次のコマンドで確認する: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
+1. API 経由で最小限のスペックを使用して F5 XC でリソースを作成
+2. リソースを読み返してサーバー適用値を確認
+3. `config/discovered_defaults.yaml` にデフォルトをドキュメント化
+4. パイプラインを実行: `make pipeline`
+5. 以下で確認: `jq '.components.schemas | to_entries[] | select(.key | contains("resource_name"))'`
 
 ## トラブルシューティング
 
-### Pre-commit の処理が遅すぎる
+### pre-commit に時間がかかりすぎる
 
-パイプラインは一貫性を確保するためにコミットごとに実行されます。作業中のコミットの場合:
+パイプラインは一貫性を確保するためにすべてのコミットで実行されます。作業中のコミットの場合:
 
 ```bash
 git commit --no-verify -m "WIP: work in progress"
-# 最終コミット前に実行: make pre-commit-run
+# Run before final commit: make pre-commit-run
 ```
 
 ### ディスカバリーが失敗する
 
 ```bash
-# VPN を確認
+# Check VPN
 ping your-tenant.console.ves.volterra.io
 
-# 認証情報を確認
+# Check credentials
 echo $F5XC_API_TOKEN | head -c 10
 
-# API URL フォーマットを確認
+# Check API URL format
 echo $F5XC_API_URL
-# フォーマット: https://tenant.console.ves.volterra.io/api
+# Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### 生成された仕様のリントエラー
+### 生成されたスペックのリントエラー
 
 ```bash
-# リントレポートを確認
+# Check lint report
 cat reports/lint-report.json | jq '.errors'
 ```
 
@@ -456,25 +456,25 @@ cat reports/lint-report.json | jq '.errors'
 
 ### バージョンシステム
 
-バージョンは git タグから導出されます（例: `v2.0.38`）。これにより、並行する PR でのマージコンフリクトを引き起こしていた競合状態が解消されます。
+バージョンは git タグから導出されます (例: `v2.0.38`)。これにより、並行 PR でのマージ競合を引き起こしていた競合状態が解消されます。
 
 ```python
-# バージョンは git タグから動的に計算される
+# Version is calculated dynamically from git tags
 from scripts.utils.version_calculator import get_version_from_tags
-version = get_version_from_tags()  # "2.0.38" を返す
+version = get_version_from_tags()  # Returns "2.0.38"
 ```
 
-### クローン後に仕様が見つからない
+### クローン後にスペックが見つからない
 
-生成された仕様は gitignored です:
+生成されたスペックは gitignored になっています。
 
 ```bash
-make build  # すべてをダウンロードして生成する
+make build  # Downloads and generates everything
 ```
 
 ### 大きなファイルがブロックされる
 
-`.pre-commit-config.yaml` に除外設定を追加します:
+`.pre-commit-config.yaml` に除外設定を追加してください。
 
 ```yaml
 - id: check-added-large-files
@@ -487,35 +487,35 @@ make build  # すべてをダウンロードして生成する
 
 | ターゲット | 説明 |
 |--------|-------------|
-| `make build` | フルビルド（ダウンロード + パイプライン） |
-| `make rebuild` | クイックリビルド（ダウンロードをスキップ） |
-| `make download` | 仕様をダウンロード（ETag キャッシュ） |
+| `make build` | フルビルド (ダウンロード + パイプライン) |
+| `make rebuild` | クイックリビルド (ダウンロードをスキップ) |
+| `make download` | スペックのダウンロード (ETag キャッシュ使用) |
 | `make download-force` | 強制ダウンロード |
-| `make pipeline` | エンリッチメントパイプラインを実行 |
+| `make pipeline` | エンリッチメントパイプラインの実行 |
 | `make lint` | Spectral リント |
 | `make serve` | ローカルドキュメントサーバー |
-| `make discover` | API ディスカバリー（VPN 必須） |
-| `make push-discovery` | ディスカバリーデータをコミット |
-| `make clean` | 生成ファイルを削除 |
-| `make pre-commit-run` | すべての品質チェックを実行 |
+| `make discover` | API ディスカバリー (VPN 必須) |
+| `make push-discovery` | ディスカバリーデータのコミット |
+| `make clean` | 生成ファイルの削除 |
+| `make pre-commit-run` | すべての品質チェックの実行 |
 
 ### 環境変数
 
-| 変数 | 目的 |
+| 変数 | 用途 |
 |----------|---------|
 | `F5XC_API_URL` | F5 XC テナント API URL |
 | `F5XC_API_TOKEN` | API 認証トークン |
 
 ### 主要ファイル
 
-| ファイル | 目的 |
+| ファイル | 用途 |
 |------|---------|
 | `.etag` | 最後にダウンロードした ETag |
-| `CHANGELOG.md` | 自動生成された変更履歴 |
+| `CHANGELOG.md` | 自動生成された変更ログ |
 | `config/enrichment.yaml` | エンリッチメントルール |
 | `config/normalization.yaml` | 正規化ルール |
 | `config/discovery.yaml` | ディスカバリー設定 |
 | `config/spectral.yaml` | リントルール |
-| `scripts/utils/version_calculator.py` | タグベースのバージョン計算 |
+| `scripts/utils/version_calculator.py` | タグベースのバージョン算出 |
 
-**注**: バージョンは `.version` ファイルではなく、git タグから導出されます（例: `v2.0.38`）。
+**注意**: バージョンは `.version` ファイルではなく、git タグから導出されます (例: `v2.0.38`)。

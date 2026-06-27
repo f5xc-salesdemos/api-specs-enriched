@@ -1,19 +1,19 @@
 ---
 title: 约束元数据系统
-description: 用于确定性 AI 生成和验证的综合约束元数据
+description: 用于确定性 AI 生成和验证的全面约束元数据
 sidebar:
   order: 2
 i18n:
-  sourceHash: 797e5a0158e1
+  sourceHash: a9da77cd5a28
   translator: machine
 ---
 
-**目的**：用于确定性 AI 生成、CLI 验证和 Terraform 架构强制执行的综合约束元数据。
+**用途**：用于确定性 AI 生成、CLI 验证和 Terraform 模式强制执行的全面约束元数据。
 
-**扩展名**：`x-f5xc-constraints`
+**扩展**：`x-f5xc-constraints`
 **版本**：3.3.0
-**状态**：生产可用
-**使用方**：AI 助手、CLI 工具、Terraform 提供者、IDE 扩展、API 验证器
+**状态**：生产就绪
+**消费方**：AI 助手、CLI 工具、Terraform 提供商、IDE 扩展、API 验证器
 
 ---
 
@@ -32,7 +32,7 @@ i18n:
 
 ## 概述
 
-`x-f5xc-constraints` 扩展提供有关字段验证约束的确定性知识，支持以下功能：
+`x-f5xc-constraints` 扩展提供了关于字段验证约束的确定性知识，能够实现：
 
 - **AI 助手**：无需用户输入约束详情即可生成有效配置
 - **CLI 工具**：提供准确的输入提示、验证和错误信息
@@ -40,18 +40,18 @@ i18n:
 - **IDE 扩展**：实时验证和自动补全建议
 - **API 验证器**：提交前验证以减少 API 错误
 
-### 覆盖统计
+### 覆盖率统计
 
 - 所有 F5 XC API 规范中共有 **9,851 个约束**
 - **50+ 种模式类型**（字符串、数组、数值）
-- 高优先级字段（名称、端口、标识符）具有 **95% 置信度**
-- **三级协调机制**：EXISTING > DISCOVERY > INFERRED
+- 高优先级字段（名称、端口、标识符）**95% 置信度**
+- **三层协调机制**：EXISTING > DISCOVERY > INFERRED
 
 ---
 
 ## 扩展结构
 
-### 顶级字段
+### 顶层字段
 
 ```json
 {
@@ -76,12 +76,12 @@ i18n:
 
 ### 字段说明
 
-| 字段 | 类型 | 描述 |
+| 字段 | 类型 | 说明 |
 |-------|------|-------------|
 | `constraintType` | string | 数据类型（string、array、number、object） |
 | `deterministic` | boolean | 高置信度标志（置信度 >= 0.9），用于 AI 生成 |
 | `category` | string | 用于分组和报告的约束类别 |
-| *（约束键）* | 各类型 | 在顶层展平的类型特定约束键（例如 `minLength`、`maxItems`、`minimum`） |
+| *(约束键)* | 各类型 | 扁平化在顶层的特定类型约束键（如 `minLength`、`maxItems`、`minimum`） |
 | `metadata` | object | 来源追踪、置信度、验证时间戳 |
 
 ---
@@ -123,7 +123,7 @@ i18n:
 
 #### 支持的格式
 
-| 格式 | 描述 | 示例 |
+| 格式 | 说明 | 示例 |
 |--------|-------------|---------|
 | `dns-label` | RFC 1123 DNS 标签（1-63 个字符） | `my-service` |
 | `fqdn` | 完全限定域名 | `api.example.com` |
@@ -190,8 +190,8 @@ i18n:
 - 示例：`my-service`、`api-gateway`、`lb-prod-01`
 
 **电子邮件地址**（`format: "email"`）：
-- 电子邮件地址必须符合 RFC 5322 标准
-- 最大 254 个字符
+- 电子邮件地址必须符合 RFC 5322 规范
+- 最多 254 个字符
 - 示例：`admin@example.com`、`api+webhook@service.io`
 
 **完全限定域名**（`format: "fqdn"`）：
@@ -200,7 +200,7 @@ i18n:
 - 示例：`api.example.com`、`service.production.internal`
 
 **URL**（`format: "url"`）：
-- URL 必须是符合 RFC 3986 标准的有效 URI
+- URL 必须是符合 RFC 3986 规范的有效 URI
 - 必须包含协议（http/https）
 - 示例：`https://api.example.com/v1`、`http://localhost:8080`
 
@@ -231,12 +231,12 @@ i18n:
 ### 数组约束
 
 **源池**：
-- 源池数组至少需要 1 个元素，最多 50 个元素
-- 每个元素必须唯一
+- 源池数组至少需要 1 个条目，最多 50 个条目
+- 每个条目必须唯一
 
 **标签**：
-- 标签数组允许 0-100 个元素
-- 元素无需唯一
+- 标签数组允许 0-100 个条目
+- 条目无需唯一
 
 ---
 
@@ -264,8 +264,8 @@ i18n:
 
 **无效值**：
 - ❌ `My-Service`（不允许大写字母）
-- ❌ `-my-service`（连字符不能在开头）
-- ❌ `my-service-`（连字符不能在结尾）
+- ❌ `-my-service`（连字符在开头）
+- ❌ `my-service-`（连字符在结尾）
 - ❌ `my_service`（不允许下划线）
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit`（超出长度限制）
 
@@ -284,14 +284,14 @@ i18n:
 **有效值**：
 - ✅ `80`（HTTP）
 - ✅ `443`（HTTPS）
-- ✅ `8080`（常用备用 HTTP 端口）
+- ✅ `8080`（常见备用 HTTP 端口）
 - ✅ `65535`（最大端口号）
 
 **无效值**：
 - ❌ `0`（低于最小值）
 - ❌ `65536`（超过最大值）
 - ❌ `-1`（负数）
-- ❌ `"80"`（字符串，非数字）
+- ❌ `"80"`（字符串，非数值）
 
 ### 示例 3：数组大小验证
 
@@ -307,41 +307,41 @@ i18n:
 ```
 
 **有效值**：
-- ✅ `["origin-1"]`（1 个元素）
-- ✅ `["origin-1", "origin-2", "origin-3"]`（3 个元素，均唯一）
+- ✅ `["origin-1"]`（1 个条目）
+- ✅ `["origin-1", "origin-2", "origin-3"]`（3 个条目，均唯一）
 
 **无效值**：
 - ❌ `[]`（低于最小值）
-- ❌ `["origin-1", "origin-1"]`（存在重复元素）
-- ❌ `[包含 51 个元素的数组]`（超过最大值）
+- ❌ `["origin-1", "origin-1"]`（重复条目）
+- ❌ `[包含 51 个条目的数组]`（超过最大值）
 
 ---
 
 ## 置信度分数
 
-### 分数解释
+### 分数解读
 
-| 范围 | 解释 | 用法 |
+| 范围 | 解读 | 用途 |
 |-------|----------------|-------|
 | 0.90-1.00 | **高置信度** | 启用确定性标志，用于 AI 生成 |
 | 0.70-0.89 | **中置信度** | 建议性，推荐用户确认 |
 | 0.50-0.69 | **低置信度** | 仅供参考，需要用户验证 |
-| < 0.50 | **极低置信度** | 不包含在约束中 |
+| < 0.50 | **极低置信度** | 不纳入约束 |
 
 ### 确定性标志
 
 满足以下条件时，`deterministic` 布尔标志将被设置为 `true`：
 - 置信度分数 >= 0.9
-- 模式已通过发现数据验证，**或者**
-- 模式符合成熟标准（RFC、ISO 等）
+- 模式已针对发现数据进行验证，或者
+- 模式符合公认标准（RFC、ISO 等）
 
 **在 AI 生成中的用法**：
 ```python
 if constraint.get("deterministic"):
-    # Generate value automatically without asking user
+    # 自动生成值，无需询问用户
     value = generate_from_pattern(constraint)
 else:
-    # Ask user for input with constraint hints
+    # 向用户显示约束提示并请求输入
     value = prompt_user_with_hints(constraint)
 ```
 
@@ -351,20 +351,20 @@ else:
 
 ### 来源优先级
 
-约束采用三级优先级进行协调：
+约束通过三层优先级进行协调：
 
 1. **EXISTING**（置信度：1.0）
-   - 在原始 OpenAPI 规范中显式设置
-   - 永不被覆盖
+   - 在原始 OpenAPI 规范中明确设置
+   - 不会被覆盖
 
 2. **DISCOVERY**（置信度：0.99）
-   - 从实时 F5 XC API 响应中提取
+   - 从 F5 XC API 实时响应中提取
    - 包含来自 x-ves-validation-rules 的验证规则
    - 覆盖推断约束
 
 3. **INFERRED**（置信度：0.50-0.95）
-   - 通过字段名称模式匹配得出
-   - 优先级最低，可被发现或显式约束覆盖
+   - 从字段名称进行模式匹配
+   - 优先级最低，可被发现或明确约束覆盖
 
 ### 发现数据来源
 
@@ -375,12 +375,12 @@ else:
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
 
-2. **错误目录**：指示约束违规的 API 错误消息
+2. **错误目录**：指示约束违规的 API 错误信息
    - "name must be 1-63 characters" → minLength/maxLength
    - "port must be between 1 and 65535" → minimum/maximum
 
 3. **响应验证**：演示有效值的成功 API 响应
-   - 观测到的值域范围
+   - 观测到的值范围
    - 实际格式模式
 
 ---
@@ -389,20 +389,20 @@ else:
 
 ### AI 助手集成
 
-**生成有效资源名称**：
+**生成有效的资源名称**：
 ```python
 def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
 
     if not constraints.get("deterministic"):
-        # Ask user for name
+        # 向用户请求名称
         return prompt_user("Enter resource name: ")
 
-    # Generate automatically
+    # 自动生成
     pattern = constraints.get("pattern")
     max_len = constraints.get("maxLength", 63)
 
-    # Generate valid name matching pattern
+    # 生成符合模式的有效名称
     return generate_dns_label(max_length=max_len)
 ```
 
@@ -414,14 +414,14 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # Check length (constraint keys are at top level)
+    # 检查长度（约束键位于顶层）
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
     if "maxLength" in constraints and len(user_value) > constraints["maxLength"]:
         return False, f"{field_name} must be at most {constraints['maxLength']} characters"
 
-    # Check pattern
+    # 检查模式
     if "pattern" in constraints:
         import re
         if not re.match(constraints["pattern"], user_value):
@@ -432,9 +432,9 @@ def validate_cli_input(field_name, user_value, constraints):
     return True, None
 ```
 
-### Terraform 提供者集成
+### Terraform 提供商集成
 
-**架构生成**：
+**模式生成**：
 ```go
 func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
     constraints := property["x-f5xc-constraints"].(map[string]interface{})
@@ -443,7 +443,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // Constraint keys are at top level (no nested "string" wrapper)
+    // 约束键位于顶层（无嵌套的 "string" 包装）
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -468,7 +468,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // Add format-specific completions
+    // 添加格式特定的补全项
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -477,7 +477,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
         });
     }
 
-    // Add validation hint
+    // 添加验证提示
     if (constraints.deterministic) {
         items.push({
             label: '✨ Auto-generate',
@@ -520,13 +520,13 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ## 支持与反馈
 
-- **问题反馈**：请在 https://github.com/f5-sales-demo/api-specs-enriched/issues 报告约束准确性问题
+- **问题反馈**：在 https://github.com/f5-sales-demo/api-specs-enriched/issues 提交约束准确性问题
 - **文档**：完整 API 文档请访问 https://f5-sales-demo.github.io/api-specs-enriched/
-- **MCP 集成**：MCP 服务器集成示例请参阅 `f5xc-api-mcp` 仓库
+- **MCP 集成**：请参阅 `f5xc-api-mcp` 仓库中的 MCP 服务器集成示例
 
 ---
 
 **版本**：3.3.0
 **最后更新**：2026-01-19
 **已协调约束数**：9,851
-**模式覆盖**：50+ 种类型
+**模式覆盖率**：50+ 种类型

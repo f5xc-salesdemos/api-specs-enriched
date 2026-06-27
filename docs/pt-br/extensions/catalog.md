@@ -1,37 +1,37 @@
 ---
 title: Catálogo de Extensões de Enriquecimento
 description: >-
-  Fonte oficial de todas as extensões x-* nas especificações OpenAPI
+  Fonte primária de referência para cada extensão x-* nas especificações OpenAPI
   enriquecidas
 i18n:
-  sourceHash: 395df1e3c471
+  sourceHash: b7ee25e1b768
   translator: machine
 ---
 
 # Catálogo de Extensões de Enriquecimento
 
-Fonte oficial de todas as extensões `x-*` que aparecem em
+Fonte primária de referência para cada extensão `x-*` que aparece em
 `docs/specifications/api/*.json`. A paridade com
 `scripts/utils/extension_constants.py` é verificada por
 `tests/test_extension_catalog.py`.
 
 Três classes de extensões estão documentadas aqui:
 
-- **Injetadas aqui** — extensões adicionadas pelos nossos enriquecedores (`x-f5xc-*` e
+- **Injetadas aqui** — extensões que nossos enriquecedores adicionam (`x-f5xc-*` e
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de
-  descoberta). Estas são as que ferramentas downstream devem consumir.
-- **Passagem upstream** — extensões emitidas pela F5 nas especificações-fonte
-  e preservadas sem alteração (`x-ves-proto-*`, `x-displayname`, etc.).
-  Documentadas para transparência, mas não controladas por este repositório.
-- **Futuras injetadas** — ainda não emitidas; documentadas aqui no momento
+  descoberta). Estas são as extensões que as ferramentas downstream devem consumir.
+- **Passagem de upstream** — extensões que a F5 emite nas especificações de origem
+  e que preservamos sem alterações (`x-ves-proto-*`, `x-displayname`, etc.).
+  Documentadas por transparência, mas não controladas por este repositório.
+- **Injetadas futuramente** — ainda não emitidas; documentadas aqui no momento
   em que um enriquecedor começar a produzi-las (não aplicável na população inicial).
 
 ## Esquema de entrada
 
 Cada entrada abaixo possui exatamente este formato. O teste de paridade em
 `tests/test_extension_catalog.py` tolera que o corpo da seção seja resumido,
-desde que o cabeçalho `### x-name` exista e o sinalizador
-`Pass-through from upstream:` esteja presente com o valor `yes` ou `no`.
+desde que o cabeçalho `### x-name` exista e o
+sinalizador `Pass-through from upstream:` esteja presente com o valor `yes` ou `no`.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -73,7 +73,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** Timestamp da especificação-fonte upstream a partir da qual o arquivo enriquecido foi gerado.
+- **Purpose:** Timestamp da especificação de origem upstream a partir da qual o arquivo enriquecido foi construído.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -85,7 +85,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag do ativo de lançamento da especificação-fonte upstream.
+- **Purpose:** ETag do ativo de lançamento da especificação de origem upstream.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -97,7 +97,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** Versão semântica carimbada na especificação enriquecida pelo pipeline.
+- **Purpose:** Versão semântica registrada na especificação enriquecida pelo pipeline.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -121,7 +121,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Timestamp de quando a passagem de descoberta da API ao vivo foi executada.
+- **Purpose:** Timestamp de quando a passagem de descoberta da API em produção foi executada.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -133,7 +133,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** URL base da API ao vivo que foi sondada durante a descoberta.
+- **Purpose:** URL base da API em produção que foi sondada durante a descoberta.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -157,7 +157,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** Tempo de resposta observado (ms) para a API sondada durante a descoberta.
+- **Purpose:** Tempo de resposta observado (em ms) para a API sondada durante a descoberta.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -169,7 +169,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** Orientações de melhores práticas selecionadas para um domínio.
+- **Purpose:** Guia curado de melhores práticas para um domínio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -181,7 +181,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Fluxos de trabalho nomeados com etapas para realizar tarefas comuns em um domínio.
+- **Purpose:** Fluxos de trabalho nomeados, passo a passo, para realizar tarefas comuns em um domínio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -219,7 +219,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Conjunto mínimo de campos necessários para realizar com êxito um POST/PUT deste recurso.
+- **Purpose:** Conjunto mínimo de campos necessários para executar com sucesso um POST/PUT deste recurso.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -231,7 +231,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** Fornece metadados de restrição de namespace, recomendação e classificação para um recurso.
+- **Purpose:** Fornece metadados de restrição, recomendação e classificação de namespace para um recurso.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -243,7 +243,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Ordenação sugerida de propriedades para apresentação em UI/CLI.
+- **Purpose:** Ordenação sugerida das propriedades para apresentação em UI/CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -255,7 +255,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Nome do tipo de recurso Terraform que corresponde a este esquema.
+- **Purpose:** Nome do tipo de recurso Terraform que mapeia para este esquema.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -341,7 +341,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** Dicas de autocompletar para shell (enum estático ou comando dinâmico).
+- **Purpose:** Dicas de autocompletar para shell (enumeração estática ou comando dinâmico).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -353,7 +353,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Valor(es) padrão a serem exibidos em documentações e UIs geradas.
+- **Purpose:** Valor(es) padrão a exibir na documentação gerada e nas interfaces.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -365,7 +365,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** Lista as operações HTTP (POST/PUT/...) que exigem esta propriedade.
+- **Purpose:** Lista as operações HTTP (POST/PUT/...) que requerem esta propriedade.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -377,7 +377,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Lista combinações de funcionalidades nomeadas que exigem esta propriedade.
+- **Purpose:** Lista combinações de funcionalidades nomeadas que requerem esta propriedade.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -401,7 +401,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Aviso de descontinuação com orientação sobre substituição.
+- **Purpose:** Aviso de descontinuação com orientação sobre substituto.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -425,7 +425,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Valor recomendado para produção em um campo cujo padrão do servidor não é ideal.
+- **Purpose:** Valor recomendado para produção de um campo onde o padrão do servidor é subótimo.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -461,7 +461,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** Documenta dependências entre campos em que um campo exige que outro esteja definido.
+- **Purpose:** Documenta dependências entre campos, nas quais um campo requer que outro esteja definido.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -473,7 +473,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Restrições numéricas/de string derivadas de sondagem da API ao vivo ou padrões estáticos.
+- **Purpose:** Restrições numéricas/de string derivadas de sondagem da API em produção ou padrões estáticos.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -497,7 +497,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** Metadados do widget de formulário do console para esta propriedade da API.
+- **Purpose:** Metadados de widget de formulário do console para esta propriedade de API.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -571,7 +571,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** Cabeçalhos/comportamento de limitação de taxa observados na API ao vivo.
+- **Purpose:** Cabeçalhos/comportamento de limite de taxa observados na API em produção.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -583,7 +583,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Catálogo de respostas de erro observadas durante a descoberta ao vivo, com payloads de exemplo.
+- **Purpose:** Catálogo de respostas de erro observadas durante a descoberta em produção, com exemplos de payloads.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -597,7 +597,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** Categoria de agrupamento de nível superior para CLI / UI / docs / Terraform de um domínio.
+- **Purpose:** Categoria de agrupamento de nível superior para CLI / UI / documentação / Terraform de um domínio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -621,7 +621,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** Recursos que exigem atenção elevada (críticos para produção).
+- **Purpose:** Recursos que requerem atenção elevada (críticos em produção).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -669,7 +669,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** Nível de complexidade relativa para criação de configurações neste domínio.
+- **Purpose:** Nível relativo de complexidade para autoria de configurações neste domínio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -681,7 +681,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** Nível mínimo de assinatura F5 XC exigido.
+- **Purpose:** Nível mínimo de assinatura do F5 XC necessário.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -693,7 +693,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Sinaliza um domínio como funcionalidade em pré-visualização / beta.
+- **Purpose:** Sinaliza um domínio como funcionalidade em preview / beta.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -717,7 +717,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Identificador de ícone a ser usado ao renderizar este domínio em uma UI.
+- **Purpose:** Identificador de ícone a ser utilizado ao renderizar este domínio em uma interface.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -729,7 +729,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** SVG embutido (ou caminho) para um logotipo de marca representando o domínio.
+- **Purpose:** SVG embutido (ou caminho) para um logotipo de marca que representa o domínio.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -753,7 +753,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Slug de seção de documentação / agrupamento de navegação para docs renderizados.
+- **Purpose:** Slug de seção de documentação / agrupamento de navegação para documentos renderizados.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -762,12 +762,12 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## Passagem upstream
+## Passagem de upstream
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -779,7 +779,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -791,7 +791,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -803,7 +803,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -815,7 +815,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -827,7 +827,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -839,7 +839,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -851,7 +851,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -863,7 +863,7 @@ desde que o cabeçalho `### x-name` exista e o sinalizador
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sem alteração a partir da especificação upstream da F5.
+- **Purpose:** Preservado sem alterações da especificação upstream da F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A

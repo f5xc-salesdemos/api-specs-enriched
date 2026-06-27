@@ -4,7 +4,7 @@ description: Estrutura e conteúdo da especificação de validação
 sidebar:
   order: 3
 i18n:
-  sourceHash: b1994d14ae6e
+  sourceHash: daa5f7b2c1c2
   translator: machine
 ---
 
@@ -12,7 +12,7 @@ Este documento descreve a estrutura e o conteúdo da especificação de validaç
 
 ## Visão Geral
 
-A especificação de validação consolida restrições de validação de API, valores padrão e metadados de configuração em um único arquivo JSON. Essa especificação é gerada a partir das specs OpenAPI enriquecidas e publicada junto a elas.
+A especificação de validação consolida restrições de validação de API, valores padrão e metadados de configuração em um único arquivo JSON. Essa especificação é gerada a partir das especificações OpenAPI enriquecidas e publicada juntamente com elas.
 
 **Local de publicação**: `docs/specifications/api/validation.json`
 
@@ -83,7 +83,7 @@ Define os valores permitidos para campos com restrições.
 
 ### constraints
 
-Padrões de validação padrão por tipo e regras baseadas em padrões.
+Padrões de validação padrão em nível de tipo e regras baseadas em padrões.
 
 ```json
 {
@@ -200,17 +200,17 @@ Todos os valores padrão organizados por tipo de recurso em uma estrutura unific
 }
 ```
 
-#### Categorias de Padrões
+#### Categorias de Padrão
 
 | Categoria | Descrição | Fonte |
 |----------|-------------|--------|
-| `server_applied` | Valores que a API aplica quando os campos são omitidos | Testes de API ao vivo |
-| `recommended` | Valores pré-preenchidos no console web F5 XC | Análise de UI |
+| `server_applied` | Valores que a API aplica quando os campos são omitidos | Testes de API em produção |
+| `recommended` | Valores pré-preenchidos no console web F5 XC | Análise de interface |
 | `advanced_options` | Padrões aninhados dentro de objetos advanced_options | Descoberta de API |
 | `oneof_choices` | Seleções padrão de variante OneOf | Comportamento da API |
 | `oneof_recommended` | Variantes OneOf recomendadas | Padrões do console |
-| `nested_recommended` | Valores recomendados para esquemas aninhados | Análise de UI |
-| `ui_vs_server` | Casos em que os padrões da UI diferem dos padrões da API | Análise comparativa |
+| `nested_recommended` | Valores recomendados para esquemas aninhados | Análise de interface |
+| `ui_vs_server` | Casos em que os padrões da interface diferem dos padrões da API | Análise comparativa |
 
 ### conditional_requirements
 
@@ -259,17 +259,17 @@ Configurações mínimas viáveis com exemplos funcionais.
 
 ## Mapeamento de Extensões OpenAPI
 
-As specs OpenAPI enriquecidas incorporam metadados de validação usando estas extensões:
+As especificações OpenAPI enriquecidas incorporam metadados de validação usando estas extensões:
 
 | Extensão | Finalidade | Localização |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | Campos obrigatórios específicos por contexto | Propriedades do esquema |
-| `x-f5xc-server-default` | Marca padrões aplicados pelo servidor | Propriedades do esquema |
-| `x-f5xc-recommended-value` | Valor padrão recomendado | Propriedades do esquema |
-| `x-f5xc-recommended-oneof-variant` | Variante OneOf recomendada | Definições do esquema |
-| `x-f5xc-conditions` | Requisitos condicionais | Propriedades do esquema |
-| `x-f5xc-minimum-configuration` | Exemplos de configuração mínima | Definições do esquema |
-| `x-f5xc-validation` | Restrições derivadas de descoberta | Propriedades do esquema |
+| `x-f5xc-required-for` | Campos obrigatórios específicos por contexto | Propriedades de esquema |
+| `x-f5xc-server-default` | Marca padrões aplicados pelo servidor | Propriedades de esquema |
+| `x-f5xc-recommended-value` | Valor padrão recomendado | Propriedades de esquema |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf recomendada | Definições de esquema |
+| `x-f5xc-conditions` | Requisitos condicionais | Propriedades de esquema |
+| `x-f5xc-minimum-configuration` | Exemplos de configuração mínima | Definições de esquema |
+| `x-f5xc-validation` | Restrições derivadas de descoberta | Propriedades de esquema |
 
 ## Acesso aos Dados
 
@@ -278,7 +278,7 @@ As specs OpenAPI enriquecidas incorporam metadados de validação usando estas e
 | Fonte | URL |
 |--------|-----|
 | GitHub Pages | `https://f5-sales-demo.github.io/api-specs-enriched/specifications/api/validation.json` |
-| Raw GitHub | `https://raw.githubusercontent.com/f5-sales-demo/api-specs-enriched/main/docs/specifications/api/validation.json` |
+| GitHub Raw | `https://raw.githubusercontent.com/f5-sales-demo/api-specs-enriched/main/docs/specifications/api/validation.json` |
 
 ### Caminho Local
 
@@ -286,26 +286,26 @@ Após executar o pipeline: `docs/specifications/api/validation.json`
 
 ## Versionamento
 
-A especificação de validação segue o versionamento semântico no campo `version`:
+A especificação de validação segue versionamento semântico no campo `version`:
 
 | Tipo de Alteração | Incremento de Versão | Exemplo |
 |-------------|--------------|---------|
-| Alterações estruturais incompatíveis | Major | Renomeação de campos, seções removidas |
-| Novas regras de validação ou recursos | Minor | Novos padrões de recurso |
-| Correções de bugs ou atualizações de descrição | Patch | Correções de erros tipográficos |
+| Alterações estruturais incompatíveis | Major | Renomeação de campos, remoção de seções |
+| Novas regras de validação ou recursos | Minor | Novos padrões de recursos |
+| Correções de bugs ou atualizações de descrição | Patch | Correções tipográficas |
 
 ## Prioridade de Reconciliação
 
 Quando múltiplas fontes fornecem restrições, a prioridade de reconciliação é:
 
-1. **Existente** - Restrições na spec OpenAPI original (maior prioridade)
-2. **Descoberta** - Restrições provenientes da descoberta de API ao vivo
-3. **Inferida** - Restrições provenientes de correspondência de padrões (menor prioridade)
+1. **Existente** - Restrições na especificação OpenAPI original (maior prioridade)
+2. **Descoberta** - Restrições provenientes de descoberta de API em produção
+3. **Inferido** - Restrições derivadas de correspondência de padrões (menor prioridade)
 
 ## Documentação Relacionada
 
-- [Healthcheck Enhancements](./Enhancements/healthcheck-enhancements/) - Enriquecimentos do esquema de healthcheck
-- [Origin Pool Enhancements](./Enhancements/originpool-enhancements/) - Enriquecimentos do esquema de origin pool
+- [Melhorias de Healthcheck](./Enhancements/healthcheck-enhancements/) - Enriquecimentos do esquema de healthcheck
+- [Melhorias de Origin Pool](./Enhancements/originpool-enhancements/) - Enriquecimentos do esquema de origin pool
 - [CLAUDE.md](../../CLAUDE.md) - Instruções para assistente de IA
 - [DEVELOPMENT.md](./development/) - Guia do desenvolvedor
 
@@ -313,6 +313,6 @@ Quando múltiplas fontes fornecem restrições, a prioridade de reconciliação 
 
 | Versão | Data | Alterações |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | Reescrito como referência de API pura; categorias oneof_recommended e nested_recommended adicionadas |
-| 2.1.0 | 2026-01-18 | Estrutura de padrões unificada substituindo seções fragmentadas |
+| 2.1.2 | 2026-01-18 | Reescrito como referência pura de API; adicionadas categorias oneof_recommended e nested_recommended |
+| 2.1.0 | 2026-01-18 | Estrutura unificada de padrões substituindo seções fragmentadas |
 | 2.0.0 | 2026-01-15 | Especificação de validação inicial |
