@@ -4,15 +4,15 @@ description: Structure et contenu de la spécification de validation
 sidebar:
   order: 3
 i18n:
-  sourceHash: b1994d14ae6e
+  sourceHash: daa5f7b2c1c2
   translator: machine
 ---
 
 Ce document décrit la structure et le contenu de la spécification de validation publiée par le projet api-specs-enriched.
 
-## Aperçu
+## Vue d'ensemble
 
-La spécification de validation regroupe les contraintes de validation d'API, les valeurs par défaut et les métadonnées de configuration dans un fichier JSON unique. Cette spécification est générée à partir des specs OpenAPI enrichies et publiée conjointement avec elles.
+La spécification de validation consolide les contraintes de validation d'API, les valeurs par défaut et les métadonnées de configuration dans un seul fichier JSON. Cette spécification est générée à partir des spécifications OpenAPI enrichies et publiée avec elles.
 
 **Emplacement de publication** : `docs/specifications/api/validation.json`
 
@@ -40,7 +40,7 @@ La spécification de validation regroupe les contraintes de validation d'API, le
 
 ### required_fields
 
-Spécifie les champs obligatoires pour chaque type d'opération par ressource.
+Spécifie les champs requis pour chaque type d'opération par ressource.
 
 ```json
 {
@@ -83,7 +83,7 @@ Définit les valeurs autorisées pour les champs contraints.
 
 ### constraints
 
-Valeurs par défaut de validation au niveau du type et règles basées sur les motifs.
+Valeurs par défaut de validation au niveau du type et règles basées sur des motifs.
 
 ```json
 {
@@ -98,7 +98,7 @@ Valeurs par défaut de validation au niveau du type et règles basées sur les m
 
 ### patterns
 
-Règles de validation basées sur les motifs de noms de champs, avec scores de confiance.
+Règles de validation basées sur des motifs de noms de champs avec scores de confiance.
 
 ```json
 {
@@ -203,11 +203,11 @@ Toutes les valeurs par défaut organisées par type de ressource dans une struct
 #### Catégories de valeurs par défaut
 
 | Catégorie | Description | Source |
-|-----------|-------------|--------|
-| `server_applied` | Valeurs appliquées par l'API lorsque les champs sont omis | Tests API en production |
-| `recommended` | Valeurs pré-remplies par la console web F5 XC | Analyse de l'interface |
+|----------|-------------|--------|
+| `server_applied` | Valeurs appliquées par l'API lorsque les champs sont omis | Tests API en direct |
+| `recommended` | Valeurs pré-renseignées par la console web F5 XC | Analyse de l'interface |
 | `advanced_options` | Valeurs par défaut imbriquées dans les objets advanced_options | Découverte API |
-| `oneof_choices` | Sélections de variantes OneOf par défaut | Comportement de l'API |
+| `oneof_choices` | Sélections de variantes OneOf par défaut | Comportement API |
 | `oneof_recommended` | Variantes OneOf recommandées | Valeurs par défaut de la console |
 | `nested_recommended` | Valeurs recommandées pour les schémas imbriqués | Analyse de l'interface |
 | `ui_vs_server` | Cas où les valeurs par défaut de l'interface diffèrent de celles de l'API | Analyse comparative |
@@ -236,7 +236,7 @@ Champs mutuellement exclusifs et dépendances conditionnelles.
 
 ### minimum_configurations
 
-Configurations minimales viables avec exemples fonctionnels.
+Configurations minimales viables avec des exemples fonctionnels.
 
 ```json
 {
@@ -259,21 +259,21 @@ Configurations minimales viables avec exemples fonctionnels.
 
 ## Correspondance des extensions OpenAPI
 
-Les specs OpenAPI enrichies intègrent des métadonnées de validation à l'aide de ces extensions :
+Les spécifications OpenAPI enrichies intègrent des métadonnées de validation à l'aide de ces extensions :
 
 | Extension | Objectif | Emplacement |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | Champs obligatoires selon le contexte | Propriétés du schéma |
-| `x-f5xc-server-default` | Indique les valeurs par défaut appliquées par le serveur | Propriétés du schéma |
-| `x-f5xc-recommended-value` | Valeur par défaut recommandée | Propriétés du schéma |
-| `x-f5xc-recommended-oneof-variant` | Variante OneOf recommandée | Définitions du schéma |
-| `x-f5xc-conditions` | Exigences conditionnelles | Propriétés du schéma |
-| `x-f5xc-minimum-configuration` | Exemples de configuration minimale | Définitions du schéma |
-| `x-f5xc-validation` | Contraintes dérivées de la découverte | Propriétés du schéma |
+| `x-f5xc-required-for` | Champs requis selon le contexte | Propriétés de schéma |
+| `x-f5xc-server-default` | Marque les valeurs par défaut appliquées par le serveur | Propriétés de schéma |
+| `x-f5xc-recommended-value` | Valeur par défaut recommandée | Propriétés de schéma |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf recommandée | Définitions de schéma |
+| `x-f5xc-conditions` | Exigences conditionnelles | Propriétés de schéma |
+| `x-f5xc-minimum-configuration` | Exemples de configuration minimale | Définitions de schéma |
+| `x-f5xc-validation` | Contraintes dérivées de la découverte | Propriétés de schéma |
 
 ## Accès aux données
 
-### URLs de publication
+### URL de publication
 
 | Source | URL |
 |--------|-----|
@@ -290,22 +290,22 @@ La spécification de validation suit la gestion sémantique des versions dans le
 
 | Type de modification | Incrément de version | Exemple |
 |-------------|--------------|---------|
-| Modifications structurelles majeures | Majeure | Renommage de champs, suppression de sections |
-| Nouvelles règles de validation ou ressources | Mineure | Nouvelles valeurs par défaut de ressource |
-| Corrections de bogues ou mises à jour des descriptions | Correctif | Corrections de fautes de frappe |
+| Modifications structurelles majeures | Majeur | Renommage de champs, suppression de sections |
+| Nouvelles règles de validation ou ressources | Mineur | Nouvelles valeurs par défaut de ressource |
+| Corrections de bugs ou mises à jour de descriptions | Correctif | Corrections typographiques |
 
 ## Priorité de réconciliation
 
 Lorsque plusieurs sources fournissent des contraintes, la priorité de réconciliation est la suivante :
 
-1. **Existantes** - Contraintes présentes dans la spec OpenAPI d'origine (priorité la plus haute)
-2. **Découverte** - Contraintes issues de la découverte API en production
-3. **Inférées** - Contraintes issues de la correspondance de motifs (priorité la plus basse)
+1. **Existant** - Contraintes dans la spécification OpenAPI d'origine (priorité la plus élevée)
+2. **Découverte** - Contraintes issues de la découverte API en direct
+3. **Inféré** - Contraintes issues de la correspondance de motifs (priorité la plus basse)
 
-## Documentation associée
+## Documentation connexe
 
-- [Améliorations Healthcheck](./Enhancements/healthcheck-enhancements/) - Enrichissements du schéma de vérification de l'état
-- [Améliorations Origin Pool](./Enhancements/originpool-enhancements/) - Enrichissements du schéma de pool d'origine
+- [Améliorations des vérifications de santé](./Enhancements/healthcheck-enhancements/) - Enrichissements du schéma de vérification de santé
+- [Améliorations du pool d'origine](./Enhancements/originpool-enhancements/) - Enrichissements du schéma du pool d'origine
 - [CLAUDE.md](../../CLAUDE.md) - Instructions pour l'assistant IA
 - [DEVELOPMENT.md](./development/) - Guide du développeur
 
@@ -314,5 +314,5 @@ Lorsque plusieurs sources fournissent des contraintes, la priorité de réconcil
 | Version | Date | Modifications |
 |---------|------|---------|
 | 2.1.2 | 2026-01-18 | Réécrit en tant que référence API pure ; ajout des catégories oneof_recommended et nested_recommended |
-| 2.1.0 | 2026-01-18 | Structure unifiée des valeurs par défaut remplaçant les sections fragmentées |
+| 2.1.0 | 2026-01-18 | Structure de valeurs par défaut unifiée remplaçant les sections fragmentées |
 | 2.0.0 | 2026-01-15 | Spécification de validation initiale |

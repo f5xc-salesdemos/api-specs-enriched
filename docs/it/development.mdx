@@ -1,16 +1,14 @@
 ---
 title: Guida allo sviluppo
-description: >-
-  Flusso di lavoro per lo sviluppo della pipeline di arricchimento delle API F5
-  XC
+description: Flusso di lavoro di sviluppo per la pipeline di arricchimento API F5 XC
 sidebar:
   order: 1
 i18n:
-  sourceHash: cd6be8e70b79
+  sourceHash: 050098d0edca
   translator: machine
 ---
 
-Questa guida descrive il flusso di lavoro per lo sviluppo della pipeline di arricchimento delle API F5 XC.
+Questa guida descrive il flusso di lavoro di sviluppo per la pipeline di arricchimento API F5 XC.
 
 ## Avvio rapido
 
@@ -76,13 +74,13 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 | Directory | Scopo | Stato Git |
 |-----------|-------|-----------|
 | `specs/original/` | Specifiche sorgente F5 | Gitignored |
-| `specs/discovered/` | Output del discovery API | Tracciato (openapi.json, session.json) |
+| `specs/discovered/` | Output discovery API | Tracciato (openapi.json, session.json) |
 | `docs/specifications/api/` | Specifiche di dominio generate | Gitignored |
 | `scripts/` | Script Python della pipeline | Tracciato |
 | `config/` | Configurazione della pipeline | Tracciato |
 | `reports/` | Report generati | Gitignored |
 
-## Pattern di flusso di lavoro
+## Modelli di flusso di lavoro
 
 ### 1. Flusso di lavoro di discovery
 
@@ -105,29 +103,29 @@ jq '.statistics' specs/discovered/session.json
 make push-discovery
 ```
 
-**Il discovery acquisisce**:
-- Campi obbligatori/facoltativi effettivi
+**La discovery acquisisce**:
+- Campi effettivamente obbligatori/facoltativi
 - Valori enum dalle risposte live
 - Valori predefiniti
-- Validazioni di pattern
+- Validazioni tramite pattern
 - Esempi di risposta
 
 ### 2. Flusso di lavoro di rilascio
 
 I rilasci sono automatizzati:
 
-1. Pianificazione giornaliera (6:00 UTC) o push al branch main attiva il workflow
+1. La pianificazione giornaliera (6:00 UTC) o il push al main avvia il flusso di lavoro
 2. Il controllo ETag determina se le specifiche F5 sono cambiate
 3. La pipeline elabora e arricchisce le specifiche
 4. La versione viene calcolata dai tag git: `git describe --tags --abbrev=0`
-5. Commit diretto + tag creato (nessun PR di bump di versione)
-6. Viene creata una GitHub Release con il changelog
-7. La documentazione viene distribuita su GitHub Pages
+5. Commit diretto + tag creato (nessuna PR di incremento versione)
+6. GitHub Release creata con changelog
+7. Documentazione distribuita su GitHub Pages
 
-**Regole di bump della versione**:
+**Regole di incremento versione**:
 
-| Condizione | Tipo di bump | Esempio |
-|------------|--------------|---------|
+| Condizione | Tipo di incremento | Esempio |
+|------------|-------------------|---------|
 | `[major]` nel commit | Major | 1.0.0 → 2.0.0 |
 | `BREAKING CHANGE` nel commit | Major | 1.0.0 → 2.0.0 |
 | Nuova specifica di dominio aggiunta | Minor | 1.0.0 → 1.1.0 |
@@ -154,18 +152,18 @@ git push -u origin feature/my-change
 gh pr create
 ```
 
-## Approfondimento sul discovery
+## Approfondimento sulla discovery
 
-### Cos'è il discovery?
+### Cos'è la discovery?
 
-Il discovery esplora l'API F5 XC live per trovare:
+La discovery esplora l'API F5 XC live per trovare:
 
 - **Vincoli non documentati**: Campi obbligatori non contrassegnati in OpenAPI
-- **Valori enum effettivi**: Valori reali osservati in produzione
+- **Valori enum effettivi**: Valori reali rilevati in produzione
 - **Comportamenti predefiniti**: Valori applicati dal server quando i campi vengono omessi
-- **Pattern di risposta**: Forme effettive dei dati
+- **Pattern di risposta**: Forme dei dati effettive
 
-### Configurazione del discovery
+### Configurazione della discovery
 
 ```yaml
 # config/discovery.yaml
@@ -187,7 +185,7 @@ discovery:
 
 ### Estensioni di discovery
 
-Il discovery aggiunge estensioni `x-discovered-*` alle specifiche:
+La discovery aggiunge estensioni `x-discovered-*` alle specifiche:
 
 ```json
 {
@@ -226,7 +224,7 @@ f5xc-api-specs-v1.0.14.zip
 └── README.md          # Usage instructions
 ```
 
-### Attivazione manuale del workflow
+### Attivazione manuale del flusso di lavoro
 
 ```bash
 gh workflow run sync-and-enrich.yml
@@ -291,16 +289,16 @@ La pipeline di arricchimento utilizza estensioni vendor per incorporare metadati
 | Estensione | Significato | Implicazione |
 |------------|-------------|--------------|
 | `x-f5xc-server-default` | Il server API F5 XC applica questo valore quando il campo viene omesso | Il campo è facoltativo; ometterlo produce il comportamento predefinito documentato |
-| `x-f5xc-recommended-value` | La console web F5 XC pre-popola questo valore per le nuove risorse | Il campo non ha un valore predefinito server ma questo valore rappresenta la configurazione tipica |
+| `x-f5xc-recommended-value` | La console web F5 XC pre-popola questo valore per le nuove risorse | Il campo non ha un valore predefinito lato server, ma questo valore rappresenta la configurazione tipica |
 | `x-f5xc-recommended-oneof-variant` | La console F5 XC preseleziona questa variante OneOf | Identifica la scelta tipica quando esistono più opzioni mutuamente esclusive |
-| `x-f5xc-conflicts-with` | Elenca le altre proprietà che non possono essere utilizzate insieme a questo campo | La proprietà fa parte di un gruppo OneOf; solo una delle proprietà in conflitto può essere specificata |
+| `x-f5xc-conflicts-with` | Elenca altre proprietà che non possono essere utilizzate insieme a questo campo | La proprietà fa parte di un gruppo OneOf; è possibile specificare solo una delle proprietà in conflitto |
 
-### Estensioni per i campi obbligatori
+### Estensioni per campi obbligatori
 
-| Estensione | Origine | Scopo |
-|------------|---------|-------|
+| Estensione | Sorgente | Scopo |
+|------------|----------|-------|
 | `x-ves-required: "true"` | Specifica originale F5 XC | Il campo richiede un valore non zero/non vuoto |
-| `x-f5xc-required-for` | Pipeline di arricchimento | Stato obbligatorio specifico per contesto |
+| `x-f5xc-required-for` | Pipeline di arricchimento | Stato obbligatorio specifico al contesto |
 
 **Contesti di x-f5xc-required-for**:
 - `create`: Obbligatorio durante la creazione della risorsa
@@ -313,14 +311,14 @@ La pipeline di arricchimento utilizza estensioni vendor per incorporare metadati
 |------------|-------|
 | `x-f5xc-server-default: true` | Contrassegna i valori predefiniti applicati dal server |
 | `x-f5xc-recommended-value` | Valore pre-popolato dalla console F5 XC |
-| `x-f5xc-recommended-oneof-variant` | Variante OneOf raccomandata |
+| `x-f5xc-recommended-oneof-variant` | Variante OneOf consigliata |
 | `x-f5xc-conflicts-with` | Esclusività reciproca con altre proprietà OneOf |
 
 #### x-f5xc-server-default
 
 **Tipo**: `boolean`
 
-Quando `true`, indica che il valore `default` associato viene applicato dal server API F5 XC. I campi con questa estensione possono essere omessi in sicurezza dalle richieste API — il server applica il valore predefinito automaticamente.
+Quando è `true`, indica che il valore `default` associato è applicato dal server API F5 XC. I campi con questa estensione possono essere omessi in sicurezza dalle richieste API — il server applica automaticamente il valore predefinito.
 
 ```yaml
 use_http2:
@@ -333,7 +331,7 @@ use_http2:
 
 **Tipo**: `any` (corrisponde al tipo del campo)
 
-Specifica un valore che la console web F5 XC utilizza come valore predefinito pre-popolato. Questo valore non è applicato dal server ma rappresenta la configurazione di partenza tipica per le nuove risorse create tramite la console.
+Specifica un valore che la console web F5 XC utilizza come valore predefinito pre-popolato. Questo valore non è applicato dal server, ma rappresenta la configurazione di partenza tipica per le nuove risorse create tramite la console.
 
 ```yaml
 timeout:
@@ -343,9 +341,9 @@ timeout:
 
 #### x-f5xc-recommended-oneof-variant
 
-**Tipo**: `object` (mappa del nome del gruppo al nome della variante)
+**Tipo**: `object` (mappa da nome del gruppo a nome della variante)
 
-Per gli schemi con gruppi di campi mutuamente esclusivi, identifica quale variante è la scelta predefinita o più comune. La chiave è il nome del gruppo OneOf e il valore è il nome del campo della variante raccomandata.
+Per gli schemi con gruppi di campi mutuamente esclusivi, identifica quale variante è quella predefinita o più comune. La chiave è il nome del gruppo OneOf e il valore è il nome del campo della variante consigliata.
 
 ```yaml
 healthcheckCreateSpecType:
@@ -358,9 +356,9 @@ healthcheckCreateSpecType:
 
 **Tipo**: `array` di stringhe
 
-**Aggiunto**: v3.2.0 (Issue #494)
+**Aggiunta**: v3.2.0 (Issue #494)
 
-Dichiara relazioni di esclusività reciproca tra i membri del gruppo OneOf. Derivato automaticamente dalle estensioni `x-ves-oneof-field-*`. Questo consente agli strumenti downstream (Terraform, CLI, MCP) di validare i conflitti a livello di schema anziché a runtime.
+Dichiara le relazioni di esclusività reciproca tra i membri del gruppo OneOf. Derivata automaticamente dalle estensioni `x-ves-oneof-field-*`. Ciò consente agli strumenti downstream (Terraform, CLI, MCP) di validare i conflitti a livello di schema anziché a runtime.
 
 ```yaml
 host_header:
@@ -374,11 +372,11 @@ use_origin_server_name:
 
 **Casi d'uso**:
 - I provider Terraform possono generare regole di validazione
-- Gli strumenti CLI possono avvisare riguardo a combinazioni di campi in conflitto
+- Gli strumenti CLI possono avvisare sulle combinazioni di campi in conflitto
 - Gli assistenti IA possono generare configurazioni OneOf corrette
-- Le estensioni IDE possono fornire autocompletamento consapevole dei conflitti
+- Le estensioni IDE possono fornire completamento automatico con consapevolezza dei conflitti
 
-**Origine**: Derivato automaticamente dalle estensioni native F5 `x-ves-oneof-field-*` durante l'arricchimento della pipeline.
+**Sorgente**: Derivata automaticamente dalle estensioni native F5 `x-ves-oneof-field-*` durante l'arricchimento della pipeline.
 
 ### Implicazioni delle regole di validazione
 
@@ -387,7 +385,7 @@ L'arricchitore ispeziona `x-ves-validation-rules` per dedurre lo stato obbligato
 | Regola | Implicazione |
 |--------|--------------|
 | `ves.io.schema.rules.message.required: "true"` | Il campo è obbligatorio |
-| `ves.io.schema.rules.uint32.gte: N` | Se N >= 1 e nessun valore predefinito server, il campo è obbligatorio |
+| `ves.io.schema.rules.uint32.gte: N` | Se N >= 1 e nessun valore predefinito lato server, il campo è obbligatorio |
 | `ves.io.schema.rules.repeated.min_items: N` | Se N >= 1, l'array richiede almeno N elementi |
 | `ves.io.schema.rules.string.min_bytes: N` | Se N >= 1, la stringa richiede almeno N byte |
 
@@ -399,7 +397,7 @@ Alcune risorse accettano specifiche vuote perché il server applica i valori pre
 |---------|----------------------------------------|
 | `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
 | `rate_limiter` | `limits: []`, `user_identification: []` |
-| `api_definition` | `swagger_specs: []`, `api_groups` predefinito |
+| `api_definition` | `swagger_specs: []`, `api_groups` predefiniti |
 | `healthcheck` | `jitter: 0`, `jitter_percent: 0`, valori predefiniti http_health_check annidati |
 
 Per queste risorse, `x-f5xc-required-for.create` può essere `false` anche quando `x-ves-required` è `true`.
@@ -426,14 +424,14 @@ Per queste risorse, `x-f5xc-required-for.create` può essere `false` anche quand
 
 ### Il pre-commit impiega troppo tempo
 
-La pipeline viene eseguita ad ogni commit per garantire la coerenza. Per i commit in corso di lavoro:
+La pipeline viene eseguita ad ogni commit per garantire la coerenza. Per i commit in corso di lavorazione:
 
 ```bash
 git commit --no-verify -m "WIP: work in progress"
 # Run before final commit: make pre-commit-run
 ```
 
-### Il discovery fallisce
+### La discovery fallisce
 
 ```bash
 # Check VPN
@@ -447,7 +445,7 @@ echo $F5XC_API_URL
 # Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### Errori di lint nelle specifiche generate
+### Errori di lint sulle specifiche generate
 
 ```bash
 # Check lint report
@@ -492,10 +490,10 @@ Aggiungere un'esclusione a `.pre-commit-config.yaml`:
 | `make build` | Build completa (download + pipeline) |
 | `make rebuild` | Rebuild rapida (salta il download) |
 | `make download` | Scarica le specifiche (con cache ETag) |
-| `make download-force` | Forza il download |
+| `make download-force` | Download forzato |
 | `make pipeline` | Esegue la pipeline di arricchimento |
 | `make lint` | Linting Spectral |
-| `make serve` | Server di documentazione locale |
+| `make serve` | Server locale di documentazione |
 | `make discover` | Discovery API (richiede VPN) |
 | `make push-discovery` | Commit dei dati di discovery |
 | `make clean` | Rimuove i file generati |
@@ -518,6 +516,6 @@ Aggiungere un'esclusione a `.pre-commit-config.yaml`:
 | `config/normalization.yaml` | Regole di normalizzazione |
 | `config/discovery.yaml` | Impostazioni di discovery |
 | `config/spectral.yaml` | Regole di linting |
-| `scripts/utils/version_calculator.py` | Calcolo della versione basato sui tag |
+| `scripts/utils/version_calculator.py` | Calcolo della versione basato su tag |
 
 **Nota**: La versione viene derivata dai tag git (es. `v2.0.38`), non da un file `.version`.
