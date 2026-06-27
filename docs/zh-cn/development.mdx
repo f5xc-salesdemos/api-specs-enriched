@@ -1,18 +1,18 @@
 ---
 title: 开发指南
-description: F5 XC API 丰富化管道的开发工作流程
+description: F5 XC API 增强管道的开发工作流程
 sidebar:
   order: 1
 i18n:
-  sourceHash: cd6be8e70b79
+  sourceHash: 050098d0edca
   translator: machine
 ---
 
-本指南描述了 F5 XC API 丰富化管道的开发工作流程。
+本指南介绍 F5 XC API 增强管道的开发工作流程。
 
 ## 快速入门
 
-### 首次安装配置
+### 首次设置
 
 ```bash
 # Clone the repository
@@ -45,7 +45,7 @@ make pre-commit-run
 make serve
 ```
 
-## 架构概述
+## 架构概览
 
 ### 双文件夹设计
 
@@ -73,11 +73,11 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 
 | 目录 | 用途 | Git 状态 |
 |-----------|---------|------------|
-| `specs/original/` | F5 源规范 | 已忽略（Gitignored） |
-| `specs/discovered/` | API 发现输出 | 已跟踪（openapi.json、session.json） |
-| `docs/specifications/api/` | 生成的域规范 | 已忽略（Gitignored） |
-| `scripts/` | Python 管道脚本 | 已跟踪 |
-| `config/` | 管道配置 | 已跟踪 |
+| `specs/original/` | F5 源规格文件 | 已忽略（Gitignored） |
+| `specs/discovered/` | API 发现输出 | 已追踪（openapi.json, session.json） |
+| `docs/specifications/api/` | 生成的领域规格文件 | 已忽略（Gitignored） |
+| `scripts/` | Python 管道脚本 | 已追踪 |
+| `config/` | 管道配置 | 已追踪 |
 | `reports/` | 生成的报告 | 已忽略（Gitignored） |
 
 ## 工作流程模式
@@ -85,8 +85,8 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 ### 1. 发现工作流程
 
 **前置条件**：
-- 已连接 VPN 至 F5 XC 环境
-- 有效的 API 凭证
+- 连接至 F5 XC 环境的 VPN
+- 有效的 API 凭据
 
 ```bash
 # Set credentials
@@ -103,32 +103,32 @@ jq '.statistics' specs/discovered/session.json
 make push-discovery
 ```
 
-**发现功能捕获以下信息**：
+**发现内容捕获**：
 - 实际的必填/可选字段
 - 来自实时响应的枚举值
 - 默认值
-- 模式验证规则
+- 模式验证
 - 响应示例
 
 ### 2. 发布工作流程
 
 发布流程已自动化：
 
-1. 每日定时（UTC 早上 6 点）或推送至主分支时触发工作流
-2. ETag 检查判断 F5 规范是否已变更
-3. 管道处理并丰富化规范
-4. 版本号通过 git 标签计算：`git describe --tags --abbrev=0`
-5. 直接提交并创建标签（无版本号升级 PR）
+1. 每日定时（UTC 凌晨 6 点）或推送至主分支触发工作流程
+2. ETag 检查确定 F5 规格文件是否有变更
+3. 管道处理并增强规格文件
+4. 版本号由 Git 标签计算得出：`git describe --tags --abbrev=0`
+5. 直接提交并创建标签（无版本升级 PR）
 6. 创建包含变更日志的 GitHub Release
 7. 文档部署至 GitHub Pages
 
-**版本号升级规则**：
+**版本升级规则**：
 
 | 条件 | 升级类型 | 示例 |
 |-----------|-----------|---------|
-| 提交中包含 `[major]` | 主版本 | 1.0.0 → 2.0.0 |
-| 提交中包含 `BREAKING CHANGE` | 主版本 | 1.0.0 → 2.0.0 |
-| 新增域规范 | 次版本 | 1.0.0 → 1.1.0 |
+| 提交信息包含 `[major]` | 主版本 | 1.0.0 → 2.0.0 |
+| 提交信息包含 `BREAKING CHANGE` | 主版本 | 1.0.0 → 2.0.0 |
+| 新增领域规格文件 | 次版本 | 1.0.0 → 1.1.0 |
 | 其他任何变更 | 补丁版本 | 1.0.0 → 1.0.1 |
 
 ### 3. 开发工作流程
@@ -152,18 +152,18 @@ git push -u origin feature/my-change
 gh pr create
 ```
 
-## 发现功能深度解析
+## 深入了解发现功能
 
-### 什么是发现功能？
+### 什么是发现？
 
-发现功能通过探索实时 F5 XC API 来获取以下信息：
+发现功能通过探索实时的 F5 XC API 来查找：
 
-- **未记录的约束**：未在 OpenAPI 中标注的必填字段
-- **实际枚举值**：生产环境中实际出现的值
-- **默认行为**：字段省略时服务器自动应用的值
-- **响应模式**：实际数据结构
+- **未文档化的约束**：OpenAPI 中未标记为必填的字段
+- **实际枚举值**：生产环境中实际观察到的值
+- **默认行为**：省略字段时服务器应用的值
+- **响应模式**：实际的数据结构
 
-### 发现功能配置
+### 发现配置
 
 ```yaml
 # config/discovery.yaml
@@ -183,9 +183,9 @@ discovery:
     detect_constraints: true
 ```
 
-### 发现功能扩展字段
+### 发现扩展
 
-发现功能会向规范中添加 `x-discovered-*` 扩展字段：
+发现功能向规格文件添加 `x-discovered-*` 扩展：
 
 ```json
 {
@@ -224,7 +224,7 @@ f5xc-api-specs-v1.0.14.zip
 └── README.md          # Usage instructions
 ```
 
-### 手动触发工作流
+### 手动触发工作流程
 
 ```bash
 gh workflow run sync-and-enrich.yml
@@ -233,7 +233,7 @@ gh run watch
 
 ## 配置指南
 
-### 丰富化配置
+### 增强配置
 
 ```yaml
 # config/enrichment.yaml
@@ -280,34 +280,34 @@ rules:
   operation-tags: warn
 ```
 
-## OpenAPI 扩展字段
+## OpenAPI 扩展
 
-丰富化管道使用供应商扩展字段来嵌入验证规则和默认值元数据。
+增强管道使用供应商扩展来嵌入验证和默认值元数据。
 
-### 扩展字段分类
+### 扩展类别
 
-| 扩展字段 | 含义 | 使用说明 |
+| 扩展 | 含义 | 说明 |
 |-----------|---------|-------------|
-| `x-f5xc-server-default` | F5 XC API 服务器在字段省略时自动应用该值 | 字段可选；省略后将产生文档中记录的默认行为 |
-| `x-f5xc-recommended-value` | F5 XC Web 控制台在创建新资源时预填充该值 | 字段无服务器默认值，但该值代表典型配置 |
-| `x-f5xc-recommended-oneof-variant` | F5 XC 控制台预选该 OneOf 变体 | 当存在多个互斥选项时，标识最常用的选择 |
-| `x-f5xc-conflicts-with` | 列出不能与此字段同时使用的其他属性 | 属性属于 OneOf 分组；互斥属性中只能指定一个 |
+| `x-f5xc-server-default` | 省略该字段时，F5 XC API 服务器会自动应用此值 | 字段为可选；省略该字段将产生已文档化的默认行为 |
+| `x-f5xc-recommended-value` | F5 XC Web 控制台为新资源预填充此值 | 字段无服务器默认值，但此值代表典型配置 |
+| `x-f5xc-recommended-oneof-variant` | F5 XC 控制台预选此 OneOf 变体 | 在多个互斥选项中标识典型选择 |
+| `x-f5xc-conflicts-with` | 列出不能与此字段同时使用的其他属性 | 属性属于 OneOf 组；冲突属性中只能指定其中一个 |
 
 ### 必填字段扩展
 
-| 扩展字段 | 来源 | 用途 |
+| 扩展 | 来源 | 用途 |
 |-----------|--------|---------|
-| `x-ves-required: "true"` | F5 XC 原始规范 | 字段需要非零/非空值 |
-| `x-f5xc-required-for` | 丰富化管道 | 特定上下文的必填状态 |
+| `x-ves-required: "true"` | F5 XC 原始规格文件 | 字段需要非零/非空值 |
+| `x-f5xc-required-for` | 增强管道 | 特定上下文的必填状态 |
 
-**x-f5xc-required-for 上下文说明**：
+**x-f5xc-required-for 上下文**：
 - `create`：创建资源时必填
 - `update`：更新资源时必填
-- `minimum_config`：最小可用配置时必填
+- `minimum_config`：最小可行配置时必填
 
-### 默认值与 OneOf 扩展字段
+### 默认值与 OneOf 扩展
 
-| 扩展字段 | 用途 |
+| 扩展 | 用途 |
 |-----------|---------|
 | `x-f5xc-server-default: true` | 标记服务器应用的默认值 |
 | `x-f5xc-recommended-value` | F5 XC 控制台预填充的值 |
@@ -318,7 +318,7 @@ rules:
 
 **类型**：`boolean`
 
-当值为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制应用。带有此扩展字段的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
+当值为 `true` 时，表示附带的 `default` 值由 F5 XC API 服务器强制执行。具有此扩展的字段可以安全地从 API 请求中省略——服务器会自动应用默认值。
 
 ```yaml
 use_http2:
@@ -331,7 +331,7 @@ use_http2:
 
 **类型**：`any`（与字段类型匹配）
 
-指定 F5 XC Web 控制台用作预填充默认值的值。该值不由服务器强制执行，但代表通过控制台创建新资源时的典型初始配置。
+指定 F5 XC Web 控制台作为预填充默认值使用的值。此值不由服务器强制执行，但代表通过控制台创建新资源时的典型初始配置。
 
 ```yaml
 timeout:
@@ -343,7 +343,7 @@ timeout:
 
 **类型**：`object`（组名到变体名的映射）
 
-对于包含互斥字段组的模式，标识哪个变体是默认或最常用的选择。键为 OneOf 组名，值为推荐变体的字段名。
+对于具有互斥字段组的模式，标识哪个变体是默认或最常见的选择。键为 OneOf 组名，值为推荐的变体字段名。
 
 ```yaml
 healthcheckCreateSpecType:
@@ -356,9 +356,9 @@ healthcheckCreateSpecType:
 
 **类型**：字符串 `array`
 
-**新增版本**：v3.2.0（Issue #494）
+**新增于**：v3.2.0（Issue #494）
 
-声明 OneOf 组成员之间的互斥关系。自动从 `x-ves-oneof-field-*` 扩展字段派生而来。这使下游工具（Terraform、CLI、MCP）能够在模式层面验证冲突，而不必等到运行时。
+声明 OneOf 组成员之间的互斥关系。由 `x-ves-oneof-field-*` 扩展自动推导。这使下游工具（Terraform、CLI、MCP）能够在模式层面而非运行时验证冲突。
 
 ```yaml
 host_header:
@@ -371,34 +371,34 @@ use_origin_server_name:
 ```
 
 **使用场景**：
-- Terraform 提供程序可生成验证规则
-- CLI 工具可对冲突字段组合发出警告
+- Terraform 提供商可生成验证规则
+- CLI 工具可警告冲突字段组合
 - AI 助手可生成正确的 OneOf 配置
-- IDE 扩展可提供感知冲突的自动补全
+- IDE 扩展可提供冲突感知的自动补全
 
-**来源**：在管道丰富化过程中，自动从 F5 原生 `x-ves-oneof-field-*` 扩展字段派生。
+**来源**：在管道增强过程中，由 F5 原生 `x-ves-oneof-field-*` 扩展自动推导。
 
-### 验证规则的含义
+### 验证规则说明
 
-丰富化程序会检查 `x-ves-validation-rules` 以推断必填状态：
+增强器检查 `x-ves-validation-rules` 以推断必填状态：
 
-| 规则 | 含义 |
+| 规则 | 说明 |
 |------|-------------|
-| `ves.io.schema.rules.message.required: "true"` | 字段为必填项 |
-| `ves.io.schema.rules.uint32.gte: N` | 若 N >= 1 且无服务器默认值，则字段为必填项 |
+| `ves.io.schema.rules.message.required: "true"` | 字段为必填 |
+| `ves.io.schema.rules.uint32.gte: N` | 若 N >= 1 且无服务器默认值，则字段为必填 |
 | `ves.io.schema.rules.repeated.min_items: N` | 若 N >= 1，数组至少需要 N 个元素 |
 | `ves.io.schema.rules.string.min_bytes: N` | 若 N >= 1，字符串至少需要 N 个字节 |
 
 ### 具有服务器应用默认值的资源
 
-某些资源可以接受空规范，因为服务器会应用默认值：
+某些资源接受空规格文件，因为服务器会应用默认值：
 
 | 资源 | 服务器应用的默认值 |
 |----------|------------------------|
-| `app_firewall` | `monitoring: \{\}`，`default_detection_settings: \{\}` |
-| `rate_limiter` | `limits: []`，`user_identification: []` |
-| `api_definition` | `swagger_specs: []`，默认 `api_groups` |
-| `healthcheck` | `jitter: 0`，`jitter_percent: 0`，嵌套 http_health_check 默认值 |
+| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
+| `rate_limiter` | `limits: []`, `user_identification: []` |
+| `api_definition` | `swagger_specs: []`, 默认 `api_groups` |
+| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, 嵌套 http_health_check 默认值 |
 
 对于这些资源，即使 `x-ves-required` 为 `true`，`x-f5xc-required-for.create` 也可能为 `false`。
 
@@ -414,7 +414,7 @@ use_origin_server_name:
 
 ### 添加已发现的默认值
 
-1. 通过 API 使用最小规范在 F5 XC 中创建资源
+1. 通过 API 在 F5 XC 中使用最小规格创建资源
 2. 读取资源以查看服务器应用的值
 3. 在 `config/discovered_defaults.yaml` 中记录默认值
 4. 运行管道：`make pipeline`
@@ -422,7 +422,7 @@ use_origin_server_name:
 
 ## 故障排查
 
-### pre-commit 执行时间过长
+### Pre-commit 耗时过长
 
 管道在每次提交时运行以确保一致性。对于进行中的提交：
 
@@ -445,18 +445,18 @@ echo $F5XC_API_URL
 # Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### 生成规范出现代码检查错误
+### 生成规格文件的代码检查错误
 
 ```bash
 # Check lint report
 cat reports/lint-report.json | jq '.errors'
 ```
 
-请在丰富化/规范化配置中修复问题，而不是直接修改输出文件。
+请在增强/规范化配置中修复问题，而非直接修改输出文件。
 
 ### 版本系统
 
-版本号从 git 标签派生（例如 `v2.0.38`），消除了并发 PR 中因竞争条件导致的合并冲突。
+版本号由 Git 标签推导（例如 `v2.0.38`），消除了并发 PR 上导致合并冲突的竞态条件。
 
 ```python
 # Version is calculated dynamically from git tags
@@ -464,15 +464,15 @@ from scripts.utils.version_calculator import get_version_from_tags
 version = get_version_from_tags()  # Returns "2.0.38"
 ```
 
-### 克隆后规范文件缺失
+### 克隆后规格文件缺失
 
-生成的规范文件已被 git 忽略：
+生成的规格文件已被 Git 忽略：
 
 ```bash
 make build  # Downloads and generates everything
 ```
 
-### 大文件被拦截
+### 大文件被阻止
 
 在 `.pre-commit-config.yaml` 中添加排除规则：
 
@@ -485,13 +485,13 @@ make build  # Downloads and generates everything
 
 ### Make 目标
 
-| 目标 | 说明 |
+| 目标 | 描述 |
 |--------|-------------|
 | `make build` | 完整构建（下载 + 管道） |
-| `make rebuild` | 快速重建（跳过下载） |
-| `make download` | 下载规范（ETag 缓存） |
+| `make rebuild` | 快速重新构建（跳过下载） |
+| `make download` | 下载规格文件（ETag 缓存） |
 | `make download-force` | 强制下载 |
-| `make pipeline` | 运行丰富化管道 |
+| `make pipeline` | 运行增强管道 |
 | `make lint` | Spectral 代码检查 |
 | `make serve` | 本地文档服务器 |
 | `make discover` | API 发现（需要 VPN） |
@@ -510,12 +510,12 @@ make build  # Downloads and generates everything
 
 | 文件 | 用途 |
 |------|---------|
-| `.etag` | 最后下载的 ETag |
+| `.etag` | 上次下载的 ETag |
 | `CHANGELOG.md` | 自动生成的变更日志 |
-| `config/enrichment.yaml` | 丰富化规则 |
+| `config/enrichment.yaml` | 增强规则 |
 | `config/normalization.yaml` | 规范化规则 |
-| `config/discovery.yaml` | 发现功能设置 |
+| `config/discovery.yaml` | 发现设置 |
 | `config/spectral.yaml` | 代码检查规则 |
 | `scripts/utils/version_calculator.py` | 基于标签的版本计算 |
 
-**注意**：版本号从 git 标签派生（例如 `v2.0.38`），而非从 `.version` 文件读取。
+**注意**：版本号由 Git 标签推导（例如 `v2.0.38`），而非来自 `.version` 文件。

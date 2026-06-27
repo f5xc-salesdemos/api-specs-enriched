@@ -4,15 +4,15 @@ description: 驗證規格的結構與內容
 sidebar:
   order: 3
 i18n:
-  sourceHash: b1994d14ae6e
+  sourceHash: daa5f7b2c1c2
   translator: machine
 ---
 
-本文件描述由 api-specs-enriched 專案發佈的驗證規格的結構與內容。
+本文件說明由 api-specs-enriched 專案發佈的驗證規格之結構與內容。
 
 ## 概觀
 
-驗證規格將 API 驗證約束、預設值及配置元數據整合為單一 JSON 檔案。此規格由豐富化的 OpenAPI 規格生成，並與其一同發佈。
+驗證規格將 API 驗證限制條件、預設值及設定元資料整合至單一 JSON 檔案中。此規格由豐富化後的 OpenAPI 規格生成，並與其一同發佈。
 
 **發佈位置**：`docs/specifications/api/validation.json`
 
@@ -40,7 +40,7 @@ i18n:
 
 ### required_fields
 
-指定每種資源各操作類型所需的欄位。
+指定每個資源各操作類型所需的欄位。
 
 ```json
 {
@@ -61,7 +61,7 @@ i18n:
 
 ### enum_values
 
-定義受限欄位的允許值。
+定義受限制欄位的允許值。
 
 ```json
 {
@@ -98,7 +98,7 @@ i18n:
 
 ### patterns
 
-基於欄位名稱模式的驗證規則，附帶信心分數。
+基於欄位名稱模式的驗證規則，並附有信心分數。
 
 ```json
 {
@@ -125,7 +125,7 @@ i18n:
 
 ### defaults
 
-依資源類型組織的所有預設值，採用統一結構。
+所有預設值依資源類型整理於統一結構中。
 
 ```json
 {
@@ -200,9 +200,9 @@ i18n:
 }
 ```
 
-#### 預設值分類
+#### 預設值類別
 
-| 分類 | 說明 | 來源 |
+| 類別 | 說明 | 來源 |
 |----------|-------------|--------|
 | `server_applied` | 欄位省略時 API 套用的值 | 即時 API 測試 |
 | `recommended` | F5 XC 網頁主控台預先填入的值 | UI 分析 |
@@ -214,7 +214,7 @@ i18n:
 
 ### conditional_requirements
 
-互斥欄位及條件式相依關係。
+互斥欄位及條件式相依性。
 
 ```json
 {
@@ -236,7 +236,7 @@ i18n:
 
 ### minimum_configurations
 
-最小可行配置及可運作的範例。
+最小可行設定及可運作範例。
 
 ```json
 {
@@ -257,19 +257,19 @@ i18n:
 }
 ```
 
-## OpenAPI 擴充對應
+## OpenAPI 擴充功能對應
 
-豐富化的 OpenAPI 規格使用以下擴充嵌入驗證元數據：
+豐富化後的 OpenAPI 規格使用以下擴充功能嵌入驗證元資料：
 
-| 擴充 | 用途 | 位置 |
+| 擴充功能 | 用途 | 位置 |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | 依上下文指定的必要欄位 | 結構描述屬性 |
+| `x-f5xc-required-for` | 特定情境的必要欄位 | 結構描述屬性 |
 | `x-f5xc-server-default` | 標記伺服器套用的預設值 | 結構描述屬性 |
 | `x-f5xc-recommended-value` | 建議的預設值 | 結構描述屬性 |
 | `x-f5xc-recommended-oneof-variant` | 建議的 OneOf 變體 | 結構描述定義 |
 | `x-f5xc-conditions` | 條件式需求 | 結構描述屬性 |
-| `x-f5xc-minimum-configuration` | 最小配置範例 | 結構描述定義 |
-| `x-f5xc-validation` | 探索所得的約束 | 結構描述屬性 |
+| `x-f5xc-minimum-configuration` | 最小設定範例 | 結構描述定義 |
+| `x-f5xc-validation` | 探索衍生的限制條件 | 結構描述屬性 |
 
 ## 資料存取
 
@@ -280,39 +280,39 @@ i18n:
 | GitHub Pages | `https://f5-sales-demo.github.io/api-specs-enriched/specifications/api/validation.json` |
 | Raw GitHub | `https://raw.githubusercontent.com/f5-sales-demo/api-specs-enriched/main/docs/specifications/api/validation.json` |
 
-### 本地路徑
+### 本機路徑
 
 執行管線後：`docs/specifications/api/validation.json`
 
 ## 版本控制
 
-驗證規格在 `version` 欄位中遵循語義化版本控制：
+驗證規格於 `version` 欄位中遵循語意化版本規範：
 
 | 變更類型 | 版本遞增 | 範例 |
 |-------------|--------------|---------|
-| 破壞性結構變更 | 主版本 | 欄位重新命名、移除節 |
-| 新增驗證規則或資源 | 次版本 | 新增資源預設值 |
-| 錯誤修正或說明更新 | 修訂版本 | 錯字更正 |
+| 重大結構變更 | 主版本號 | 欄位重新命名、章節移除 |
+| 新增驗證規則或資源 | 次版本號 | 新增資源預設值 |
+| 錯誤修正或說明更新 | 修訂號 | 錯字更正 |
 
-## 協調優先順序
+## 調和優先順序
 
-當多個來源提供約束時，協調優先順序為：
+當多個來源提供限制條件時，調和優先順序為：
 
-1. **既有** - 原始 OpenAPI 規格中的約束（最高優先順序）
-2. **探索** - 來自即時 API 探索的約束
-3. **推斷** - 來自模式比對的約束（最低優先順序）
+1. **現有** - 原始 OpenAPI 規格中的限制條件（最高優先順序）
+2. **探索** - 來自即時 API 探索的限制條件
+3. **推斷** - 來自模式比對的限制條件（最低優先順序）
 
 ## 相關文件
 
-- [健康檢查增強](./Enhancements/healthcheck-enhancements/) - 健康檢查結構描述豐富化
-- [源池增強](./Enhancements/originpool-enhancements/) - 源池結構描述豐富化
-- [CLAUDE.md](../../CLAUDE.md) - AI 助手說明
-- [DEVELOPMENT.md](./development/) - 開發者指南
+- [Healthcheck Enhancements](./Enhancements/healthcheck-enhancements/) - 健康檢查結構描述豐富化
+- [Origin Pool Enhancements](./Enhancements/originpool-enhancements/) - 來源集區結構描述豐富化
+- [CLAUDE.md](../../CLAUDE.md) - AI 助理說明
+- [DEVELOPMENT.md](./development/) - 開發人員指南
 
 ## 變更日誌
 
 | 版本 | 日期 | 變更內容 |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | 改寫為純 API 參考；新增 oneof_recommended 及 nested_recommended 分類 |
-| 2.1.0 | 2026-01-18 | 統一預設值結構，取代分散的各節 |
+| 2.1.2 | 2026-01-18 | 改寫為純 API 參考；新增 oneof_recommended 及 nested_recommended 類別 |
+| 2.1.0 | 2026-01-18 | 統一預設值結構，取代原有分散的各節 |
 | 2.0.0 | 2026-01-15 | 初始驗證規格 |
