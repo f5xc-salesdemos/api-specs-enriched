@@ -1,36 +1,34 @@
 ---
 title: Catalogo delle estensioni di arricchimento
-description: >-
-  Fonte ufficiale di riferimento per ogni estensione x-* nelle specifiche
-  OpenAPI arricchite
+description: Fonte di verità per ogni estensione x-* nelle specifiche OpenAPI arricchite
 i18n:
-  sourceHash: 395df1e3c471
+  sourceHash: b7ee25e1b768
   translator: machine
 ---
 
 # Catalogo delle estensioni di arricchimento
 
-Fonte ufficiale di riferimento per ogni estensione `x-*` che compare in
-`docs/specifications/api/*.json`. La corrispondenza con
+Fonte di verità per ogni estensione `x-*` che compare in
+`docs/specifications/api/*.json`. La parità con
 `scripts/utils/extension_constants.py` è verificata da
 `tests/test_extension_catalog.py`.
 
-Qui sono documentate tre classi di estensioni:
+Sono documentate qui tre classi di estensioni:
 
-- **Iniettate qui** — estensioni aggiunte dai nostri enricher (`x-f5xc-*` e
+- **Iniettate qui** — estensioni aggiunte dai nostri arricchitori (`x-f5xc-*` e
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / varianti di
-  discovery). Queste sono quelle che gli strumenti a valle dovrebbero consumare.
+  discovery). Queste sono quelle che gli strumenti downstream dovrebbero consumare.
 - **Pass-through upstream** — estensioni emesse da F5 nelle specifiche sorgente
-  e preservate invariate (`x-ves-proto-*`, `x-displayname`, ecc.).
-  Documentate per trasparenza ma non controllate da questo repository.
-- **Iniettate in futuro** — non ancora emesse; documentate nel momento in cui
-  un enricher inizia a produrle (non applicabile alla popolazione iniziale).
+  e da noi preservate invariate (`x-ves-proto-*`, `x-displayname`, ecc.).
+  Documentate per trasparenza, ma non controllate da questo repository.
+- **Iniettate in futuro** — non ancora emesse; documentate qui nel momento in cui
+  un arricchitore inizia a produrle (non applicabile alla popolazione iniziale).
 
 ## Schema delle voci
 
-Ogni voce di seguito ha esattamente questa forma. Il test di corrispondenza in
+Ogni voce qui sotto ha esattamente questa forma. Il test di parità in
 `tests/test_extension_catalog.py` tollera che il corpo della sezione sia
-minimale purché esista l'intestazione `### x-name` e il flag
+sintetico, purché l'intestazione `### x-name` esista e il flag
 `Pass-through from upstream:` sia presente con valore `yes` o `no`.
 
     ### x-<name>
@@ -44,7 +42,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## Iniettate — a livello di specifica (sezione info)
+## Iniettate — livello di specifica (sezione info)
 
 ### x-f5xc-cli-domain
 
@@ -61,7 +59,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** Blocco di metadati a livello CLI (nome dello strumento, suggerimenti di versione, raggruppamento per dominio).
+- **Purpose:** Blocco di metadati CLI globali (nome strumento, suggerimenti di versione, raggruppamento del dominio).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -109,7 +107,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** Blocco glossario di branding/terminologia applicato a ogni specifica di dominio.
+- **Purpose:** Blocco di glossario branding/terminologia applicato a ogni specifica di dominio.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -121,7 +119,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Timestamp di quando è stata eseguita la fase di discovery sull'API live.
+- **Purpose:** Timestamp di quando è stata eseguita la fase di discovery dell'API live.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -133,7 +131,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** URL base dell'API live analizzata durante la discovery.
+- **Purpose:** URL base dell'API live sottoposta a probe durante la discovery.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -157,7 +155,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** Tempo di risposta osservato (ms) per l'API analizzata durante la discovery.
+- **Purpose:** Tempo di risposta osservato (ms) per l'API sottoposta a probe durante la discovery.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -169,7 +167,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** Guida alle best practice curata per un dominio.
+- **Purpose:** Guida curata alle best practice per un dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -214,7 +212,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
-## Iniettate — a livello di schema (schemi dei componenti)
+## Iniettate — livello di schema (schemi dei componenti)
 
 ### x-f5xc-minimum-configuration
 
@@ -231,7 +229,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** Fornisce metadati di vincolo, raccomandazione e classificazione del namespace per una risorsa.
+- **Purpose:** Fornisce metadati di vincolo del namespace, raccomandazione e classificazione per una risorsa.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -243,7 +241,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Ordinamento suggerito delle proprietà per la presentazione nell'interfaccia utente/CLI.
+- **Purpose:** Ordinamento suggerito delle proprietà per la presentazione in UI/CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -255,7 +253,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Nome del tipo di risorsa Terraform che corrisponde a questo schema.
+- **Purpose:** Nome del tipo di risorsa Terraform che mappa a questo schema.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -267,7 +265,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** Nome visualizzato leggibile dall'uomo per uno schema di risorsa (sostituisce la generazione automatica).
+- **Purpose:** Nome visualizzato leggibile dall'utente per uno schema di risorsa (sovrascrive la generazione automatica).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -279,7 +277,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** Navigazione nell'interfaccia utente della console, routing e struttura del form per questa risorsa.
+- **Purpose:** Navigazione UI della console, routing e struttura del form per questa risorsa.
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -288,12 +286,12 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
-## Iniettate — a livello di proprietà
+## Iniettate — livello di proprietà
 
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** Descrizione arricchita della proprietà che integra la `description` upstream.
+- **Purpose:** Descrizione della proprietà arricchita che integra la `description` upstream.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -353,7 +351,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Valore/i predefinito/i da mostrare nella documentazione generata e nelle interfacce utente.
+- **Purpose:** Valore/i predefinito/i da mostrare nella documentazione generata e nelle UI.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -377,7 +375,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Elenca le combinazioni di funzionalità denominate che richiedono questa proprietà.
+- **Purpose:** Elenca le combinazioni di funzionalità nominate che richiedono questa proprietà.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -389,7 +387,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** Requisiti condizionali (es. obbligatorio quando il campo fratello è uguale a X).
+- **Purpose:** Requisiti condizionali (es. richiesto quando il campo fratello è uguale a X).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -425,7 +423,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Valore di produzione raccomandato per un campo in cui il valore predefinito del server non è ottimale.
+- **Purpose:** Valore di produzione raccomandato per un campo dove il valore predefinito del server è subottimale.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -461,7 +459,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** Documenta le dipendenze tra campi in cui un campo richiede che un altro sia impostato.
+- **Purpose:** Documenta le dipendenze tra campi in cui un campo ne richiede un altro impostato.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -485,7 +483,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** Dichiara se un campo deve essere univoco nel suo ambito.
+- **Purpose:** Dichiara se un campo deve essere univoco all'interno del proprio scope.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -506,12 +504,12 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
 - **Pass-through from upstream:** no
 
-## Iniettate — a livello di operazione
+## Iniettate — livello di operazione
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** Nomina i campi del corpo dell'operazione che devono essere forniti per il successo.
+- **Purpose:** Denomina i campi del corpo dell'operazione che devono essere forniti per il successo.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -523,7 +521,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** Classifica il raggio d'azione di un'operazione (low/medium/high/critical).
+- **Purpose:** Classifica il raggio di impatto di un'operazione (low/medium/high/critical).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -535,7 +533,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Indica se CLI/interfaccia utente deve richiedere all'utente conferma prima dell'esecuzione.
+- **Purpose:** Indica se CLI/UI deve richiedere all'utente di confermare prima dell'esecuzione.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -571,7 +569,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** Intestazioni/comportamento di rate-limit osservati dall'API live.
+- **Purpose:** Header di rate-limit / comportamento osservati esposti dall'API live.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -592,12 +590,12 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## Iniettate — a livello di indice (metadati del dominio)
+## Iniettate — livello indice (metadati di dominio)
 
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** Categoria di raggruppamento di primo livello per CLI / interfaccia utente / documentazione / Terraform di un dominio.
+- **Purpose:** Categoria di raggruppamento di primo livello per CLI / UI / documentazione / Terraform di un dominio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -621,7 +619,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** Risorse che richiedono attenzione elevata (critiche in produzione).
+- **Purpose:** Risorse che richiedono maggiore attenzione (critiche in produzione).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -693,7 +691,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Contrassegna un dominio come funzionalità in anteprima/beta.
+- **Purpose:** Contrassegna un dominio come funzionalità in anteprima / beta.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -705,7 +703,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** Casi d'uso denominati supportati da questo dominio.
+- **Purpose:** Casi d'uso nominati supportati da questo dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -717,7 +715,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Identificatore dell'icona da utilizzare per il rendering di questo dominio nell'interfaccia utente.
+- **Purpose:** Identificatore dell'icona da utilizzare per il rendering di questo dominio nell'UI.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -741,7 +739,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** Riferimenti incrociati ad altri domini comunemente utilizzati insieme a questo.
+- **Purpose:** Collegamenti incrociati ad altri domini comunemente utilizzati insieme a questo.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -753,7 +751,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Sezione della documentazione / slug di raggruppamento di navigazione per la documentazione renderizzata.
+- **Purpose:** Slug della sezione della documentazione / raggruppamento di navigazione per la documentazione renderizzata.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -845,7 +843,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Vedere la documentazione upstream F5.
+- **Example:** Consultare la documentazione upstream F5.
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
@@ -857,7 +855,7 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Vedere la documentazione upstream F5.
+- **Example:** Consultare la documentazione upstream F5.
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
@@ -869,5 +867,5 @@ minimale purché esista l'intestazione `### x-name` e il flag
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Vedere la documentazione upstream F5.
+- **Example:** Consultare la documentazione upstream F5.
 - **Pass-through from upstream:** yes

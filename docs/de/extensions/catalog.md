@@ -1,37 +1,37 @@
 ---
-title: Erweiterungskatalog für Anreicherungen
+title: Anreicherungserweiterungskatalog
 description: >-
   Maßgebliche Referenz für jede x-*-Erweiterung in den angereicherten
   OpenAPI-Spezifikationen
 i18n:
-  sourceHash: 395df1e3c471
+  sourceHash: b7ee25e1b768
   translator: machine
 ---
 
-# Erweiterungskatalog für Anreicherungen
+# Anreicherungserweiterungskatalog
 
 Maßgebliche Referenz für jede `x-*`-Erweiterung, die in
-`docs/specifications/api/*.json` vorkommt. Die Übereinstimmung mit
+`docs/specifications/api/*.json` vorkommt. Die Parität mit
 `scripts/utils/extension_constants.py` wird durch
-`tests/test_extension_catalog.py` erzwungen.
+`tests/test_extension_catalog.py` sichergestellt.
 
 Drei Klassen von Erweiterungen sind hier dokumentiert:
 
-- **Hier injiziert** — Erweiterungen, die unsere Anreicherungsskripte hinzufügen (`x-f5xc-*` und
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / Discovery-
-  Varianten). Diese sollten von nachgelagerten Werkzeugen konsumiert werden.
+- **Hier eingefügt** — Erweiterungen, die unsere Anreicherungsskripte hinzufügen (`x-f5xc-*` und
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / Erkennung
+  Varianten). Diese sind die Erweiterungen, die nachgelagerte Werkzeuge verwenden sollten.
 - **Upstream-Durchleitung** — Erweiterungen, die F5 in den Quellspezifikationen ausgibt
   und die wir unverändert übernehmen (`x-ves-proto-*`, `x-displayname` usw.).
   Aus Transparenzgründen dokumentiert, aber nicht von diesem Repository gesteuert.
-- **Zukünftig injiziert** — noch nicht ausgegeben; wird hier dokumentiert, sobald
-  ein Anreicherungsskript beginnt, sie zu erzeugen (bei der initialen Befüllung nicht anwendbar).
+- **Zukünftig eingefügt** — noch nicht ausgegeben; wird hier dokumentiert, sobald
+  ein Anreicherungsskript beginnt, sie zu erzeugen (bei der Erstbefüllung nicht zutreffend).
 
 ## Eintragsschema
 
-Jeder nachstehende Eintrag hat genau diese Form. Der Paritätstest in
-`tests/test_extension_catalog.py` toleriert, dass der Abschnittsinhalt kurz gehalten ist,
+Jeder Eintrag unten hat genau diese Form. Der Paritätstest in
+`tests/test_extension_catalog.py` toleriert, dass der Abschnittsinhalt kurz ist,
 solange der `### x-name`-Header vorhanden ist und das
-`Pass-through from upstream:`-Flag mit dem Wert `yes` oder `no` angegeben ist.
+`Pass-through from upstream:`-Flag mit dem Wert `yes` oder `no` gesetzt ist.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -44,7 +44,7 @@ solange der `### x-name`-Header vorhanden ist und das
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## Injiziert — Spezifikationsebene (Info-Abschnitt)
+## Eingefügt — Spezifikationsebene (Info-Abschnitt)
 
 ### x-f5xc-cli-domain
 
@@ -121,7 +121,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Zeitstempel, zu dem der Live-API-Discovery-Durchlauf ausgeführt wurde.
+- **Purpose:** Zeitstempel, wann der Live-API-Erkennungsdurchlauf ausgeführt wurde.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -133,7 +133,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** Basis-URL der Live-API, die während der Discovery untersucht wurde.
+- **Purpose:** Basis-URL der Live-API, die während der Erkennung untersucht wurde.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -157,7 +157,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** Gemessene Antwortzeit (ms) für die untersuchte API während der Discovery.
+- **Purpose:** Beobachtete Antwortzeit (ms) für die untersuchte API während der Erkennung.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -181,7 +181,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Benannte schrittweise Workflows zur Erledigung häufiger Aufgaben in einer Domain.
+- **Purpose:** Benannte Schritt-für-Schritt-Workflows zur Erledigung häufiger Aufgaben in einer Domain.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -193,7 +193,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** Domänenspezifische Akronym-Auflösungstabelle.
+- **Purpose:** Domain-spezifische Akronym-Erweiterungstabelle.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -205,7 +205,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-console-navigation
 
 - **Applied at:** spec info
-- **Purpose:** Globale Konsolen-Navigationsstruktur — Arbeitsbereich- und Menühierarchie.
+- **Purpose:** Globaler Konsolen-Navigationsbaum — Arbeitsbereich- und Menühierarchie.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
@@ -214,12 +214,12 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
-## Injiziert — Schemaebene (Komponentenschemata)
+## Eingefügt — Schemaebene (Komponentenschemata)
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Minimale Feldmenge, die erforderlich ist, um diese Ressource erfolgreich per POST/PUT zu übermitteln.
+- **Purpose:** Minimaler Feldsatz, der für ein erfolgreiches POST/PUT dieser Ressource erforderlich ist.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -243,7 +243,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Vorgeschlagene Reihenfolge der Eigenschaften für die UI/CLI-Darstellung.
+- **Purpose:** Empfohlene Reihenfolge der Eigenschaften für die UI-/CLI-Darstellung.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -255,7 +255,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Terraform-Ressourcentypname, der diesem Schema zugeordnet ist.
+- **Purpose:** Name des Terraform-Ressourcentyps, der diesem Schema zugeordnet ist.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -288,7 +288,7 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
-## Injiziert — Eigenschaftsebene
+## Eingefügt — Eigenschaftsebene
 
 ### x-f5xc-description
 
@@ -353,7 +353,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Standardwert(e), die in generierten Dokumentationen und Benutzeroberflächen angezeigt werden.
+- **Purpose:** Standardwert(e), die in generierten Dokumenten und Benutzeroberflächen angezeigt werden.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -365,7 +365,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** Listet HTTP-Operationen (POST/PUT/...) auf, für die diese Eigenschaft erforderlich ist.
+- **Purpose:** Listet HTTP-Operationen (POST/PUT/...) auf, die diese Eigenschaft erfordern.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -377,7 +377,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Listet benannte Feature-Kombinationen auf, für die diese Eigenschaft erforderlich ist.
+- **Purpose:** Listet benannte Funktionskombinationen auf, die diese Eigenschaft erfordern.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -389,7 +389,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** Bedingte Anforderungen (z. B. erforderlich, wenn ein Geschwisterfeld gleich X ist).
+- **Purpose:** Bedingte Anforderungen (z. B. erforderlich, wenn ein benachbartes Feld gleich X ist).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -401,7 +401,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Veraltungshinweis mit Ersetzungshinweisen.
+- **Purpose:** Veraltungshinweis mit Hinweisen zur Ersetzung.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -449,7 +449,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** Listet Geschwistereigenschaften auf, die nicht zusammen mit dieser gesetzt werden können.
+- **Purpose:** Listet benachbarte Eigenschaften auf, die nicht zusammen mit dieser gesetzt werden können.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -461,7 +461,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** Dokumentiert feldübergreifende Abhängigkeiten, bei denen ein Feld ein anderes erfordert.
+- **Purpose:** Dokumentiert feldübergreifende Abhängigkeiten, bei denen ein Feld erfordert, dass ein anderes gesetzt ist.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -473,7 +473,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Numerische / Zeichenfolgen-Einschränkungen, die aus Live-API-Prüfungen oder statischen Mustern abgeleitet werden.
+- **Purpose:** Numerische/Zeichenketten-Einschränkungen, abgeleitet aus Live-API-Prüfungen oder statischen Mustern.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -485,7 +485,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** Deklariert, ob ein Feld innerhalb seines Gültigkeitsbereichs eindeutig sein muss.
+- **Purpose:** Gibt an, ob ein Feld innerhalb seines Geltungsbereichs eindeutig sein muss.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -506,12 +506,12 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
 - **Pass-through from upstream:** no
 
-## Injiziert — Operationsebene
+## Eingefügt — Operationsebene
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** Benennt die Operationsanfrage-Felder, die für einen Erfolg angegeben werden müssen.
+- **Purpose:** Benennt die Operationsrumpf-Felder, die für einen Erfolg angegeben werden müssen.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -523,7 +523,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** Klassifiziert den Wirkungsbereich einer Operation (niedrig/mittel/hoch/kritisch).
+- **Purpose:** Klassifiziert den Wirkungsradius einer Operation (niedrig/mittel/hoch/kritisch).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -535,7 +535,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Gibt an, ob CLI/UI den Benutzer vor der Ausführung zur Bestätigung auffordern soll.
+- **Purpose:** Gibt an, ob CLI/UI den Benutzer zur Bestätigung auffordern soll, bevor die Ausführung erfolgt.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -559,7 +559,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** Empirisch gemessene Antwortzeit für diese Operation während der Discovery.
+- **Purpose:** Empirisch gemessene Antwortzeit für diese Operation während der Erkennung.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -571,7 +571,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** Beobachtete Rate-Limit-Header / -Verhalten, die von der Live-API erfasst wurden.
+- **Purpose:** Beobachtete Rate-Limit-Header/-Verhalten, die von der Live-API ermittelt wurden.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -583,7 +583,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Katalog der während der Live-Discovery beobachteten Fehlerantworten mit Beispiel-Payloads.
+- **Purpose:** Katalog der während der Live-Erkennung beobachteten Fehlerantworten mit Beispiel-Payloads.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -592,7 +592,7 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## Injiziert — Indexebene (Domain-Metadaten)
+## Eingefügt — Indexebene (Domain-Metadaten)
 
 ### x-f5xc-category
 
@@ -645,7 +645,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** Mittellange (~150 Zeichen) Domain-Beschreibung. Gilt auch auf Eigenschaftsebene.
+- **Purpose:** Mittlere (~150 Zeichen) Domain-Beschreibung. Gilt auch auf Eigenschaftsebene.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -693,7 +693,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Kennzeichnet eine Domain als Vorschau-/Beta-Feature.
+- **Purpose:** Kennzeichnet eine Domain als Vorschau-/Beta-Funktion.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -729,7 +729,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** Eingebettetes SVG (oder Pfad) für ein Markenlogo, das die Domain repräsentiert.
+- **Purpose:** Inline-SVG (oder Pfad) für ein Markenlogo, das die Domain repräsentiert.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -753,7 +753,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Dokumentationsabschnitt / Navigationsgruppen-Slug für gerenderte Dokumentation.
+- **Purpose:** Dokumentationsabschnitt-/Navigationsgruppierungs-Slug für gerenderte Dokumentation.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`

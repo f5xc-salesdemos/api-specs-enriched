@@ -1,10 +1,10 @@
 ---
-title: Specifica di validazione
+title: Specifiche di validazione
 description: Struttura e contenuto della specifica di validazione
 sidebar:
   order: 3
 i18n:
-  sourceHash: b1994d14ae6e
+  sourceHash: daa5f7b2c1c2
   translator: machine
 ---
 
@@ -12,7 +12,7 @@ Questo documento descrive la struttura e il contenuto della specifica di validaz
 
 ## Panoramica
 
-La specifica di validazione consolida i vincoli di validazione dell'API, i valori predefiniti e i metadati di configurazione in un unico file JSON. Questa specifica viene generata dalle specifiche OpenAPI arricchite e pubblicata insieme a esse.
+La specifica di validazione consolida i vincoli di validazione delle API, i valori predefiniti e i metadati di configurazione in un unico file JSON. Questa specifica viene generata a partire dalle specifiche OpenAPI arricchite e pubblicata insieme ad esse.
 
 **Posizione di pubblicazione**: `docs/specifications/api/validation.json`
 
@@ -40,7 +40,7 @@ La specifica di validazione consolida i vincoli di validazione dell'API, i valor
 
 ### required_fields
 
-Specifica i campi obbligatori per ciascun tipo di operazione per risorsa.
+Specifica i campi obbligatori per ogni tipo di operazione per risorsa.
 
 ```json
 {
@@ -61,7 +61,7 @@ Specifica i campi obbligatori per ciascun tipo di operazione per risorsa.
 
 ### enum_values
 
-Definisce i valori consentiti per i campi vincolati.
+Definisce i valori consentiti per i campi con vincoli.
 
 ```json
 {
@@ -98,7 +98,7 @@ Valori predefiniti di validazione a livello di tipo e regole basate su pattern.
 
 ### patterns
 
-Regole di validazione basate su pattern di nomi di campo con punteggi di affidabilità.
+Regole di validazione basate sul pattern del nome del campo, con punteggi di affidabilità.
 
 ```json
 {
@@ -204,12 +204,12 @@ Tutti i valori predefiniti organizzati per tipo di risorsa in una struttura unif
 
 | Categoria | Descrizione | Fonte |
 |----------|-------------|--------|
-| `server_applied` | Valori applicati dall'API quando i campi vengono omessi | Test live dell'API |
-| `recommended` | Valori pre-popolati dalla console web F5 XC | Analisi dell'interfaccia utente |
-| `advanced_options` | Valori predefiniti annidati all'interno degli oggetti advanced_options | Rilevamento API |
+| `server_applied` | Valori applicati dall'API quando i campi vengono omessi | Test API in produzione |
+| `recommended` | Valori precompilati dalla console web F5 XC | Analisi dell'interfaccia utente |
+| `advanced_options` | Valori predefiniti nidificati all'interno degli oggetti advanced_options | Rilevamento API |
 | `oneof_choices` | Selezioni predefinite della variante OneOf | Comportamento dell'API |
 | `oneof_recommended` | Varianti OneOf consigliate | Valori predefiniti della console |
-| `nested_recommended` | Valori consigliati per gli schemi annidati | Analisi dell'interfaccia utente |
+| `nested_recommended` | Valori consigliati per gli schemi nidificati | Analisi dell'interfaccia utente |
 | `ui_vs_server` | Casi in cui i valori predefiniti dell'interfaccia utente differiscono da quelli dell'API | Analisi comparativa |
 
 ### conditional_requirements
@@ -236,7 +236,7 @@ Campi mutuamente esclusivi e dipendenze condizionali.
 
 ### minimum_configurations
 
-Configurazioni minime funzionanti con esempi operativi.
+Configurazioni minime praticabili con esempi funzionanti.
 
 ```json
 {
@@ -259,7 +259,7 @@ Configurazioni minime funzionanti con esempi operativi.
 
 ## Mappatura delle estensioni OpenAPI
 
-Le specifiche OpenAPI arricchite incorporano i metadati di validazione utilizzando queste estensioni:
+Le specifiche OpenAPI arricchite incorporano metadati di validazione tramite queste estensioni:
 
 | Estensione | Scopo | Posizione |
 |-----------|---------|----------|
@@ -290,16 +290,16 @@ La specifica di validazione segue il versionamento semantico nel campo `version`
 
 | Tipo di modifica | Incremento versione | Esempio |
 |-------------|--------------|---------|
-| Modifiche strutturali non compatibili | Major | Rinomina di campi, sezioni rimosse |
-| Nuove regole di validazione o risorse | Minor | Nuovi valori predefiniti per risorse |
-| Correzioni di bug o aggiornamenti della descrizione | Patch | Correzioni di errori tipografici |
+| Modifiche strutturali non retrocompatibili | Major | Rinomina di campi, sezioni rimosse |
+| Nuove regole di validazione o risorse | Minor | Nuovi valori predefiniti per una risorsa |
+| Correzioni di bug o aggiornamenti delle descrizioni | Patch | Correzioni di errori tipografici |
 
 ## Priorità di riconciliazione
 
 Quando più fonti forniscono vincoli, la priorità di riconciliazione è:
 
 1. **Esistente** - Vincoli nella specifica OpenAPI originale (priorità massima)
-2. **Rilevamento** - Vincoli dal rilevamento live dell'API
+2. **Rilevamento** - Vincoli derivati dal rilevamento API in produzione
 3. **Inferito** - Vincoli derivati dalla corrispondenza di pattern (priorità minima)
 
 ## Documentazione correlata
@@ -313,6 +313,6 @@ Quando più fonti forniscono vincoli, la priorità di riconciliazione è:
 
 | Versione | Data | Modifiche |
 |---------|------|---------|
-| 2.1.2 | 2026-01-18 | Riscritto come puro riferimento API; aggiunte le categorie oneof_recommended e nested_recommended |
-| 2.1.0 | 2026-01-18 | Struttura dei valori predefiniti unificata in sostituzione delle sezioni frammentate |
+| 2.1.2 | 2026-01-18 | Riscritto come riferimento API puro; aggiunte le categorie oneof_recommended e nested_recommended |
+| 2.1.0 | 2026-01-18 | Struttura unificata dei valori predefiniti in sostituzione delle sezioni frammentate |
 | 2.0.0 | 2026-01-15 | Specifica di validazione iniziale |
