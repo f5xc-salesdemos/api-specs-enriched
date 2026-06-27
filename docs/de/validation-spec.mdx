@@ -4,7 +4,7 @@ description: Struktur und Inhalt der Validierungsspezifikation
 sidebar:
   order: 3
 i18n:
-  sourceHash: b1994d14ae6e
+  sourceHash: daa5f7b2c1c2
   translator: machine
 ---
 
@@ -12,7 +12,7 @@ Dieses Dokument beschreibt die Struktur und den Inhalt der Validierungsspezifika
 
 ## Übersicht
 
-Die Validierungsspezifikation konsolidiert API-Validierungseinschränkungen, Standardwerte und Konfigurationsmetadaten in einer einzigen JSON-Datei. Diese Spezifikation wird aus den erweiterten OpenAPI-Spezifikationen generiert und zusammen mit diesen veröffentlicht.
+Die Validierungsspezifikation fasst API-Validierungseinschränkungen, Standardwerte und Konfigurationsmetadaten in einer einzigen JSON-Datei zusammen. Diese Spezifikation wird aus den erweiterten OpenAPI-Spezifikationen generiert und zusammen mit diesen veröffentlicht.
 
 **Veröffentlichungsort**: `docs/specifications/api/validation.json`
 
@@ -83,7 +83,7 @@ Definiert zulässige Werte für eingeschränkte Felder.
 
 ### constraints
 
-Validierungsstandards auf Typebene und musterbasierte Regeln.
+Typbezogene Validierungsstandards und musterbasierte Regeln.
 
 ```json
 {
@@ -125,7 +125,7 @@ Musterbasierte Validierungsregeln für Feldnamen mit Konfidenzwerten.
 
 ### defaults
 
-Alle Standardwerte, nach Ressourcentyp in einer einheitlichen Struktur organisiert.
+Alle Standardwerte, geordnet nach Ressourcentyp in einer einheitlichen Struktur.
 
 ```json
 {
@@ -203,13 +203,13 @@ Alle Standardwerte, nach Ressourcentyp in einer einheitlichen Struktur organisie
 #### Standardwertkategorien
 
 | Kategorie | Beschreibung | Quelle |
-|----------|-------------|--------|
+|-----------|-------------|--------|
 | `server_applied` | Werte, die die API anwendet, wenn Felder weggelassen werden | Live-API-Tests |
-| `recommended` | Vorausgefüllte Werte der F5 XC Webkonsole | UI-Analyse |
+| `recommended` | Vorausgefüllte Werte der F5 XC Web-Konsole | UI-Analyse |
 | `advanced_options` | Verschachtelte Standardwerte innerhalb von advanced_options-Objekten | API-Erkennung |
 | `oneof_choices` | Standard-OneOf-Variantenauswahl | API-Verhalten |
-| `oneof_recommended` | Empfohlene OneOf-Varianten | Konsolenstandards |
-| `nested_recommended` | Empfohlene Werte für verschachtelte Schemata | UI-Analyse |
+| `oneof_recommended` | Empfohlene OneOf-Varianten | Konsolenstandardwerte |
+| `nested_recommended` | Empfohlene Werte für verschachtelte Schemas | UI-Analyse |
 | `ui_vs_server` | Fälle, in denen UI-Standardwerte von API-Standardwerten abweichen | Vergleichsanalyse |
 
 ### conditional_requirements
@@ -236,7 +236,7 @@ Sich gegenseitig ausschließende Felder und bedingte Abhängigkeiten.
 
 ### minimum_configurations
 
-Minimal tragfähige Konfigurationen mit funktionierenden Beispielen.
+Minimal funktionsfähige Konfigurationen mit funktionierenden Beispielen.
 
 ```json
 {
@@ -263,13 +263,13 @@ Die erweiterten OpenAPI-Spezifikationen betten Validierungsmetadaten mithilfe di
 
 | Erweiterung | Zweck | Ort |
 |-----------|---------|----------|
-| `x-f5xc-required-for` | Kontextspezifische Pflichtfelder | Schemaeigenschaften |
-| `x-f5xc-server-default` | Kennzeichnet serverseitig angewendete Standardwerte | Schemaeigenschaften |
-| `x-f5xc-recommended-value` | Empfohlener Standardwert | Schemaeigenschaften |
-| `x-f5xc-recommended-oneof-variant` | Empfohlene OneOf-Variante | Schemadefinitionen |
-| `x-f5xc-conditions` | Bedingte Anforderungen | Schemaeigenschaften |
-| `x-f5xc-minimum-configuration` | Beispiele für Mindestkonfigurationen | Schemadefinitionen |
-| `x-f5xc-validation` | Aus der Erkennung abgeleitete Einschränkungen | Schemaeigenschaften |
+| `x-f5xc-required-for` | Kontextspezifische Pflichtfelder | Schema-Eigenschaften |
+| `x-f5xc-server-default` | Kennzeichnet serverseitig angewendete Standardwerte | Schema-Eigenschaften |
+| `x-f5xc-recommended-value` | Empfohlener Standardwert | Schema-Eigenschaften |
+| `x-f5xc-recommended-oneof-variant` | Empfohlene OneOf-Variante | Schema-Definitionen |
+| `x-f5xc-conditions` | Bedingte Anforderungen | Schema-Eigenschaften |
+| `x-f5xc-minimum-configuration` | Mindestkonfigurationsbeispiele | Schema-Definitionen |
+| `x-f5xc-validation` | Durch Erkennung abgeleitete Einschränkungen | Schema-Eigenschaften |
 
 ## Datenzugriff
 
@@ -290,24 +290,24 @@ Die Validierungsspezifikation folgt der semantischen Versionierung im Feld `vers
 
 | Änderungstyp | Versionserhöhung | Beispiel |
 |-------------|--------------|---------|
-| Strukturelle Änderungen mit Abwärtsinkompatibilität | Major | Feldumbenennungen, entfernte Abschnitte |
-| Neue Validierungsregeln oder Ressourcen | Minor | Neue Ressourcenstandards |
+| Grundlegende Strukturänderungen | Major | Feldumbenennungen, entfernte Abschnitte |
+| Neue Validierungsregeln oder Ressourcen | Minor | Neue Ressourcenstandardwerte |
 | Fehlerbehebungen oder Beschreibungsaktualisierungen | Patch | Tippfehlerkorrektur |
 
 ## Abstimmungspriorität
 
 Wenn mehrere Quellen Einschränkungen bereitstellen, gilt folgende Abstimmungspriorität:
 
-1. **Vorhanden** – Einschränkungen in der ursprünglichen OpenAPI-Spezifikation (höchste Priorität)
-2. **Erkannt** – Einschränkungen aus der Live-API-Erkennung
+1. **Bestehend** – Einschränkungen in der ursprünglichen OpenAPI-Spezifikation (höchste Priorität)
+2. **Erkennung** – Einschränkungen aus der Live-API-Erkennung
 3. **Abgeleitet** – Einschränkungen aus dem Musterabgleich (niedrigste Priorität)
 
 ## Verwandte Dokumentation
 
-- [Healthcheck-Erweiterungen](./Enhancements/healthcheck-enhancements/) – Anreicherungen des Healthcheck-Schemas
-- [Ursprungspool-Erweiterungen](./Enhancements/originpool-enhancements/) – Anreicherungen des Ursprungspool-Schemas
+- [Healthcheck-Erweiterungen](./Enhancements/healthcheck-enhancements/) – Schema-Anreicherungen für Healthchecks
+- [Ursprungsserver-Pool-Erweiterungen](./Enhancements/originpool-enhancements/) – Schema-Anreicherungen für Ursprungsserver-Pools
 - [CLAUDE.md](../../CLAUDE.md) – KI-Assistentenanweisungen
-- [DEVELOPMENT.md](./development/) – Entwicklerhandbuch
+- [DEVELOPMENT.md](./development/) – Entwicklerleitfaden
 
 ## Änderungsprotokoll
 

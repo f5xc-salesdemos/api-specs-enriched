@@ -1,24 +1,29 @@
 ---
-title: 扩展字段目录
-description: 富化 OpenAPI 规范中每个 x-* 扩展的权威来源
+title: 扩展目录（Enrichment Extension Catalog）
+description: docs/specifications/api/*.json 中所有 x-* 扩展的权威参考
 i18n:
-  sourceHash: 395df1e3c471
+  sourceHash: b7ee25e1b768
   translator: machine
 ---
 
-# 扩展字段目录
+# 扩展目录（Enrichment Extension Catalog）
 
-本目录是 `docs/specifications/api/*.json` 中每个 `x-*` 扩展的权威来源。与 `scripts/utils/extension_constants.py` 的一致性由 `tests/test_extension_catalog.py` 强制保证。
+`docs/specifications/api/*.json` 中每个 `x-*` 扩展的权威参考。
+与 `scripts/utils/extension_constants.py` 的一致性由
+`tests/test_extension_catalog.py` 强制保证。
 
-此处记录了三类扩展：
+本文档记录了三类扩展：
 
-- **此处注入** — 由我们的富化器添加的扩展（`x-f5xc-*` 以及 `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / 发现变体）。这些是下游工具应使用的扩展。
-- **上游透传** — F5 在源规范中发出并由我们原样保留的扩展（`x-ves-proto-*`、`x-displayname` 等）。为透明起见而记录，但不由本仓库控制。
-- **未来注入** — 尚未发出；一旦富化器开始生成即在此记录（初始填充时不适用）。
+- **此处注入** — 由我们的 enricher 添加的扩展（`x-f5xc-*` 以及
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / discovery
+  变体）。这些是下游工具应当使用的扩展。
+- **上游透传** — F5 在源规范中发出并由我们原样保留的扩展（`x-ves-proto-*`、`x-displayname` 等）。
+  记录于此以保持透明，但不由本仓库控制。
+- **未来注入** — 尚未输出；当某个 enricher 开始生成时，立即在此处记录（初始填充时不适用）。
 
 ## 条目结构
 
-以下每个条目具有完全相同的结构。`tests/test_extension_catalog.py` 中的一致性测试容忍章节正文简略，只要 `### x-name` 标题存在，且 `Pass-through from upstream:` 标志以 `yes` 或 `no` 为值即可。
+以下每个条目均具有完全相同的结构。`tests/test_extension_catalog.py` 中的一致性测试允许章节正文较为简短，只要 `### x-name` 标题存在，且 `Pass-through from upstream:` 字段的值为 `yes` 或 `no` 即可。
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -36,7 +41,7 @@ i18n:
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** 标识富化规范的 CLI 域名缩略词（例如 `http_loadbalancer`）。
+- **Purpose:** 标识富化规范的 CLI 域 slug（例如 `http_loadbalancer`）。
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -48,7 +53,7 @@ i18n:
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** CLI 级别的元数据块（工具名称、版本提示、域分组）。
+- **Purpose:** CLI 全局元数据块（工具名称、版本提示、域分组）。
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -60,7 +65,7 @@ i18n:
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** 构建富化文件所使用的上游源规范的时间戳。
+- **Purpose:** 富化文件所基于的上游源规范的时间戳。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -84,7 +89,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** 由流水线在富化规范上打印的语义版本。
+- **Purpose:** 由流水线在富化规范上标记的语义版本号。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -108,7 +113,7 @@ i18n:
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** 执行实时 API 发现过程的时间戳。
+- **Purpose:** 执行实时 API 发现扫描的时间戳。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -120,7 +125,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** 发现过程中探测的实时 API 基础 URL。
+- **Purpose:** 发现过程中探测的实时 API 的基础 URL。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -132,7 +137,7 @@ i18n:
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** 该域的托管 API 参考文档页面 URL。
+- **Purpose:** 该域托管的 API 参考文档页面的 URL。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -156,7 +161,7 @@ i18n:
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** 针对某域的精选最佳实践指导。
+- **Purpose:** 针对某一域精选的最佳实践指导。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -168,7 +173,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** 用于完成域内常见任务的命名分步工作流。
+- **Purpose:** 在域内完成常见任务的命名逐步工作流。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -180,7 +185,7 @@ i18n:
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** 按域划分的首字母缩写词扩展表。
+- **Purpose:** 按域划分的首字母缩略词扩展表。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -192,7 +197,7 @@ i18n:
 ### x-f5xc-console-navigation
 
 - **Applied at:** spec info
-- **Purpose:** 全局控制台导航树 — 工作区与菜单层级结构。
+- **Purpose:** 全局控制台导航树——工作区与菜单层级。
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
@@ -201,7 +206,7 @@ i18n:
 - **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
-## 注入 — 模式级别（组件模式）
+## 注入 — Schema 级别（组件 schemas）
 
 ### x-f5xc-minimum-configuration
 
@@ -230,7 +235,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** 供 UI/CLI 展示时建议的属性排列顺序。
+- **Purpose:** UI/CLI 展示时属性的建议排列顺序。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -242,7 +247,7 @@ i18n:
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** 映射到此模式的 Terraform 资源类型名称。
+- **Purpose:** 映射到此 schema 的 Terraform 资源类型名称。
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -254,7 +259,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** 资源模式的人类可读显示名称（覆盖自动生成）。
+- **Purpose:** 资源 schema 的人类可读显示名称（覆盖自动生成的名称）。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -266,7 +271,7 @@ i18n:
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** 该资源的控制台 UI 导航、路由及表单结构。
+- **Purpose:** 该资源的控制台 UI 导航、路由和表单结构。
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -280,7 +285,7 @@ i18n:
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** 富化的属性描述，补充上游 `description`。
+- **Purpose:** 补充上游 `description` 的富化属性描述。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -304,7 +309,7 @@ i18n:
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** 属性的多个示例值。
+- **Purpose:** 为属性提供多个示范性示例值。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -328,7 +333,7 @@ i18n:
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** Shell 自动补全提示（静态枚举或动态命令）。
+- **Purpose:** Shell 补全提示（静态枚举或动态命令）。
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -352,7 +357,7 @@ i18n:
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** 列出需要此属性的 HTTP 操作（POST/PUT/...）。
+- **Purpose:** 列出需要该属性的 HTTP 操作（POST/PUT/...）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -364,7 +369,7 @@ i18n:
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** 列出需要此属性的命名功能组合。
+- **Purpose:** 列出需要该属性的命名功能组合。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -376,7 +381,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** 条件要求（例如，当兄弟字段等于 X 时为必填项）。
+- **Purpose:** 条件要求（例如，当同级字段等于 X 时为必填项）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -388,7 +393,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** 包含替代建议的弃用通知。
+- **Purpose:** 带有替换指引的弃用通知。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -400,7 +405,7 @@ i18n:
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** 客户端省略该属性时服务器所赋予的默认值。
+- **Purpose:** 客户端省略该属性时服务器分配的默认值。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -412,7 +417,7 @@ i18n:
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** 字段在服务器默认值次优时的推荐生产值。
+- **Purpose:** 当服务器默认值不够理想时，为某字段推荐的生产环境值。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -436,7 +441,7 @@ i18n:
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** 列出不能与此属性同时设置的兄弟属性。
+- **Purpose:** 列出不能与该属性同时设置的同级属性。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -448,7 +453,7 @@ i18n:
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** 记录跨字段依赖关系，即一个字段需要另一个字段被设置。
+- **Purpose:** 记录跨字段依赖关系，说明某个字段需要另一个字段被设置。
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -472,7 +477,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** 声明某字段是否在其作用域内必须唯一。
+- **Purpose:** 声明某字段在其作用域内是否必须唯一。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -484,7 +489,7 @@ i18n:
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** 该 API 属性的控制台表单控件元数据。
+- **Purpose:** 该 API 属性在控制台表单中的控件元数据。
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -498,7 +503,7 @@ i18n:
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** 命名操作请求体中必须提供才能成功的字段。
+- **Purpose:** 列出操作请求体中必须提供的字段名称，以确保执行成功。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -510,7 +515,7 @@ i18n:
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** 对操作的影响范围进行分类（low/medium/high/critical）。
+- **Purpose:** 对操作的爆炸半径进行分类（low/medium/high/critical）。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -534,7 +539,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** 列出该操作的可观测副作用（重启、重新配置等）。
+- **Purpose:** 列出操作的可观测副作用（重启、重新配置等）。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -546,7 +551,7 @@ i18n:
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** 发现过程中对该操作实测的响应时间。
+- **Purpose:** 发现过程中针对该操作实测的响应时间。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -558,7 +563,7 @@ i18n:
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** 从实时 API 中观测到的速率限制标头/行为。
+- **Purpose:** 从实时 API 获取的观测速率限制头信息/行为。
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -570,7 +575,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** 实时发现过程中观测到的错误响应目录（含示例载荷）。
+- **Purpose:** 实时发现过程中观测到的错误响应目录，包含示例载荷。
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -644,7 +649,7 @@ i18n:
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** 长篇（约 500 字符）域描述。
+- **Purpose:** 较长（约 500 字符）的域描述。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -680,7 +685,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** 将某域标记为预览/测试版功能。
+- **Purpose:** 将某个域标记为预览/测试版功能。
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -716,7 +721,7 @@ i18n:
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** 代表该域的品牌 Logo 内联 SVG（或路径）。
+- **Purpose:** 表示该域的品牌 Logo 的内联 SVG（或路径）。
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -740,7 +745,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** 渲染文档时的文档章节/导航分组缩略词。
+- **Purpose:** 渲染文档时的文档章节/导航分组 slug。
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`

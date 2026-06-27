@@ -1,16 +1,16 @@
 ---
-title: Sistema di Metadati dei Vincoli
+title: Sistema di Metadati per Vincoli
 description: >-
-  Metadati completi dei vincoli per la generazione deterministica tramite IA e
-  la validazione
+  Metadati completi sui vincoli per la generazione deterministica con IA e la
+  validazione
 sidebar:
   order: 2
 i18n:
-  sourceHash: 797e5a0158e1
+  sourceHash: a9da77cd5a28
   translator: machine
 ---
 
-**Scopo**: Metadati completi dei vincoli per la generazione deterministica tramite IA, la validazione tramite CLI e l'applicazione dello schema Terraform.
+**Scopo**: Metadati completi sui vincoli per la generazione deterministica con IA, la validazione tramite CLI e l'applicazione degli schemi Terraform.
 
 **Estensione**: `x-f5xc-constraints`
 **Versione**: 3.3.0
@@ -23,28 +23,28 @@ i18n:
 
 1. [Panoramica](#overview)
 2. [Struttura dell'estensione](#extension-structure)
-3. [Tipi di vincoli](#constraint-types)
+3. [Tipi di vincolo](#constraint-types)
 4. [Descrizioni in linguaggio naturale](#natural-language-descriptions)
 5. [Esempi di validazione](#validation-examples)
 6. [Punteggi di confidenza](#confidence-scores)
-7. [Integrazione con il rilevamento](#discovery-integration)
+7. [Integrazione con il sistema di discovery](#discovery-integration)
 8. [Guida all'integrazione degli strumenti](#tool-integration-guide)
 
 ---
 
 ## Panoramica
 
-L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincoli di validazione dei campi, abilitando:
+L'estensione `x-f5xc-constraints` fornisce informazioni deterministiche sui vincoli di validazione dei campi, abilitando:
 
 - **Assistenti IA**: Generano configurazioni valide senza richiedere all'utente i dettagli sui vincoli
-- **Strumenti CLI**: Forniscono suggerimenti precisi per l'input, validazione e messaggi di errore
-- **Terraform**: Applica i vincoli in fase di pianificazione, non in fase di applicazione
+- **Strumenti CLI**: Forniscono suggerimenti di input accurati, validazione e messaggi di errore
+- **Terraform**: Applica i vincoli al momento della pianificazione, non dell'applicazione
 - **Estensioni IDE**: Validazione in tempo reale e suggerimenti di completamento automatico
-- **Validatori API**: Validazione pre-invio per ridurre gli errori delle API
+- **Validatori API**: Validazione pre-invio per ridurre gli errori API
 
 ### Statistiche di copertura
 
-- **9.851 vincoli** su tutte le specifiche API F5 XC
+- **9.851 vincoli** in tutte le specifiche API F5 XC
 - **50+ tipi di pattern** (stringa, array, numerico)
 - **95% di confidenza** sui campi ad alta priorità (nomi, porte, identificatori)
 - **Riconciliazione a 3 livelli**: EXISTING > DISCOVERY > INFERRED
@@ -81,14 +81,14 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 | Campo | Tipo | Descrizione |
 |-------|------|-------------|
 | `constraintType` | string | Tipo di dato (string, array, number, object) |
-| `deterministic` | boolean | Flag ad alta confidenza (confidence >= 0.9) per la generazione tramite IA |
+| `deterministic` | boolean | Flag di alta confidenza (confidenza >= 0,9) per la generazione con IA |
 | `category` | string | Categoria del vincolo per raggruppamento e reportistica |
-| *(chiavi dei vincoli)* | varie | Chiavi dei vincoli specifiche per tipo appiattite al primo livello (es. `minLength`, `maxItems`, `minimum`) |
+| *(chiavi di vincolo)* | vario | Chiavi di vincolo specifiche per tipo appiattite al primo livello (es. `minLength`, `maxItems`, `minimum`) |
 | `metadata` | object | Tracciamento della sorgente, confidenza, timestamp di validazione |
 
 ---
 
-## Tipi di vincoli
+## Tipi di vincolo
 
 ### Vincoli su stringhe
 
@@ -128,8 +128,8 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 | Formato | Descrizione | Esempio |
 |---------|-------------|---------|
 | `dns-label` | Etichetta DNS RFC 1123 (1-63 caratteri) | `my-service` |
-| `fqdn` | Nome di dominio completamente qualificato | `api.example.com` |
-| `email` | Indirizzo email RFC 5322 | `user@example.com` |
+| `fqdn` | Nome di dominio completo (FQDN) | `api.example.com` |
+| `email` | Indirizzo e-mail RFC 5322 | `user@example.com` |
 | `url` | URI/URL RFC 3986 | `https://example.com/api` |
 | `ipv4` | Indirizzo IPv4 | `192.168.1.1` |
 | `ipv6` | Indirizzo IPv6 | `2001:db8::1` |
@@ -184,20 +184,20 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 
 ## Descrizioni in linguaggio naturale
 
-### Vincoli di formato per stringhe
+### Vincoli su formato stringa
 
 **Etichette DNS** (`format: "dns-label"`):
 - I nomi delle etichette DNS devono essere composti da 1-63 caratteri alfanumerici minuscoli
-- I trattini sono ammessi ma non all'inizio o alla fine (RFC 1123)
+- I trattini sono consentiti ma non in prima o ultima posizione (RFC 1123)
 - Esempio: `my-service`, `api-gateway`, `lb-prod-01`
 
-**Indirizzi email** (`format: "email"`):
-- Gli indirizzi email devono essere validi secondo RFC 5322
+**Indirizzi e-mail** (`format: "email"`):
+- Gli indirizzi e-mail devono essere validi secondo RFC 5322
 - Massimo 254 caratteri
 - Esempio: `admin@example.com`, `api+webhook@service.io`
 
 **FQDN** (`format: "fqdn"`):
-- I nomi di dominio completamente qualificati devono essere compresi tra 1 e 253 caratteri
+- I nomi di dominio completi (FQDN) devono essere composti da 1-253 caratteri
 - Etichette DNS separate da punti
 - Esempio: `api.example.com`, `service.production.internal`
 
@@ -211,7 +211,7 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 - Esempio: `192.168.1.1`, `10.0.0.1`
 
 **UUID** (`format: "uuid"`):
-- Gli UUID devono rispettare il formato RFC 4122
+- Gli UUID devono seguire il formato RFC 4122
 - Esempio: `550e8400-e29b-41d4-a716-446655440000`
 
 **Timestamp** (`format: "date-time"`):
@@ -233,18 +233,18 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 ### Vincoli su array
 
 **Pool di origine**:
-- L'array dei pool di origine richiede almeno 1 elemento, massimo 50 elementi
+- L'array di pool di origine richiede almeno 1 elemento, massimo 50 elementi
 - Ogni elemento deve essere univoco
 
 **Tag**:
-- L'array dei tag ammette da 0 a 100 elementi
+- L'array di tag consente da 0 a 100 elementi
 - Gli elementi non devono necessariamente essere univoci
 
 ---
 
 ## Esempi di validazione
 
-### Esempio 1: Validazione del nome con etichetta DNS
+### Esempio 1: Validazione del nome come etichetta DNS
 
 **Vincolo**:
 ```json
@@ -265,9 +265,9 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 - ✅ `web`
 
 **Valori non validi**:
-- ❌ `My-Service` (maiuscole non consentite)
-- ❌ `-my-service` (trattino all'inizio)
-- ❌ `my-service-` (trattino alla fine)
+- ❌ `My-Service` (lettere maiuscole non consentite)
+- ❌ `-my-service` (trattino in prima posizione)
+- ❌ `my-service-` (trattino in ultima posizione)
 - ❌ `my_service` (underscore non consentito)
 - ❌ `this-is-a-very-long-name-that-exceeds-the-sixty-three-character-limit` (troppo lungo)
 
@@ -325,8 +325,8 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 
 | Intervallo | Interpretazione | Utilizzo |
 |------------|-----------------|----------|
-| 0,90-1,00 | **Alta confidenza** | Flag deterministico abilitato, utilizzare per la generazione tramite IA |
-| 0,70-0,89 | **Media confidenza** | Consultivo, si raccomanda la conferma dell'utente |
+| 0,90-1,00 | **Alta confidenza** | Flag deterministico abilitato, utilizzare per la generazione con IA |
+| 0,70-0,89 | **Confidenza media** | Consultivo, si raccomanda la conferma dell'utente |
 | 0,50-0,69 | **Bassa confidenza** | Solo informativo, richiede la validazione dell'utente |
 | < 0,50 | **Molto bassa** | Non incluso nei vincoli |
 
@@ -334,22 +334,22 @@ L'estensione `x-f5xc-constraints` fornisce conoscenze deterministiche sui vincol
 
 Il flag booleano `deterministic` viene impostato quando:
 - Il punteggio di confidenza è >= 0,9
-- Il pattern è stato validato rispetto ai dati di rilevamento OPPURE
+- Il pattern è stato validato rispetto ai dati di discovery OPPURE
 - Il pattern corrisponde a standard consolidati (RFC, ISO, ecc.)
 
-**Utilizzo nella generazione tramite IA**:
+**Utilizzo nella generazione con IA**:
 ```python
 if constraint.get("deterministic"):
     # Genera il valore automaticamente senza chiedere all'utente
     value = generate_from_pattern(constraint)
 else:
-    # Chiedi all'utente con suggerimenti sui vincoli
+    # Chiede input all'utente con suggerimenti sui vincoli
     value = prompt_user_with_hints(constraint)
 ```
 
 ---
 
-## Integrazione con il rilevamento
+## Integrazione con il sistema di discovery
 
 ### Priorità delle sorgenti
 
@@ -366,22 +366,22 @@ I vincoli vengono riconciliati utilizzando una priorità a 3 livelli:
 
 3. **INFERRED** (Confidenza: 0,50-0,95)
    - Corrispondenza di pattern dai nomi dei campi
-   - Priorità più bassa, sovrascritto da discovery o explicit
+   - Priorità più bassa, viene sovrascritto da discovery o explicit
 
-### Sorgenti dei dati di rilevamento
+### Sorgenti dei dati di discovery
 
-I vincoli di rilevamento vengono estratti da:
+I vincoli di discovery vengono estratti da:
 
 1. **x-ves-validation-rules**: Estensioni di validazione native F5
    - `ves.io.schema.rules.string.max_len` → `maxLength`
    - `ves.io.schema.rules.string.pattern` → `pattern`
    - `ves.io.schema.rules.repeated.max_items` → `maxItems`
 
-2. **Catalogo degli errori**: Messaggi di errore delle API che indicano violazioni dei vincoli
+2. **Catalogo degli errori**: Messaggi di errore API che indicano violazioni dei vincoli
    - "name must be 1-63 characters" → minLength/maxLength
    - "port must be between 1 and 65535" → minimum/maximum
 
-3. **Validazione delle risposte**: Risposte API riuscite che dimostrano valori validi
+3. **Validazione delle risposte**: Risposte API andate a buon fine che dimostrano valori validi
    - Intervalli di valori osservati
    - Pattern di formato effettivi
 
@@ -389,7 +389,7 @@ I vincoli di rilevamento vengono estratti da:
 
 ## Guida all'integrazione degli strumenti
 
-### Integrazione con gli assistenti IA
+### Integrazione con assistenti IA
 
 **Generare nomi di risorse validi**:
 ```python
@@ -397,7 +397,7 @@ def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
 
     if not constraints.get("deterministic"):
-        # Chiedi all'utente il nome
+        # Chiede all'utente il nome
         return prompt_user("Enter resource name: ")
 
     # Genera automaticamente
@@ -408,7 +408,7 @@ def generate_resource_name(schema_property):
     return generate_dns_label(max_length=max_len)
 ```
 
-### Integrazione con gli strumenti CLI
+### Integrazione con strumenti CLI
 
 **Fornire la validazione dell'input**:
 ```python
@@ -416,7 +416,7 @@ def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
         return True, None
 
-    # Controlla la lunghezza (le chiavi dei vincoli sono al primo livello)
+    # Controlla la lunghezza (le chiavi di vincolo sono al primo livello)
     if "minLength" in constraints and len(user_value) < constraints["minLength"]:
         return False, f"{field_name} must be at least {constraints['minLength']} characters"
 
@@ -434,7 +434,7 @@ def validate_cli_input(field_name, user_value, constraints):
     return True, None
 ```
 
-### Integrazione con il Provider Terraform
+### Integrazione con il provider Terraform
 
 **Generazione dello schema**:
 ```go
@@ -445,7 +445,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
         Required: true,
     }
 
-    // Le chiavi dei vincoli sono al primo livello (senza wrapper "string" annidato)
+    // Le chiavi di vincolo sono al primo livello (senza wrapper "string" annidato)
     if minLen, ok := constraints["minLength"].(float64); ok {
         s.ValidateDiagFunc = validation.StringLenBetween(int(minLen), int(constraints["maxLength"].(float64)))
     }
@@ -460,7 +460,7 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 }
 ```
 
-### Integrazione con le estensioni IDE
+### Integrazione con estensioni IDE
 
 **Completamento automatico e validazione**:
 ```typescript
@@ -470,7 +470,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
     const items: CompletionItem[] = [];
 
-    // Aggiunge completamenti specifici per il formato
+    // Aggiungi completamenti specifici per formato
     if (constraints.format === 'dns-label') {
         items.push({
             label: 'my-service',
@@ -479,7 +479,7 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
         });
     }
 
-    // Aggiunge suggerimento di validazione
+    // Aggiungi suggerimento di validazione
     if (constraints.deterministic) {
         items.push({
             label: '✨ Auto-generate',
@@ -495,28 +495,28 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ---
 
-## Appendice: Catalogo dei pattern dei vincoli
+## Appendice: Catalogo dei pattern di vincolo
 
 ### Pattern ad alta confidenza (0,95-0,99)
 
 | Pattern | Regex nome campo | Tipo di vincolo | Esempio |
-|---------|-----------------|-----------------|---------|
-| Etichetta DNS | `\bname$` | Stringa (1-63 caratteri, dns-label) | `my-service` |
-| Namespace | `\bnamespace$` | Stringa (1-63 caratteri, dns-label) | `production` |
-| Porta | `\bport$` | Numero (1-65535) | `443` |
-| ID VLAN | `\b(vlan)?_?id$` | Numero (1-4094) | `100` |
-| UUID | `\buuid$` | Stringa (36 caratteri, formato uuid) | `550e8400-...` |
-| Email | `\bemail$` | Stringa (max 254 caratteri, email) | `user@example.com` |
-| Timestamp | `\b(timestamp\|created_at\|updated_at)$` | Stringa (ISO 8601) | `2026-01-19T12:00:00Z` |
+|---------|------------------|-----------------|---------|
+| Etichetta DNS | `\bname$` | String (1-63 caratteri, dns-label) | `my-service` |
+| Namespace | `\bnamespace$` | String (1-63 caratteri, dns-label) | `production` |
+| Porta | `\bport$` | Number (1-65535) | `443` |
+| ID VLAN | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
+| UUID | `\buuid$` | String (36 caratteri, formato uuid) | `550e8400-...` |
+| E-mail | `\bemail$` | String (max 254 caratteri, email) | `user@example.com` |
+| Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
 
-### Pattern a media confidenza (0,80-0,94)
+### Pattern a confidenza media (0,80-0,94)
 
 | Pattern | Regex nome campo | Tipo di vincolo | Esempio |
-|---------|-----------------|-----------------|---------|
-| Nome utente | `\b(user\|username)$` | Stringa (1-64 caratteri, alfanumerico) | `admin` |
-| Nome visualizzato | `\b(display_?)?name$` | Stringa (1-256 caratteri, testo libero) | `My Service` |
-| Descrizione | `\b(comment\|description\|note)$` | Stringa (max 4096 caratteri) | `Service description` |
-| Percorso | `\bpath$` | Stringa (max 2048 caratteri) | `/api/v1/resources` |
+|---------|------------------|-----------------|---------|
+| Nome utente | `\b(user\|username)$` | String (1-64 caratteri, alfanumerico) | `admin` |
+| Nome visualizzato | `\b(display_?)?name$` | String (1-256 caratteri, testo libero) | `My Service` |
+| Descrizione | `\b(comment\|description\|note)$` | String (max 4096 caratteri) | `Service description` |
+| Percorso | `\bpath$` | String (max 2048 caratteri) | `/api/v1/resources` |
 
 ---
 
