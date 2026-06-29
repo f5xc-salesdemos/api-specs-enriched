@@ -296,7 +296,6 @@ class TestSpecEnrichment:
 
 
 SYSTEM_RESOURCES = [
-    "alert_policy",
     "aws_vpc_site",
     "azure_vnet_site",
     "gcp_vpc_site",
@@ -304,7 +303,6 @@ SYSTEM_RESOURCES = [
     "namespace",
     "role",
     "user",
-    "certificate",
     "global_network",
     "virtual_network",
     "k8s_cluster",
@@ -356,4 +354,37 @@ def test_tenant_resource_scope(enricher: NamespaceProfileEnricher, resource_name
     assert "custom" in profile["constraint"]["allowed"], f"{resource_name} should allow custom"
     assert "system" not in profile["constraint"]["allowed"], (
         f"{resource_name} should not allow system"
+    )
+
+
+# -- Completeness Gate --
+
+
+def test_all_primary_resources_have_explicit_namespace_profile() -> None:
+    """Every primary resource in the spec index must have an explicit entry
+    in namespace_profile.yaml. Silent default inheritance is not acceptable
+    for primary resources — it leads to misclassified resources in the tree."""
+    import json
+    from pathlib import Path
+
+    index_path = Path("docs/specifications/api/index.json")
+    if not index_path.exists():
+        pytest.skip("index.json not available")
+
+    with index_path.open() as f:
+        index = json.load(f)
+
+    primary_names: set[str] = set()
+    specs = index.get("specifications", [])
+    if isinstance(specs, dict):
+        specs = list(specs.values())
+    for domain_info in specs:
+        for resource in domain_info.get("x-f5xc-primary-resources", []):
+            primary_names.add(resource["name"])
+
+    enricher = NamespaceProfileEnricher()
+    missing = sorted(name for name in primary_names if not enricher.is_resource_explicit(name))
+
+    assert missing == [], (
+        f"{len(missing)} primary resources lack explicit namespace profile entries: {missing}"
     )

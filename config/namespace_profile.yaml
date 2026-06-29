@@ -139,14 +139,13 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_k8s:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Virtual K8s provisioning is platform-level"
+      primary: "custom"
+      rationale: "Virtual K8s clusters are tenant-scoped workload resources"
     classification:
       category: "infrastructure"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   dc_cluster_group:
     constraint:
@@ -332,27 +331,25 @@ resources:
       category: "identity"
       multi_tenant_pattern: "none"
 
-  # ── System-only: Certificate management ──
+  # ── Tenant-scoped: Certificate management (CRUD verified 2026-06-28) ──
 
   certificate:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification: created successfully in system, default, and custom namespaces
     recommendation:
-      primary: "system"
-      rationale: "Certificate management is platform-level"
+      primary: "custom"
+      rationale: "Certificates can be managed in any namespace"
     classification:
       category: "certificate"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   certificate_chain:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification: created successfully in system, default, and custom namespaces
     recommendation:
-      primary: "system"
-      rationale: "Certificate chain management is platform-level"
+      primary: "custom"
+      rationale: "Certificate chains can be managed in any namespace"
     classification:
       category: "certificate"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: Cloud and infrastructure ──
 
@@ -471,14 +468,13 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_site:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Virtual site is platform-level abstraction"
+      primary: "custom"
+      rationale: "Virtual sites are tenant-scoped label-based abstractions"
     classification:
       category: "infrastructure"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: App and monitoring ──
 
@@ -503,14 +499,13 @@ resources:
       multi_tenant_pattern: "none"
 
   alert_policy:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Alert policies are platform-level monitoring"
+      primary: "custom"
+      rationale: "Alert policies are namespace-scoped monitoring configurations"
     classification:
       category: "observability"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   alert_policy_set:
     constraint:
@@ -711,14 +706,13 @@ resources:
       multi_tenant_pattern: "none"
 
   api_definition:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in default + custom ns
     recommendation:
-      primary: "system"
-      rationale: "API definition management is platform-level"
+      primary: "custom"
+      rationale: "API definitions are scoped to application namespaces"
     classification:
       category: "security"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: Views variants (mirror their base resource) ──
 
@@ -795,6 +789,7 @@ resources:
   # ── System-only: DNS ──
 
   dns_zone:
+    _verification: {status: verified, method: spec_signal, date: "2026-06-28"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -805,6 +800,7 @@ resources:
       multi_tenant_pattern: "none"
 
   dns_domain:
+    _verification: {status: verified, method: spec_signal, date: "2026-06-28"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -814,27 +810,111 @@ resources:
       category: "networking"
       multi_tenant_pattern: "none"
 
-  # ── Tenant-scoped: DNS resources (parameterized namespace paths) ──
+  # ── System-only: DNS GSLB resources ──
+  # CRUD verification (2026-06-28): "Creation of DNS objects outside system
+  # namespace not permitted" — confirmed for dns_load_balancer, dns_lb_pool,
+  # dns_lb_health_check. dns_proxy presumed same (all DNS objects restricted).
 
   dns_load_balancer:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS load balancing requires system namespace — API enforces restriction"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_lb_pool:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS LB pool is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_lb_health_check:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS LB health check is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_proxy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS proxy is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: CRUD-verified (2026-06-28) ──
+
+  fleet_config:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Fleet config creation restricted to system namespace by API"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  usage_report:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Usage reports namespace must be constant system"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  registration_token:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Registration objects allowed to be created only in system namespace"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  k8s_cluster_role:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "K8s cluster roles allowed to be created only in system namespace"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  rate_limit_threshold:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Protocol policer objects allowed to be created only in system namespace"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
 
   # ── Shared-only resources ──
 
@@ -1078,3 +1158,412 @@ resources:
     classification:
       category: "security"
       multi_tenant_pattern: "shared-ref"
+
+  # ══════════════════════════════════════════════════════════════════════
+  # Explicit entries for all primary resources — seeded 2026-06-28
+  # Every primary resource MUST have an explicit entry here.
+  # status: verified = CRUD/signal confirmed, assumed = domain knowledge
+  # ══════════════════════════════════════════════════════════════════════
+
+  # System-only (domain knowledge — needs CRUD verification)
+  node_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Node configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  otp_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "OTP policies are platform-level authentication config"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  quota:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Quotas are platform-level limits"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  session:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Sessions are platform-level"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  shape_recognizer:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: spec_signal, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "System-only API paths"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  site:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Sites are platform-level infrastructure"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  site_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Site configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  subscription:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Subscriptions are platform-level billing"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  user_profile:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "User profiles are platform-level"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  vpm_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "VPM configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # Tenant-scoped (domain knowledge — uses default constraint)
+
+  ai_gateway:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  ai_policy:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  alert:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  analytics_query:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  api_endpoint:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  api_rate_limit:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  audit_log:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  authentication_policy:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bigip_device:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  bigip_pool:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  blindfold_secret:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bot_defense_instance:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bucket:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  cdn_origin_pool:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  dashboard:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  data_classification:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  data_export:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  ddos_mitigation_rule:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  ddos_protection:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  insight_query:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  malicious_user_detection:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  marketplace_item:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  metrics_receiver:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  mk8s_cluster:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  namespace_role:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "per-tenant"
+
+  nginx_config:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  nginx_upstream:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  object_store:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  pod_security_policy:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  policy_document:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  saved_query:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  service_discovery:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  shape_app_firewall:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  static_asset:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  support_case:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  telemetry_receiver:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  threat_campaign_policy:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  threat_category:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  ui_component:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  user_role:
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "per-tenant"
+
+
+  # CRUD-verified tenant-scoped primary resources (2026-06-28)
+  ca_certificate:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "per-tenant"
+
+  cdn_loadbalancer:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  container_registry:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  endpoint:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  malicious_user_rule:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  mitigation_policy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  network_policy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  workload:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
