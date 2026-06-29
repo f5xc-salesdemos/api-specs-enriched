@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any
@@ -60,11 +59,11 @@ def mine_description_signals(specs_dir: Path) -> dict[str, list[dict[str, str]]]
     """Scan all spec files for namespace constraint language in descriptions."""
     results: dict[str, list[dict[str, str]]] = {}
 
-    for fname in sorted(os.listdir(specs_dir)):
+    for entry in sorted(specs_dir.iterdir()):
+        fname = entry.name
         if not fname.endswith(".json") or fname in ("index.json", "namespace_profiles.json"):
             continue
-        filepath = os.path.join(specs_dir, fname)
-        with open(filepath) as f:
+        with (specs_dir / fname).open() as f:
             spec = json.load(f)
 
         domain = fname.replace(".json", "")
@@ -105,9 +104,7 @@ def mine_path_signals(specs: list[dict[str, Any]]) -> dict[str, list[dict[str, s
 
             system_hardcoded = [p for p in api_paths if "/namespaces/system/" in p]
             parameterized = [
-                p
-                for p in api_paths
-                if "{namespace}" in p or "{metadata.namespace}" in p
+                p for p in api_paths if "{namespace}" in p or "{metadata.namespace}" in p
             ]
 
             if system_hardcoded and not parameterized:
@@ -143,11 +140,11 @@ def mine_example_signals(specs_dir: Path) -> dict[str, list[dict[str, str]]]:
     """Check x-ves-example and x-f5xc-example values for namespace fields."""
     results: dict[str, list[dict[str, str]]] = {}
 
-    for fname in sorted(os.listdir(specs_dir)):
+    for entry in sorted(specs_dir.iterdir()):
+        fname = entry.name
         if not fname.endswith(".json") or fname in ("index.json", "namespace_profiles.json"):
             continue
-        filepath = os.path.join(specs_dir, fname)
-        with open(filepath) as f:
+        with (specs_dir / fname).open() as f:
             spec = json.load(f)
 
         domain = fname.replace(".json", "")
@@ -245,9 +242,7 @@ def classify_resources(
 
     for name in sorted(all_resource_names):
         resource_config = resources_config.get(name, {})
-        config_allowed = resource_config.get("constraint", {}).get(
-            "allowed", default_allowed
-        )
+        config_allowed = resource_config.get("constraint", {}).get("allowed", default_allowed)
         config_category = resource_config.get("classification", {}).get("category", "")
         is_system_only = sorted(config_allowed) == ["system"]
         is_default_profile = name not in resources_config or "constraint" not in resource_config
@@ -257,9 +252,7 @@ def classify_resources(
         signals.extend(path_signals.get(name, []))
         signals.extend(example_signals.get(name, []))
 
-        system_signal_count = sum(
-            1 for s in signals if s.get("inferred") == "system"
-        )
+        system_signal_count = sum(1 for s in signals if s.get("inferred") == "system")
         has_system_signals = system_signal_count > 0
 
         if is_system_only and has_system_signals:
@@ -297,9 +290,7 @@ def classify_resources(
     return audit_entries
 
 
-def print_audit_report(
-    entries: list[dict[str, Any]], flag_low_confidence: bool = False
-) -> None:
+def print_audit_report(entries: list[dict[str, Any]], flag_low_confidence: bool = False) -> None:
     """Print a human-readable audit report."""
     stats = {"high": 0, "medium": 0, "low": 0}
     for e in entries:
@@ -319,7 +310,11 @@ def print_audit_report(
         print("  LOW CONFIDENCE — Needs manual verification:")
         print(f"{'─' * 70}")
         for e in low_entries:
-            label = "SYSTEM-ONLY (no signals)" if e["is_system_only"] else "TENANT-SCOPED (has system signals)"
+            label = (
+                "SYSTEM-ONLY (no signals)"
+                if e["is_system_only"]
+                else "TENANT-SCOPED (has system signals)"
+            )
             print(f"\n  {e['resource']} — {label}")
             print(f"    Config: {e['config_allowed']}")
             if e.get("category"):

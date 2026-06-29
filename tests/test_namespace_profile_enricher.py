@@ -383,11 +383,8 @@ def test_all_primary_resources_have_explicit_namespace_profile() -> None:
             primary_names.add(resource["name"])
 
     enricher = NamespaceProfileEnricher()
-    missing = sorted(
-        name for name in primary_names if not enricher.is_resource_explicit(name)
-    )
+    missing = sorted(name for name in primary_names if not enricher.is_resource_explicit(name))
 
     assert missing == [], (
-        f"{len(missing)} primary resources lack explicit namespace profile entries: "
-        f"{missing}"
+        f"{len(missing)} primary resources lack explicit namespace profile entries: {missing}"
     )

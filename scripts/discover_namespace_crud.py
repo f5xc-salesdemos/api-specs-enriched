@@ -15,8 +15,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import base64
+import contextlib
 import json
 import os
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -71,9 +75,7 @@ def load_resources_from_specs(
             if not create_path:
                 continue
 
-            example_payload = _get_example_payload(
-                specs_dir, spec_file, name, spec_cache
-            )
+            example_payload = _get_example_payload(specs_dir, spec_file, name, spec_cache)
 
             resources.append(
                 {
@@ -157,9 +159,7 @@ NS_RESTRICTION_PATTERNS = [
 ]
 
 
-def classify_response(
-    status_code: int, error_msg: str
-) -> str:
+def classify_response(status_code: int, error_msg: str) -> str:
     """Classify an API response into a namespace constraint signal."""
     if status_code in (200, 201):
         return "created"
@@ -211,7 +211,7 @@ def probe_create(
         result = {
             "status": resp.status_code,
             "classification": result_class,
-            "error": error_msg if error_msg else None,
+            "error": error_msg or None,
         }
 
         if result_class in ("created", "conflict"):
@@ -237,10 +237,8 @@ def _cleanup(
 ) -> None:
     """Delete a created resource."""
     url = f"{base_url}{create_path}/{name}".replace("{namespace}", namespace)
-    try:
+    with contextlib.suppress(Exception):
         requests.delete(url, headers=headers, timeout=10)
-    except Exception:
-        pass
 
 
 def _load_payload_overrides(overrides_path: Path | None) -> dict[str, Any]:
@@ -259,8 +257,7 @@ def _prepare_payload(
     """Return the override payload if available, otherwise the spec example."""
     override = overrides.get(resource_name)
     if override:
-        payload = {k: v for k, v in override.items() if not k.startswith("_")}
-        return payload
+        return {k: v for k, v in override.items() if not k.startswith("_")}
     return example_payload
 
 
@@ -282,13 +279,11 @@ def _setup_prereqs(
         if "metadata" in payload:
             payload["metadata"]["namespace"] = namespace
         url = f"{base_url}{path}"
-        try:
+        with contextlib.suppress(Exception):
             requests.post(url, json=payload, headers=headers, timeout=15)
             name = payload.get("metadata", {}).get("name", "")
             if name:
                 cleanup_paths.append(f"{path}/{name}")
-        except Exception:
-            pass
 
     return cleanup_paths
 
@@ -300,36 +295,41 @@ def _cleanup_prereqs(
 ) -> None:
     """Delete prerequisite resources."""
     for path in cleanup_paths:
-        try:
+        with contextlib.suppress(Exception):
             requests.delete(f"{base_url}{path}", headers=headers, timeout=10)
-        except Exception:
-            pass
 
 
 def _inject_cert_placeholders(payload: dict[str, Any]) -> dict[str, Any]:
     """Replace {CERT_B64}/{KEY_B64} placeholders with a dummy self-signed cert."""
-    import base64
-    import subprocess
-    import tempfile
-
     payload_str = json.dumps(payload)
     if "{CERT_B64}" not in payload_str and "{KEY_B64}" not in payload_str:
         return payload
 
     with tempfile.TemporaryDirectory() as td:
-        key_path = f"{td}/key.pem"
-        cert_path = f"{td}/cert.pem"
+        key_path = Path(td) / "key.pem"
+        cert_path = Path(td) / "cert.pem"
         subprocess.run(
             [
-                "openssl", "req", "-x509", "-newkey", "rsa:2048",
-                "-keyout", key_path, "-out", cert_path,
-                "-days", "1", "-nodes", "-subj", "/CN=crud-probe.example.com",
+                "openssl",
+                "req",
+                "-x509",
+                "-newkey",
+                "rsa:2048",
+                "-keyout",
+                str(key_path),
+                "-out",
+                str(cert_path),
+                "-days",
+                "1",
+                "-nodes",
+                "-subj",
+                "/CN=crud-probe.example.com",
             ],
             capture_output=True,
             check=True,
         )
-        cert_b64 = base64.b64encode(open(cert_path, "rb").read()).decode()
-        key_b64 = base64.b64encode(open(key_path, "rb").read()).decode()
+        cert_b64 = base64.b64encode(cert_path.read_bytes()).decode()
+        key_b64 = base64.b64encode(key_path.read_bytes()).decode()
 
     payload_str = payload_str.replace("{CERT_B64}", cert_b64).replace("{KEY_B64}", key_b64)
     return json.loads(payload_str)
@@ -384,9 +384,7 @@ def discover_all(
         for ns in namespaces_to_test:
             cleanup_paths = _setup_prereqs(base_url, headers, overrides, name, ns)
 
-            ns_payload = json.loads(
-                json.dumps(payload).replace('"{namespace}"', f'"{ns}"')
-            )
+            ns_payload = json.loads(json.dumps(payload).replace('"{namespace}"', f'"{ns}"'))
 
             probe = probe_create(
                 base_url,
@@ -432,7 +430,9 @@ def discover_all(
         elif validation_errors:
             entry["verdict"] = "inconclusive"
             entry["confidence"] = "low"
-            entry["note"] = "All namespaces returned validation errors — namespace check may happen after field validation"
+            entry["note"] = (
+                "All namespaces returned validation errors — namespace check may happen after field validation"
+            )
         else:
             entry["verdict"] = "inconclusive"
             entry["confidence"] = "low"
@@ -443,9 +443,7 @@ def discover_all(
     return results
 
 
-def diff_with_config(
-    discovery: dict[str, Any], config_path: Path
-) -> list[dict[str, Any]]:
+def diff_with_config(discovery: dict[str, Any], config_path: Path) -> list[dict[str, Any]]:
     """Compare discovery results against namespace_profile.yaml."""
     with config_path.open() as f:
         config = yaml.safe_load(f)
@@ -460,9 +458,7 @@ def diff_with_config(
 
         discovered = sorted(result.get("discovered_allowed", []))
         resource_conf = resources_config.get(name, {})
-        config_allowed = sorted(
-            resource_conf.get("constraint", {}).get("allowed", default_allowed)
-        )
+        config_allowed = sorted(resource_conf.get("constraint", {}).get("allowed", default_allowed))
 
         if config_allowed != discovered:
             diffs.append(
@@ -481,7 +477,7 @@ def diff_with_config(
 
 def print_summary(results: dict[str, Any], diffs: list[dict[str, Any]] | None) -> None:
     """Print a summary report."""
-    verdicts = {}
+    verdicts: dict[str, int] = {}
     for r in results.values():
         v = r.get("verdict", "unknown")
         verdicts[v] = verdicts.get(v, 0) + 1
@@ -508,9 +504,7 @@ def print_summary(results: dict[str, Any], diffs: list[dict[str, Any]] | None) -
 
 def main() -> None:
     """Run CRUD-based namespace discovery."""
-    parser = argparse.ArgumentParser(
-        description="Discover namespace constraints via CRUD testing"
-    )
+    parser = argparse.ArgumentParser(description="Discover namespace constraints via CRUD testing")
     parser.add_argument(
         "--specs-dir",
         default="docs/specifications/api",

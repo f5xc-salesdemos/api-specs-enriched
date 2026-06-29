@@ -93,9 +93,11 @@ def _extract_list_path(api_paths: list[str] | dict[str, str]) -> str:
             candidates.append(p)
 
     if not candidates and isinstance(api_paths, list) and api_paths:
-        for p in api_paths:
-            if "/namespaces/" in p and not _has_name_param(p):
-                candidates.append(p.replace("{metadata.namespace}", "{namespace}"))
+        candidates.extend(
+            p.replace("{metadata.namespace}", "{namespace}")
+            for p in api_paths
+            if "/namespaces/" in p and not _has_name_param(p)
+        )
 
     if candidates:
         candidates.sort(key=len)
@@ -295,7 +297,7 @@ def discover_all(
                 del post_result["notes"]
             entry["post"] = post_result
 
-        if method in ("get", "both") and method not in ("post",):
+        if method in ("get", "both") and method != "post":
             entry["allowed"] = entry.get("get", {}).get("allowed", [])
         if method == "post":
             entry["allowed"] = entry.get("post", {}).get("allowed", [])
