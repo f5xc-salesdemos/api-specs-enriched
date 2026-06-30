@@ -44,26 +44,32 @@ references:
   "viewsOriginPoolListType.pools": origin_pool
   "viewsDefaultRoutePoolAdvanced.pool": origin_pool
 
-# Fields whose referred kind could not be derived from the field name.
-# Curate each (add to references: above) — leaving it here = resource_kind:null.
+# Site/virtual-site selectors (RefSelector — WHERE to deploy, not a single resource)
+  "advertise_policyCreateSpecType.where": virtual_site
+  "bgpCreateSpecType.where": site
+  "discoveryCreateSpecType.where": site
+  "schemaendpointCreateSpecType.where": virtual_site
+  "secret_management_accessCreateSpecType.where": site
+  # DC cluster group variants (same kind, different placement)
+  "schemafleetCreateSpecType.dc_cluster_group_inside": dc_cluster_group
+  "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_sli": dc_cluster_group
+  "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_slo": dc_cluster_group
+  # Cloud credentials
+  "viewsaws_vpc_siteCreateSpecType.aws_cred": cloud_credentials
+  "viewsazure_vnet_siteCreateSpecType.azure_cred": cloud_credentials
+  # DNS
+  "schemadns_load_balancerCreateSpecType.fallback_pool": dns_lb_pool
+  # Sites
+  "external_connectorCreateSpecType.ce_site_reference": site
+  # Workloads
+  "virtual_k8sCreateSpecType.default_flavor_ref": workload_flavor
+
+# Remaining: platform-internal or uncommon references (resource_kind: null until curated)
 _needs_review:
-  # - "addon_subscriptionCreateSpecType.addon_service"
-  # - "advertise_policyCreateSpecType.where"
-  # - "bgpCreateSpecType.where"
-  # - "discoveryCreateSpecType.where"
-  # - "external_connectorCreateSpecType.ce_site_reference"
-  # - "infraprotect_asn_prefixCreateSpecType.asn"
-  # - "infraprotect_tunnelCreateSpecType.firewall_rule_group"
-  # - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"
-  # - "schemadns_load_balancerCreateSpecType.fallback_pool"
-  # - "schemaendpointCreateSpecType.where"
-  # - "schemafleetCreateSpecType.dc_cluster_group_inside"
-  # - "secret_management_accessCreateSpecType.where"
-  # - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"
-  # - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"
-  # - "tenant_profileCreateSpecType.plan"
-  # - "viewsaws_vpc_siteCreateSpecType.aws_cred"
-  # - "viewsazure_vnet_siteCreateSpecType.azure_cred"
-  # - "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_sli"
-  # - "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_slo"
-  # - "virtual_k8sCreateSpecType.default_flavor_ref"
+  # - "addon_subscriptionCreateSpecType.addon_service"         # addon_service (platform-internal)
+  # - "infraprotect_asn_prefixCreateSpecType.asn"              # infraprotect ASN
+  # - "infraprotect_tunnelCreateSpecType.firewall_rule_group"  # infraprotect firewall rules
+  # - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"  # PSA config
+  # - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"  # tenant mgmt
+  # - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"  # tenant mgmt
+  # - "tenant_profileCreateSpecType.plan"                      # tenant plan
