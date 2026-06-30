@@ -33,6 +33,7 @@ from .operation_description_enricher import OperationDescriptionEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .property_description_short_enricher import PropertyDescriptionShortEnricher
 from .readonly_enricher import ReadOnlyEnricher
+from .references_enricher import ReferencesEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
 from .schema_override_enricher import SchemaOverrideEnricher
@@ -81,6 +82,7 @@ __all__ = [
     "OperationMetadataEnricher",
     "PropertyDescriptionShortEnricher",
     "ReadOnlyEnricher",
+    "ReferencesEnricher",
     "ResourceExamplesEnricher",
     "SchemaFixer",
     "SchemaOverrideEnricher",

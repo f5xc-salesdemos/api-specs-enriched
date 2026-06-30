@@ -328,6 +328,22 @@ property_level:
     issue: "#494"
     note: "Enables downstream tools to validate conflicts at schema level rather than runtime"
 
+  x-f5xc-references:
+    type: array
+    items: object
+    purpose: Declares resource references (ObjectRefType fields) to other resources that must exist first — enables deterministic CRUD ordering
+    consumers: [terraform, cli, mcp, ide, ai-assistants]
+    source: "Derived from ObjectRefType allOf refs + curated config/resource_references.yaml (F5 specs do not carry the target kind); oneOf gating from x-ves-oneof-field-*"
+    example:
+      - resource_kind: app_firewall
+        field_path: app_firewall
+        gated_by: { choice: waf_choice }
+        required: false
+        cardinality: single
+    added_in: "3.5.0"
+    issue: "#TBD"
+    note: "resource_kind null = unresolved (curate in resource_references.yaml, never guessed). The coarse resource_dependency_graph.json is a projection of these."
+
   x-f5xc-constraints:
     type: object
     purpose: Comprehensive constraint metadata for deterministic AI generation and validation

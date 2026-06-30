@@ -95,6 +95,7 @@ from scripts.utils import (
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
     ReadOnlyEnricher,
+    ReferencesEnricher,
     ResourceExamplesEnricher,
     SchemaFixer,
     SchemaOverrideEnricher,
@@ -1176,6 +1177,9 @@ def merge_specs_by_domain(
     # Load dependency enricher — stamps x-f5xc-requires for cross-field deps
     dependency_enricher = DependencyEnricher()
 
+    # Load references enricher — stamps x-f5xc-references for resource-reference deps
+    references_enricher = ReferencesEnricher.from_config()
+
     # Load constrained fields enricher — stamps enum/range constraints from config
     constrained_fields_enricher = ConstrainedFieldsEnricher()
 
@@ -1358,6 +1362,13 @@ def merge_specs_by_domain(
         stats.setdefault("dependencies_added", 0)
         stats["dependencies_added"] += dep_stats.get("dependencies_added", 0)
         dependency_enricher.reset_stats()
+
+        # Resource references: stamp x-f5xc-references on ObjectRefType properties
+        merged_spec = references_enricher.enrich_spec(merged_spec)
+        ref_stats = references_enricher.get_stats()
+        stats.setdefault("references_stamped", 0)
+        stats["references_stamped"] += ref_stats.get("references_stamped", 0)
+        references_enricher.reset_stats()
 
         # Constrained fields: stamp enum/range constraints from minimum_configs.yaml
         merged_spec = constrained_fields_enricher.enrich_spec(merged_spec)
