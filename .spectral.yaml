@@ -84,6 +84,32 @@ rules:
       functionOptions:
         notMatch: "^(my|test|foo|demo|sample)-[a-z]"
 
+  # x-f5xc-references descriptor validation (resource-reference dependency metadata)
+  x-f5xc-references-valid-type:
+    description: "x-f5xc-references must be an array"
+    message: "x-f5xc-references must be an array of reference descriptors, got {{type}}"
+    severity: error
+    given: "$..['x-f5xc-references']"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+
+  x-f5xc-references-descriptor-shape:
+    description: "Each x-f5xc-references entry must have resource_kind + field_path"
+    message: "x-f5xc-references entry missing required fields (resource_kind, field_path)"
+    severity: warn
+    given: "$..['x-f5xc-references'][*]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - resource_kind
+            - field_path
+
   # placeholder-check removed: requires custom function definition not bundled with spectral:oas
 
 overrides:

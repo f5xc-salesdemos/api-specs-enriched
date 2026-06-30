@@ -116,6 +116,46 @@ def test_from_config_loads_curated_map(tmp_path):
     assert e.kind_map == {"fooCreateSpecType.bar": "origin_pool"}
 
 
+def test_recursive_nested_objectref_through_sub_schema(enricher):
+    """ObjectRefType nested inside allOf→sub-schema→array→items→sub-schema is detected."""
+    spec = _spec(
+        {
+            "viewshttp_loadbalancerCreateSpecType": {
+                "type": "object",
+                "properties": {
+                    "default_pool_list": {
+                        "allOf": [{"$ref": "#/components/schemas/viewsOriginPoolListType"}],
+                    },
+                },
+            },
+            "viewsOriginPoolListType": {
+                "properties": {
+                    "pools": {
+                        "type": "array",
+                        "items": {"$ref": "#/components/schemas/viewsOriginPoolWithWeight"},
+                    },
+                },
+            },
+            "viewsOriginPoolWithWeight": {
+                "properties": {
+                    "pool": {
+                        "allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}],
+                    },
+                    "weight": {"type": "integer"},
+                },
+            },
+            "schemaviewsObjectRefType": {"type": "object", "properties": {"name": {"type": "string"}}},
+        }
+    )
+    # The enricher should find the nested pool→ObjectRefType when recursing.
+    kind_map = {"viewsOriginPoolWithWeight.pool": "origin_pool"}
+    e = ReferencesEnricher(kind_map=kind_map)
+    out = e.enrich_spec(spec)
+    pool_prop = out["components"]["schemas"]["viewsOriginPoolWithWeight"]["properties"]["pool"]
+    assert X_F5XC_REFERENCES in pool_prop
+    assert pool_prop[X_F5XC_REFERENCES][0]["resource_kind"] == "origin_pool"
+
+
 def test_idempotent(enricher):
     """Re-running does not duplicate descriptors."""
     spec = _spec(
