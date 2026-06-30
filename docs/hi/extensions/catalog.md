@@ -1,24 +1,24 @@
 ---
 title: संवर्धन एक्सटेंशन कैटलॉग
-description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन का सत्य स्रोत
+description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन का सत्य का स्रोत
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
 # संवर्धन एक्सटेंशन कैटलॉग
 
-`docs/specifications/api/*.json` में प्रकट होने वाले प्रत्येक `x-*` एक्सटेंशन का सत्य स्रोत। `scripts/utils/extension_constants.py` के साथ समानता `tests/test_extension_catalog.py` द्वारा सुनिश्चित की जाती है।
+`docs/specifications/api/*.json` में प्रकट होने वाले प्रत्येक `x-*` एक्सटेंशन का सत्य का स्रोत। `scripts/utils/extension_constants.py` के साथ समानता `tests/test_extension_catalog.py` द्वारा लागू की जाती है।
 
-यहाँ एक्सटेंशन की तीन श्रेणियाँ दस्तावेज़ीकृत हैं:
+यहाँ एक्सटेंशन की तीन श्रेणियाँ प्रलेखित हैं:
 
-- **यहाँ इंजेक्ट किए गए** — वे एक्सटेंशन जो हमारे एनरिचर जोड़ते हैं (`x-f5xc-*` और `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / डिस्कवरी वेरिएंट)। ये वे हैं जिन्हें डाउनस्ट्रीम उपकरणों को उपभोग करना चाहिए।
-- **अपस्ट्रीम पास-थ्रू** — वे एक्सटेंशन जो F5 स्रोत स्पेक्स में उत्सर्जित करता है और हम अपरिवर्तित रखते हैं (`x-ves-proto-*`, `x-displayname`, आदि)। पारदर्शिता के लिए दस्तावेज़ीकृत हैं लेकिन इस रेपो द्वारा नियंत्रित नहीं हैं।
-- **भविष्य में इंजेक्ट किए जाने वाले** — अभी तक उत्सर्जित नहीं हुए; किसी एनरिचर द्वारा उत्पन्न करना शुरू करते ही यहाँ दस्तावेज़ीकृत किए जाएंगे (प्रारंभिक पॉप्युलेशन पर लागू नहीं)।
+- **यहाँ इंजेक्ट किए गए** — एक्सटेंशन जो हमारे एनरिचर जोड़ते हैं (`x-f5xc-*` और `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / डिस्कवरी वेरिएंट)। ये वे हैं जिन्हें डाउनस्ट्रीम उपकरणों को उपभोग करना चाहिए।
+- **अपस्ट्रीम पास-थ्रू** — एक्सटेंशन जो F5 स्रोत स्पेक्स में उत्सर्जित करता है और हम अपरिवर्तित संरक्षित करते हैं (`x-ves-proto-*`, `x-displayname`, आदि)। पारदर्शिता के लिए प्रलेखित लेकिन इस रेपो द्वारा नियंत्रित नहीं।
+- **भविष्य में इंजेक्ट किए जाने वाले** — अभी तक उत्सर्जित नहीं; जिस क्षण कोई एनरिचर उन्हें उत्पन्न करना शुरू करता है उसी समय यहाँ प्रलेखित (प्रारंभिक जनसंख्या पर लागू नहीं)।
 
 ## प्रविष्टि स्कीमा
 
-नीचे दी गई प्रत्येक प्रविष्टि का आकार बिल्कुल यही है। `tests/test_extension_catalog.py` में पैरिटी परीक्षण सेक्शन बॉडी के स्टबी होने को सहन करता है जब तक `### x-name` हेडर मौजूद है और `Pass-through from upstream:` फ़्लैग `yes` या `no` मान के साथ उपस्थित है।
+नीचे प्रत्येक प्रविष्टि का ठीक यही आकार है। `tests/test_extension_catalog.py` में पैरिटी परीक्षण अनुभाग बॉडी के स्टब्बी होने को सहन करता है जब तक `### x-name` हेडर मौजूद हो और `Pass-through from upstream:` फ़्लैग `yes` या `no` मान के साथ उपस्थित हो।
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -31,12 +31,12 @@ i18n:
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## इंजेक्ट किए गए — स्पेक-स्तर (info सेक्शन)
+## इंजेक्ट किए गए — स्पेक-स्तर (info अनुभाग)
 
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** किसी संवर्धित स्पेक के लिए CLI डोमेन स्लग (जैसे `http_loadbalancer`) की पहचान करता है।
+- **Purpose:** संवर्धित स्पेक के लिए CLI डोमेन स्लग (जैसे `http_loadbalancer`) पहचानता है।
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -48,7 +48,7 @@ i18n:
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** CLI-व्यापी मेटाडेटा ब्लॉक (टूल नाम, संस्करण संकेत, डोमेन ग्रुपिंग)।
+- **Purpose:** CLI-व्यापी मेटाडेटा ब्लॉक (टूल नाम, संस्करण संकेत, डोमेन समूहन)।
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -84,7 +84,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** पाइपलाइन द्वारा संवर्धित स्पेक पर स्टैम्प किया गया सेमांटिक संस्करण।
+- **Purpose:** पाइपलाइन द्वारा संवर्धित स्पेक पर अंकित सेमेंटिक संस्करण।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -108,7 +108,7 @@ i18n:
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** वह टाइमस्टैम्प जब लाइव-API डिस्कवरी पास निष्पादित हुई।
+- **Purpose:** टाइमस्टैम्प जब लाइव-API डिस्कवरी पास निष्पादित किया गया था।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -120,7 +120,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** उस लाइव API का बेस URL जिसे डिस्कवरी के दौरान प्रोब किया गया था।
+- **Purpose:** लाइव API का बेस URL जिसे डिस्कवरी के दौरान प्रोब किया गया था।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -132,7 +132,7 @@ i18n:
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** इस डोमेन के लिए होस्ट किए गए API संदर्भ दस्तावेज़ पृष्ठ का URL।
+- **Purpose:** इस डोमेन के लिए होस्ट किए गए API संदर्भ दस्तावेज़ीकरण पृष्ठ का URL।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -144,7 +144,7 @@ i18n:
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** डिस्कवरी के दौरान प्रोब की गई API के लिए अवलोकित प्रतिक्रिया समय (ms)।
+- **Purpose:** डिस्कवरी के दौरान प्रोब किए गए API के लिए अवलोकित प्रतिक्रिया समय (ms)।
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -180,7 +180,7 @@ i18n:
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** प्रति-डोमेन संक्षेपाक्षर विस्तार तालिका।
+- **Purpose:** प्रति-डोमेन संक्षिप्त नाम विस्तार तालिका।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -206,7 +206,7 @@ i18n:
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** इस संसाधन को सफलतापूर्वक POST/PUT करने के लिए आवश्यक न्यूनतम व्यावहारिक फ़ील्ड सेट।
+- **Purpose:** इस संसाधन को सफलतापूर्वक POST/PUT करने के लिए आवश्यक न्यूनतम व्यवहार्य फ़ील्ड सेट।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -230,7 +230,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** UI/CLI प्रस्तुति के लिए प्रॉपर्टीज़ का सुझाया गया क्रम।
+- **Purpose:** UI/CLI प्रस्तुति के लिए गुणों का सुझावित क्रम।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -254,7 +254,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** किसी संसाधन स्कीमा के लिए मानव-पठनीय प्रदर्शन नाम (ऑटो-जनरेशन को ओवरराइड करता है)।
+- **Purpose:** संसाधन स्कीमा के लिए मानव-पठनीय प्रदर्शन नाम (ऑटो-जनरेशन को ओवरराइड करता है)।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -266,7 +266,7 @@ i18n:
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** इस संसाधन के लिए कंसोल UI नेविगेशन, रूटिंग और फ़ॉर्म संरचना।
+- **Purpose:** इस संसाधन के लिए कंसोल UI नेविगेशन, रूटिंग और फॉर्म संरचना।
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -280,7 +280,7 @@ i18n:
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** संवर्धित प्रॉपर्टी विवरण जो अपस्ट्रीम `description` को पूरक बनाता है।
+- **Purpose:** संवर्धित प्रॉपर्टी विवरण जो अपस्ट्रीम `description` को पूरक करता है।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -292,7 +292,7 @@ i18n:
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** अपस्ट्रीम protobuf `ves.io.schema.rules` से प्राप्त घोषणात्मक सत्यापन नियम।
+- **Purpose:** अपस्ट्रीम protobuf `ves.io.schema.rules` से व्युत्पन्न घोषणात्मक सत्यापन नियम।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -304,7 +304,7 @@ i18n:
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** किसी प्रॉपर्टी के लिए कई दृष्टांत उदाहरण मान।
+- **Purpose:** किसी प्रॉपर्टी के लिए अनेक उदाहरण मान।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -316,7 +316,7 @@ i18n:
 ### x-f5xc-example
 
 - **Applied at:** schema property
-- **Purpose:** एक एकल प्रामाणिक उदाहरण मान।
+- **Purpose:** एकल विहित उदाहरण मान।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -328,7 +328,7 @@ i18n:
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** शेल कम्प्लीशन संकेत (स्टैटिक enum या डायनामिक कमांड)।
+- **Purpose:** शेल कम्पलीशन संकेत (स्टैटिक enum या डायनेमिक कमांड)।
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -340,7 +340,7 @@ i18n:
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** जनरेटेड डॉक्स और UI में प्रदर्शित करने के लिए डिफ़ॉल्ट मान।
+- **Purpose:** जेनरेट किए गए दस्तावेज़ों और UI में प्रदर्शित करने के लिए डिफ़ॉल्ट मान।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -376,7 +376,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** सशर्त आवश्यकताएँ (जैसे जब सिब्लिंग फ़ील्ड X के बराबर हो तो आवश्यक)।
+- **Purpose:** सशर्त आवश्यकताएँ (जैसे जब सिब्लिंग फ़ील्ड X के बराबर हो तब आवश्यक)।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -388,7 +388,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** प्रतिस्थापन मार्गदर्शन के साथ अवमूल्यन सूचना।
+- **Purpose:** प्रतिस्थापन मार्गदर्शन के साथ अवमूल्यन नोटिस।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -400,7 +400,7 @@ i18n:
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** वह डिफ़ॉल्ट मान जो सर्वर तब असाइन करता है जब क्लाइंट प्रॉपर्टी को छोड़ देता है।
+- **Purpose:** डिफ़ॉल्ट मान जो सर्वर तब असाइन करता है जब क्लाइंट प्रॉपर्टी छोड़ देता है।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -412,7 +412,7 @@ i18n:
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** किसी फ़ील्ड के लिए अनुशंसित उत्पादन मान जहाँ सर्वर डिफ़ॉल्ट इष्टतम नहीं है।
+- **Purpose:** किसी फ़ील्ड के लिए अनुशंसित उत्पादन मान जहाँ सर्वर डिफ़ॉल्ट उप-इष्टतम है।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -436,7 +436,7 @@ i18n:
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** उन सिब्लिंग प्रॉपर्टीज़ को सूचीबद्ध करता है जो इसके साथ-साथ सेट नहीं की जा सकतीं।
+- **Purpose:** सिब्लिंग प्रॉपर्टीज़ सूचीबद्ध करता है जिन्हें इसके साथ सेट नहीं किया जा सकता।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -445,10 +445,34 @@ i18n:
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** ObjectRefType फ़ील्ड के संदर्भित संसाधन-प्रकार (वह संसाधन जिसे यह इंगित करता है, जो पहले अस्तित्व में होना चाहिए) को घोषित करता है, oneOf चॉइस-गेटिंग, required-for-create, और कार्डिनैलिटी के साथ — निर्भरता मॉडल का संसाधन-संदर्भ आयाम।
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** प्रति-फ़ील्ड क्रिएट उदाहरण मान (फ्लैट field_path से value मैप) जो x-f5xc-minimum-configuration.example_yaml से व्युत्पन्न हैं — डाउनस्ट्रीम फॉर्म/वर्कफ़्लो जनरेशन के लिए निर्धारक क्रिएट मानों का एकल सत्य स्रोत।
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** क्रॉस-फ़ील्ड निर्भरताएँ दस्तावेज़ीकृत करता है जहाँ एक फ़ील्ड को दूसरे का सेट होना आवश्यक है।
+- **Purpose:** क्रॉस-फ़ील्ड निर्भरताओं को प्रलेखित करता है जहाँ एक फ़ील्ड को दूसरे को सेट करने की आवश्यकता होती है।
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -460,7 +484,7 @@ i18n:
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** लाइव-API प्रोबिंग या स्टैटिक पैटर्न से प्राप्त न्यूमेरिक / स्ट्रिंग बाधाएँ।
+- **Purpose:** लाइव-API प्रोबिंग या स्टैटिक पैटर्न से व्युत्पन्न संख्यात्मक/स्ट्रिंग बाधाएँ।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -472,7 +496,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** घोषित करता है कि कोई फ़ील्ड अपने स्कोप के भीतर अद्वितीय होनी चाहिए या नहीं।
+- **Purpose:** घोषित करता है कि कोई फ़ील्ड अपने दायरे में अद्वितीय होनी चाहिए या नहीं।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -484,7 +508,7 @@ i18n:
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** इस API प्रॉपर्टी के लिए कंसोल फ़ॉर्म विजेट मेटाडेटा।
+- **Purpose:** इस API प्रॉपर्टी के लिए कंसोल फॉर्म विजेट मेटाडेटा।
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -498,7 +522,7 @@ i18n:
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** ऑपरेशन-बॉडी फ़ील्ड्स के नाम देता है जो सफलता के लिए प्रदान किए जाने चाहिए।
+- **Purpose:** ऑपरेशन-बॉडी फ़ील्ड नाम देता है जो सफलता के लिए प्रदान किए जाने चाहिए।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -522,7 +546,7 @@ i18n:
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** क्या CLI/UI को निष्पादन से पहले उपयोगकर्ता से पुष्टि के लिए संकेत देना चाहिए।
+- **Purpose:** क्या CLI/UI को निष्पादित करने से पहले उपयोगकर्ता से पुष्टि के लिए प्रॉम्प्ट करना चाहिए।
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -534,7 +558,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** ऑपरेशन के अवलोकन योग्य साइड इफेक्ट्स सूचीबद्ध करता है (restart, reconfigure, आदि)।
+- **Purpose:** ऑपरेशन के अवलोकनीय दुष्प्रभावों (restart, reconfigure, आदि) को सूचीबद्ध करता है।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -558,7 +582,7 @@ i18n:
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** लाइव API से पता लगाए गए अवलोकित रेट-लिमिट हेडर / व्यवहार।
+- **Purpose:** लाइव API से सर्फेस किए गए अवलोकित रेट-लिमिट हेडर/व्यवहार।
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -570,7 +594,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** लाइव डिस्कवरी के दौरान अवलोकित त्रुटि प्रतिक्रियाओं का कैटलॉग, सैंपल पेलोड के साथ।
+- **Purpose:** लाइव डिस्कवरी के दौरान अवलोकित त्रुटि प्रतिक्रियाओं की कैटलॉग, नमूना पेलोड के साथ।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -579,12 +603,12 @@ i18n:
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## इंजेक्ट किए गए — इंडेक्स-स्तर (डोमेन मेटाडेटा)
+## इंजेक्ट किए गए — इंडेक्स-स्तर (domain metadata)
 
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** किसी डोमेन के लिए शीर्ष-स्तरीय CLI / UI / docs / Terraform ग्रुपिंग श्रेणी।
+- **Purpose:** किसी डोमेन के लिए शीर्ष-स्तरीय CLI / UI / docs / Terraform समूहन श्रेणी।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -596,7 +620,7 @@ i18n:
 ### x-f5xc-primary-resources
 
 - **Applied at:** info
-- **Purpose:** प्राथमिक संसाधन प्रकारों की सूची जो डोमेन को परिभाषित करती है।
+- **Purpose:** प्राथमिक संसाधन प्रकारों की सूची जो डोमेन को परिभाषित करते हैं।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -608,7 +632,7 @@ i18n:
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** वे संसाधन जिनके लिए ऊँचा ध्यान आवश्यक है (उत्पादन-महत्वपूर्ण)।
+- **Purpose:** संसाधन जिनके लिए उन्नत देखभाल आवश्यक है (उत्पादन-महत्वपूर्ण)।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -620,7 +644,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** संक्षिप्त (~60 अक्षर) डोमेन विवरण। लंबे विवरणों के लिए प्रॉपर्टी स्तर पर भी लागू होता है।
+- **Purpose:** संक्षिप्त (~60 वर्ण) डोमेन विवरण। लंबे विवरणों के लिए प्रॉपर्टी स्तर पर भी लागू होता है।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -632,7 +656,7 @@ i18n:
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** मध्यम (~150 अक्षर) डोमेन विवरण। प्रॉपर्टी स्तर पर भी लागू होता है।
+- **Purpose:** मध्यम (~150 वर्ण) डोमेन विवरण। प्रॉपर्टी स्तर पर भी लागू होता है।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -644,7 +668,7 @@ i18n:
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** लंबा (~500 अक्षर) डोमेन विवरण।
+- **Purpose:** लंबा (~500 वर्ण) डोमेन विवरण।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -656,7 +680,7 @@ i18n:
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** इस डोमेन में कॉन्फ़िगरेशन लेखन के लिए सापेक्ष जटिलता स्तर।
+- **Purpose:** इस डोमेन में कॉन्फ़िगरेशन लिखने की सापेक्ष जटिलता स्तर।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -668,7 +692,7 @@ i18n:
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** न्यूनतम F5 XC सदस्यता स्तर आवश्यक।
+- **Purpose:** आवश्यक न्यूनतम F5 XC सदस्यता स्तर।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -680,7 +704,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** किसी डोमेन को प्रीव्यू / बीटा फ़ीचर के रूप में चिह्नित करता है।
+- **Purpose:** किसी डोमेन को प्रीव्यू/बीटा फ़ीचर के रूप में चिह्नित करता है।
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -692,7 +716,7 @@ i18n:
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** नामित उपयोग-मामले जो इस डोमेन का समर्थन करते हैं।
+- **Purpose:** नामित उपयोग मामले जो यह डोमेन समर्थन करता है।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -704,7 +728,7 @@ i18n:
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** UI में इस डोमेन को रेंडर करते समय उपयोग किया जाने वाला आइकन आइडेंटिफ़ायर।
+- **Purpose:** UI में इस डोमेन को रेंडर करते समय उपयोग करने के लिए आइकन पहचानकर्ता।
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -716,7 +740,7 @@ i18n:
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** डोमेन का प्रतिनिधित्व करने वाले ब्रांड लोगो के लिए इनलाइन SVG (या पाथ)।
+- **Purpose:** डोमेन का प्रतिनिधित्व करने वाले ब्रांड लोगो के लिए इनलाइन SVG (या पथ)।
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -728,7 +752,7 @@ i18n:
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** अन्य डोमेन के क्रॉस-लिंक जो आमतौर पर इसके साथ उपयोग किए जाते हैं।
+- **Purpose:** अन्य डोमेन के साथ क्रॉस-लिंक जो आमतौर पर इसके साथ उपयोग किए जाते हैं।
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -740,7 +764,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** रेंडर किए गए दस्तावेज़ों के लिए दस्तावेज़ीकरण सेक्शन / नेव ग्रुपिंग स्लग।
+- **Purpose:** रेंडर किए गए दस्तावेज़ों के लिए दस्तावेज़ीकरण अनुभाग / nav समूहन स्लग।
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`

@@ -1,34 +1,34 @@
 ---
 title: كتالوج امتدادات الإثراء
-description: المرجع الرئيسي لكل امتداد x-* في مواصفات OpenAPI المحسّنة
+description: المرجع المعتمد لكل امتداد x-* في مواصفات OpenAPI المحسّنة
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
 # كتالوج امتدادات الإثراء
 
-المرجع الرئيسي لكل امتداد `x-*` يظهر في
-`docs/specifications/api/*.json`. يتم التحقق من التوافق مع
+المرجع المعتمد لكل امتداد `x-*` يظهر في
+`docs/specifications/api/*.json`. يُفرض التوافق مع
 `scripts/utils/extension_constants.py` عبر
 `tests/test_extension_catalog.py`.
 
-يتم توثيق ثلاث فئات من الامتدادات هنا:
+ثلاث فئات من الامتدادات موثّقة هنا:
 
-- **مُحقنة هنا** — الامتدادات التي تضيفها عمليات الإثراء لدينا (`x-f5xc-*` و
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / متغيرات
-  الاستكشاف). هذه هي الامتدادات التي ينبغي للأدوات التابعة استهلاكها.
-- **مُمررة من المصدر** — الامتدادات التي تُصدرها F5 في المواصفات المصدرية
+- **مُضافة هنا** — الامتدادات التي تضيفها أدوات الإثراء لدينا (`x-f5xc-*` و
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / متغيرات الاكتشاف).
+  وهي الامتدادات التي يجب أن تستهلكها الأدوات اللاحقة.
+- **مُمرَّرة من المصدر الأصلي** — الامتدادات التي تُصدرها F5 في المواصفات المصدرية
   ونحتفظ بها دون تغيير (`x-ves-proto-*`، `x-displayname`، إلخ).
-  موثقة للشفافية ولكن لا يتحكم بها هذا المستودع.
-- **مُحقنة مستقبلاً** — لم تُصدر بعد؛ توثق هنا في اللحظة التي يبدأ
-  فيها أحد عمليات الإثراء بإنتاجها (لا ينطبق عند التعبئة الأولية).
+  موثّقة للشفافية لكنها غير مُتحكَّم بها من هذا المستودع.
+- **مُضافة مستقبلاً** — لم تُصدَر بعد؛ توثّق هنا فور أن يبدأ أحد أدوات الإثراء
+  بإنتاجها (لا ينطبق عند التعبئة الأولية).
 
-## مخطط المدخل
+## مخطط الإدخال
 
-كل مدخل أدناه له هذا الشكل بالضبط. يتحمل اختبار التوافق في
-`tests/test_extension_catalog.py` أن يكون محتوى القسم موجزًا طالما أن
-رأس `### x-name` موجود وعلامة `Pass-through from upstream:` حاضرة
+لكل إدخال أدناه هذا الشكل بالضبط. يتسامح اختبار التوافق في
+`tests/test_extension_catalog.py` مع كون نص القسم مختصراً طالما أن
+ترويسة `### x-name` موجودة وعلامة `Pass-through from upstream:` حاضرة
 بقيمة `yes` أو `no`.
 
     ### x-<name>
@@ -42,12 +42,12 @@ i18n:
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## مُحقنة — على مستوى المواصفات (قسم info)
+## مُضاف — على مستوى المواصفة (قسم info)
 
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** يحدد بادئة نطاق CLI (مثل `http_loadbalancer`) لمواصفة محسّنة.
+- **Purpose:** يحدد الاسم المختصر لنطاق CLI (مثال: `http_loadbalancer`) لمواصفة محسّنة.
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -59,7 +59,7 @@ i18n:
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** كتلة بيانات تعريفية شاملة لـ CLI (اسم الأداة، تلميحات الإصدار، تجميع النطاق).
+- **Purpose:** كتلة بيانات تعريفية على مستوى CLI (اسم الأداة، تلميحات الإصدار، تجميع النطاق).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -71,7 +71,7 @@ i18n:
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** طابع زمني للمواصفة المصدرية التي بُني منها الملف المحسّن.
+- **Purpose:** الطابع الزمني لمواصفة المصدر الأصلي التي بُني منها الملف المحسّن.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -83,7 +83,7 @@ i18n:
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag لأصل إصدار المواصفة المصدرية.
+- **Purpose:** ETag لأصل إصدار مواصفة المصدر الأصلي.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -95,7 +95,7 @@ i18n:
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** إصدار دلالي مُختوم على المواصفة المحسّنة بواسطة خط الأنابيب.
+- **Purpose:** إصدار دلالي مختوم على المواصفة المحسّنة بواسطة خط الأنابيب.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -107,7 +107,7 @@ i18n:
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** كتلة مسرد للعلامات التجارية/المصطلحات المطبقة على كل مواصفة نطاق.
+- **Purpose:** كتلة مسرد المصطلحات والعلامات التجارية المطبّقة على كل مواصفة نطاق.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -119,7 +119,7 @@ i18n:
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** الطابع الزمني لتنفيذ مرور اكتشاف API المباشر.
+- **Purpose:** الطابع الزمني عند تنفيذ تمريرة اكتشاف الـ API المباشر.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -131,7 +131,7 @@ i18n:
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** عنوان URL الأساسي للـ API المباشر الذي تم استطلاعه أثناء الاكتشاف.
+- **Purpose:** عنوان URL الأساسي للـ API المباشر الذي جرى فحصه أثناء الاكتشاف.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -155,7 +155,7 @@ i18n:
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** وقت الاستجابة الملاحَظ (بالميلي ثانية) للـ API المستطلع أثناء الاكتشاف.
+- **Purpose:** وقت الاستجابة المرصود (بالملي ثانية) للـ API الذي جرى فحصه أثناء الاكتشاف.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -179,7 +179,7 @@ i18n:
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** سير عمل خطوة بخطوة مُسمّاة لإنجاز المهام الشائعة في نطاق معين.
+- **Purpose:** سير عمل مسمّاة خطوة بخطوة لإنجاز المهام الشائعة في نطاق معين.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -191,7 +191,7 @@ i18n:
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** جدول توسيع الاختصارات لكل نطاق.
+- **Purpose:** جدول توسعة الاختصارات لكل نطاق.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -203,7 +203,7 @@ i18n:
 ### x-f5xc-console-navigation
 
 - **Applied at:** spec info
-- **Purpose:** شجرة التنقل الشاملة في وحدة التحكم — مساحة العمل والتسلسل الهرمي للقوائم.
+- **Purpose:** شجرة التنقل العامة في وحدة التحكم — مساحة العمل وتسلسل القوائم.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
@@ -212,12 +212,12 @@ i18n:
 - **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
-## مُحقنة — على مستوى المخطط (مخططات المكونات)
+## مُضاف — على مستوى المخطط (مخططات المكونات)
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** الحد الأدنى من مجموعة الحقول المطلوبة لنجاح عملية POST/PUT لهذا المورد.
+- **Purpose:** الحد الأدنى من الحقول المطلوبة لنجاح عملية POST/PUT لهذا المورد.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -229,7 +229,7 @@ i18n:
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** يوفر البيانات التعريفية للقيد والتوصية والتصنيف لمساحة الاسم الخاصة بمورد معين.
+- **Purpose:** يوفر بيانات تعريفية تتعلق بقيد مساحة الاسم وتوصيتها وتصنيفها لمورد معين.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -241,7 +241,7 @@ i18n:
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** الترتيب المقترح للخصائص لعرضها في واجهة المستخدم/CLI.
+- **Purpose:** الترتيب المقترح للخصائص لعرضها في واجهة المستخدم أو CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -253,7 +253,7 @@ i18n:
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** اسم نوع مورد Terraform الذي يُعيَّن إلى هذا المخطط.
+- **Purpose:** اسم نوع مورد Terraform الذي يرتبط بهذا المخطط.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -265,7 +265,7 @@ i18n:
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** اسم عرض قابل للقراءة البشرية لمخطط المورد (يتجاوز التوليد التلقائي).
+- **Purpose:** اسم عرض مقروء للبشر لمخطط مورد (يتجاوز التوليد التلقائي).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -277,7 +277,7 @@ i18n:
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** بيانات تعريفية لتنقل واجهة وحدة التحكم والتوجيه وبنية النموذج لهذا المورد.
+- **Purpose:** تنقل واجهة وحدة التحكم والتوجيه وبنية النموذج لهذا المورد.
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -286,12 +286,12 @@ i18n:
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
-## مُحقنة — على مستوى الخاصية
+## مُضاف — على مستوى الخاصية
 
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** وصف خاصية مُثرى يُكمل `description` المصدرية.
+- **Purpose:** وصف خاصية محسّن يُكمّل الـ `description` الأصلي.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -303,7 +303,7 @@ i18n:
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** قواعد التحقق التصريحية المستمدة من `ves.io.schema.rules` في protobuf المصدري.
+- **Purpose:** قواعد التحقق التصريحية المستخلصة من `ves.io.schema.rules` في protobuf الأصلي.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -315,7 +315,7 @@ i18n:
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** قيم أمثلة توضيحية متعددة لخاصية معينة.
+- **Purpose:** قيم مثال توضيحية متعددة لخاصية معينة.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -327,7 +327,7 @@ i18n:
 ### x-f5xc-example
 
 - **Applied at:** schema property
-- **Purpose:** قيمة مثال معيارية واحدة.
+- **Purpose:** قيمة مثال أساسية واحدة.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -339,7 +339,7 @@ i18n:
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** تلميحات إكمال الصدفة (enum ثابت أو أمر ديناميكي).
+- **Purpose:** تلميحات إكمال الصدفة (تعداد ثابت أو أمر ديناميكي).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -351,7 +351,7 @@ i18n:
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** القيمة (القيم) الافتراضية لعرضها في الوثائق وواجهات المستخدم المُولَّدة.
+- **Purpose:** القيمة الافتراضية أو القيم الافتراضية لعرضها في المستندات المُولَّدة وواجهات المستخدم.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -375,7 +375,7 @@ i18n:
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** يسرد مجموعات الميزات المُسمّاة التي تتطلب هذه الخاصية.
+- **Purpose:** يسرد مجموعات الميزات المسمّاة التي تتطلب هذه الخاصية.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -387,7 +387,7 @@ i18n:
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** المتطلبات الشرطية (مثل: مطلوب عندما يساوي حقل شقيق قيمة X).
+- **Purpose:** المتطلبات الشرطية (مثال: مطلوب عندما تساوي حقل شقيق قيمة X).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -399,7 +399,7 @@ i18n:
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** إشعار الإيقاف مع توجيهات الاستبدال.
+- **Purpose:** إشعار الإهمال مع إرشادات الاستبدال.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -411,7 +411,7 @@ i18n:
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** القيمة الافتراضية التي يُعيّنها الخادم عندما يحذف العميل الخاصية.
+- **Purpose:** القيمة الافتراضية التي يعيّنها الخادم عند إغفال العميل للخاصية.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -423,7 +423,7 @@ i18n:
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** القيمة الإنتاجية الموصى بها لحقل يكون فيه الافتراضي الخاصي بالخادم غير مثالي.
+- **Purpose:** القيمة الموصى بها في الإنتاج لحقل تكون قيمة الخادم الافتراضية له دون المستوى الأمثل.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -456,10 +456,34 @@ i18n:
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** يُعلن عن نوع مورد حقل ObjectRefType المُشار إليه (المورد الذي يشير إليه ويجب أن يوجد مسبقاً)، مع تحديد اختيار oneOf، والمتطلب عند الإنشاء، والعدديّة — البُعد المرجعي للموارد في نموذج الاعتمادية.
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** قيم مثال الحقول عند الإنشاء لكل حقل (خريطة مسطحة من مسار الحقل إلى القيمة) مستخلصة من x-f5xc-minimum-configuration.example_yaml — المصدر الوحيد الحتمي لقيم الإنشاء المستخدمة في توليد النماذج وسير العمل اللاحقة.
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** يوثق تبعيات الحقول المتقاطعة حيث يتطلب حقل واحد تعيين حقل آخر.
+- **Purpose:** يوثّق التبعيات عبر الحقول حيث يتطلب حقل ما أن يكون حقل آخر محدداً.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -471,7 +495,7 @@ i18n:
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** القيود الرقمية/النصية المستمدة من استطلاع API المباشر أو الأنماط الثابتة.
+- **Purpose:** قيود رقمية أو نصية مستخلصة من فحص الـ API المباشر أو الأنماط الثابتة.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -483,7 +507,7 @@ i18n:
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** يُعلن ما إذا كان الحقل يجب أن يكون فريدًا ضمن نطاقه.
+- **Purpose:** يُعلن ما إذا كان الحقل يجب أن يكون فريداً ضمن نطاقه.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -495,7 +519,7 @@ i18n:
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** بيانات تعريفية لأداة النموذج في وحدة التحكم لخاصية API هذه.
+- **Purpose:** بيانات تعريفية لعنصر نموذج وحدة التحكم لهذه الخاصية في الـ API.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -504,12 +528,12 @@ i18n:
 - **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
 - **Pass-through from upstream:** no
 
-## مُحقنة — على مستوى العملية
+## مُضاف — على مستوى العملية
 
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** يُسمّي حقول نص العملية التي يجب توفيرها لتحقيق النجاح.
+- **Purpose:** يسمّي حقول نص العملية التي يجب توفيرها لنجاح التنفيذ.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -521,7 +545,7 @@ i18n:
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** يُصنّف نطاق تأثير العملية (منخفض/متوسط/عالٍ/حرج).
+- **Purpose:** يصنّف نطاق تأثير العملية (منخفض/متوسط/مرتفع/حرج).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -533,7 +557,7 @@ i18n:
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** ما إذا كان يجب على CLI/واجهة المستخدم مطالبة المستخدم بالتأكيد قبل التنفيذ.
+- **Purpose:** ما إذا كان CLI أو واجهة المستخدم يجب أن يطلب من المستخدم التأكيد قبل التنفيذ.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -545,7 +569,7 @@ i18n:
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** يسرد الآثار الجانبية القابلة للملاحظة للعملية (إعادة التشغيل، إعادة التهيئة، إلخ).
+- **Purpose:** يسرد الآثار الجانبية الملحوظة للعملية (إعادة التشغيل، إعادة الضبط، إلخ).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -557,7 +581,7 @@ i18n:
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** وقت الاستجابة المقاس تجريبيًا لهذه العملية أثناء الاكتشاف.
+- **Purpose:** وقت الاستجابة المقاس تجريبياً لهذه العملية أثناء الاكتشاف.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -569,7 +593,7 @@ i18n:
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** ترويسات/سلوك تحديد المعدل الملاحَظة المستخرجة من API المباشر.
+- **Purpose:** حدود المعدل المرصودة / السلوك المرصود من الـ API المباشر.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -581,7 +605,7 @@ i18n:
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** كتالوج استجابات الأخطاء الملاحظة أثناء الاكتشاف المباشر، مع عينات من الحمولات.
+- **Purpose:** كتالوج استجابات الأخطاء المرصودة أثناء الاكتشاف المباشر، مع عيّنات من البيانات.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -590,12 +614,12 @@ i18n:
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## مُحقنة — على مستوى الفهرس (بيانات تعريفية للنطاق)
+## مُضاف — على مستوى الفهرس (بيانات تعريفية للنطاق)
 
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** فئة التجميع عالية المستوى لـ CLI / واجهة المستخدم / الوثائق / Terraform لنطاق معين.
+- **Purpose:** فئة التجميع العليا لـ CLI / واجهة المستخدم / المستندات / Terraform لنطاق معين.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -607,7 +631,7 @@ i18n:
 ### x-f5xc-primary-resources
 
 - **Applied at:** info
-- **Purpose:** قائمة بأنواع الموارد الأساسية التي تُعرّف النطاق.
+- **Purpose:** قائمة أنواع الموارد الرئيسية التي تُعرّف النطاق.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -619,7 +643,7 @@ i18n:
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** الموارد التي تتطلب عناية خاصة (حرجة في الإنتاج).
+- **Purpose:** الموارد التي تستلزم عناية خاصة (حرجة للإنتاج).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -631,7 +655,7 @@ i18n:
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** وصف قصير للنطاق (~60 حرفًا). ينطبق أيضًا على مستوى الخاصية للأوصاف الطويلة.
+- **Purpose:** وصف مختصر للنطاق (~60 حرفاً). ينطبق أيضاً على مستوى الخاصية للأوصاف الطويلة.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -643,7 +667,7 @@ i18n:
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** وصف متوسط للنطاق (~150 حرفًا). ينطبق أيضًا على مستوى الخاصية.
+- **Purpose:** وصف متوسط للنطاق (~150 حرفاً). ينطبق أيضاً على مستوى الخاصية.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -691,7 +715,7 @@ i18n:
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** يُعلّم نطاقًا باعتباره ميزة معاينة/تجريبية.
+- **Purpose:** يضع علامة على النطاق باعتباره ميزة معاينة / تجريبية.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -703,7 +727,7 @@ i18n:
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** حالات الاستخدام المُسمّاة التي يدعمها هذا النطاق.
+- **Purpose:** حالات الاستخدام المسمّاة التي يدعمها هذا النطاق.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -715,7 +739,7 @@ i18n:
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** معرّف الأيقونة المستخدم عند تقديم هذا النطاق في واجهة مستخدم.
+- **Purpose:** معرّف الأيقونة المستخدمة عند عرض هذا النطاق في واجهة المستخدم.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -727,7 +751,7 @@ i18n:
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** SVG مُدمج (أو مسار) لشعار علامة تجارية يمثل النطاق.
+- **Purpose:** SVG مضمّن (أو مسار) لشعار علامة تجارية يمثّل النطاق.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -739,7 +763,7 @@ i18n:
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** روابط متقاطعة لنطاقات أخرى تُستخدم عادةً مع هذا النطاق.
+- **Purpose:** روابط تقاطع مع نطاقات أخرى تُستخدم عادةً معاً مع هذا النطاق.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -751,7 +775,7 @@ i18n:
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** قسم الوثائق / بادئة تجميع التنقل للوثائق المُقدَّمة.
+- **Purpose:** الاسم المختصر لقسم التوثيق / مجموعة التنقل في المستندات المُصيَّرة.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -760,12 +784,12 @@ i18n:
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## مُمررة من المصدر
+## مُمرَّر من المصدر الأصلي
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -777,7 +801,7 @@ i18n:
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -789,7 +813,7 @@ i18n:
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -801,7 +825,7 @@ i18n:
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -813,7 +837,7 @@ i18n:
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -825,7 +849,7 @@ i18n:
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -837,35 +861,35 @@ i18n:
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** راجع وثائق F5 المصدرية.
+- **Example:** راجع وثائق F5 الأصلية.
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** راجع وثائق F5 المصدرية.
+- **Example:** راجع وثائق F5 الأصلية.
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** محفوظة دون تغيير من مواصفة F5 المصدرية.
+- **Purpose:** محفوظ دون تغيير من مواصفة F5 الأصلية.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** راجع وثائق F5 المصدرية.
+- **Example:** راجع وثائق F5 الأصلية.
 - **Pass-through from upstream:** yes

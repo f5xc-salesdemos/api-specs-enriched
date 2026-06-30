@@ -1,37 +1,38 @@
 ---
-title: Anreicherungserweiterungskatalog
+title: Anreicherungserweiterungs-Katalog
 description: >-
-  Maßgebliche Referenz für jede x-*-Erweiterung in den angereicherten
+  Maßgebliche Referenz für jede x-* Erweiterung in den erweiterten
   OpenAPI-Spezifikationen
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
-# Anreicherungserweiterungskatalog
+# Anreicherungserweiterungs-Katalog
 
 Maßgebliche Referenz für jede `x-*`-Erweiterung, die in
 `docs/specifications/api/*.json` vorkommt. Die Parität mit
 `scripts/utils/extension_constants.py` wird durch
-`tests/test_extension_catalog.py` sichergestellt.
+`tests/test_extension_catalog.py` erzwungen.
 
 Drei Klassen von Erweiterungen sind hier dokumentiert:
 
-- **Hier eingefügt** — Erweiterungen, die unsere Anreicherungsskripte hinzufügen (`x-f5xc-*` und
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / Erkennung
-  Varianten). Diese sind die Erweiterungen, die nachgelagerte Werkzeuge verwenden sollten.
-- **Upstream-Durchleitung** — Erweiterungen, die F5 in den Quellspezifikationen ausgibt
-  und die wir unverändert übernehmen (`x-ves-proto-*`, `x-displayname` usw.).
+- **Hier eingefügt** — Erweiterungen, die unsere Anreicherungsprozesse hinzufügen (`x-f5xc-*` und
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / Discovery-
+  Varianten). Diese sind diejenigen, die nachgelagerte Werkzeuge konsumieren sollen.
+- **Upstream-Durchleitung** — Erweiterungen, die F5 in den Quellspezifikationen
+  ausgibt und die wir unverändert weitergeben (`x-ves-proto-*`, `x-displayname` usw.).
   Aus Transparenzgründen dokumentiert, aber nicht von diesem Repository gesteuert.
-- **Zukünftig eingefügt** — noch nicht ausgegeben; wird hier dokumentiert, sobald
-  ein Anreicherungsskript beginnt, sie zu erzeugen (bei der Erstbefüllung nicht zutreffend).
+- **Zukünftig eingefügt** — Noch nicht ausgegeben; hier dokumentiert in dem Moment,
+  in dem ein Anreicherungsprozess beginnt, diese zu erzeugen (gilt nicht für die erste
+  Befüllung).
 
 ## Eintragsschema
 
 Jeder Eintrag unten hat genau diese Form. Der Paritätstest in
-`tests/test_extension_catalog.py` toleriert, dass der Abschnittsinhalt kurz ist,
+`tests/test_extension_catalog.py` toleriert, dass der Abschnittskörper kurz ist,
 solange der `### x-name`-Header vorhanden ist und das
-`Pass-through from upstream:`-Flag mit dem Wert `yes` oder `no` gesetzt ist.
+`Pass-through from upstream:`-Kennzeichen mit dem Wert `yes` oder `no` vorhanden ist.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -73,7 +74,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** Zeitstempel der Upstream-Quellspezifikation, aus der die angereicherte Datei erstellt wurde.
+- **Purpose:** Zeitstempel der vorgelagerten Quellspezifikation, aus der die angereicherte Datei erstellt wurde.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -85,7 +86,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag des Release-Assets der Upstream-Quellspezifikation.
+- **Purpose:** ETag des Release-Assets der vorgelagerten Quellspezifikation.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -109,7 +110,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** Branding-/Terminologieglossar-Block, der auf jede Domain-Spezifikation angewendet wird.
+- **Purpose:** Marken-/Terminologie-Glossarblock, der auf jede Domain-Spezifikation angewendet wird.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -121,7 +122,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Zeitstempel, wann der Live-API-Erkennungsdurchlauf ausgeführt wurde.
+- **Purpose:** Zeitstempel, wann der Live-API-Discovery-Durchlauf ausgeführt wurde.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -133,7 +134,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** Basis-URL der Live-API, die während der Erkennung untersucht wurde.
+- **Purpose:** Basis-URL der Live-API, die während der Discovery geprüft wurde.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -157,7 +158,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** Beobachtete Antwortzeit (ms) für die untersuchte API während der Erkennung.
+- **Purpose:** Beobachtete Antwortzeit (ms) für die geprüfte API während der Discovery.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -169,7 +170,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** Kuratierte Best-Practice-Leitlinien für eine Domain.
+- **Purpose:** Kuratierte Best-Practice-Anleitungen für eine Domain.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -181,7 +182,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Benannte Schritt-für-Schritt-Workflows zur Erledigung häufiger Aufgaben in einer Domain.
+- **Purpose:** Benannte schrittweise Workflows zur Erledigung häufiger Aufgaben in einer Domain.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -193,7 +194,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** Domain-spezifische Akronym-Erweiterungstabelle.
+- **Purpose:** Domain-spezifische Akronym-Auflösungstabelle.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -219,7 +220,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Minimaler Feldsatz, der für ein erfolgreiches POST/PUT dieser Ressource erforderlich ist.
+- **Purpose:** Minimaler lebensfähiger Feldsatz, der erforderlich ist, um diese Ressource erfolgreich per POST/PUT zu übertragen.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -255,7 +256,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Name des Terraform-Ressourcentyps, der diesem Schema zugeordnet ist.
+- **Purpose:** Terraform-Ressourcentypname, der diesem Schema zugeordnet ist.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -267,7 +268,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** Menschenlesbarer Anzeigename für ein Ressourcenschema (überschreibt die automatische Generierung).
+- **Purpose:** Lesbarer Anzeigename für ein Ressourcenschema (überschreibt die automatische Generierung).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -293,7 +294,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** Angereicherte Eigenschaftsbeschreibung, die die Upstream-`description` ergänzt.
+- **Purpose:** Angereicherte Eigenschaftsbeschreibung, die die vorgelagerte `description` ergänzt.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -305,7 +306,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** Deklarative Validierungsregeln, abgeleitet aus den Upstream-Protobuf-`ves.io.schema.rules`.
+- **Purpose:** Deklarative Validierungsregeln, abgeleitet aus den vorgelagerten Protobuf-`ves.io.schema.rules`.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -317,7 +318,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** Mehrere illustrative Beispielwerte für eine Eigenschaft.
+- **Purpose:** Mehrere veranschaulichende Beispielwerte für eine Eigenschaft.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -389,7 +390,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** Bedingte Anforderungen (z. B. erforderlich, wenn ein benachbartes Feld gleich X ist).
+- **Purpose:** Bedingte Anforderungen (z. B. erforderlich, wenn ein Geschwisterfeld gleich X ist).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -401,7 +402,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Veraltungshinweis mit Hinweisen zur Ersetzung.
+- **Purpose:** Veraltungshinweis mit Ersetzungsanleitung.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -425,7 +426,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Empfohlener Produktionswert für ein Feld, bei dem der Serverstandard suboptimal ist.
+- **Purpose:** Empfohlener Produktionswert für ein Feld, bei dem der Server-Standard suboptimal ist.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -437,7 +438,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** Gibt bei `oneOf`-Blöcken an, welche Variante empfohlen wird.
+- **Purpose:** Gibt für `oneOf`-Blöcke an, welche Variante empfohlen wird.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -449,13 +450,37 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** Listet benachbarte Eigenschaften auf, die nicht zusammen mit dieser gesetzt werden können.
+- **Purpose:** Listet Geschwistereigenschaften auf, die nicht zusammen mit dieser gesetzt werden können.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
 - **Injected by:** scripts/utils/conflicts_with_enricher.py
 - **Driven by config:** hardcoded
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** Deklariert die referenzierte Ressourcenart eines ObjectRefType-Feldes (die Ressource, auf die es zeigt und die zuerst vorhanden sein muss), mit oneOf-Auswahlsteuerung, Pflichtangabe bei der Erstellung und Kardinalität — die ressourcenreferenz-Dimension des Abhängigkeitsmodells.
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** Feldspezifische Erstellungsbeispielpielwerte (flache Zuordnung von Feldpfad zu Wert), abgeleitet aus x-f5xc-minimum-configuration.example_yaml — die einzige Quelle der Wahrheit für deterministische Erstellungswerte für die nachgelagerte Formular-/Workflow-Generierung.
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-requires
@@ -473,7 +498,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Numerische/Zeichenketten-Einschränkungen, abgeleitet aus Live-API-Prüfungen oder statischen Mustern.
+- **Purpose:** Numerische/String-Einschränkungen, abgeleitet aus Live-API-Prüfungen oder statischen Mustern.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -511,7 +536,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** Benennt die Operationsrumpf-Felder, die für einen Erfolg angegeben werden müssen.
+- **Purpose:** Benennt die Felder des Operationskörpers, die für den Erfolg bereitgestellt werden müssen.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -523,7 +548,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** Klassifiziert den Wirkungsradius einer Operation (niedrig/mittel/hoch/kritisch).
+- **Purpose:** Klassifiziert den Wirkungsbereich einer Operation (niedrig/mittel/hoch/kritisch).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -535,7 +560,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Gibt an, ob CLI/UI den Benutzer zur Bestätigung auffordern soll, bevor die Ausführung erfolgt.
+- **Purpose:** Gibt an, ob CLI/UI den Benutzer vor der Ausführung zur Bestätigung auffordern soll.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -559,7 +584,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** Empirisch gemessene Antwortzeit für diese Operation während der Erkennung.
+- **Purpose:** Empirisch gemessene Antwortzeit für diese Operation während der Discovery.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -583,7 +608,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Katalog der während der Live-Erkennung beobachteten Fehlerantworten mit Beispiel-Payloads.
+- **Purpose:** Katalog der während der Live-Discovery beobachteten Fehlerantworten mit Beispiel-Payloads.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -681,7 +706,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** Mindest-F5-XC-Abonnementstufe, die erforderlich ist.
+- **Purpose:** Minimale erforderliche F5 XC-Abonnementstufe.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -717,7 +742,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Symbol-Bezeichner, der beim Rendern dieser Domain in einer Benutzeroberfläche verwendet wird.
+- **Purpose:** Symbolkennung, die beim Rendern dieser Domain in einer Benutzeroberfläche verwendet werden soll.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -753,7 +778,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Dokumentationsabschnitt-/Navigationsgruppierungs-Slug für gerenderte Dokumentation.
+- **Purpose:** Dokumentationsabschnitt-/Navigationsgruppen-Slug für gerenderte Dokumentation.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -767,7 +792,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -779,7 +804,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -791,7 +816,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -803,7 +828,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -815,7 +840,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -827,7 +852,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -839,7 +864,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -851,7 +876,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -863,7 +888,7 @@ solange der `### x-name`-Header vorhanden ist und das
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** Unverändert aus der F5-Upstream-Spezifikation übernommen.
+- **Purpose:** Unverändert aus der vorgelagerten F5-Spezifikation übernommen.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
