@@ -68,7 +68,9 @@ class ReferencesEnricher:
         self.stats = ReferencesEnrichmentStats()
 
     @classmethod
-    def from_config(cls, config_path: Path | str = Path("config/resource_references.yaml")) -> "ReferencesEnricher":
+    def from_config(
+        cls, config_path: Path | str = Path("config/resource_references.yaml")
+    ) -> "ReferencesEnricher":
         """Build an enricher with the curated referred-kind map loaded from YAML."""
         path = Path(config_path)
         kind_map: dict[str, str] = {}
@@ -141,11 +143,15 @@ class ReferencesEnricher:
                     mapping[v] = group
         return mapping
 
-    def _stamp(self, schema_name: str, field_name: str, prop: dict[str, Any], gate_group: str | None) -> None:
+    def _stamp(
+        self, schema_name: str, field_name: str, prop: dict[str, Any], gate_group: str | None
+    ) -> None:
         if X_F5XC_REFERENCES in prop:  # idempotent
             return
         # Resolution order: exact <schema>.<field> → field-name default → null (honest gap).
-        kind = self.kind_map.get(f"{schema_name}.{field_name}") or self.field_defaults.get(field_name)
+        kind = self.kind_map.get(f"{schema_name}.{field_name}") or self.field_defaults.get(
+            field_name
+        )
         if kind is None:
             self.stats.references_unmapped += 1
             logger.debug("unmapped ObjectRef: %s.%s", schema_name, field_name)

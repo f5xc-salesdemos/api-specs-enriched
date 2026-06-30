@@ -458,7 +458,7 @@ stubby as long as the `### x-name` header exists and the
 
 - **Applied at:** schema property
 - **Purpose:** Declares an ObjectRefType field's referred resource-kind (the resource it points to, which must exist first), with oneOf choice-gating, required-for-create, and cardinality — the resource-reference dimension of the dependency model.
-- **Consumers:** terraform, cli, mcp, ide, ai-assistants
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
 - **Injected by:** scripts/utils/references_enricher.py

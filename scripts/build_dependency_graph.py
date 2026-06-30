@@ -66,8 +66,14 @@ def collect_edges(specs: list[dict[str, Any]]) -> list[Edge]:
                     key = (src, target)
                     # Prefer the strongest edge: required + unconditional wins.
                     prior = edges.get(key)
-                    if prior is None or (required and not prior.required) or (not conditional and prior.conditional):
-                        edges[key] = Edge(src=src, target=target, conditional=conditional, required=required)
+                    if (
+                        prior is None
+                        or (required and not prior.required)
+                        or (not conditional and prior.conditional)
+                    ):
+                        edges[key] = Edge(
+                            src=src, target=target, conditional=conditional, required=required
+                        )
     return list(edges.values())
 
 

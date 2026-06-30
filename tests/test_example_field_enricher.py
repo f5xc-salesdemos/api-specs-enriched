@@ -67,4 +67,6 @@ def test_idempotent():
     once = e.enrich_spec(spec)
     e.reset_stats()
     twice = e.enrich_spec(once)
-    assert twice["components"]["schemas"]["barCreateSpecType"]["x-f5xc-field-examples"] == {"spec.port": 80}
+    assert twice["components"]["schemas"]["barCreateSpecType"]["x-f5xc-field-examples"] == {
+        "spec.port": 80
+    }

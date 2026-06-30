@@ -63,13 +63,17 @@ def test_unmapped_objectref_gets_null_kind_not_a_guess(enricher):
         {
             "someResourceCreateSpecType": {
                 "properties": {
-                    "mystery_ref": {"allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}]},
+                    "mystery_ref": {
+                        "allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}]
+                    },
                 },
             },
         }
     )
     out = enricher.enrich_spec(spec)
-    refs = out["components"]["schemas"]["someResourceCreateSpecType"]["properties"]["mystery_ref"][X_F5XC_REFERENCES]
+    refs = out["components"]["schemas"]["someResourceCreateSpecType"]["properties"]["mystery_ref"][
+        X_F5XC_REFERENCES
+    ]
     assert refs[0]["resource_kind"] is None
 
 
@@ -95,16 +99,18 @@ def test_gated_by_records_oneof_choice(enricher):
                 "type": "object",
                 "x-ves-oneof-field-waf_choice": ["app_firewall", "disable_waf"],
                 "properties": {
-                    "app_firewall": {"allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}]},
+                    "app_firewall": {
+                        "allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}]
+                    },
                     "disable_waf": {"type": "object"},
                 },
             },
         }
     )
     out = enricher.enrich_spec(spec)
-    refs = out["components"]["schemas"]["viewshttp_loadbalancerCreateSpecType"]["properties"]["app_firewall"][
-        X_F5XC_REFERENCES
-    ]
+    refs = out["components"]["schemas"]["viewshttp_loadbalancerCreateSpecType"]["properties"][
+        "app_firewall"
+    ][X_F5XC_REFERENCES]
     assert refs[0]["gated_by"] == {"choice": "waf_choice"}
 
 
@@ -144,7 +150,10 @@ def test_recursive_nested_objectref_through_sub_schema(enricher):
                     "weight": {"type": "integer"},
                 },
             },
-            "schemaviewsObjectRefType": {"type": "object", "properties": {"name": {"type": "string"}}},
+            "schemaviewsObjectRefType": {
+                "type": "object",
+                "properties": {"name": {"type": "string"}},
+            },
         }
     )
     # The enricher should find the nested pool→ObjectRefType when recursing.
@@ -162,7 +171,9 @@ def test_idempotent(enricher):
         {
             "fast_aclCreateSpecType": {
                 "properties": {
-                    "protocol_policer": {"allOf": [{"$ref": "#/components/schemas/schemaObjectRefType"}]},
+                    "protocol_policer": {
+                        "allOf": [{"$ref": "#/components/schemas/schemaObjectRefType"}]
+                    },
                 },
             },
         }
@@ -170,5 +181,7 @@ def test_idempotent(enricher):
     once = enricher.enrich_spec(spec)
     enricher.reset_stats()
     twice = enricher.enrich_spec(once)
-    refs = twice["components"]["schemas"]["fast_aclCreateSpecType"]["properties"]["protocol_policer"][X_F5XC_REFERENCES]
+    refs = twice["components"]["schemas"]["fast_aclCreateSpecType"]["properties"][
+        "protocol_policer"
+    ][X_F5XC_REFERENCES]
     assert len(refs) == 1
