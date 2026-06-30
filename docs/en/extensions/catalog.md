@@ -454,6 +454,30 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** Declares an ObjectRefType field's referred resource-kind (the resource it points to, which must exist first), with oneOf choice-gating, required-for-create, and cardinality — the resource-reference dimension of the dependency model.
+- **Consumers:** terraform, cli, mcp, ide, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** Per-field create example values (flat field_path to value map) derived from x-f5xc-minimum-configuration.example_yaml — the single source of deterministic create values for downstream form/workflow generation.
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property

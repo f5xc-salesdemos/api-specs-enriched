@@ -24,7 +24,7 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-X_F5XC_FIELD_EXAMPLES = "x-f5xc-field-examples"
+from .extension_constants import X_F5XC_FIELD_EXAMPLES  # noqa: E402 (re-exported)
 
 
 def flatten_example(obj: Any, prefix: str = "spec") -> dict[str, Any]:
