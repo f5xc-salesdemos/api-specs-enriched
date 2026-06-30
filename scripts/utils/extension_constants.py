@@ -77,6 +77,7 @@ X_F5XC_RECOMMENDED_ONEOF_VARIANT = "x-f5xc-recommended-oneof-variant"
 X_F5XC_CONFLICTS_WITH = "x-f5xc-conflicts-with"
 X_F5XC_CONSTRAINTS = "x-f5xc-constraints"
 X_F5XC_REQUIRES = "x-f5xc-requires"
+X_F5XC_REFERENCES = "x-f5xc-references"
 X_F5XC_UNIQUENESS = "x-f5xc-uniqueness"
 
 # Console UI field enrichment (Issue #679)
@@ -188,6 +189,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_CONFLICTS_WITH,
         X_F5XC_CONSTRAINTS,
         X_F5XC_REQUIRES,
+        X_F5XC_REFERENCES,
         X_F5XC_UNIQUENESS,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,
