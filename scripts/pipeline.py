@@ -95,6 +95,7 @@ from scripts.utils import (
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
     ReadOnlyEnricher,
+    ExampleFieldEnricher,
     ReferencesEnricher,
     ResourceExamplesEnricher,
     SchemaFixer,
@@ -1180,6 +1181,9 @@ def merge_specs_by_domain(
     # Load references enricher — stamps x-f5xc-references for resource-reference deps
     references_enricher = ReferencesEnricher.from_config()
 
+    # Load example-field enricher — derives per-field create examples from example_yaml
+    example_field_enricher = ExampleFieldEnricher()
+
     # Load constrained fields enricher — stamps enum/range constraints from config
     constrained_fields_enricher = ConstrainedFieldsEnricher()
 
@@ -1369,6 +1373,13 @@ def merge_specs_by_domain(
         stats.setdefault("references_stamped", 0)
         stats["references_stamped"] += ref_stats.get("references_stamped", 0)
         references_enricher.reset_stats()
+
+        # Per-field create examples: derive x-f5xc-field-examples from example_yaml
+        merged_spec = example_field_enricher.enrich_spec(merged_spec)
+        ex_stats = example_field_enricher.get_stats()
+        stats.setdefault("example_fields_stamped", 0)
+        stats["example_fields_stamped"] += ex_stats.get("fields_stamped", 0)
+        example_field_enricher.reset_stats()
 
         # Constrained fields: stamp enum/range constraints from minimum_configs.yaml
         merged_spec = constrained_fields_enricher.enrich_spec(merged_spec)

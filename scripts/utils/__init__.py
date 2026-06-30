@@ -22,6 +22,7 @@ from .description_validator import DescriptionValidator
 from .discovery_enricher import DiscoveryEnricher
 from .domain_categorizer import DomainCategorizer, categorize_spec
 from .error_resolution_enricher import ErrorResolutionEnricher
+from .example_field_enricher import ExampleFieldEnricher
 from .external_docs_enricher import ExternalDocsEnricher
 from .field_description_enricher import FieldDescriptionEnricher
 from .field_metadata_enricher import FieldMetadataEnricher
@@ -71,6 +72,7 @@ __all__ = [
     "DiscoveryEnricher",
     "DomainCategorizer",
     "ErrorResolutionEnricher",
+    "ExampleFieldEnricher",
     "ExternalDocsEnricher",
     "FieldDescriptionEnricher",
     "FieldMetadataEnricher",
