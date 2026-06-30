@@ -1,35 +1,37 @@
 ---
 title: แคตตาล็อกส่วนขยาย Enrichment
 description: >-
-  แหล่งข้อมูลหลักสำหรับทุก x-* extension ในข้อกำหนด OpenAPI
+  แหล่งข้อมูลหลักสำหรับส่วนขยาย x-* ทุกรายการในข้อกำหนด OpenAPI
   ที่เพิ่มประสิทธิภาพแล้ว
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
 # แคตตาล็อกส่วนขยาย Enrichment
 
-แหล่งข้อมูลหลักสำหรับทุก `x-*` extension ที่ปรากฏใน
+แหล่งข้อมูลหลักสำหรับส่วนขยาย `x-*` ทุกรายการที่ปรากฏใน
 `docs/specifications/api/*.json` ความสอดคล้องกับ
-`scripts/utils/extension_constants.py` ถูกตรวจสอบโดย
+`scripts/utils/extension_constants.py` ถูกบังคับใช้โดย
 `tests/test_extension_catalog.py`
 
-ส่วนขยายแบ่งออกเป็นสามประเภทที่บันทึกไว้ที่นี่:
+ส่วนขยายสามประเภทได้รับการจัดทำเอกสารไว้ที่นี่:
 
-- **Injected here** — ส่วนขยายที่ enricher ของเราเพิ่มเข้ามา (`x-f5xc-*` และ
+- **ฉีดเข้ามาที่นี่** — ส่วนขยายที่ enricher ของเราเพิ่มเข้ามา (`x-f5xc-*` และ
   `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / discovery
-  variants) นี่คือส่วนขยายที่เครื่องมือปลายทางควรนำไปใช้
-- **Upstream pass-through** — ส่วนขยายที่ F5 ส่งออกมาในข้อกำหนดต้นทางและเราเก็บรักษาไว้โดยไม่เปลี่ยนแปลง (`x-ves-proto-*`, `x-displayname` ฯลฯ)
-  บันทึกไว้เพื่อความโปร่งใสแต่ไม่ได้ถูกควบคุมโดย repo นี้
-- **Future-injected** — ยังไม่ได้ถูกส่งออก บันทึกไว้ที่นี่ทันทีที่ enricher เริ่มสร้างขึ้น (ไม่เกี่ยวข้องกับการประชากรเริ่มต้น)
+  variants) เหล่านี้คือส่วนขยายที่เครื่องมือ downstream ควรนำไปใช้
+- **ส่งผ่านจาก upstream** — ส่วนขยายที่ F5 ส่งออกมาในสเปคต้นทาง
+  และเราเก็บรักษาไว้โดยไม่เปลี่ยนแปลง (`x-ves-proto-*`, `x-displayname` เป็นต้น)
+  จัดทำเอกสารเพื่อความโปร่งใส แต่ไม่ได้ควบคุมโดย repo นี้
+- **ฉีดในอนาคต** — ยังไม่ได้ส่งออก; จัดทำเอกสารทันทีที่
+  enricher เริ่มผลิตขึ้นมา (ไม่มีผลบังคับใช้ในการป้อนข้อมูลเริ่มต้น)
 
 ## โครงสร้างรายการ
 
-ทุกรายการด้านล่างมีรูปแบบนี้โดยเฉพาะ การทดสอบความสอดคล้องใน
-`tests/test_extension_catalog.py` ยอมรับให้เนื้อหาส่วนนั้นสั้นได้
-ตราบใดที่ header `### x-name` มีอยู่และ
-flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes` หรือ `no`
+ทุกรายการด้านล่างมีรูปแบบนี้อย่างแน่นอน การทดสอบความสอดคล้องใน
+`tests/test_extension_catalog.py` ยอมรับเนื้อหาของส่วนที่สั้นกระชับ
+ตราบเท่าที่ส่วนหัว `### x-name` มีอยู่ และ
+แฟล็ก `Pass-through from upstream:` มีค่าเป็น `yes` หรือ `no`
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
@@ -42,12 +44,12 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
     - **Example:** <short snippet>
     - **Pass-through from upstream:** <yes/no>
 
-## Injected — ระดับ spec (ส่วน info)
+## ฉีดเข้ามา — ระดับสเปค (ส่วน info)
 
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** ระบุ slug ของ CLI domain (เช่น `http_loadbalancer`) สำหรับ spec ที่เพิ่มประสิทธิภาพแล้ว
+- **Purpose:** ระบุ slug ของโดเมน CLI (เช่น `http_loadbalancer`) สำหรับสเปคที่เพิ่มประสิทธิภาพแล้ว
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -59,7 +61,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** บล็อก metadata ระดับ CLI (ชื่อเครื่องมือ, คำแนะนำเวอร์ชัน, การจัดกลุ่ม domain)
+- **Purpose:** บล็อกเมตาดาตาสำหรับ CLI ทั้งหมด (ชื่อเครื่องมือ, 힌트เวอร์ชัน, การจัดกลุ่มโดเมน)
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -71,7 +73,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** Timestamp ของ spec ต้นทาง upstream ที่ไฟล์ที่เพิ่มประสิทธิภาพแล้วถูกสร้างขึ้นมา
+- **Purpose:** Timestamp ของสเปคต้นทาง upstream ที่ใช้สร้างไฟล์ที่เพิ่มประสิทธิภาพแล้ว
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -83,7 +85,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag ของ release asset ของ spec ต้นทาง upstream
+- **Purpose:** ETag ของ asset การเผยแพร่สเปคต้นทาง upstream
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -95,7 +97,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-enriched-version
 
 - **Applied at:** info
-- **Purpose:** เวอร์ชัน semantic ที่ประทับบน spec ที่เพิ่มประสิทธิภาพแล้วโดย pipeline
+- **Purpose:** เวอร์ชัน Semantic ที่ประทับลงบนสเปคที่เพิ่มประสิทธิภาพแล้วโดย pipeline
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -107,7 +109,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** บล็อก glossary ของการสร้างแบรนด์/คำศัพท์ที่ใช้กับ spec แต่ละ domain
+- **Purpose:** บล็อกคำศัพท์ด้านการสร้างแบรนด์/คำศัพท์เฉพาะที่ใช้กับสเปคของแต่ละโดเมน
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -119,7 +121,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Timestamp เมื่อรอบการค้นพบ live-API ถูกดำเนินการ
+- **Purpose:** Timestamp เมื่อดำเนินการ discovery pass ของ live API
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -131,7 +133,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** Base URL ของ live API ที่ถูกตรวจสอบระหว่างการค้นพบ
+- **Purpose:** URL พื้นฐานของ live API ที่ถูกตรวจสอบระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -143,7 +145,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** URL ไปยังหน้าเอกสาร API reference ที่โฮสต์ไว้สำหรับ domain นี้
+- **Purpose:** URL ไปยังหน้าเอกสารอ้างอิง API ที่โฮสต์ไว้สำหรับโดเมนนี้
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -155,7 +157,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** เวลาตอบสนองที่สังเกตได้ (ms) สำหรับ API ที่ถูกตรวจสอบระหว่างการค้นพบ
+- **Purpose:** เวลาตอบสนองที่สังเกตได้ (ms) สำหรับ API ที่ถูกตรวจสอบระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -167,7 +169,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** แนวทางปฏิบัติที่ดีที่สุดที่คัดเลือกมาสำหรับ domain
+- **Purpose:** คำแนะนำแนวทางปฏิบัติที่ดีที่สุดที่คัดเลือกแล้วสำหรับโดเมน
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -179,7 +181,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Workflow แบบมีชื่อที่มีขั้นตอนสำหรับทำงานทั่วไปใน domain
+- **Purpose:** เวิร์กโฟลว์แบบขั้นตอนที่มีชื่อเพื่อทำงานทั่วไปในโดเมน
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -191,7 +193,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-acronyms
 
 - **Applied at:** info
-- **Purpose:** ตารางขยายความตัวย่อสำหรับแต่ละ domain
+- **Purpose:** ตารางการขยายตัวย่อสำหรับแต่ละโดเมน
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "additionalProperties": {"type": "string"}}`
@@ -203,7 +205,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-console-navigation
 
 - **Applied at:** spec info
-- **Purpose:** โครงสร้างการนำทาง console ระดับ global — ลำดับชั้น workspace และเมนู
+- **Purpose:** ต้นไม้การนำทางคอนโซลทั่วทั้งระบบ — ลำดับชั้น workspace และเมนู
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
@@ -212,12 +214,12 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-console-navigation": {"workspaces": {"web-app-and-api-protection": {"label": "Web App & API Protection", "route_prefix": "/web/workspaces/web-app-and-api-protection"}}}`
 - **Pass-through from upstream:** no
 
-## Injected — ระดับ schema (component schemas)
+## ฉีดเข้ามา — ระดับ schema (component schemas)
 
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** ชุดฟิลด์ขั้นต่ำที่จำเป็นสำหรับการ POST/PUT resource นี้ให้สำเร็จ
+- **Purpose:** ชุดฟิลด์ขั้นต่ำที่จำเป็นเพื่อ POST/PUT ทรัพยากรนี้ให้สำเร็จ
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -229,7 +231,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** ให้ข้อมูล metadata เกี่ยวกับข้อจำกัด namespace, คำแนะนำ, และการจำแนกประเภทสำหรับ resource
+- **Purpose:** ให้ metadata ด้านข้อจำกัด namespace, คำแนะนำ, และการจัดประเภทสำหรับทรัพยากร
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -241,7 +243,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** ลำดับที่แนะนำของ properties สำหรับการนำเสนอใน UI/CLI
+- **Purpose:** ลำดับที่แนะนำของ properties สำหรับการแสดงผลใน UI/CLI
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -253,7 +255,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** ชื่อ resource type ของ Terraform ที่แมปกับ schema นี้
+- **Purpose:** ชื่อประเภท Terraform resource ที่แมปกับ schema นี้
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -265,7 +267,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** ชื่อแสดงผลที่อ่านได้สำหรับมนุษย์สำหรับ resource schema (แทนที่การสร้างอัตโนมัติ)
+- **Purpose:** ชื่อที่แสดงผลแบบอ่านง่ายสำหรับ resource schema (แทนที่การสร้างอัตโนมัติ)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -277,7 +279,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** การนำทาง UI ของ console, การ routing, และโครงสร้างฟอร์มสำหรับ resource นี้
+- **Purpose:** การนำทาง UI คอนโซล, การกำหนดเส้นทาง, และโครงสร้างฟอร์มสำหรับทรัพยากรนี้
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -286,12 +288,12 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
-## Injected — ระดับ property
+## ฉีดเข้ามา — ระดับ property
 
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** คำอธิบาย property ที่เพิ่มประสิทธิภาพแล้วซึ่งเสริม `description` ของ upstream
+- **Purpose:** คำอธิบาย property ที่เพิ่มประสิทธิภาพแล้วซึ่งเสริมจาก `description` upstream
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -303,7 +305,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** กฎการตรวจสอบความถูกต้องเชิงประกาศที่ได้มาจาก `ves.io.schema.rules` ของ upstream protobuf
+- **Purpose:** กฎการตรวจสอบแบบ declarative ที่ได้มาจาก `ves.io.schema.rules` ของ protobuf upstream
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -315,7 +317,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** ค่าตัวอย่างที่หลากหลายสำหรับ property
+- **Purpose:** ค่าตัวอย่างหลายรายการสำหรับ property
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -327,7 +329,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-example
 
 - **Applied at:** schema property
-- **Purpose:** ค่าตัวอย่างแบบ canonical เดียว
+- **Purpose:** ค่าตัวอย่างหลักเพียงค่าเดียว
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -339,7 +341,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** คำแนะนำการเติมอัตโนมัติ shell (enum แบบ static หรือคำสั่งแบบ dynamic)
+- **Purpose:** คำแนะนำสำหรับการเติมข้อความอัตโนมัติใน shell (enum แบบ static หรือคำสั่งแบบ dynamic)
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -363,7 +365,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** แสดงรายการ HTTP operation (POST/PUT/...) ที่ต้องการ property นี้
+- **Purpose:** แสดงรายการ HTTP operations (POST/PUT/...) ที่ต้องการ property นี้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -375,7 +377,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** แสดงรายการชุดฟีเจอร์ที่มีชื่อซึ่งต้องการ property นี้
+- **Purpose:** แสดงรายการการรวมกันของฟีเจอร์ที่มีชื่อซึ่งต้องการ property นี้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -387,7 +389,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** ข้อกำหนดเงื่อนไข (เช่น จำเป็นเมื่อฟิลด์พี่น้องเท่ากับ X)
+- **Purpose:** ข้อกำหนดแบบมีเงื่อนไข (เช่น required เมื่อฟิลด์ sibling มีค่าเท่ากับ X)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -399,7 +401,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** ประกาศการเลิกใช้งานพร้อมคำแนะนำสำหรับการแทนที่
+- **Purpose:** ประกาศการเลิกใช้งานพร้อมคำแนะนำการแทนที่
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -411,7 +413,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-server-default
 
 - **Applied at:** schema property
-- **Purpose:** ค่าเริ่มต้นที่เซิร์ฟเวอร์กำหนดเมื่อ client ละเว้น property นั้น
+- **Purpose:** ค่าเริ่มต้นที่ server กำหนดเมื่อ client ละเว้น property
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -423,7 +425,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** ค่าที่แนะนำสำหรับ production สำหรับฟิลด์ที่ค่าเริ่มต้นของเซิร์ฟเวอร์ไม่เหมาะสม
+- **Purpose:** ค่าที่แนะนำสำหรับการใช้งานจริงสำหรับฟิลด์ที่ค่าเริ่มต้นของ server ไม่เหมาะสม
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -447,7 +449,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** แสดงรายการ properties พี่น้องที่ไม่สามารถตั้งค่าพร้อมกับ property นี้ได้
+- **Purpose:** แสดงรายการ properties แบบ sibling ที่ไม่สามารถตั้งค่าพร้อมกับ property นี้ได้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -456,10 +458,34 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** ประกาศประเภททรัพยากรที่อ้างถึงของฟิลด์ ObjectRefType (ทรัพยากรที่ชี้ไป ซึ่งต้องมีอยู่ก่อน) พร้อม oneOf choice-gating, required-for-create, และ cardinality — มิติการอ้างอิงทรัพยากรของโมเดล dependency
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** ค่าตัวอย่างในการสร้างแบบต่อฟิลด์ (แมป field_path แบบ flat กับค่า) ที่ได้มาจาก x-f5xc-minimum-configuration.example_yaml — แหล่งข้อมูลเดียวของค่าการสร้างแบบ deterministic สำหรับการสร้างฟอร์ม/เวิร์กโฟลว์ downstream
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** บันทึก dependency ข้ามฟิลด์ที่ฟิลด์หนึ่งต้องการให้ฟิลด์อื่นถูกตั้งค่า
+- **Purpose:** จัดทำเอกสาร dependencies ระหว่างฟิลด์ข้ามกัน ซึ่งฟิลด์หนึ่งต้องการให้ฟิลด์อื่นถูกตั้งค่าด้วย
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -471,7 +497,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** ข้อจำกัดตัวเลข/สตริงที่ได้มาจากการตรวจสอบ live-API หรือ pattern แบบ static
+- **Purpose:** ข้อจำกัดด้านตัวเลข/สตริงที่ได้มาจากการตรวจสอบ live API หรือ patterns แบบ static
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -483,7 +509,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** ประกาศว่าฟิลด์ต้องมีความเฉพาะเจาะจงภายใน scope ของมันหรือไม่
+- **Purpose:** ประกาศว่าฟิลด์ต้องมีค่าเฉพาะภายใน scope ของมันหรือไม่
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -495,7 +521,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** metadata ของ widget ฟอร์ม console สำหรับ API property นี้
+- **Purpose:** metadata ของ widget ฟอร์มคอนโซลสำหรับ API property นี้
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -504,7 +530,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-console-field": {"widget_type": "listbox", "default": "HTTPS with Automatic Certificate", "form_section": "domains-and-lb-type"}`
 - **Pass-through from upstream:** no
 
-## Injected — ระดับ operation
+## ฉีดเข้ามา — ระดับ operation
 
 ### x-f5xc-required-fields
 
@@ -521,7 +547,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** จำแนกระดับ blast radius ของ operation (low/medium/high/critical)
+- **Purpose:** จำแนกระดับผลกระทบของ operation (low/medium/high/critical)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -533,7 +559,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** CLI/UI ควรแจ้งให้ผู้ใช้ยืนยันก่อนดำเนินการหรือไม่
+- **Purpose:** ระบุว่า CLI/UI ควรแจ้งให้ผู้ใช้ยืนยันก่อนดำเนินการหรือไม่
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -545,7 +571,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** แสดงรายการผลข้างเคียงที่สังเกตได้ของ operation (restart, reconfigure ฯลฯ)
+- **Purpose:** แสดงรายการผลข้างเคียงที่สังเกตได้จาก operation (restart, reconfigure เป็นต้น)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -557,7 +583,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-discovered-response-time
 
 - **Applied at:** operation
-- **Purpose:** เวลาตอบสนองที่วัดได้จากการทดลองสำหรับ operation นี้ระหว่างการค้นพบ
+- **Purpose:** เวลาตอบสนองที่วัดได้จริงสำหรับ operation นี้ระหว่าง discovery
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -569,7 +595,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** headers/พฤติกรรม rate-limit ที่สังเกตได้จาก live API
+- **Purpose:** headers / พฤติกรรมการจำกัดอัตราที่สังเกตได้จาก live API
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -581,7 +607,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** แคตตาล็อกของการตอบสนองข้อผิดพลาดที่สังเกตได้ระหว่างการค้นพบ live พร้อม payload ตัวอย่าง
+- **Purpose:** แคตตาล็อกของการตอบสนองข้อผิดพลาดที่สังเกตได้ระหว่าง live discovery พร้อม payload ตัวอย่าง
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -590,12 +616,12 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-discovered-error-catalog": [{"status": 400, "reason": "bad_request"}]`
 - **Pass-through from upstream:** no
 
-## Injected — ระดับ index (domain metadata)
+## ฉีดเข้ามา — ระดับ index (domain metadata)
 
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** หมวดหมู่การจัดกลุ่มระดับสูงสุดสำหรับ CLI / UI / เอกสาร / Terraform ของ domain
+- **Purpose:** หมวดหมู่การจัดกลุ่มระดับบนสุดสำหรับ CLI / UI / docs / Terraform ของโดเมน
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -607,7 +633,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-primary-resources
 
 - **Applied at:** info
-- **Purpose:** รายการ resource type หลักที่กำหนด domain
+- **Purpose:** รายการประเภททรัพยากรหลักที่กำหนดโดเมน
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -619,7 +645,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** ทรัพยากรที่ต้องการความระมัดระวังสูง (critical สำหรับ production)
+- **Purpose:** ทรัพยากรที่ต้องการความระมัดระวังเป็นพิเศษ (สำคัญต่อ production)
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -631,7 +657,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain แบบสั้น (~60 ตัวอักษร) นอกจากนี้ยังใช้ที่ระดับ property สำหรับคำอธิบายยาว
+- **Purpose:** คำอธิบายโดเมนสั้น (~60 ตัวอักษร) ใช้ได้ในระดับ property ด้วยสำหรับคำอธิบายยาว
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -643,7 +669,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain แบบกลาง (~150 ตัวอักษร) นอกจากนี้ยังใช้ที่ระดับ property
+- **Purpose:** คำอธิบายโดเมนขนาดกลาง (~150 ตัวอักษร) ใช้ได้ในระดับ property ด้วย
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -655,7 +681,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** คำอธิบาย domain แบบยาว (~500 ตัวอักษร)
+- **Purpose:** คำอธิบายโดเมนยาว (~500 ตัวอักษร)
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -667,7 +693,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** ระดับความซับซ้อนสัมพัทธ์สำหรับการเขียน configuration ใน domain นี้
+- **Purpose:** ระดับความซับซ้อนสัมพัทธ์สำหรับการเขียน configurations ในโดเมนนี้
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -691,7 +717,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** ทำเครื่องหมาย domain ว่าเป็นฟีเจอร์ preview / beta
+- **Purpose:** ทำเครื่องหมายโดเมนว่าเป็นฟีเจอร์ preview / beta
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -703,7 +729,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** use case ที่มีชื่อซึ่ง domain นี้รองรับ
+- **Purpose:** กรณีการใช้งานที่มีชื่อซึ่งโดเมนนี้รองรับ
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -715,7 +741,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** ตัวระบุไอคอนที่ใช้เมื่อแสดง domain นี้ใน UI
+- **Purpose:** ตัวระบุไอคอนที่ใช้เมื่อแสดงโดเมนนี้ใน UI
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -727,7 +753,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** SVG แบบ inline (หรือ path) สำหรับโลโก้แบรนด์ที่แทน domain
+- **Purpose:** SVG แบบ inline (หรือ path) สำหรับโลโก้แบรนด์ที่แทนโดเมน
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -739,7 +765,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** cross-link ไปยัง domain อื่นที่มักใช้ร่วมกับ domain นี้
+- **Purpose:** ลิงก์ข้ามไปยังโดเมนอื่นที่มักใช้ร่วมกับโดเมนนี้
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -760,12 +786,12 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## Upstream pass-through
+## ส่งผ่านจาก upstream
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -777,7 +803,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -789,7 +815,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -801,7 +827,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -813,7 +839,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -825,7 +851,7 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -837,35 +863,35 @@ flag `Pass-through from upstream:` ปรากฏพร้อมค่า `yes`
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสาร upstream ของ F5
+- **Example:** ดูเอกสาร F5 upstream
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสาร upstream ของ F5
+- **Example:** ดูเอกสาร F5 upstream
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจาก spec upstream ของ F5
+- **Purpose:** เก็บรักษาไว้โดยไม่เปลี่ยนแปลงจากสเปค F5 upstream
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** ดูเอกสาร upstream ของ F5
+- **Example:** ดูเอกสาร F5 upstream
 - **Pass-through from upstream:** yes

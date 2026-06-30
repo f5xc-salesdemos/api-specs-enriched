@@ -4,44 +4,44 @@ description: >-
   Source de vérité pour chaque extension x-* dans les spécifications OpenAPI
   enrichies
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
 # Catalogue des extensions d'enrichissement
 
-Source de vérité pour chaque extension `x-*` apparaissant dans
+Source de vérité pour chaque extension `x-*` qui apparaît dans
 `docs/specifications/api/*.json`. La parité avec
 `scripts/utils/extension_constants.py` est vérifiée par
 `tests/test_extension_catalog.py`.
 
-Trois catégories d'extensions sont documentées ici :
+Trois classes d'extensions sont documentées ici :
 
 - **Injectées ici** — extensions ajoutées par nos enrichisseurs (`x-f5xc-*` et
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de
-  découverte). Ce sont celles que les outils en aval doivent consommer.
-- **Transmises depuis l'amont** — extensions émises par F5 dans les spécifications sources
-  et préservées sans modification (`x-ves-proto-*`, `x-displayname`, etc.).
-  Documentées par transparence mais non contrôlées par ce dépôt.
-- **À injecter ultérieurement** — pas encore émises ; documentées ici dès qu'un
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de découverte).
+  Ce sont celles que les outils en aval doivent consommer.
+- **Transmission en amont** — extensions émises par F5 dans les spécifications sources
+  et préservées à l'identique (`x-ves-proto-*`, `x-displayname`, etc.).
+  Documentées par souci de transparence, mais non contrôlées par ce dépôt.
+- **Injectées ultérieurement** — pas encore émises ; documentées ici dès qu'un
   enrichisseur commence à les produire (non applicable lors de la population initiale).
 
 ## Schéma d'entrée
 
 Chaque entrée ci-dessous possède exactement cette forme. Le test de parité dans
-`tests/test_extension_catalog.py` tolère que le corps de section soit sommaire,
+`tests/test_extension_catalog.py` tolère que le corps de section soit succinct,
 à condition que l'en-tête `### x-name` existe et que l'indicateur
 `Pass-through from upstream:` soit présent avec la valeur `yes` ou `no`.
 
     ### x-<name>
     - **Applied at:** <schema | parameter | operation | path-item | info | response>
-    - **Purpose:** <one sentence>
+    - **Purpose:** <une phrase>
     - **Consumers:** <CLI | VSCode | Terraform | Web UI | multiple | N/A>
     - **Value type:** <string | number | boolean | object | array>
-    - **Value schema:** <JSON Schema snippet, or N/A>
-    - **Injected by:** <scripts/utils/<enricher>.py, or "upstream">
-    - **Driven by config:** <config/<file>.yaml, or "hardcoded", or "upstream">
-    - **Example:** <short snippet>
+    - **Value schema:** <extrait JSON Schema, ou N/A>
+    - **Injected by:** <scripts/utils/<enricher>.py, ou "upstream">
+    - **Driven by config:** <config/<file>.yaml, ou "hardcoded", ou "upstream">
+    - **Example:** <extrait court>
     - **Pass-through from upstream:** <yes/no>
 
 ## Injectées — niveau spec (section info)
@@ -61,7 +61,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** Bloc de métadonnées globales CLI (nom de l'outil, indications de version, groupement de domaine).
+- **Purpose:** Bloc de métadonnées CLI global (nom de l'outil, indications de version, regroupement de domaine).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -73,7 +73,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-upstream-timestamp
 
 - **Applied at:** info
-- **Purpose:** Horodatage de la spec source amont à partir de laquelle le fichier enrichi a été construit.
+- **Purpose:** Horodatage de la spec source en amont à partir de laquelle le fichier enrichi a été construit.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -85,7 +85,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag de la ressource de publication de la spec source amont.
+- **Purpose:** ETag de la ressource de version de la spec source en amont.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -121,7 +121,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Horodatage de l'exécution de la passe de découverte de l'API en direct.
+- **Purpose:** Horodatage indiquant quand la passe de découverte de l'API en direct a été exécutée.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -133,7 +133,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-api-url
 
 - **Applied at:** info
-- **Purpose:** URL de base de l'API en direct qui a été sondée lors de la découverte.
+- **Purpose:** URL de base de l'API en direct sondée lors de la découverte.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -145,7 +145,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** URL vers la page de documentation de référence API hébergée pour ce domaine.
+- **Purpose:** URL de la page de documentation de référence API hébergée pour ce domaine.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -157,7 +157,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-response-time-ms
 
 - **Applied at:** info
-- **Purpose:** Temps de réponse observé (en ms) pour l'API sondée lors de la découverte.
+- **Purpose:** Temps de réponse observé (ms) pour l'API sondée lors de la découverte.
 - **Consumers:** multiple
 - **Value type:** number
 - **Value schema:** `{"type": "number"}`
@@ -169,7 +169,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-best-practices
 
 - **Applied at:** info
-- **Purpose:** Guide de bonnes pratiques sélectionné pour un domaine.
+- **Purpose:** Recommandations de bonnes pratiques pour un domaine.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -181,7 +181,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Workflows guidés nommés, étape par étape, pour accomplir des tâches courantes dans un domaine.
+- **Purpose:** Workflows nommés, pas à pas, pour accomplir des tâches courantes dans un domaine.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -219,7 +219,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Ensemble minimal de champs requis pour réussir un POST/PUT de cette ressource.
+- **Purpose:** Ensemble minimal de champs requis pour effectuer avec succès un POST/PUT de cette ressource.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -231,7 +231,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-namespace-profile
 
 - **Applied at:** info
-- **Purpose:** Fournit les métadonnées de contrainte, de recommandation et de classification de l'espace de noms pour une ressource.
+- **Purpose:** Fournit des métadonnées de contrainte, de recommandation et de classification de namespace pour une ressource.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"constraint": {"type": "object"}, "recommendation": {"type": "object"}, "classification": {"type": "object"}}}`
@@ -243,7 +243,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Ordre suggéré des propriétés pour la présentation dans l'interface UI/CLI.
+- **Purpose:** Ordre suggéré des propriétés pour la présentation dans l'interface utilisateur/CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -255,7 +255,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Nom du type de ressource Terraform associé à ce schéma.
+- **Purpose:** Nom du type de ressource Terraform correspondant à ce schéma.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -279,7 +279,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** Navigation dans l'interface console, routage et structure de formulaire pour cette ressource.
+- **Purpose:** Navigation dans la console, routage et structure du formulaire pour cette ressource.
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -293,7 +293,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-description
 
 - **Applied at:** schema property
-- **Purpose:** Description de propriété enrichie qui complète la `description` amont.
+- **Purpose:** Description de propriété enrichie qui complète la `description` en amont.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -305,7 +305,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** Règles de validation déclaratives dérivées des `ves.io.schema.rules` protobuf amont.
+- **Purpose:** Règles de validation déclaratives dérivées des `ves.io.schema.rules` protobuf en amont.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -317,7 +317,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-examples
 
 - **Applied at:** schema property
-- **Purpose:** Plusieurs exemples de valeurs illustratives pour une propriété.
+- **Purpose:** Plusieurs valeurs d'exemple illustratives pour une propriété.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array"}`
@@ -353,7 +353,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Valeur(s) par défaut à afficher dans la documentation générée et les interfaces.
+- **Purpose:** Valeur(s) par défaut à afficher dans la documentation générée et les interfaces utilisateur.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -365,7 +365,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
-- **Purpose:** Liste les opérations HTTP (POST/PUT/...) qui requièrent cette propriété.
+- **Purpose:** Liste les opérations HTTP (POST/PUT/...) qui nécessitent cette propriété.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -377,7 +377,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Liste les combinaisons de fonctionnalités nommées qui requièrent cette propriété.
+- **Purpose:** Liste les combinaisons de fonctionnalités nommées qui nécessitent cette propriété.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -401,7 +401,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Avis de dépréciation avec des conseils de remplacement.
+- **Purpose:** Avis de dépréciation avec des conseils sur le remplacement.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -425,7 +425,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Valeur de production recommandée pour un champ dont la valeur par défaut du serveur est sous-optimale.
+- **Purpose:** Valeur recommandée en production pour un champ dont la valeur par défaut du serveur est sous-optimale.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -449,7 +449,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-conflicts-with
 
 - **Applied at:** schema property
-- **Purpose:** Liste les propriétés sœurs qui ne peuvent pas être définies en même temps que celle-ci.
+- **Purpose:** Liste les propriétés frères qui ne peuvent pas être définies conjointement avec celle-ci.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -458,10 +458,34 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** Déclare le type de ressource référencé par un champ ObjectRefType (la ressource vers laquelle il pointe et qui doit exister préalablement), avec gestion des choix oneOf, obligation à la création et cardinalité — la dimension de référence de ressource du modèle de dépendance.
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** Valeurs d'exemple par champ pour la création (map plate champ_path → valeur) dérivées de x-f5xc-minimum-configuration.example_yaml — source unique de valeurs de création déterministes pour la génération de formulaires/workflows en aval.
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** Documente les dépendances inter-champs où un champ en requiert un autre.
+- **Purpose:** Documente les dépendances inter-champs où un champ en requiert un autre d'être défini.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -473,7 +497,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Contraintes numériques / de chaîne dérivées du sondage de l'API en direct ou de patrons statiques.
+- **Purpose:** Contraintes numériques/de chaîne dérivées du sondage de l'API en direct ou de patterns statiques.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -485,7 +509,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
-- **Purpose:** Déclare si un champ doit être unique dans sa portée.
+- **Purpose:** Déclare si un champ doit être unique dans son périmètre.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -497,7 +521,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** Métadonnées du widget de formulaire console pour cette propriété API.
+- **Purpose:** Métadonnées du widget de formulaire de la console pour cette propriété d'API.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -511,7 +535,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-required-fields
 
 - **Applied at:** operation
-- **Purpose:** Nomme les champs du corps de l'opération qui doivent être fournis pour réussir.
+- **Purpose:** Nomme les champs du corps d'opération qui doivent être fournis pour qu'elle réussisse.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -523,7 +547,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-danger-level
 
 - **Applied at:** operation
-- **Purpose:** Classe le rayon d'action d'une opération (faible/moyen/élevé/critique).
+- **Purpose:** Classifie le rayon d'impact d'une opération (low/medium/high/critical).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high", "critical"]}`
@@ -535,7 +559,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Indique si le CLI/UI doit inviter l'utilisateur à confirmer avant l'exécution.
+- **Purpose:** Indique si la CLI/l'interface utilisateur doit demander une confirmation à l'utilisateur avant d'exécuter.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -547,7 +571,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-side-effects
 
 - **Applied at:** operation
-- **Purpose:** Liste les effets secondaires observables de l'opération (redémarrage, reconfiguration, etc.).
+- **Purpose:** Liste les effets de bord observables de l'opération (redémarrage, reconfiguration, etc.).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -571,7 +595,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** En-têtes / comportements de limite de débit observés depuis l'API en direct.
+- **Purpose:** En-têtes de limite de débit / comportement observés depuis l'API en direct.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -583,7 +607,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Catalogue des réponses d'erreur observées lors de la découverte en direct, avec des exemples de charge utile.
+- **Purpose:** Catalogue des réponses d'erreur observées lors de la découverte en direct, avec des exemples de charges utiles.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -597,7 +621,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-category
 
 - **Applied at:** info
-- **Purpose:** Catégorie de regroupement CLI / UI / docs / Terraform de premier niveau pour un domaine.
+- **Purpose:** Catégorie de regroupement de premier niveau pour CLI / interface utilisateur / documentation / Terraform d'un domaine.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -633,7 +657,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** Description courte du domaine (~60 caractères). S'applique également au niveau des propriétés pour les descriptions longues.
+- **Purpose:** Description courte (~60 caractères) du domaine. S'applique également au niveau propriété pour les descriptions longues.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -645,7 +669,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** Description moyenne du domaine (~150 caractères). S'applique également au niveau des propriétés.
+- **Purpose:** Description moyenne (~150 caractères) du domaine. S'applique également au niveau propriété.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -657,7 +681,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** Description longue du domaine (~500 caractères).
+- **Purpose:** Description longue (~500 caractères) du domaine.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -693,7 +717,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Signale un domaine comme fonctionnalité en aperçu / bêta.
+- **Purpose:** Marque un domaine comme fonctionnalité en aperçu / bêta.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -705,7 +729,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** Cas d'utilisation nommés que ce domaine prend en charge.
+- **Purpose:** Cas d'usage nommés que ce domaine prend en charge.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -717,7 +741,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Identifiant d'icône à utiliser lors du rendu de ce domaine dans une interface.
+- **Purpose:** Identifiant d'icône à utiliser lors du rendu de ce domaine dans une interface utilisateur.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -729,7 +753,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-logo-svg
 
 - **Applied at:** info
-- **Purpose:** SVG intégré (ou chemin) pour un logo de marque représentant le domaine.
+- **Purpose:** SVG inline (ou chemin) pour un logo de marque représentant le domaine.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -741,7 +765,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** Liens croisés vers d'autres domaines couramment utilisés avec celui-ci.
+- **Purpose:** Liens croisés vers d'autres domaines couramment utilisés conjointement avec celui-ci.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -753,7 +777,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Section de documentation / slug de regroupement de navigation pour les docs rendus.
+- **Purpose:** Slug de section de documentation / regroupement de navigation pour les docs rendus.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -762,12 +786,12 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## Transmises depuis l'amont
+## Transmission en amont
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -779,7 +803,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -791,7 +815,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -803,7 +827,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -815,7 +839,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -827,7 +851,7 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -839,35 +863,35 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Voir la documentation amont F5.
+- **Example:** Voir la documentation F5 en amont.
 - **Pass-through from upstream:** yes
 
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Voir la documentation amont F5.
+- **Example:** Voir la documentation F5 en amont.
 - **Pass-through from upstream:** yes
 
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** Préservé sans modification depuis la spec amont F5.
+- **Purpose:** Préservé à l'identique depuis la spec F5 en amont.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
 - **Injected by:** upstream
 - **Driven by config:** upstream
-- **Example:** Voir la documentation amont F5.
+- **Example:** Voir la documentation F5 en amont.
 - **Pass-through from upstream:** yes

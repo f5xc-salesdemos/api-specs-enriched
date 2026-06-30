@@ -85,6 +85,7 @@ from scripts.utils import (
     DescriptionValidator,
     DiscoveryEnricher,
     ErrorResolutionEnricher,
+    ExampleFieldEnricher,
     ExternalDocsEnricher,
     FieldDescriptionEnricher,
     GrammarImprover,
@@ -95,6 +96,7 @@ from scripts.utils import (
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
     ReadOnlyEnricher,
+    ReferencesEnricher,
     ResourceExamplesEnricher,
     SchemaFixer,
     SchemaOverrideEnricher,
@@ -382,7 +384,8 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     return spec, {
         "field_count": field_count,
         "schemas_fixed": schema_stats.get("fixes_applied", 0),
-        "descriptions_generated": desc_stats.get("operations_generated", 0) + desc_stats.get("schemas_generated", 0),
+        "descriptions_generated": desc_stats.get("operations_generated", 0)
+        + desc_stats.get("schemas_generated", 0),
         "consistency_issues": consistency_stats.get("total_issues", 0),
         "domains_normalized": domain_normalize_count,
         "field_descriptions_added": field_desc_stats.get("descriptions_added", 0),
@@ -663,7 +666,11 @@ def _remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]
             del path_item[method]
             removed_count += 1
 
-        remaining = [m for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"] if m in path_item]
+        remaining = [
+            m
+            for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]
+            if m in path_item
+        ]
         if not remaining:
             paths_to_remove.append(path)
 
@@ -1116,14 +1123,17 @@ def merge_specs_by_domain(
             domain_specs["data_intelligence"].append((filename, spec))
 
         # Also add specs to threat_campaign domain if they contain threat_campaign/threat_mesh paths
-        has_threat_campaign_paths = any("/api/waf/threat_campaign" in p or "/threat_mesh" in p for p in paths)
+        has_threat_campaign_paths = any(
+            "/api/waf/threat_campaign" in p or "/threat_mesh" in p for p in paths
+        )
         if has_threat_campaign_paths and domain != "threat_campaign":
             domain_specs["threat_campaign"].append((filename, spec))
 
         # Also add specs to system domain if they contain credential management paths
         # Pattern-based detection for credential/token management under /api/web/
         has_credential_paths = any(
-            "/api/web/" in p and ("/api_credentials" in p or "/service_credentials" in p or "/scim_token" in p)
+            "/api/web/" in p
+            and ("/api_credentials" in p or "/service_credentials" in p or "/scim_token" in p)
             for p in paths
         )
         if has_credential_paths and domain != "authentication":
@@ -1175,6 +1185,12 @@ def merge_specs_by_domain(
 
     # Load dependency enricher — stamps x-f5xc-requires for cross-field deps
     dependency_enricher = DependencyEnricher()
+
+    # Load references enricher — stamps x-f5xc-references for resource-reference deps
+    references_enricher = ReferencesEnricher.from_config()
+
+    # Load example-field enricher — derives per-field create examples from example_yaml
+    example_field_enricher = ExampleFieldEnricher()
 
     # Load constrained fields enricher — stamps enum/range constraints from config
     constrained_fields_enricher = ConstrainedFieldsEnricher()
@@ -1231,7 +1247,9 @@ def merge_specs_by_domain(
                     continue
 
                 # Skip threat_campaign/threat_mesh paths if not merging into threat_campaign domain
-                if not is_threat_campaign_domain and ("/api/waf/threat_campaign" in path or "/threat_mesh" in path):
+                if not is_threat_campaign_domain and (
+                    "/api/waf/threat_campaign" in path or "/threat_mesh" in path
+                ):
                     continue
 
                 # Skip data-intelligence paths if not merging into data_intelligence domain
@@ -1245,7 +1263,9 @@ def merge_specs_by_domain(
                 # Skip credential management paths if not merging into authentication domain
                 # Pattern-based: /api/web/ + (api_credentials|service_credentials|scim_token)
                 is_credential_path = "/api/web/" in path and (
-                    "/api_credentials" in path or "/service_credentials" in path or "/scim_token" in path
+                    "/api_credentials" in path
+                    or "/service_credentials" in path
+                    or "/scim_token" in path
                 )
                 if not is_auth_domain and is_credential_path:
                     continue
@@ -1264,7 +1284,9 @@ def merge_specs_by_domain(
                         if method not in merged_spec["paths"][path]:
                             merged_spec["paths"][path][method] = operation
                             stats["paths"] += 1
-                        elif isinstance(operation, dict) and isinstance(merged_spec["paths"][path].get(method), dict):
+                        elif isinstance(operation, dict) and isinstance(
+                            merged_spec["paths"][path].get(method), dict
+                        ):
                             existing = merged_spec["paths"][path][method]
                             for k, v in operation.items():
                                 if k not in existing:
@@ -1358,6 +1380,20 @@ def merge_specs_by_domain(
         stats.setdefault("dependencies_added", 0)
         stats["dependencies_added"] += dep_stats.get("dependencies_added", 0)
         dependency_enricher.reset_stats()
+
+        # Resource references: stamp x-f5xc-references on ObjectRefType properties
+        merged_spec = references_enricher.enrich_spec(merged_spec)
+        ref_stats = references_enricher.get_stats()
+        stats.setdefault("references_stamped", 0)
+        stats["references_stamped"] += ref_stats.get("references_stamped", 0)
+        references_enricher.reset_stats()
+
+        # Per-field create examples: derive x-f5xc-field-examples from example_yaml
+        merged_spec = example_field_enricher.enrich_spec(merged_spec)
+        ex_stats = example_field_enricher.get_stats()
+        stats.setdefault("example_fields_stamped", 0)
+        stats["example_fields_stamped"] += ex_stats.get("fields_stamped", 0)
+        example_field_enricher.reset_stats()
 
         # Constrained fields: stamp enum/range constraints from minimum_configs.yaml
         merged_spec = constrained_fields_enricher.enrich_spec(merged_spec)

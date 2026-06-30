@@ -1,0 +1,176 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+#
+# Curated referred-kind map for ObjectRefType reference fields.
+# F5 specs do NOT carry the target resource kind (ObjectRefType is generic),
+# so this committed+reviewed map is the deterministic source consumed by
+# references_enricher.py to stamp x-f5xc-references.resource_kind.
+#
+# Keyed by <SchemaName>.<field>. high-confidence entries below were seeded
+# from field-name == known-resource-kind and are safe; the _needs_review
+# list at the bottom must be curated by hand (do NOT guess).
+
+references:
+  "certificateCreateSpecType.certificate_chain": certificate_chain
+  "fast_acl_ruleCreateSpecType.ip_prefix_set": ip_prefix_set
+  "forwarding_classCreateSpecType.policer": policer
+  "k8s_cluster_role_bindingCreateSpecType.k8s_cluster_role": k8s_cluster_role
+  "network_policy_ruleCreateSpecType.ip_prefix_set": ip_prefix_set
+  "schemacdn_purge_commandCreateSpecType.virtual_host": virtual_host
+  "schemacloud_connectCreateSpecType.segment": segment
+  "schemadns_proxyCreateSpecType.protocol_inspection": protocol_inspection
+  "schemafast_aclCreateSpecType.protocol_policer": protocol_policer
+  "schemafleetCreateSpecType.dc_cluster_group": dc_cluster_group
+  "schemafleetCreateSpecType.log_receiver": log_receiver
+  "schemafleetCreateSpecType.usb_policy": usb_policy
+  "tenant_managementchild_tenantCreateSpecType.tenant_profile": tenant_profile
+  "viewsaws_tgw_siteCreateSpecType.log_receiver": log_receiver
+  "viewsaws_vpc_siteCreateSpecType.log_receiver": log_receiver
+  "viewsazure_vnet_siteCreateSpecType.log_receiver": log_receiver
+  "viewscdn_loadbalancerCreateSpecType.app_firewall": app_firewall
+  "viewscdn_loadbalancerCreateSpecType.user_identification": user_identification
+  "viewsforward_proxy_policyCreateSpecType.network_connector": network_connector
+  "viewsgcp_vpc_siteCreateSpecType.cloud_credentials": cloud_credentials
+  "viewsgcp_vpc_siteCreateSpecType.log_receiver": log_receiver
+  "viewshttp_loadbalancerCreateSpecType.app_firewall": app_firewall
+  "viewshttp_loadbalancerCreateSpecType.user_identification": user_identification
+  "viewssecuremesh_siteCreateSpecType.log_receiver": log_receiver
+  "viewssecuremesh_site_v2CreateSpecType.log_receiver": log_receiver
+  "viewsvoltstack_siteCreateSpecType.k8s_cluster": k8s_cluster
+  "viewsvoltstack_siteCreateSpecType.log_receiver": log_receiver
+  "viewsvoltstack_siteCreateSpecType.usb_policy": usb_policy
+  # Nested references (inside sub-schemas, not top-level CreateSpecType)
+  "viewsOriginPoolWithWeight.pool": origin_pool
+  "viewsOriginPoolWithWeight.cluster": cluster
+  "viewsOriginPoolListType.pools": origin_pool
+  "viewsDefaultRoutePoolAdvanced.pool": origin_pool
+
+# Site/virtual-site selectors (RefSelector — WHERE to deploy, not a single resource)
+  "advertise_policyCreateSpecType.where": virtual_site
+  "bgpCreateSpecType.where": site
+  "discoveryCreateSpecType.where": site
+  "schemaendpointCreateSpecType.where": virtual_site
+  "secret_management_accessCreateSpecType.where": site
+  # DC cluster group variants (same kind, different placement)
+  "schemafleetCreateSpecType.dc_cluster_group_inside": dc_cluster_group
+  "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_sli": dc_cluster_group
+  "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_slo": dc_cluster_group
+  # Cloud credentials
+  "viewsaws_vpc_siteCreateSpecType.aws_cred": cloud_credentials
+  "viewsazure_vnet_siteCreateSpecType.azure_cred": cloud_credentials
+  # DNS
+  "schemadns_load_balancerCreateSpecType.fallback_pool": dns_lb_pool
+  # Sites
+  "external_connectorCreateSpecType.ce_site_reference": site
+  # Workloads
+  "virtual_k8sCreateSpecType.default_flavor_ref": workload_flavor
+
+# Field-name-level defaults: when <schema>.<field> isn't in `references:` above,
+# try just the field name. Covers the 1100+ sub-schema repetitions (the same field
+# name "site", "app_firewall" etc. appears across dozens of inline wrapper types).
+# DRY: one entry covers all occurrences.
+field_defaults:
+  site: site
+  virtual_site: virtual_site
+  log_receiver: log_receiver
+  dc_cluster_group: dc_cluster_group
+  dc_cluster_group_inside_vn: dc_cluster_group
+  dc_cluster_group_outside_vn: dc_cluster_group
+  dc_cluster_group_inside: dc_cluster_group
+  dc_cluster_group_sli: dc_cluster_group
+  dc_cluster_group_slo: dc_cluster_group
+  app_firewall: app_firewall
+  ip_prefix_set: ip_prefix_set
+  k8s_cluster: k8s_cluster
+  segment: segment
+  virtual_network: virtual_network
+  trusted_ca: certificate
+  waf_exclusion_policy: waf_exclusion_policy
+  user_identification: user_identification
+  api_definition: api_definition
+  public_ip: public_ip
+  usb_policy: usb_policy
+  policer: policer
+  pool: origin_pool
+  origin_pool: origin_pool
+  origin_pools: origin_pool
+  default_origin_pools: origin_pool
+  default_pool: origin_pool
+  fallback_pool: dns_lb_pool
+  health_check: health_check
+  healthcheck: health_check
+  protocol_policer: protocol_policer
+  certificate: certificate
+  certificate_chain: certificate
+  k8s_cluster_role: k8s_cluster_role
+  cluster: cluster
+  aws_cred: cloud_credentials
+  azure_cred: cloud_credentials
+  gcp_cred: cloud_credentials
+  cred: cloud_credentials
+  workload_flavor: workload_flavor
+  default_flavor_ref: workload_flavor
+  where: virtual_site
+  ref_value: virtual_site
+  ref_rate_limiter: rate_limiter
+  ref_user_id: user_identification
+  discovery_object: discovery
+  crl: crl
+  malicious_user_mitigation: malicious_user_mitigation
+  http_loadbalancer: http_load_balancer
+  sensitive_data_policy_ref: sensitive_data_policy
+  api_discovery_ref: api_discovery
+  code_base_integration: code_base_integration
+  service_discovery: discovery
+  report_config: global_log_receiver
+  asn: bgp_asn_set
+  firewall_rule_group: fast_acl
+  # Additional field-name defaults for full coverage
+  tunnel: tunnel
+  tcp_loadbalancer: tcp_load_balancer
+  http_load_balancer: http_load_balancer
+  cdn_loadbalancer: cdn_loadbalancer
+  bigip_virtual_server: bigip_virtual_server
+  geo_location_set: geo_location_set
+  endpoint: endpoint
+  virtual_host: virtual_host
+  virtual_host_ref: virtual_host
+  advertise_policy: advertise_policy
+  network_connector: network_connector
+  network_interface: network_interface
+  site_mesh_group: site_mesh_group
+  container_registry: container_registry
+  cloud_connect: cloud_connect
+  cloud_credentials: cloud_credentials
+  cloud_link: cloud_link
+  nfv_service: nfv_service
+  protocol_inspection: protocol_inspection
+  private_network: virtual_network
+  global_vn: virtual_network
+  route_ref: route_object
+  destination_ip_prefix_set: ip_prefix_set
+  source_ip_prefix_set: ip_prefix_set
+  dst_ip_prefix_set: ip_prefix_set
+  dst_asn_set: bgp_asn_set
+  custom_rate_limiter: rate_limiter
+  custom_data_type_ref: data_type
+  custom_flavor: workload_flavor
+  app_firewall_on_cache_miss: app_firewall
+  edge_site: site
+  bare_metal_site: site
+  aws_tgw_site: aws_tgw_site
+  ce_site_reference: site
+  hub_mesh_group: site_mesh_group
+  interface: network_interface
+  policy: service_policy
+  # System-internal (excluded from CRUD dependency graph — not stamped)
+  # owner_view: (system read-only ref × 435 — not a CRUD dep, intentionally null)
+
+# Remaining: platform-internal or uncommon references (resource_kind: null until curated)
+_needs_review:
+  # - "addon_subscriptionCreateSpecType.addon_service"         # addon_service (platform-internal)
+  # - "infraprotect_asn_prefixCreateSpecType.asn"              # infraprotect ASN
+  # - "infraprotect_tunnelCreateSpecType.firewall_rule_group"  # infraprotect firewall rules
+  # - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"  # PSA config
+  # - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"  # tenant mgmt
+  # - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"  # tenant mgmt
+  # - "tenant_profileCreateSpecType.plan"                      # tenant plan

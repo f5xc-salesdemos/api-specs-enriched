@@ -22,6 +22,7 @@ from .description_validator import DescriptionValidator
 from .discovery_enricher import DiscoveryEnricher
 from .domain_categorizer import DomainCategorizer, categorize_spec
 from .error_resolution_enricher import ErrorResolutionEnricher
+from .example_field_enricher import ExampleFieldEnricher
 from .external_docs_enricher import ExternalDocsEnricher
 from .field_description_enricher import FieldDescriptionEnricher
 from .field_metadata_enricher import FieldMetadataEnricher
@@ -33,6 +34,7 @@ from .operation_description_enricher import OperationDescriptionEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .property_description_short_enricher import PropertyDescriptionShortEnricher
 from .readonly_enricher import ReadOnlyEnricher
+from .references_enricher import ReferencesEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
 from .schema_fixer import SchemaFixer
 from .schema_override_enricher import SchemaOverrideEnricher
@@ -70,6 +72,7 @@ __all__ = [
     "DiscoveryEnricher",
     "DomainCategorizer",
     "ErrorResolutionEnricher",
+    "ExampleFieldEnricher",
     "ExternalDocsEnricher",
     "FieldDescriptionEnricher",
     "FieldMetadataEnricher",
@@ -81,6 +84,7 @@ __all__ = [
     "OperationMetadataEnricher",
     "PropertyDescriptionShortEnricher",
     "ReadOnlyEnricher",
+    "ReferencesEnricher",
     "ResourceExamplesEnricher",
     "SchemaFixer",
     "SchemaOverrideEnricher",

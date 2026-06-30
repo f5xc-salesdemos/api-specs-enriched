@@ -4,7 +4,7 @@ description: >-
   Fuente de verdad para cada extensión x-* en las especificaciones OpenAPI
   enriquecidas
 i18n:
-  sourceHash: b7ee25e1b768
+  sourceHash: 3ed334783ced
   translator: machine
 ---
 
@@ -12,25 +12,25 @@ i18n:
 
 Fuente de verdad para cada extensión `x-*` que aparece en
 `docs/specifications/api/*.json`. La paridad con
-`scripts/utils/extension_constants.py` es aplicada por
+`scripts/utils/extension_constants.py` es verificada por
 `tests/test_extension_catalog.py`.
 
 Aquí se documentan tres clases de extensiones:
 
-- **Inyectadas aquí** — extensiones que nuestros enriquecedores añaden (`x-f5xc-*` y
-  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de descubrimiento).
-  Estas son las que las herramientas descendentes deben consumir.
-- **Transferencia desde upstream** — extensiones que F5 emite en las especificaciones fuente
+- **Inyectadas aquí** — extensiones que añaden nuestros enriquecedores (`x-f5xc-*` y
+  `x-ves-cli-*` / `x-ves-field-*` / `x-ves-operation-*` / variantes de
+  descubrimiento). Estas son las que deben consumir las herramientas posteriores.
+- **Transmisión desde upstream** — extensiones que F5 emite en las especificaciones fuente
   y que preservamos sin cambios (`x-ves-proto-*`, `x-displayname`, etc.).
   Documentadas por transparencia, pero no controladas por este repositorio.
 - **Inyección futura** — aún no emitidas; documentadas aquí en el momento en que
-  un enriquecedor comience a producirlas (no aplica en la población inicial).
+  un enriquecedor comienza a producirlas (no aplica en la población inicial).
 
-## Esquema de entradas
+## Esquema de entrada
 
 Cada entrada a continuación tiene exactamente esta forma. La prueba de paridad en
 `tests/test_extension_catalog.py` tolera que el cuerpo de la sección sea
-mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
+escueto, siempre que exista el encabezado `### x-name` y el indicador
 `Pass-through from upstream:` esté presente con el valor `yes` o `no`.
 
     ### x-<name>
@@ -49,7 +49,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
-- **Purpose:** Identifica el slug del dominio CLI (p. ej., `http_loadbalancer`) para una especificación enriquecida.
+- **Purpose:** Identifica el slug de dominio de la CLI (p. ej. `http_loadbalancer`) para una especificación enriquecida.
 - **Consumers:** CLI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -61,7 +61,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-cli-metadata
 
 - **Applied at:** info
-- **Purpose:** Bloque de metadatos de CLI (nombre de la herramienta, sugerencias de versión, agrupación de dominio).
+- **Purpose:** Bloque de metadatos globales de la CLI (nombre de herramienta, sugerencias de versión, agrupación de dominio).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -85,7 +85,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-upstream-etag
 
 - **Applied at:** info
-- **Purpose:** ETag del activo de la versión de la especificación fuente upstream.
+- **Purpose:** ETag del activo de lanzamiento de la especificación fuente upstream.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -109,7 +109,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-glossary
 
 - **Applied at:** info
-- **Purpose:** Bloque de glosario de marca/terminología aplicado a cada especificación de dominio.
+- **Purpose:** Bloque de glosario de terminología y marca aplicado a cada especificación de dominio.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -121,7 +121,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-discovered-at
 
 - **Applied at:** info
-- **Purpose:** Marca de tiempo de cuando se ejecutó el paso de descubrimiento de la API en vivo.
+- **Purpose:** Marca de tiempo de cuándo se ejecutó el paso de descubrimiento de la API en vivo.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "date-time"}`
@@ -145,7 +145,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-api-reference-url
 
 - **Applied at:** info
-- **Purpose:** URL a la página de documentación de referencia de API alojada para este dominio.
+- **Purpose:** URL a la página de documentación de referencia de la API alojada para este dominio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "format": "uri"}`
@@ -181,7 +181,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-guided-workflows
 
 - **Applied at:** info
-- **Purpose:** Flujos de trabajo paso a paso con nombre para realizar tareas comunes en un dominio.
+- **Purpose:** Flujos de trabajo paso a paso con nombre para llevar a cabo tareas comunes en un dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -205,7 +205,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-console-navigation
 
 - **Applied at:** spec info
-- **Purpose:** Árbol de navegación global de la consola — jerarquía de espacios de trabajo y menús.
+- **Purpose:** Árbol de navegación global de la consola — jerarquía de espacio de trabajo y menú.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspaces": "object"}}`
@@ -219,7 +219,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-minimum-configuration
 
 - **Applied at:** schema
-- **Purpose:** Conjunto mínimo de campos requerido para realizar con éxito un POST/PUT de este recurso.
+- **Purpose:** Conjunto mínimo de campos necesarios para hacer un POST/PUT exitoso de este recurso.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -243,7 +243,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-displayorder
 
 - **Applied at:** schema
-- **Purpose:** Orden sugerido de propiedades para la presentación en UI/CLI.
+- **Purpose:** Ordenamiento sugerido de propiedades para la presentación en UI/CLI.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -255,7 +255,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-terraform-resource
 
 - **Applied at:** schema
-- **Purpose:** Nombre del tipo de recurso de Terraform que se corresponde con este esquema.
+- **Purpose:** Nombre del tipo de recurso Terraform que se mapea a este esquema.
 - **Consumers:** Terraform
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -267,7 +267,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-display-name
 
 - **Applied at:** schema
-- **Purpose:** Nombre para mostrar legible por humanos para un esquema de recurso (anula la generación automática).
+- **Purpose:** Nombre de presentación legible por humanos para un esquema de recurso (reemplaza la generación automática).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -279,7 +279,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-console
 
 - **Applied at:** schema
-- **Purpose:** Navegación, enrutamiento y estructura de formulario de la UI de la consola para este recurso.
+- **Purpose:** Navegación de la interfaz de usuario de la consola, enrutamiento y estructura de formularios para este recurso.
 - **Consumers:** console-catalog, xcsh, vscode-xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"workspace": "string", "menu_path": "array", "route_pattern": "string", "breadcrumbs": "array", "add_action": "object", "form_sections": "array", "metadata": "object"}}`
@@ -305,7 +305,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-validation
 
 - **Applied at:** schema property
-- **Purpose:** Reglas de validación declarativas derivadas de `ves.io.schema.rules` de protobuf upstream.
+- **Purpose:** Reglas de validación declarativas derivadas de las `ves.io.schema.rules` de protobuf upstream.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -341,7 +341,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-completion
 
 - **Applied at:** schema property
-- **Purpose:** Sugerencias de autocompletado de shell (enumeración estática o comando dinámico).
+- **Purpose:** Sugerencias de completado de shell (enumeración estática o comando dinámico).
 - **Consumers:** CLI
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -353,7 +353,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-defaults
 
 - **Applied at:** schema property
-- **Purpose:** Valor(es) predeterminado(s) para mostrar en la documentación generada y en las interfaces de usuario.
+- **Purpose:** Valor(es) predeterminado(s) para mostrar en documentación y UIs generadas.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -377,7 +377,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-required-for
 
 - **Applied at:** schema property
-- **Purpose:** Lista las combinaciones de características con nombre que requieren esta propiedad.
+- **Purpose:** Lista las combinaciones de funcionalidades nombradas que requieren esta propiedad.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -389,7 +389,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-conditions
 
 - **Applied at:** schema property
-- **Purpose:** Requisitos condicionales (p. ej., requerido cuando un campo hermano es igual a X).
+- **Purpose:** Requisitos condicionales (p. ej. requerido cuando un campo hermano es igual a X).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -401,7 +401,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-deprecated
 
 - **Applied at:** schema property
-- **Purpose:** Aviso de obsolescencia con orientación sobre el reemplazo.
+- **Purpose:** Aviso de deprecación con orientación sobre el reemplazo.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -425,7 +425,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-recommended-value
 
 - **Applied at:** schema property
-- **Purpose:** Valor de producción recomendado para un campo donde el valor predeterminado del servidor es subóptimo.
+- **Purpose:** Valor recomendado para producción en un campo donde el valor predeterminado del servidor no es óptimo.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{}`
@@ -437,7 +437,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-recommended-oneof-variant
 
 - **Applied at:** schema property
-- **Purpose:** Para bloques `oneOf`, indica cuál variante es la recomendada.
+- **Purpose:** Para bloques `oneOf`, indica qué variante se recomienda.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -458,10 +458,34 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-references
+
+- **Applied at:** schema property
+- **Purpose:** Declara el tipo de recurso referenciado por un campo ObjectRefType (el recurso al que apunta, que debe existir previamente), con limitación de elección oneOf, requerido para creación y cardinalidad — la dimensión de referencia de recurso del modelo de dependencias.
+- **Consumers:** terraform, cli, mcp, IDE, ai-assistants
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"resource_kind": {"type": ["string", "null"]}, "field_path": {"type": "string"}, "gated_by": {"type": ["object", "null"]}, "required": {"type": "boolean"}, "cardinality": {"type": "string"}}}}`
+- **Injected by:** scripts/utils/references_enricher.py
+- **Driven by config:** config/resource_references.yaml
+- **Example:** `"x-f5xc-references": [{"resource_kind": "app_firewall", "field_path": "app_firewall", "gated_by": {"choice": "waf_choice"}, "required": false, "cardinality": "single"}]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-field-examples
+
+- **Applied at:** schema (CreateSpecType)
+- **Purpose:** Valores de ejemplo de creación por campo (mapa plano de field_path a valor) derivados de x-f5xc-minimum-configuration.example_yaml — la única fuente de verdad de valores de creación deterministas para la generación de formularios y flujos de trabajo posteriores.
+- **Consumers:** cli, workflow-generator, sweep, ai-assistants
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": true}`
+- **Injected by:** scripts/utils/example_field_enricher.py
+- **Driven by config:** derived from x-f5xc-minimum-configuration.example_yaml
+- **Example:** `"x-f5xc-field-examples": {"spec.port": 8080}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-requires
 
 - **Applied at:** schema property
-- **Purpose:** Documenta las dependencias entre campos donde un campo requiere que otro esté configurado.
+- **Purpose:** Documenta dependencias entre campos donde un campo requiere que otro esté definido.
 - **Consumers:** compile_catalog.py, xcsh CLI
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object", "properties": {"field": {"type": "string"}, "required": {"type": "boolean"}, "reason": {"type": "string"}}}}`
@@ -473,7 +497,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-constraints
 
 - **Applied at:** schema property
-- **Purpose:** Restricciones numéricas/de cadena derivadas del sondeo de la API en vivo o de patrones estáticos.
+- **Purpose:** Restricciones numéricas / de cadena derivadas del sondeo de la API en vivo o de patrones estáticos.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -497,7 +521,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-console-field
 
 - **Applied at:** schema property
-- **Purpose:** Metadatos del widget de formulario de la consola para esta propiedad de API.
+- **Purpose:** Metadatos del widget de formulario de consola para esta propiedad de API.
 - **Consumers:** console-catalog, xcsh, browser-automation
 - **Value type:** object
 - **Value schema:** `{"type": "object", "properties": {"widget_type": "string", "label": "string", "default": "any", "selector": "string", "form_section": "string", "show_when": "object", "advanced": "boolean"}}`
@@ -535,7 +559,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-confirmation-required
 
 - **Applied at:** operation
-- **Purpose:** Indica si el CLI/UI debe solicitar confirmación al usuario antes de ejecutar.
+- **Purpose:** Indica si la CLI/UI debe solicitar confirmación al usuario antes de ejecutar.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -571,7 +595,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-discovered-rate-limits
 
 - **Applied at:** operation
-- **Purpose:** Encabezados/comportamiento de límite de tasa observados desde la API en vivo.
+- **Purpose:** Encabezados / comportamiento de límite de tasa observados desde la API en vivo.
 - **Consumers:** multiple
 - **Value type:** object
 - **Value schema:** `{"type": "object"}`
@@ -583,7 +607,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-discovered-error-catalog
 
 - **Applied at:** operation
-- **Purpose:** Catálogo de respuestas de error observadas durante el descubrimiento en vivo, con cargas de muestra.
+- **Purpose:** Catálogo de respuestas de error observadas durante el descubrimiento en vivo, con cargas útiles de muestra.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "object"}}`
@@ -621,7 +645,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-critical-resources
 
 - **Applied at:** info
-- **Purpose:** Recursos que requieren cuidado especial (críticos para producción).
+- **Purpose:** Recursos que requieren especial cuidado (críticos para producción).
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -633,7 +657,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-description-short
 
 - **Applied at:** info
-- **Purpose:** Descripción corta del dominio (~60 caracteres). También aplica a nivel de propiedad para descripciones largas.
+- **Purpose:** Descripción de dominio corta (~60 caracteres). También aplica a nivel de propiedad para descripciones largas.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -645,7 +669,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-description-medium
 
 - **Applied at:** info
-- **Purpose:** Descripción media del dominio (~150 caracteres). También aplica a nivel de propiedad.
+- **Purpose:** Descripción de dominio media (~150 caracteres). También aplica a nivel de propiedad.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -657,7 +681,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-description-long
 
 - **Applied at:** info
-- **Purpose:** Descripción larga del dominio (~500 caracteres).
+- **Purpose:** Descripción de dominio larga (~500 caracteres).
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -669,7 +693,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-complexity
 
 - **Applied at:** info
-- **Purpose:** Nivel de complejidad relativa para la creación de configuraciones en este dominio.
+- **Purpose:** Nivel de complejidad relativa para la autoría de configuraciones en este dominio.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string", "enum": ["low", "medium", "high"]}`
@@ -681,7 +705,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-requires-tier
 
 - **Applied at:** info
-- **Purpose:** Nivel mínimo de suscripción de F5 XC requerido.
+- **Purpose:** Nivel mínimo de suscripción a F5 XC requerido.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -693,7 +717,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-is-preview
 
 - **Applied at:** info
-- **Purpose:** Marca un dominio como característica de vista previa / beta.
+- **Purpose:** Marca un dominio como funcionalidad en versión preliminar / beta.
 - **Consumers:** multiple
 - **Value type:** boolean
 - **Value schema:** `{"type": "boolean"}`
@@ -705,7 +729,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-use-cases
 
 - **Applied at:** info
-- **Purpose:** Casos de uso con nombre que admite este dominio.
+- **Purpose:** Casos de uso nombrados que admite este dominio.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -717,7 +741,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-icon
 
 - **Applied at:** info
-- **Purpose:** Identificador de icono para usar al renderizar este dominio en una interfaz de usuario.
+- **Purpose:** Identificador de icono a usar al renderizar este dominio en una UI.
 - **Consumers:** Web UI
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -741,7 +765,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-related-domains
 
 - **Applied at:** info
-- **Purpose:** Vínculos cruzados hacia otros dominios comúnmente utilizados junto con este.
+- **Purpose:** Vínculos cruzados a otros dominios comúnmente usados junto con este.
 - **Consumers:** multiple
 - **Value type:** array
 - **Value schema:** `{"type": "array", "items": {"type": "string"}}`
@@ -753,7 +777,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-f5xc-doc-section
 
 - **Applied at:** info
-- **Purpose:** Sección de documentación / slug de agrupación de navegación para la documentación renderizada.
+- **Purpose:** Slug de sección de documentación / agrupación de navegación para los documentos renderizados.
 - **Consumers:** multiple
 - **Value type:** string
 - **Value schema:** `{"type": "string"}`
@@ -762,12 +786,12 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 - **Example:** `"x-f5xc-doc-section": "load-balancing"`
 - **Pass-through from upstream:** no
 
-## Transferencia desde upstream
+## Transmisión desde upstream
 
 ### x-ves-proto-package
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -779,7 +803,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-proto-file
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -791,7 +815,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-proto-message
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -803,7 +827,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-proto-service
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -815,7 +839,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-proto-rpc
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -827,7 +851,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-displayname
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -839,7 +863,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-oneof
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -851,7 +875,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-default
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
@@ -863,7 +887,7 @@ mínimo, siempre que exista el encabezado `### x-nombre` y el indicador
 ### x-ves-required
 
 - **Applied at:** upstream
-- **Purpose:** Preservado sin cambios desde la especificación upstream de F5.
+- **Purpose:** Preservado sin cambios de la especificación upstream de F5.
 - **Consumers:** N/A
 - **Value type:** varies
 - **Value schema:** N/A
