@@ -64,6 +64,7 @@ class ReferencesEnricher:
                 deterministic source of the target kind (F5 specs do not carry it).
         """
         self.kind_map = kind_map or {}
+        self.field_defaults: dict[str, str] = {}
         self.stats = ReferencesEnrichmentStats()
 
     @classmethod
@@ -76,6 +77,11 @@ class ReferencesEnricher:
             refs = data.get("references", {})
             if isinstance(refs, dict):
                 kind_map = {str(k): str(v) for k, v in refs.items()}
+            defaults = data.get("field_defaults", {})
+            if isinstance(defaults, dict):
+                enricher = cls(kind_map=kind_map)
+                enricher.field_defaults = {str(k): str(v) for k, v in defaults.items()}
+                return enricher
         else:
             logger.warning("resource_references.yaml not found at %s — kinds will be null", path)
         return cls(kind_map=kind_map)
@@ -138,7 +144,8 @@ class ReferencesEnricher:
     def _stamp(self, schema_name: str, field_name: str, prop: dict[str, Any], gate_group: str | None) -> None:
         if X_F5XC_REFERENCES in prop:  # idempotent
             return
-        kind = self.kind_map.get(f"{schema_name}.{field_name}")
+        # Resolution order: exact <schema>.<field> → field-name default → null (honest gap).
+        kind = self.kind_map.get(f"{schema_name}.{field_name}") or self.field_defaults.get(field_name)
         if kind is None:
             self.stats.references_unmapped += 1
             logger.debug("unmapped ObjectRef: %s.%s", schema_name, field_name)
