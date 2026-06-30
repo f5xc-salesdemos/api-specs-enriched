@@ -1,0 +1,64 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+#
+# Curated referred-kind map for ObjectRefType reference fields.
+# F5 specs do NOT carry the target resource kind (ObjectRefType is generic),
+# so this committed+reviewed map is the deterministic source consumed by
+# references_enricher.py to stamp x-f5xc-references.resource_kind.
+#
+# Keyed by <SchemaName>.<field>. high-confidence entries below were seeded
+# from field-name == known-resource-kind and are safe; the _needs_review
+# list at the bottom must be curated by hand (do NOT guess).
+
+references:
+  "certificateCreateSpecType.certificate_chain": certificate_chain
+  "fast_acl_ruleCreateSpecType.ip_prefix_set": ip_prefix_set
+  "forwarding_classCreateSpecType.policer": policer
+  "k8s_cluster_role_bindingCreateSpecType.k8s_cluster_role": k8s_cluster_role
+  "network_policy_ruleCreateSpecType.ip_prefix_set": ip_prefix_set
+  "schemacdn_purge_commandCreateSpecType.virtual_host": virtual_host
+  "schemacloud_connectCreateSpecType.segment": segment
+  "schemadns_proxyCreateSpecType.protocol_inspection": protocol_inspection
+  "schemafast_aclCreateSpecType.protocol_policer": protocol_policer
+  "schemafleetCreateSpecType.dc_cluster_group": dc_cluster_group
+  "schemafleetCreateSpecType.log_receiver": log_receiver
+  "schemafleetCreateSpecType.usb_policy": usb_policy
+  "tenant_managementchild_tenantCreateSpecType.tenant_profile": tenant_profile
+  "viewsaws_tgw_siteCreateSpecType.log_receiver": log_receiver
+  "viewsaws_vpc_siteCreateSpecType.log_receiver": log_receiver
+  "viewsazure_vnet_siteCreateSpecType.log_receiver": log_receiver
+  "viewscdn_loadbalancerCreateSpecType.app_firewall": app_firewall
+  "viewscdn_loadbalancerCreateSpecType.user_identification": user_identification
+  "viewsforward_proxy_policyCreateSpecType.network_connector": network_connector
+  "viewsgcp_vpc_siteCreateSpecType.cloud_credentials": cloud_credentials
+  "viewsgcp_vpc_siteCreateSpecType.log_receiver": log_receiver
+  "viewshttp_loadbalancerCreateSpecType.app_firewall": app_firewall
+  "viewshttp_loadbalancerCreateSpecType.user_identification": user_identification
+  "viewssecuremesh_siteCreateSpecType.log_receiver": log_receiver
+  "viewssecuremesh_site_v2CreateSpecType.log_receiver": log_receiver
+  "viewsvoltstack_siteCreateSpecType.k8s_cluster": k8s_cluster
+  "viewsvoltstack_siteCreateSpecType.log_receiver": log_receiver
+  "viewsvoltstack_siteCreateSpecType.usb_policy": usb_policy
+
+# Fields whose referred kind could not be derived from the field name.
+# Curate each (add to references: above) — leaving it here = resource_kind:null.
+_needs_review:
+  # - "addon_subscriptionCreateSpecType.addon_service"
+  # - "advertise_policyCreateSpecType.where"
+  # - "bgpCreateSpecType.where"
+  # - "discoveryCreateSpecType.where"
+  # - "external_connectorCreateSpecType.ce_site_reference"
+  # - "infraprotect_asn_prefixCreateSpecType.asn"
+  # - "infraprotect_tunnelCreateSpecType.firewall_rule_group"
+  # - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"
+  # - "schemadns_load_balancerCreateSpecType.fallback_pool"
+  # - "schemaendpointCreateSpecType.where"
+  # - "schemafleetCreateSpecType.dc_cluster_group_inside"
+  # - "secret_management_accessCreateSpecType.where"
+  # - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"
+  # - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"
+  # - "tenant_profileCreateSpecType.plan"
+  # - "viewsaws_vpc_siteCreateSpecType.aws_cred"
+  # - "viewsazure_vnet_siteCreateSpecType.azure_cred"
+  # - "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_sli"
+  # - "viewssecuremesh_site_v2CreateSpecType.dc_cluster_group_slo"
+  # - "virtual_k8sCreateSpecType.default_flavor_ref"

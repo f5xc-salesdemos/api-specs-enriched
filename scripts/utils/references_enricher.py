@@ -23,7 +23,10 @@ Issue: resource-reference dependency metadata (x-f5xc-references)
 import json
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
+
+import yaml
 
 from .extension_constants import X_F5XC_REFERENCES, X_VES_ONEOF_FIELD_PREFIX
 
@@ -62,6 +65,20 @@ class ReferencesEnricher:
         """
         self.kind_map = kind_map or {}
         self.stats = ReferencesEnrichmentStats()
+
+    @classmethod
+    def from_config(cls, config_path: Path | str = Path("config/resource_references.yaml")) -> "ReferencesEnricher":
+        """Build an enricher with the curated referred-kind map loaded from YAML."""
+        path = Path(config_path)
+        kind_map: dict[str, str] = {}
+        if path.exists():
+            data = yaml.safe_load(path.read_text()) or {}
+            refs = data.get("references", {})
+            if isinstance(refs, dict):
+                kind_map = {str(k): str(v) for k, v in refs.items()}
+        else:
+            logger.warning("resource_references.yaml not found at %s — kinds will be null", path)
+        return cls(kind_map=kind_map)
 
     def get_stats(self) -> dict[str, Any]:
         """Return enrichment stats as a dictionary."""

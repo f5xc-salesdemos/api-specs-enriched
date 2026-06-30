@@ -87,6 +87,35 @@ def test_non_objectref_property_is_untouched(enricher):
         assert X_F5XC_REFERENCES not in prop
 
 
+def test_gated_by_records_oneof_choice(enricher):
+    """A reference field that is a oneOf variant records the gating choice group."""
+    spec = _spec(
+        {
+            "viewshttp_loadbalancerCreateSpecType": {
+                "type": "object",
+                "x-ves-oneof-field-waf_choice": ["app_firewall", "disable_waf"],
+                "properties": {
+                    "app_firewall": {"allOf": [{"$ref": "#/components/schemas/schemaviewsObjectRefType"}]},
+                    "disable_waf": {"type": "object"},
+                },
+            },
+        }
+    )
+    out = enricher.enrich_spec(spec)
+    refs = out["components"]["schemas"]["viewshttp_loadbalancerCreateSpecType"]["properties"]["app_firewall"][
+        X_F5XC_REFERENCES
+    ]
+    assert refs[0]["gated_by"] == {"choice": "waf_choice"}
+
+
+def test_from_config_loads_curated_map(tmp_path):
+    """from_config reads the curated referred-kind map from YAML."""
+    cfg = tmp_path / "resource_references.yaml"
+    cfg.write_text('references:\n  "fooCreateSpecType.bar": origin_pool\n')
+    e = ReferencesEnricher.from_config(cfg)
+    assert e.kind_map == {"fooCreateSpecType.bar": "origin_pool"}
+
+
 def test_idempotent(enricher):
     """Re-running does not duplicate descriptors."""
     spec = _spec(
