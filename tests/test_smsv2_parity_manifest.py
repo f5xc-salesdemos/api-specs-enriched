@@ -28,10 +28,7 @@ def test_manifest_contains_complete_nested_paths_and_semantics() -> None:
     assert paths[f"{interface_prefix}.is_management"]["read_only"] is True
     assert paths[f"{interface_prefix}.is_primary"]["read_only"] is True
     assert not ({"spec.log_receiver", "spec.private_adn", "spec.rseries"} & paths.keys())
-    assert manifest["current_platform_removals"] == [
-        "spec.segment_vrf[].segment_config.nameserver_v6",
-        "spec.segment_vrf[].segment_config.secondary_nameserver_v6",
-    ]
+    assert manifest["current_platform_removals"] == []
     assert not set(manifest["current_platform_removals"]) & paths.keys()
     assert len(manifest["choice_groups"]) > 50
     assert manifest["choice_groups"]["spec.provider_choice"] == [
@@ -64,7 +61,7 @@ def test_platform_evidence_records_only_sanitized_behavioral_conclusions() -> No
         "spec.segment_vrf[].segment_config.nameserver_v6",
         "spec.segment_vrf[].segment_config.secondary_nameserver_v6",
     ):
-        assert fields[path]["classification"] == "current_platform_removal"
+        assert fields[path]["classification"] == "behavior_requires_investigation"
         assert fields[path]["server_behavior"] == "silently_removed"
         assert fields[path]["returned_unchanged"] is False
     for path in (
@@ -88,3 +85,15 @@ def test_platform_evidence_records_only_sanitized_behavioral_conclusions() -> No
     assert public_ip["legacy_value"] == "empty_string"
     for conclusion in fields.values():
         assert not ({"tenant", "name", "body", "resource_version"} & conclusion.keys())
+
+
+def test_deprecation_is_not_an_automatic_parity_exclusion(tmp_path: Path) -> None:
+    evidence = tmp_path / "evidence.yaml"
+    evidence.write_text("fields: {}\n")
+    spec = {
+        "info": {"version": "test"},
+        "components": {
+            "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
+        },
+    }
+    assert build_parity_manifest(spec, evidence)["deprecated_exclusions"] == []

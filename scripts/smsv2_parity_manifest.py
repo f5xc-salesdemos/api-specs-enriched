@@ -133,7 +133,7 @@ def build_parity_manifest(
         "path_count": len(paths),
         "paths": paths,
         "choice_groups": dict(sorted(choice_groups.items())),
-        "deprecated_exclusions": ["spec.log_receiver", "spec.private_adn", "spec.rseries"],
+        "deprecated_exclusions": [],
         "current_platform_removals": platform_removals,
     }
 
