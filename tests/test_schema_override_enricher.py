@@ -1257,3 +1257,30 @@ class TestMapOverridesRegression:
             "additionalProperties"
             not in schemas["tenantLoginEventsMap"]["properties"]["login_events_map"]
         )
+
+
+def test_virtual_site_spec_requires_recreation(enricher):
+    """ReplaceSpecType is empty; live PUT ignored selector edits."""
+    spec = {
+        "components": {
+            "schemas": {
+                "schemavirtual_siteCreateSpecType": {
+                    "type": "object",
+                    "properties": {
+                        "site_selector": {
+                            "allOf": [{"$ref": "#/components/schemas/schemaLabelSelectorType"}]
+                        },
+                        "site_type": {"type": "string"},
+                    },
+                },
+                "schemavirtual_siteReplaceSpecType": {"type": "object"},
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec)
+    schemas = result["components"]["schemas"]
+    for field in ["site_selector", "site_type"]:
+        assert schemas["schemavirtual_siteCreateSpecType"]["properties"][field].get(
+            "x-field-mutability"
+        ) == "immutable"
+    assert "properties" not in schemas["schemavirtual_siteReplaceSpecType"]
