@@ -48,6 +48,15 @@ def _platform_evidence(path: Path | None = None) -> dict[str, Any]:
     return fields
 
 
+def _explicit_platform_rejection(path: str, message: str) -> bool:
+    """Recognize the verified API contract, not generic validation failures."""
+    platform = re.fullmatch(r"spec\.([a-z][a-z0-9_]*)", path)
+    if not platform or not isinstance(message, str):
+        return False
+    expected = f"{platform[1]} provider is not supported for SecureMeshSite"
+    return message.strip().casefold() == expected.casefold()
+
+
 def build_parity_manifest(
     spec: dict[str, Any], evidence_path: Path | None = None
 ) -> dict[str, Any]:
@@ -136,7 +145,7 @@ def build_parity_manifest(
         if (
             conclusion.get("proof_kind") != "explicit_api_rejection"
             or conclusion.get("http_status") not in (400, 410, 422)
-            or not conclusion.get("server_message")
+            or not _explicit_platform_rejection(path, conclusion.get("server_message", ""))
             or not conclusion.get("observed_date")
             or not all(
                 re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes

@@ -148,3 +148,42 @@ def test_rseries_removal_retains_verified_api_evidence() -> None:
     assert proof["http_status"] == 400
     assert proof["server_message"] == "Rseries provider is not supported for SecureMeshSite"
     assert proof["proof_kind"] == "explicit_api_rejection"
+
+
+def test_api_validation_and_entitlement_errors_cannot_prove_platform_removal(
+    tmp_path: Path,
+) -> None:
+    import pytest
+
+    spec = {
+        "components": {
+            "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
+        }
+    }
+    for message in (
+        "A subscription to addon f5xc-ipv6-standard is required",
+        "Invalid interface configuration",
+        None,
+        400,
+        "Aws provider is not supported for SecureMeshSite",
+    ):
+        evidence = tmp_path / "evidence.yaml"
+        evidence.write_text(
+            json.dumps(
+                {
+                    "fields": {
+                        "spec.rseries": {
+                            "classification": "current_platform_removal",
+                            "proof_kind": "explicit_api_rejection",
+                            "http_status": 400,
+                            "server_message": message,
+                            "observed_date": "2026-09-06",
+                            "legacy_fixture_sha256": "sha256:" + "a" * 64,
+                            "probe_receipt_sha256": "sha256:" + "b" * 64,
+                        }
+                    }
+                }
+            )
+        )
+        with pytest.raises(ValueError, match="removal evidence"):
+            build_parity_manifest(spec, evidence)
