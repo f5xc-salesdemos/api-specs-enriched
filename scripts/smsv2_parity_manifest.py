@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -128,6 +129,23 @@ def build_parity_manifest(
         for path, conclusion in evidence.items()
         if conclusion.get("classification") == "current_platform_removal"
     )
+    removal_evidence = {}
+    for path in platform_removals:
+        conclusion = evidence[path]
+        hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
+        if (
+            conclusion.get("proof_kind") != "explicit_api_rejection"
+            or conclusion.get("http_status") not in (400, 410, 422)
+            or not conclusion.get("server_message")
+            or not conclusion.get("observed_date")
+            or not all(
+                re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
+            )
+            or any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths)
+        ):
+            raise ValueError(f"Invalid platform removal evidence for {path}")
+        removal_evidence[path] = conclusion
+
     return {
         "version": spec.get("info", {}).get("version"),
         "resource": "securemesh_site_v2",
@@ -137,6 +155,7 @@ def build_parity_manifest(
         "choice_groups": dict(sorted(choice_groups.items())),
         "deprecated_exclusions": [],
         "current_platform_removals": platform_removals,
+        "platform_removal_evidence": removal_evidence,
     }
 
 

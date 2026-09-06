@@ -28,7 +28,7 @@ def test_manifest_contains_complete_nested_paths_and_semantics() -> None:
     assert paths[f"{interface_prefix}.is_management"]["read_only"] is True
     assert paths[f"{interface_prefix}.is_primary"]["read_only"] is True
     assert not ({"spec.log_receiver", "spec.private_adn", "spec.rseries"} & paths.keys())
-    assert manifest["current_platform_removals"] == []
+    assert manifest["current_platform_removals"] == ["spec.rseries"]
     assert not set(manifest["current_platform_removals"]) & paths.keys()
     assert len(manifest["choice_groups"]) > 50
     assert manifest["choice_groups"]["spec.provider_choice"] == [
@@ -124,3 +124,27 @@ def test_manifest_separates_logical_paths_from_wire_names(tmp_path: Path) -> Non
         paths = {entry["path"]: entry for entry in build_parity_manifest(spec, evidence)["paths"]}
         assert paths["blocked_service[]"]["wire_key"] == "blocked_sevice"
         assert paths["blocked_service[].dns"]["wire_key"] == "dns"
+
+
+def test_platform_removal_requires_explicit_rejection_receipt(tmp_path: Path) -> None:
+    import pytest
+
+    evidence = tmp_path / "evidence.yaml"
+    evidence.write_text("fields:\n  spec.rseries:\n    classification: current_platform_removal\n")
+    spec = {
+        "components": {
+            "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
+        }
+    }
+    with pytest.raises(ValueError, match="removal evidence"):
+        build_parity_manifest(spec, evidence)
+
+
+def test_rseries_removal_retains_verified_api_evidence() -> None:
+    spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
+    manifest = build_parity_manifest(spec)
+    assert manifest["current_platform_removals"] == ["spec.rseries"]
+    proof = manifest["platform_removal_evidence"]["spec.rseries"]
+    assert proof["http_status"] == 400
+    assert proof["server_message"] == "Rseries provider is not supported for SecureMeshSite"
+    assert proof["proof_kind"] == "explicit_api_rejection"
