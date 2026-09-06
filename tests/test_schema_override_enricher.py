@@ -1321,3 +1321,44 @@ def test_smsv2_addressing_preserves_current_api_round_trip(enricher):
         == "string"
     )
     assert schemas["network_interfaceDHCPPoolType"]["properties"]["exclude"]["type"] == "boolean"
+
+
+@pytest.mark.parametrize(
+    ("name", "field", "field_type", "group", "siblings"),
+    [
+        (
+            "viewsRegionalEdgeSelection",
+            "specific_geography",
+            "string",
+            "re_selection_choice",
+            ["geo_proximity", "specific_re"],
+        ),
+        (
+            "viewsKubernetesUpgradeDrainConfig",
+            "drain_max_unavailable_node_percentage",
+            "integer",
+            "drain_max_unavailable_choice",
+            ["drain_max_unavailable_node_count"],
+        ),
+    ],
+)
+def test_smsv2_selection_and_drain_preserve_current_api_fields(
+    enricher, name, field, field_type, group, siblings
+):
+    choice = "x-ves-oneof-field-" + group
+    spec = {
+        "components": {
+            "schemas": {
+                name: {
+                    "type": "object",
+                    "properties": {sibling: {} for sibling in siblings},
+                    choice: json.dumps(siblings),
+                }
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec)
+    schema = result["components"]["schemas"][name]
+    assert schema["properties"][field]["type"] == field_type
+    assert set(json.loads(schema[choice])) == {*siblings, field}
+    assert enricher.enrich_spec(result) == result

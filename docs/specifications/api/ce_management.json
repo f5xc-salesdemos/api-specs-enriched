@@ -20427,7 +20427,7 @@
         "description": "Specify batch upgrade settings for worker nodes within a site.",
         "title": "Enable Node by Node Upgrade",
         "x-displayname": "Enable Node by Node Upgrade.",
-        "x-ves-oneof-field-drain_max_unavailable_choice": "[\"drain_max_unavailable_node_count\"]",
+        "x-ves-oneof-field-drain_max_unavailable_choice": "[\"drain_max_unavailable_node_count\", \"drain_max_unavailable_node_percentage\"]",
         "x-ves-oneof-field-vega_upgrade_mode_toggle_choice": "[\"disable_vega_upgrade_mode\",\"enable_vega_upgrade_mode\"]",
         "x-ves-proto-message": "ves.io.schema.views.KubernetesUpgradeDrainConfig",
         "properties": {
@@ -20479,7 +20479,8 @@
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": ["drain_max_unavailable_node_percentage"]
           },
           "drain_node_timeout": {
             "type": "integer",
@@ -20533,6 +20534,12 @@
               "read": false
             },
             "x-f5xc-conflicts-with": ["disable_vega_upgrade_mode"]
+          },
+          "drain_max_unavailable_node_percentage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Maximum percentage of nodes unavailable during upgrade draining.",
+            "x-f5xc-conflicts-with": ["drain_max_unavailable_node_count"]
           }
         },
         "x-f5xc-description-short": "Specify batch upgrade settings for worker nodes within a site.",
