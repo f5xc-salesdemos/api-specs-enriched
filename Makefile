@@ -75,6 +75,10 @@ check-deps:
 # Install all dependencies
 install: venv
 	$(PIP) install -r requirements.txt
+	@if command -v npm >/dev/null 2>&1; then \
+		echo "Installing Node.js dependencies for Spectral..."; \
+		npm ci --ignore-scripts || npm install --ignore-scripts; \
+	fi
 	@echo "Dependencies installed successfully"
 
 # Download specifications from F5 (with ETag caching - only downloads if changed)
@@ -104,9 +108,8 @@ merge:
 api-viewer:
 	$(PYTHON) -m scripts.generate_api_viewer
 
-# Compile API catalog from enriched specs
-catalog: ## Compile API catalog from enriched specs
-	@echo "Compiling API catalog..."
+# Compile all enriched domain specs into release/api-catalog.json
+catalog:
 	$(PYTHON) -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
 	@echo "Catalog compiled to release/api-catalog.json"
 
@@ -114,7 +117,7 @@ catalog: ## Compile API catalog from enriched specs
 test: check-deps
 	$(PYTHON) -m pytest
 
-# Lint specifications with Spectral (requires: npm install -g @stoplight/spectral-cli)
+# Lint specifications with Spectral
 lint:
 	$(PYTHON) scripts/lint.py --input-dir docs/specifications/api
 

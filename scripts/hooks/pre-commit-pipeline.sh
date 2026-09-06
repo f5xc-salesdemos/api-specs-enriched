@@ -84,11 +84,11 @@ fi
 # =============================================================================
 echo -e "${YELLOW}[2/2] Running Spectral linting on ALL generated specs...${NC}"
 
-# Check if Spectral is installed - REQUIRED, never skip
-if ! command -v spectral &>/dev/null; then
-  echo -e "${RED}ERROR: Spectral CLI is not installed!${NC}"
+# Check if Node.js is installed - REQUIRED, never skip
+if ! command -v node &>/dev/null; then
+  echo -e "${RED}ERROR: Node.js is not installed!${NC}"
   echo -e "${RED}Linting is REQUIRED and cannot be skipped.${NC}"
-  echo -e "${YELLOW}Install with: npm install -g @stoplight/spectral-cli${NC}"
+  echo -e "${YELLOW}Install Node.js and run: npm ci --ignore-scripts${NC}"
   exit 1
 fi
 

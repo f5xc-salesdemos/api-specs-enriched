@@ -5,8 +5,6 @@
 
 Validates specifications against OpenAPI standards and custom rules before merge.
 Generates detailed lint reports for quality assurance.
-
-Requires: npm install -g @stoplight/spectral-cli
 """
 
 import argparse
@@ -39,13 +37,12 @@ except ModuleNotFoundError:
 
 console = Console()
 
-
 # Default configuration
 DEFAULT_CONFIG = {
     "paths": {
         "normalized": "docs/specifications/api",
         "reports": "reports",
-        "ruleset": "config/spectral.yaml",
+        "ruleset": "config/spectral.mjs",
     },
     "linting": {
         "fail_on_error": True,
@@ -80,9 +77,16 @@ def _deep_merge(base: dict, override: dict) -> dict:
     return result
 
 
+def get_runner_path() -> Path:
+    """Return path to the Spectral runner script."""
+    return Path(__file__).resolve().parent / "spectral_runner.mjs"
+
+
 def check_spectral_installed() -> bool:
-    """Check if Spectral CLI is installed."""
-    return shutil.which("spectral") is not None
+    """Check if Node.js and the Spectral runner script are available."""
+    if shutil.which("node") is None:
+        return False
+    return get_runner_path().exists()
 
 
 def run_spectral(
@@ -93,63 +97,73 @@ def run_spectral(
 
     Returns (success, issues, error_message).
     """
-    cmd = ["spectral", "lint", str(spec_path), "--format", "json"]
+    if shutil.which("node") is None:
+        return (
+            False,
+            [],
+            "Node.js not found. Please ensure Node.js is installed on PATH.",
+        )
 
-    if ruleset_path and ruleset_path.exists():
-        cmd.extend(["--ruleset", str(ruleset_path)])
+    runner_path = get_runner_path()
+    if not runner_path.exists():
+        return (
+            False,
+            [],
+            f"Spectral runner not found at {runner_path}",
+        )
+
+    if ruleset_path is None:
+        default_ruleset = Path("config/spectral.mjs")
+        if default_ruleset.exists():
+            ruleset_path = default_ruleset
+        elif Path(".spectral.mjs").exists():
+            ruleset_path = Path(".spectral.mjs")
+        else:
+            ruleset_path = Path("config/spectral.yaml")
+
+    if not ruleset_path.exists():
+        return (
+            False,
+            [],
+            f"Spectral ruleset not found at {ruleset_path}",
+        )
+
+    cmd = ["node", str(runner_path), "--ruleset", str(ruleset_path), str(spec_path)]
 
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=60,
+            timeout=180,
             check=False,
         )
 
+        if result.returncode != 0:
+            error_msg = result.stderr.strip() or f"Spectral runner failed with exit code {result.returncode}"
+            return False, [], error_msg
+
         # Parse JSON output
-        if result.stdout.strip():
+        stdout = result.stdout.strip()
+        if stdout:
             try:
-                issues = json.loads(result.stdout)
-                return result.returncode == 0, issues, None
+                issues = json.loads(stdout)
+                if not isinstance(issues, list):
+                    return False, [], f"Spectral runner returned non-list JSON: {stdout[:200]}"
+                return True, issues, None
             except json.JSONDecodeError:
-                # Spectral may append text after JSON (e.g., "[]No results...")
-                # Try to extract just the JSON array
-                stdout = result.stdout.strip()
-                if stdout.startswith("["):
-                    # Find the end of the JSON array
-                    bracket_count = 0
-                    json_end = 0
-                    for i, char in enumerate(stdout):
-                        if char == "[":
-                            bracket_count += 1
-                        elif char == "]":
-                            bracket_count -= 1
-                            if bracket_count == 0:
-                                json_end = i + 1
-                                break
-                    if json_end > 0:
-                        try:
-                            issues = json.loads(stdout[:json_end])
-                            return result.returncode == 0, issues, None
-                        except json.JSONDecodeError:
-                            pass
-                return False, [], f"Failed to parse Spectral output: {result.stdout[:200]}"
+                return False, [], f"Failed to parse Spectral JSON output: {stdout[:200]}"
 
         # Empty output means no issues
-        if result.returncode == 0:
-            return True, [], None
-
-        # Non-zero return code with no JSON output
-        return False, [], result.stderr or "Spectral returned non-zero exit code"
+        return True, [], None
 
     except subprocess.TimeoutExpired:
-        return False, [], "Spectral timed out after 60 seconds"
-    except FileNotFoundError:
+        return False, [], "Spectral timed out after 180 seconds"
+    except FileNotFoundError as e:
         return (
             False,
             [],
-            "Spectral CLI not found. Install with: npm install -g @stoplight/spectral-cli",
+            f"Command execution failed: {e}",
         )
     except Exception as e:
         return False, [], str(e)
@@ -409,12 +423,11 @@ def main() -> int:
 
     # Check Spectral installation
     if not check_spectral_installed():
-        console.print("[red]Spectral CLI not found![/red]")
-        console.print("[yellow]Install with: npm install -g @stoplight/spectral-cli[/yellow]")
+        console.print("[red]Spectral runner or Node.js environment not found![/red]")
         console.print(
-            "[yellow]Or skip linting by removing the lint step from the workflow[/yellow]",
+            "[yellow]Ensure Node.js is installed and run 'npm ci --ignore-scripts' to install dependencies.[/yellow]"
         )
-        return 1
+        return 2
 
     # Load configuration
     config = load_config(args.config)
@@ -438,16 +451,23 @@ def main() -> int:
         console.print(
             "[yellow]Run 'python -m scripts.normalize' first to normalize specifications[/yellow]",
         )
-        return 1
+        return 2
 
     # Check ruleset exists
     if not ruleset_path.exists():
-        console.print(f"[yellow]Ruleset not found: {ruleset_path}[/yellow]")
-        console.print("[yellow]Using Spectral default rules[/yellow]")
-        ruleset_path = None
+        console.print(f"[red]Ruleset not found: {ruleset_path}[/red]")
+        return 2
 
     # Run linting
     stats = lint_all_specs(input_dir, ruleset_path, config)
+
+    # If any file had an operational failure (e.g. error_message is set)
+    operational_failures = [r for r in stats.results if r.error_message]
+    if operational_failures:
+        console.print(f"\n[red]Operational error in linting {len(operational_failures)} file(s):[/red]")
+        for r in operational_failures[:5]:
+            console.print(f"  {r.filename}: {r.error_message}")
+        return 2
 
     # Generate reports using LintReporter (both JSON and markdown)
     path_config = PathConfig()

@@ -64,7 +64,9 @@ def _invoke(cwd: Path, *, force: bool = False) -> subprocess.CompletedProcess[st
     python_stub.write_text(
         '#!/usr/bin/env bash\necho "[fake python] args: $*" >&2\nexit 0\n'.replace("'", '"')
     )
-    python_stub.chmod(python_stub.stat().st_mode | stat.S_IEXEC)
+    node_stub = fakebin / "node"
+    node_stub.write_text("#!/usr/bin/env bash\nexit 0\n")
+    node_stub.chmod(node_stub.stat().st_mode | stat.S_IEXEC)
     spectral_stub = fakebin / "spectral"
     spectral_stub.write_text("#!/usr/bin/env bash\nexit 0\n")
     spectral_stub.chmod(spectral_stub.stat().st_mode | stat.S_IEXEC)
