@@ -1280,7 +1280,44 @@ def test_virtual_site_spec_requires_recreation(enricher):
     result = enricher.enrich_spec(spec)
     schemas = result["components"]["schemas"]
     for field in ["site_selector", "site_type"]:
-        assert schemas["schemavirtual_siteCreateSpecType"]["properties"][field].get(
-            "x-field-mutability"
-        ) == "immutable"
+        assert (
+            schemas["schemavirtual_siteCreateSpecType"]["properties"][field].get(
+                "x-field-mutability"
+            )
+            == "immutable"
+        )
     assert "properties" not in schemas["schemavirtual_siteReplaceSpecType"]
+
+
+def test_smsv2_addressing_preserves_current_api_round_trip(enricher):
+    spec = {
+        "components": {
+            "schemas": {
+                "securemesh_site_v2Interface": {
+                    "type": "object",
+                    "properties": {},
+                    "x-ves-oneof-field-address_choice": '["dhcp_client","no_ipv4_address","static_ip"]',
+                },
+                "network_interfaceStaticIpParametersNodeType": {"type": "object", "properties": {}},
+                "network_interfaceDHCPServerParametersType": {"type": "object", "properties": {}},
+                "network_interfaceDHCPPoolType": {"type": "object", "properties": {}},
+            }
+        }
+    }
+    schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+    interface = schemas["securemesh_site_v2Interface"]
+    assert interface["properties"]["dhcp_server"]["allOf"] == [
+        {"$ref": "#/components/schemas/network_interfaceDHCPServerParametersType"}
+    ]
+    assert "dhcp_server" in json.loads(interface["x-ves-oneof-field-address_choice"])
+    assert (
+        schemas["network_interfaceStaticIpParametersNodeType"]["properties"]["dns_server"]["type"]
+        == "string"
+    )
+    assert (
+        schemas["network_interfaceDHCPServerParametersType"]["properties"]["dhcp_option82_tag"][
+            "type"
+        ]
+        == "string"
+    )
+    assert schemas["network_interfaceDHCPPoolType"]["properties"]["exclude"]["type"] == "boolean"

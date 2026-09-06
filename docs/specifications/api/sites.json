@@ -65277,6 +65277,10 @@
               "update": false,
               "read": false
             }
+          },
+          "exclude": {
+            "type": "boolean",
+            "description": "Exclude this address range from DHCP allocation."
           }
         },
         "x-f5xc-description-short": "DHCP pool is a range of IP addresses (start IP and end IP).",
@@ -65436,6 +65440,10 @@
               "automatic_from_end",
               "automatic_from_start"
             ]
+          },
+          "dhcp_option82_tag": {
+            "type": "string",
+            "description": "DHCP option 82 tag."
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -67062,6 +67070,10 @@
               "update": false,
               "read": false
             }
+          },
+          "dns_server": {
+            "type": "string",
+            "description": "DNS server address for the static interface configuration."
           }
         },
         "x-f5xc-description-short": "Configure Static IP parameters for a node.",
@@ -95132,7 +95144,7 @@
         "description": "Interface definition.",
         "title": "Interface",
         "x-displayname": "Interface",
-        "x-ves-oneof-field-address_choice": "[\"dhcp_client\",\"no_ipv4_address\",\"static_ip\"]",
+        "x-ves-oneof-field-address_choice": "[\"dhcp_client\", \"dhcp_server\", \"no_ipv4_address\", \"static_ip\"]",
         "x-ves-oneof-field-interface_choice": "[\"bond_interface\",\"ethernet_interface\",\"vlan_interface\"]",
         "x-ves-oneof-field-ipv6_address_choice": "[\"ipv6_auto_config\",\"no_ipv6_address\",\"static_ipv6_address\"]",
         "x-ves-oneof-field-monitoring_choice": "[\"monitor\",\"monitor_disabled\"]",
@@ -95210,6 +95222,7 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
+              "dhcp_server",
               "no_ipv4_address",
               "static_ip"
             ]
@@ -95422,6 +95435,7 @@
             },
             "x-f5xc-conflicts-with": [
               "dhcp_client",
+              "dhcp_server",
               "static_ip"
             ]
           },
@@ -95526,6 +95540,7 @@
             },
             "x-f5xc-conflicts-with": [
               "dhcp_client",
+              "dhcp_server",
               "no_ipv4_address"
             ]
           },
@@ -95562,6 +95577,19 @@
             "x-f5xc-conflicts-with": [
               "bond_interface",
               "ethernet_interface"
+            ]
+          },
+          "dhcp_server": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/network_interfaceDHCPServerParametersType"
+              }
+            ],
+            "description": "DHCP server configuration for this interface.",
+            "x-f5xc-conflicts-with": [
+              "dhcp_client",
+              "no_ipv4_address",
+              "static_ip"
             ]
           },
           "is_management": {
