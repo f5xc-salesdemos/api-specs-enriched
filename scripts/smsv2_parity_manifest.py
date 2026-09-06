@@ -89,7 +89,9 @@ def build_parity_manifest(
                 path += "[]"
             entry: dict[str, Any] = {
                 "path": path,
-                "wire_key": wire_key,
+                "wire_key": prop.get(
+                    "x-f5xc-wire-name", prop_resolved.get("x-f5xc-wire-name", wire_key)
+                ),
                 "type": prop_type,
                 "cardinality": "list" if prop_type == "array" else "single",
                 "required": wire_key in required,

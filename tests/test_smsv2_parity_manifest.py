@@ -97,3 +97,30 @@ def test_deprecation_is_not_an_automatic_parity_exclusion(tmp_path: Path) -> Non
         },
     }
     assert build_parity_manifest(spec, evidence)["deprecated_exclusions"] == []
+
+
+def test_manifest_separates_logical_paths_from_wire_names(tmp_path: Path) -> None:
+    evidence = tmp_path / "evidence.yaml"
+    evidence.write_text("fields: {}\n")
+    for reference in (
+        {"$ref": "#/components/schemas/Services"},
+        {"allOf": [{"$ref": "#/components/schemas/Services"}]},
+    ):
+        spec = {
+            "components": {
+                "schemas": {
+                    "securemesh_site_v2CreateRequest": {
+                        "properties": {
+                            "blocked_service": {**reference, "x-f5xc-wire-name": "blocked_sevice"}
+                        }
+                    },
+                    "Services": {
+                        "type": "array",
+                        "items": {"type": "object", "properties": {"dns": {"type": "boolean"}}},
+                    },
+                }
+            }
+        }
+        paths = {entry["path"]: entry for entry in build_parity_manifest(spec, evidence)["paths"]}
+        assert paths["blocked_service[]"]["wire_key"] == "blocked_sevice"
+        assert paths["blocked_service[].dns"]["wire_key"] == "dns"
