@@ -97,7 +97,7 @@ def test_deprecation_is_not_an_automatic_parity_exclusion(tmp_path: Path) -> Non
             "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
         },
     }
-    assert build_parity_manifest(spec, evidence)["deprecated_exclusions"] == []
+    assert not build_parity_manifest(spec, evidence)["deprecated_exclusions"]
 
 
 def test_manifest_separates_logical_paths_from_wire_names(tmp_path: Path) -> None:
