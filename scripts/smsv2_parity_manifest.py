@@ -142,7 +142,7 @@ def build_parity_manifest(
     for path in platform_removals:
         conclusion = evidence[path]
         hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
-        invalid_evidence = (
+        platform_evidence_errors = (
             conclusion.get("proof_kind") != "explicit_api_rejection",
             conclusion.get("http_status") not in (400, 410, 422),
             not _explicit_platform_rejection(path, conclusion.get("server_message", "")),
@@ -152,7 +152,7 @@ def build_parity_manifest(
             ),
             any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
         )
-        if any(invalid_evidence):
+        if any(platform_evidence_errors):
             raise ValueError(f"Invalid platform removal evidence for {path}")
         removal_evidence[path] = conclusion
 
@@ -165,7 +165,7 @@ def build_parity_manifest(
     for path in verified_removals:
         conclusion = evidence[path]
         hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
-        invalid_evidence = (
+        feature_evidence_errors = (
             conclusion.get("proof_kind") != "create_read_normalization",
             conclusion.get("create_status") != 200,
             conclusion.get("get_status") != 200,
@@ -177,7 +177,7 @@ def build_parity_manifest(
             ),
             any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
         )
-        if any(invalid_evidence):
+        if any(feature_evidence_errors):
             raise ValueError(f"Invalid verified removal evidence for {path}")
         verified_removal_evidence[path] = conclusion
 
