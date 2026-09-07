@@ -142,16 +142,17 @@ def build_parity_manifest(
     for path in platform_removals:
         conclusion = evidence[path]
         hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
-        if (
-            conclusion.get("proof_kind") != "explicit_api_rejection"
-            or conclusion.get("http_status") not in (400, 410, 422)
-            or not _explicit_platform_rejection(path, conclusion.get("server_message", ""))
-            or not conclusion.get("observed_date")
-            or not all(
+        invalid_evidence = (
+            conclusion.get("proof_kind") != "explicit_api_rejection",
+            conclusion.get("http_status") not in (400, 410, 422),
+            not _explicit_platform_rejection(path, conclusion.get("server_message", "")),
+            not conclusion.get("observed_date"),
+            not all(
                 re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
-            )
-            or any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths)
-        ):
+            ),
+            any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
+        )
+        if any(invalid_evidence):
             raise ValueError(f"Invalid platform removal evidence for {path}")
         removal_evidence[path] = conclusion
 
@@ -164,18 +165,19 @@ def build_parity_manifest(
     for path in verified_removals:
         conclusion = evidence[path]
         hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
-        if (
-            conclusion.get("proof_kind") != "create_read_normalization"
-            or conclusion.get("create_status") != 200
-            or conclusion.get("get_status") != 200
-            or conclusion.get("server_behavior") != "silently_removed"
-            or conclusion.get("absence_after_probe_verified") is not True
-            or not conclusion.get("observed_date")
-            or not all(
+        invalid_evidence = (
+            conclusion.get("proof_kind") != "create_read_normalization",
+            conclusion.get("create_status") != 200,
+            conclusion.get("get_status") != 200,
+            conclusion.get("server_behavior") != "silently_removed",
+            conclusion.get("absence_after_probe_verified") is not True,
+            not conclusion.get("observed_date"),
+            not all(
                 re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
-            )
-            or any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths)
-        ):
+            ),
+            any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
+        )
+        if any(invalid_evidence):
             raise ValueError(f"Invalid verified removal evidence for {path}")
         verified_removal_evidence[path] = conclusion
 
