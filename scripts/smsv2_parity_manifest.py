@@ -155,6 +155,30 @@ def build_parity_manifest(
             raise ValueError(f"Invalid platform removal evidence for {path}")
         removal_evidence[path] = conclusion
 
+    verified_removals = sorted(
+        path
+        for path, conclusion in evidence.items()
+        if conclusion.get("classification") == "current_feature_removal"
+    )
+    verified_removal_evidence = {}
+    for path in verified_removals:
+        conclusion = evidence[path]
+        hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
+        if (
+            conclusion.get("proof_kind") != "create_read_normalization"
+            or conclusion.get("create_status") != 200
+            or conclusion.get("get_status") != 200
+            or conclusion.get("server_behavior") != "silently_removed"
+            or conclusion.get("absence_after_probe_verified") is not True
+            or not conclusion.get("observed_date")
+            or not all(
+                re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
+            )
+            or any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths)
+        ):
+            raise ValueError(f"Invalid verified removal evidence for {path}")
+        verified_removal_evidence[path] = conclusion
+
     return {
         "version": spec.get("info", {}).get("version"),
         "resource": "securemesh_site_v2",
@@ -165,6 +189,8 @@ def build_parity_manifest(
         "deprecated_exclusions": [],
         "current_platform_removals": platform_removals,
         "platform_removal_evidence": removal_evidence,
+        "verified_removals": verified_removals,
+        "verified_removal_evidence": verified_removal_evidence,
     }
 
 

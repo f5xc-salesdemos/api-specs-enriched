@@ -29,6 +29,7 @@ def test_manifest_contains_complete_nested_paths_and_semantics() -> None:
     assert paths[f"{interface_prefix}.is_primary"]["read_only"] is True
     assert not ({"spec.log_receiver", "spec.private_adn", "spec.rseries"} & paths.keys())
     assert manifest["current_platform_removals"] == ["spec.rseries"]
+    assert manifest["verified_removals"] == ["spec.private_adn"]
     assert not set(manifest["current_platform_removals"]) & paths.keys()
     assert len(manifest["choice_groups"]) > 50
     assert manifest["choice_groups"]["spec.provider_choice"] == [
@@ -148,6 +149,48 @@ def test_rseries_removal_retains_verified_api_evidence() -> None:
     assert proof["http_status"] == 400
     assert proof["server_message"] == "Rseries provider is not supported for SecureMeshSite"
     assert proof["proof_kind"] == "explicit_api_rejection"
+
+
+def test_private_adn_removal_retains_create_read_normalization_evidence() -> None:
+    spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
+    manifest = build_parity_manifest(spec)
+    proof = manifest["verified_removal_evidence"]["spec.private_adn"]
+    assert proof["proof_kind"] == "create_read_normalization"
+    assert proof["create_status"] == 200
+    assert proof["get_status"] == 200
+    assert proof["server_behavior"] == "silently_removed"
+    assert proof["absence_after_probe_verified"] is True
+
+
+def test_feature_removal_requires_complete_create_read_evidence(tmp_path: Path) -> None:
+    import pytest
+
+    spec = {
+        "components": {
+            "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
+        }
+    }
+    evidence = tmp_path / "evidence.yaml"
+    evidence.write_text(
+        json.dumps(
+            {
+                "fields": {
+                    "spec.private_adn": {
+                        "classification": "current_feature_removal",
+                        "proof_kind": "create_read_normalization",
+                        "create_status": 200,
+                        "get_status": 200,
+                        "server_behavior": "silently_removed",
+                        "absence_after_probe_verified": True,
+                        "observed_date": "2026-09-06",
+                        "legacy_fixture_sha256": "sha256:" + "a" * 64,
+                    }
+                }
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="verified removal evidence"):
+        build_parity_manifest(spec, evidence)
 
 
 def test_api_validation_and_entitlement_errors_cannot_prove_platform_removal(
